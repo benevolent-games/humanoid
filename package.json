@@ -1,0 +1,60 @@
+{
+	"name": "@benev/humanoid",
+	"version": "0.0.0-x.0",
+	"description": "character controller for babylon games",
+	"license": "MIT",
+	"author": "Chase Moskal <chasemoskal@gmail.com>",
+	"type": "module",
+	"main": "x/index.js",
+	"files": [
+		"x",
+		"s"
+	],
+	"scripts": {
+		"prepare": "toolbox-cleanup-babylon",
+		"build": "turtle-standard",
+		"start": "turtle-standard-watch",
+		"test": "cynic node x/tests.test.js"
+	},
+	"dependencies": {
+		"@benev/slate": "^0.1.0-x.6",
+		"@benev/toolbox": "^0.5.0-x.0",
+		"@dimforge/rapier3d": "^0.11.2",
+		"@dimforge/rapier3d-compat": "^0.11.2",
+		"es-module-shims": "^1.8.2"
+	},
+	"peerDependencies": {
+		"@babylonjs/core": "^6.37.1",
+		"@babylonjs/loaders": "^6.37.1"
+	},
+	"devDependencies": {
+		"@benev/turtle": "^0.5.2",
+		"@rollup/plugin-node-resolve": "^15.2.3",
+		"@rollup/plugin-wasm": "^6.2.2",
+		"chokidar": "^3.5.3",
+		"chokidar-cli": "^3.0.0",
+		"cynic": "^0.2.1",
+		"http-server": "^14.1.1",
+		"importly": "^0.2.3",
+		"mkdirp": "^3.0.1",
+		"npm-run-all": "^4.1.5",
+		"rimraf": "^5.0.5",
+		"rollup": "^4.9.2",
+		"terser": "^5.26.0",
+		"typescript": "^5.3.3"
+	},
+	"keywords": [
+		"game",
+		"babylon",
+		"character",
+		"character controller"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/benevolent-games/humanoid.git"
+	},
+	"bugs": {
+		"url": "https://github.com/benevolent-games/humanoid/issues"
+	},
+	"homepage": "https://github.com/benevolent-games/humanoid#readme"
+}
