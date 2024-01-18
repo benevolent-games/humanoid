@@ -17,7 +17,7 @@ import {nexus} from "./nexus.js"
 import {mainthread} from "./ecs/hub.js"
 import {mainpipe} from "./ecs/pipeline.js"
 import {makeRealm} from "./models/realm/realm.js"
-import {Sensitivity} from "./models/impulse/types.js"
+import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {HumanoidSchema, HumanoidTick} from "./ecs/schema.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
 
@@ -52,32 +52,31 @@ realm.porthole.resolution = localTesting
 
 const executor = mainthread.executor(realm, realm.entities, mainpipe)
 
-const {spawn} = realm
-spawn.environment("gym")
-spawn.hemi({direction: [.234, 1, .123], intensity: .6})
-spawn.physicsBox({
+realm.entities.create({
+	environment: "gym",
+})
+
+realm.entities.create(Archetypes.hemi({
+	direction: [.234, 1, .123],
+	intensity: .6,
+}))
+
+realm.entities.create(Archetypes.physicsBox({
 	density: 1000,
 	position: [0, 5, 2],
 	scale: [1, 1, 1],
 	rotation: quat.identity(),
-})
+}))
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")
 
-	const sensitivity = (): Sensitivity => ({
-		keys: 100 / 10_000,
-		mouse: 5 / 10_000,
-		stick: 100 / 10_000,
-	})
-
 	let next: () => void = () => {}
 
 	function spectatorState() {
-		const id = realm.spawn.spectator({
+		const id = realm.entities.create(Archetypes.spectator({
 			position: [0, 1, -2],
-			sensitivity: sensitivity(),
-		})
+		}))
 		next = () => {
 			realm.entities.delete(id)
 			humanoidState()
@@ -85,11 +84,10 @@ spawn.physicsBox({
 	}
 
 	function humanoidState() {
-		const id = realm.spawn.humanoid({
+		const id = realm.entities.create(Archetypes.humanoid({
 			debug: false,
 			position: [0, 5, 0],
-			sensitivity: sensitivity(),
-		})
+		}))
 		next = () => {
 			realm.entities.delete(id)
 			spectatorState()

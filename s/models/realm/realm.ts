@@ -1,7 +1,6 @@
 
 import {Ecs, Physics, Porthole, Stage, debug_colors} from "@benev/toolbox"
 
-import {spawners} from "../../ecs/spawners.js"
 import {MeshStore} from "./parts/mesh_store.js"
 import {HumanoidSchema} from "../../ecs/schema.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
@@ -21,7 +20,6 @@ export type Realm = {
 	impulse: HumanoidImpulse
 	physics: Physics
 	entities: Ecs.Entities<HumanoidSchema>
-	spawn: ReturnType<typeof spawners>
 	meshStore: MeshStore
 	containers: HumanoidContainers
 }
@@ -70,7 +68,6 @@ export async function makeRealm({entities, tickrate, glb_links}: {
 		impulse,
 		physics,
 		entities,
-		spawn: spawners(entities),
 		meshStore: new MeshStore(),
 		containers: {gym, character},
 	}
