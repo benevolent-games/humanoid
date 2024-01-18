@@ -2,6 +2,7 @@
 /x
 /assets/temp
 /notes
+/temp
 
 /node_modules
 /yarn.lock
