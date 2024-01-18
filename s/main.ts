@@ -10,8 +10,8 @@ import "@babylonjs/core/Physics/physicsEngineComponent.js"
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
-import {Ecs, human, measure, quat, scalar, RunningAverage} from "@benev/toolbox"
 import {register_to_dom} from "@benev/slate"
+import {Ecs, human, measure, quat, scalar, RunningAverage} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
 import {mainthread} from "./ecs/hub.js"
@@ -61,12 +61,17 @@ realm.entities.create(Archetypes.hemi({
 	intensity: .6,
 }))
 
-realm.entities.create(Archetypes.physicsBox({
-	density: 1000,
+// realm.entities.create(Archetypes.physicsBox({
+// 	density: 1000,
+// 	position: [0, 5, 2],
+// 	scale: [1, 1, 1],
+// 	rotation: quat.identity(),
+// }))
+
+realm.entities.create({
+	physics_joints: {},
 	position: [0, 5, 2],
-	scale: [1, 1, 1],
-	rotation: quat.identity(),
-}))
+})
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")

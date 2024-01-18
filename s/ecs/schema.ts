@@ -34,6 +34,7 @@ export type HumanoidSchema = Ecs.AsSchema<{
 	}
 
 	physical: "dynamic" | "fixed"
+	physics_joints: {}
 	shape: "box"
 
 	intent: {

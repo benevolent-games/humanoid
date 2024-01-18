@@ -1,6 +1,6 @@
 
 import {mainthread} from "../hub.js"
-import {babylonian} from "@benev/toolbox"
+import {babylonian, quat, vec3} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 
 export const physics_dynamic_system = mainthread.lifecycle
@@ -37,6 +37,44 @@ export const physics_dynamic_system = mainthread.lifecycle
 		execute(_tick, state) {
 			state.position = babylonian.to.vec3(mesh.position)
 			state.rotation = babylonian.to.quat(mesh.absoluteRotationQuaternion)
+		},
+	}
+})
+
+export const physics_joints_system = mainthread.lifecycle
+	("physics_joints")(
+		"physics_joints",
+		"position",
+	)(realm => init => {
+
+	const boxA = realm.physics.box({
+		scale: [1, 1, 1],
+		density: 5,
+		position: vec3.add(init.position, [-2, 0, 0]),
+		rotation: quat.identity(),
+	})
+
+	const boxB = realm.physics.box({
+		scale: [1, 1, 1],
+		density: 5,
+		position: vec3.add(init.position, [2, 0, 0]),
+		rotation: quat.identity(),
+	})
+
+	const joint = realm.physics.joint_spherical({
+		bodies: [boxA.rigid, boxB.rigid],
+		anchors: [[-2, 0, 0], [2, 0, 0]],
+	})
+
+	return {
+		dispose() {
+			joint.dispose()
+			boxA.dispose()
+			boxB.dispose()
+		},
+		execute(_tick, state) {
+			// state.position = babylonian.to.vec3(mesh.position)
+			// state.rotation = babylonian.to.quat(mesh.absoluteRotationQuaternion)
 		},
 	}
 })
