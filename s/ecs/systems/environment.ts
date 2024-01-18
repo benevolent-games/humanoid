@@ -5,7 +5,9 @@ import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {mainthread} from "../hub.js"
 import {babylonian, obtain_babylon_quaternion_from_mesh} from "@benev/toolbox"
 
-export const environment_system = mainthread.lifecycle("environment")("environment")
+export const environment_system = mainthread.lifecycle
+	("environment")
+	("environment")
 	(realm => ({environment}) => {
 
 	const container = (() => {

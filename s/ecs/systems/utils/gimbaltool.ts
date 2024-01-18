@@ -2,7 +2,7 @@
 import {Vec2, Vec3, scalar, vec2} from "@benev/toolbox"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 
-const fullCircle: Vec2 = [
+const circle: Vec2 = [
 	scalar.radians.from.degrees(0),
 	scalar.radians.from.degrees(360),
 ]
@@ -13,7 +13,7 @@ export const gimbaltool = (gimbal: Vec2) => ({
 		const [gimbalX] = gimbal
 		const [x, z] = vec2.rotate(
 			[moveX, moveZ],
-			-scalar.map(gimbalX, fullCircle),
+			-scalar.map(gimbalX, circle),
 		)
 		return [x, moveY, z]
 	},
@@ -22,7 +22,7 @@ export const gimbaltool = (gimbal: Vec2) => ({
 		const [gimbalX] = gimbal
 		const [x, z] = vec2.rotate(
 			[moveX, moveZ],
-			scalar.map(gimbalX, fullCircle),
+			scalar.map(gimbalX, circle),
 		)
 		return [x, moveY, z]
 	},

@@ -1,21 +1,21 @@
 
-import {Scene} from "@babylonjs/core/scene.js"
-import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {Quat, Vec3, babylonian, label, scalar, vec3} from "@benev/toolbox"
+import {scalar, vec3} from "@benev/toolbox"
 
 import {mainthread} from "../hub.js"
 import {flatten} from "./utils/flatten.js"
 import {molasses3d} from "./utils/molasses.js"
 import {gimbaltool} from "./utils/gimbaltool.js"
-import {CharacterContainer} from "../../models/character/container.js"
+import {AdjustmentAnims} from "../../models/choreographer/types.js"
 import {make_dummy_anim_group} from "./choreography/dummy_anim_group.js"
 import {sync_character_anims} from "./choreography/sync_character_anims.js"
-import {AdjustmentAnims, AdjustmentDirection} from "../../models/choreographer/types.js"
-import {CharacterAnims, setup_character_anims} from "./choreography/setup_character_anims.js"
+import {setup_character_anims} from "./choreography/setup_character_anims.js"
+import {adjustment_anim_for_direction} from "./choreography/adjustment_anim_for_direction.js"
+import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
 import {calculate_adjustment_weight} from "../../models/choreographer/utils/calculate_adjustment_weight.js"
 import {calculate_ambulatory_report, apply_adjustments, swivel_effected_by_glance} from "./choreography/calculations.js"
 
-export const choreography_system = mainthread.lifecycle("choreography")(
+export const choreography_system = mainthread.lifecycle
+	("choreography")(
 		"humanoid",
 		"height",
 		"speeds",
@@ -142,52 +142,4 @@ export const choreography_system = mainthread.lifecycle("choreography")(
 		},
 	}
 })
-
-///////////////////////////////////////
-///////////////////////////////////////
-
-export function prepare_choreographer_babylon_parts(o: {
-		scene: Scene
-		characterContainer: CharacterContainer
-		state: {
-			height: number
-			position: Vec3
-			rotation: Quat
-		}
-	}) {
-
-	const {scene, characterContainer, state} = o
-
-	const transform = new TransformNode(label("choreographyTransform"), scene)
-	const character = characterContainer.instance([0, -(state.height / 2), 0])
-	character.root.setParent(transform)
-
-	const position
-		= transform.position
-		= babylonian.from.vec3(state.position)
-
-	const rotation
-		= transform.rotationQuaternion
-		= babylonian.from.quat(state.rotation)
-
-	return {
-		transform,
-		characterInstance: character,
-		position,
-		rotation,
-		dispose() {
-			character.dispose()
-			transform.dispose()
-		},
-	}
-}
-
-function adjustment_anim_for_direction(
-		anims: CharacterAnims,
-		direction: AdjustmentDirection,
-	) {
-	return direction === "left"
-		? anims.stand_legadjust_left
-		: anims.stand_legadjust_right
-}
 

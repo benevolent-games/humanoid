@@ -2,7 +2,8 @@
 import {mainthread} from "../hub.js"
 import {Vec2, Vec3, get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 
-export const intention_system = mainthread.lifecycle("intention")(
+export const intention_system = mainthread.lifecycle
+	("intention")(
 		"intent",
 		"sensitivity",
 	)(realm => () => {

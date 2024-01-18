@@ -3,7 +3,8 @@ import {mainthread} from "../hub.js"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {HemisphericLight} from "@babylonjs/core/Lights/hemisphericLight.js"
 
-export const lighting_system = mainthread.lifecycle("lighting")(
+export const lighting_system = mainthread.lifecycle
+	("lighting")(
 		"light",
 		"direction",
 		"intensity",

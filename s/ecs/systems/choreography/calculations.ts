@@ -2,30 +2,7 @@
 import {Vec2, scalar, vec2} from "@benev/toolbox"
 
 import {molasses} from "../utils/molasses.js"
-import {AdjustmentAnims, ChoreoSwivelAdjustment} from "../../../models/choreographer/types.js"
-
-export type Choreography = {
-	swivel: number
-	settings: ChoreographySettings
-	adjustment: null | ChoreoSwivelAdjustment
-}
-
-export type ChoreographySettings = {
-	swivel_duration: number
-	swivel_readjustment_margin: number
-}
-
-export type Ambulatory = {
-	magnitude: number
-	stillness: number
-	north: number
-	west: number
-	south: number
-	east: number
-}
-
-////////////////////////////////
-////////////////////////////////
+import {AdjustmentAnims, Ambulatory, ChoreoSwivelAdjustment, Choreography} from "../../../models/choreographer/types.js"
 
 export const swivel_midpoint = 0.5
 

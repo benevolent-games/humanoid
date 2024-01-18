@@ -9,7 +9,8 @@ import {mainthread} from "../hub.js"
 import {gimbaltool} from "./utils/gimbaltool.js"
 import {molasses, molasses3d} from "./utils/molasses.js"
 
-export const humanoid_system = mainthread.lifecycle("humanoid")(
+export const humanoid_system = mainthread.lifecycle
+	("humanoid")(
 		"debug",
 		"humanoid",
 		"third_person_cam_distance",

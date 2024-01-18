@@ -1,7 +1,7 @@
 
 import {HumanoidContainers} from "../models/realm/realm.js"
 import {Ecs, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
-import {Choreography} from "./systems/choreography/calculations.js"
+import {Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
 	tick: number
@@ -58,6 +58,4 @@ export type HumanoidSchema = Ecs.AsSchema<{
 	spectator: {}
 	humanoid: {}
 }>
-
-export type ChoreographyComponent = Omit<Choreography, "gimbal" | "intent">
 

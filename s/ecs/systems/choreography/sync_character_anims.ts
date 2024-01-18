@@ -3,8 +3,7 @@ import {Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {CharacterAnims} from "./setup_character_anims.js"
-import {Ambulatory, Choreography} from "./calculations.js"
-import {AdjustmentAnims} from "../../../models/choreographer/types.js"
+import {AdjustmentAnims, Ambulatory, Choreography} from "../../../models/choreographer/types.js"
 
 export function sync_character_anims({
 		gimbal: [,vertical],

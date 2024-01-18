@@ -8,7 +8,8 @@ import {flatten} from "./utils/flatten.js"
 import {gimbaltool} from "./utils/gimbaltool.js"
 import {Vec2, Vec3, babylonian, scalar, vec3} from "@benev/toolbox"
 
-export const spectator_system = mainthread.lifecycle("spectator")(
+export const spectator_system = mainthread.lifecycle
+	("spectator")(
 		"spectator",
 		"force",
 		"gimbal",

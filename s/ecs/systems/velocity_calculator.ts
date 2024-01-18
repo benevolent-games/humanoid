@@ -2,7 +2,8 @@
 import {vec3} from "@benev/toolbox"
 import {threadable} from "../hub.js"
 
-export const velocity_calculator_system = threadable.lifecycle("velocity_calculator")(
+export const velocity_calculator_system = threadable.lifecycle
+	("velocity_calculator")(
 		"position",
 		"velocity",
 	)(() => () => {

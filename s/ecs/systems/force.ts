@@ -3,7 +3,8 @@ import {vec3} from "@benev/toolbox"
 import {threadable} from "../hub.js"
 import {molasses3d} from "./utils/molasses.js"
 
-export const force_system = threadable.processor("force")(
+export const force_system = threadable.processor
+	("force")(
 		"force",
 		"intent",
 		"smoothing",

@@ -1,35 +1,22 @@
 
-import {Vec2} from "@benev/toolbox"
-
-/////////////////////
-/////////////////////
-
 export type Choreography = {
-	settings: ChoreoSettings
-	intent: ChoreoIntent
-	gimbal: Vec2
 	swivel: number
-	adjustment: ChoreoSwivelAdjustment | null
-	ambulatory: ChoreoAmbulatory
-	rotation: number
+	settings: ChoreographySettings
+	adjustment: null | ChoreoSwivelAdjustment
 }
 
-/////////////////////
-/////////////////////
+export type ChoreographySettings = {
+	swivel_duration: number
+	swivel_readjustment_margin: number
+}
 
-export type ChoreoAmbulatory = {
-	ambulation: Vec2
+export type Ambulatory = {
 	magnitude: number
 	stillness: number
 	north: number
 	west: number
 	south: number
 	east: number
-}
-
-export type ChoreoIntent = {
-	amble: Vec2
-	glance: Vec2
 }
 
 export type AdjustmentDirection = "left" | "right"
@@ -40,19 +27,6 @@ export type ChoreoSwivelAdjustment = {
 	duration: number
 	progress: number
 }
-
-export type ChoreoSettings = {
-	sensitivity: number
-	ambulation_delay: number
-	swivel: {
-		readjustment_margin: number
-		midpoint: number
-		duration: number
-	}
-}
-
-/////////////////////
-/////////////////////
 
 export type AdjustmentAnims = {
 	start: (adjustment: ChoreoSwivelAdjustment) => void

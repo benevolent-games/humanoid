@@ -2,7 +2,9 @@
 import {threadable} from "../hub.js"
 import {scalar} from "@benev/toolbox"
 
-export const freelook_system = threadable.processor("freelook")("intent", "gimbal")
+export const freelook_system = threadable.processor
+	("freelook")
+	("intent", "gimbal")
 	(() => () => state => {
 
 	const [gimbalX, gimbalY] = state.gimbal
@@ -10,10 +12,11 @@ export const freelook_system = threadable.processor("freelook")("intent", "gimba
 
 	const x = gimbalX + glanceX
 
-	// y must be twice as sensitive.
-	//  - x axis traverses 360 degrees.
-	//  - y axis traverses 180 degrees.
-	//  - therefore gimbalX packs "double the punch" of gimbalY.
+	// y axis must be doubled compared to x.
+	//  - gimbalX and gimbalY are both between 0 and 1.
+	//  - gimbalX represents 360 degrees of horizontal rotation.
+	//  - gimbalY represents only 180 degrees of vertical rotation.
+	//  - therefore, gimbalX packs "double the punch" of gimbalY.
 	//  - thus, to compensate, we double our influence on gimbalY.
 	const y = gimbalY + (glanceY * 2)
 
