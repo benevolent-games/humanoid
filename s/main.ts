@@ -38,7 +38,7 @@ const realm = await nexus.context.realmOp.load(
 		tickrate: 60,
 		glb_links: localTesting ? {
 			gym: "/temp/gym13.glb",
-			character: "/temp/knightanimations23.glb",
+			character: "/temp/knightanimations35.glb",
 		} : {
 			gym: "https://filebin.net/jpb4802198d8jcpx/gym13.glb",
 			character: "https://filebin.net/jpb4802198d8jcpx/knightanimations23.glb",

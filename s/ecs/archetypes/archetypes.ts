@@ -63,7 +63,7 @@ export namespace Archetypes {
 		smoothing: 4,
 		rotation: quat.identity(),
 		velocity: vec3.zero(),
-		speeds: {base: 3, fast: 6, slow: 1.5},
+		speeds: {base: 3, fast: 5, slow: 1.5},
 		choreography: {
 			swivel: .5,
 			adjustment: null,

@@ -81,7 +81,8 @@ export function sync_character_anims({
 	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)
 
 	anims.hips_swivel.weight = 1
-	anims.hips_swivel.forceFrame(swivel * anims.hips_swivel.to)
+	const hipframe = swivel * anims.hips_swivel.to
+	anims.hips_swivel.forceFrame(hipframe)
 }
 
 ////////////////////////////////////////
