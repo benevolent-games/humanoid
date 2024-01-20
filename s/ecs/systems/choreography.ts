@@ -139,6 +139,7 @@ export const choreography_system = mainthread.lifecycle
 		},
 		dispose() {
 			babylon.dispose()
+			boss_anim.dispose()
 		},
 	}
 })

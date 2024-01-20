@@ -97,7 +97,7 @@ realm.entities.create(Archetypes.physicsBox({
 	humanoidState()
 
 	realm.impulse.on.universal.buttons.respawn(input => {
-		if (input.down)
+		if (input.down && !input.repeat)
 			next()
 	})
 }

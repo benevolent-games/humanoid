@@ -75,14 +75,11 @@ export function sync_character_anims({
 	anims.stand_rightward.weight = b(mod(ambulatory.east))
 	anims.twohander_rightward.weight = b(ambulatory.east)
 
-	// additives
-
 	anims.spine_bend.weight = 1
 	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)
 
 	anims.hips_swivel.weight = 1
-	const hipframe = swivel * anims.hips_swivel.to
-	anims.hips_swivel.forceFrame(hipframe)
+	anims.hips_swivel.forceFrame(swivel * anims.hips_swivel.to)
 }
 
 ////////////////////////////////////////
