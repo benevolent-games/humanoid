@@ -5,12 +5,13 @@ import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {Vec2, Vec3, babylonian, labeler, scalar, vec3} from "@benev/toolbox"
 
-import {mainthread} from "../hub.js"
+import {hub} from "../hub.js"
 import {gimbaltool} from "./utils/gimbaltool.js"
 import {molasses, molasses3d} from "./utils/molasses.js"
 
-export const humanoid_system = mainthread.lifecycle
-	("humanoid")(
+export const humanoid_system = hub
+	.behavior("humanoid")
+	.select(
 		"debug",
 		"humanoid",
 		"third_person_cam_distance",
@@ -26,7 +27,8 @@ export const humanoid_system = mainthread.lifecycle
 		"speeds",
 		"force",
 		"choreography",
-	)(realm => init => {
+	)
+	.lifecycle(realm => init => {
 
 	const {stage, colors} = realm
 	const {scene} = stage

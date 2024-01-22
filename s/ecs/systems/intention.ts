@@ -1,12 +1,11 @@
 
-import {mainthread} from "../hub.js"
+import {hub} from "../hub.js"
 import {Vec2, Vec3, get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 
-export const intention_system = mainthread.lifecycle
-	("intention")(
-		"intent",
-		"sensitivity",
-	)(realm => () => {
+export const intention_system = hub
+	.behavior("intention")
+	.select("intent", "sensitivity")
+	.lifecycle(realm => () => {
 
 	const {impulse, stage} = realm
 	const {buttons} = impulse.report.humanoid

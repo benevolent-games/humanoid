@@ -11,10 +11,10 @@ import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {register_to_dom} from "@benev/slate"
-import {Ecs, human, measure, quat, scalar, RunningAverage} from "@benev/toolbox"
+import {human, measure, quat, scalar, RunningAverage, Ecs2} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
-import {mainthread} from "./ecs/hub.js"
+import {hub} from "./ecs/hub.js"
 import {mainpipe} from "./ecs/pipeline.js"
 import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
@@ -30,7 +30,7 @@ const localTesting = (
 	window.location.host.startsWith("192")
 )
 
-const entities = new Ecs.Entities<HumanoidSchema>()
+const entities = new Ecs2.Entities<HumanoidSchema>()
 
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
@@ -50,7 +50,7 @@ realm.porthole.resolution = localTesting
 	? 0.5
 	: 1
 
-const executor = mainthread.executor(realm, realm.entities, mainpipe)
+const executor = hub.executor(realm, realm.entities, mainpipe)
 
 realm.entities.create({
 	environment: "gym",
@@ -117,7 +117,7 @@ const measures = {
 }
 
 function systemDiagnostics() {
-	const diagnostics = new Map<Ecs.System<HumanoidTick, HumanoidSchema>, number>()
+	const diagnostics = new Map<Ecs2.System<HumanoidTick, HumanoidSchema, any>, number>()
 	const commit = () => {
 		for (const [system, ms] of diagnostics)
 			measures.systems.get(system.name)!.add(ms)

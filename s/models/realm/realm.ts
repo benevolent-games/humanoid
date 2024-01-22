@@ -1,5 +1,5 @@
 
-import {Ecs, Physics, Porthole, Stage, debug_colors} from "@benev/toolbox"
+import {Ecs2, Physics, Porthole, Stage, debug_colors} from "@benev/toolbox"
 
 import {MeshStore} from "./parts/mesh_store.js"
 import {HumanoidSchema} from "../../ecs/schema.js"
@@ -19,13 +19,13 @@ export type Realm = {
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
 	physics: Physics
-	entities: Ecs.Entities<HumanoidSchema>
+	entities: Ecs2.Entities<HumanoidSchema>
 	meshStore: MeshStore
 	containers: HumanoidContainers
 }
 
 export async function makeRealm({entities, tickrate, glb_links}: {
-		entities: Ecs.Entities<HumanoidSchema>
+		entities: Ecs2.Entities<HumanoidSchema>
 		tickrate: number
 		glb_links: {
 			gym: string

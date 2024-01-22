@@ -1,12 +1,11 @@
 
+import {hub} from "../hub.js"
 import {vec3} from "@benev/toolbox"
-import {threadable} from "../hub.js"
 
-export const velocity_calculator_system = threadable.lifecycle
-	("velocity_calculator")(
-		"position",
-		"velocity",
-	)(() => () => {
+export const velocity_calculator_system = hub
+	.behavior("velocity_calculator")
+	.select("position", "velocity")
+	.lifecycle(() => () => {
 
 	let previous_position = vec3.zero()
 

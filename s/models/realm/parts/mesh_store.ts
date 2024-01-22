@@ -1,16 +1,14 @@
 
+import {id_counter} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 
 export class MeshStore {
 	#map = new Map<number, Mesh | InstancedMesh>
-	#count = 0
-	#nextId() {
-		return this.#count++
-	}
+	#id = id_counter()
 
 	keep(mesh: Mesh | InstancedMesh) {
-		const id = this.#nextId()
+		const id = this.#id()
 		this.#map.set(id, mesh)
 		return id
 	}

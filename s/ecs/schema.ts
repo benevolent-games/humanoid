@@ -1,6 +1,6 @@
 
 import {HumanoidContainers} from "../models/realm/realm.js"
-import {Ecs, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
+import {Ecs, Ecs2, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
 import {Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
@@ -35,6 +35,10 @@ export type HumanoidSchema = Ecs.AsSchema<{
 
 	physical: "dynamic" | "fixed"
 	physics_joints: {}
+	joint: {
+		parts: [Ecs2.Id, Ecs2.Id],
+		anchors: [Vec3, Vec3]
+	}
 	shape: "box"
 
 	intent: {

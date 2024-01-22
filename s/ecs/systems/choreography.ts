@@ -1,7 +1,7 @@
 
 import {scalar, vec3} from "@benev/toolbox"
 
-import {mainthread} from "../hub.js"
+import {hub} from "../hub.js"
 import {flatten} from "./utils/flatten.js"
 import {molasses3d} from "./utils/molasses.js"
 import {gimbaltool} from "./utils/gimbaltool.js"
@@ -14,8 +14,9 @@ import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreo
 import {calculate_adjustment_weight} from "../../models/choreographer/utils/calculate_adjustment_weight.js"
 import {calculate_ambulatory_report, apply_adjustments, swivel_effected_by_glance} from "./choreography/calculations.js"
 
-export const choreography_system = mainthread.lifecycle
-	("choreography")(
+export const choreography_system = hub
+	.behavior("choreography")
+	.select(
 		"humanoid",
 		"height",
 		"speeds",
@@ -25,7 +26,8 @@ export const choreography_system = mainthread.lifecycle
 		"intent",
 		"velocity",
 		"choreography",
-	)(realm => init => {
+	)
+	.lifecycle(realm => init => {
 
 	const babylon = prepare_choreographer_babylon_parts({
 		scene: realm.stage.scene,
