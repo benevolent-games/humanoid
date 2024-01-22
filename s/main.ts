@@ -61,17 +61,34 @@ realm.entities.create(Archetypes.hemi({
 	intensity: .6,
 }))
 
-realm.entities.create(Archetypes.physicsBox({
-	density: 1000,
-	position: [0, 5, 2],
-	scale: [1, 1, 1],
-	rotation: quat.identity(),
-}))
-
-// realm.entities.create({
-// 	physics_joints: {},
+// realm.entities.create(Archetypes.physicsBox({
+// 	density: 1000,
 // 	position: [0, 5, 2],
-// })
+// 	scale: [1, 1, 1],
+// 	rotation: quat.identity(),
+// }))
+
+realm.entities.create({
+	joint: {
+		anchors: [[0, 0, 0], [2, 0, 0]],
+		parts: [
+
+			realm.entities.create(Archetypes.physicsBox({
+				density: 1000,
+				position: [-1, 5, 2],
+				scale: [1, 1, 1],
+				rotation: quat.identity(),
+			})),
+
+			realm.entities.create(Archetypes.physicsBox({
+				density: 1000,
+				position: [1, 5, 2],
+				scale: [1, 1, 1],
+				rotation: quat.identity(),
+			})),
+		],
+	}
+})
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")
@@ -110,33 +127,6 @@ realm.entities.create(Archetypes.physicsBox({
 let count = 0
 let last_time = performance.now()
 
-
-
-
-
-// realm.stage.remote.onTick(() => {
-// 	const last = last_time
-
-// 	const tick: HumanoidTick = {
-// 		tick: count++,
-// 		deltaTime: scalar.clamp(
-// 			((last_time = performance.now()) - last),
-// 			0,
-// 			100, // clamp to 100ms delta to avoid crazy over-corrections
-// 		) / 1000,
-// 	}
-
-// 	realm.physics.step()
-// 	executor.execute_all(tick)
-// })
-
-// realm.stage.remote.start()
-
-// console.log("realm", realm)
-
-
-
-
 const measures = {
 	physics: new RunningAverage(),
 	tick: new RunningAverage(),
@@ -170,14 +160,15 @@ realm.stage.remote.onTick(() => {
 
 	measures.tick.add(measure(() => {
 		const {diagnostics, commit} = systemDiagnostics()
-		executor.execute_all({
+		const tick: HumanoidTick = {
 			tick: count++,
 			deltaTime: scalar.clamp(
 				((last_time = performance.now()) - last),
 				0,
 				100, // clamp to 100ms delta to avoid large over-corrections
 			) / 1000,
-		}, diagnostics)
+		}
+		executor.execute_all(tick, diagnostics)
 		commit()
 	}))
 
@@ -188,6 +179,4 @@ realm.stage.remote.onTick(() => {
 realm.stage.remote.start()
 
 console.log("realm", realm)
-
-
 

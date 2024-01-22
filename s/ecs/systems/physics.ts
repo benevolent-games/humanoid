@@ -31,7 +31,7 @@ export const physics_dynamics_system = hub
 			dispose = () => actor.dispose()
 			realm.entities.update(id, {
 				...init,
-				physics_actor: realm.physicsStore.keep(actor),
+				physics_actor_ref: realm.physicsStore.keep(actor),
 			})
 		} break
 		default: {
@@ -64,7 +64,7 @@ export const physics_fixed_system = hub
 
 	realm.entities.update(id, {
 		...init,
-		physics_actor: realm.physicsStore.keep(actor),
+		physics_actor_ref: realm.physicsStore.keep(actor),
 	})
 
 	return {
@@ -105,17 +105,13 @@ export const physics_joints_system = hub
 		})
 	}
 
-	// 	position: vec3.add(init.position, [-2, 0, 0]),
-	// 	position: vec3.add(init.position, [2, 0, 0]),
-	// 	anchors: [[-2, 0, 0], [2, 0, 0]],
-
 	return passes({
-
 		physicals: pass({
 			query: ["physics_actor_ref"],
 			events: {
 				initialize(id, state) {
-					actorRecords.set(id, realm.physicsStore.recall(state.physics_actor_ref))
+					const actor = realm.physicsStore.recall(state.physics_actor_ref)
+					actorRecords.set(id, actor)
 				},
 				dispose(id) {
 					actorRecords.delete(id)
@@ -151,9 +147,11 @@ export const physics_joints_system = hub
 	}).execute(() => {
 		for (const [id, pending] of [...pendingJoints]) {
 			pending.attempts += 1
+
 			const {parts: [id1, id2], anchors} = pending.joint
 			const alpha = actorRecords.get(id1)
 			const bravo = actorRecords.get(id2)
+
 			if (alpha && bravo) {
 				jointRecords.set(id, {
 					joint: make_physics_joint(alpha, bravo, anchors),
@@ -164,6 +162,7 @@ export const physics_joints_system = hub
 			}
 			else if (pending.attempts > 10) {
 				console.warn(`failed to create joint`, pending)
+				pendingJoints.delete(id)
 			}
 		}
 	})
