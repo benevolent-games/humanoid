@@ -34,9 +34,9 @@ export type HumanoidSchema = Ecs.AsSchema<{
 	}
 
 	physical: "dynamic" | "fixed"
-	physics_joints: {}
+	physics_actor_ref: number
 	joint: {
-		parts: [Ecs2.Id, Ecs2.Id],
+		parts: [Ecs2.Id, Ecs2.Id]
 		anchors: [Vec3, Vec3]
 	}
 	shape: "box"

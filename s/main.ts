@@ -11,7 +11,7 @@ import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {register_to_dom} from "@benev/slate"
-import {human, measure, quat, scalar, RunningAverage, Ecs2} from "@benev/toolbox"
+import {human, measure, quat, scalar, RunningAverage, Ecs3} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
 import {hub} from "./ecs/hub.js"
@@ -30,7 +30,7 @@ const localTesting = (
 	window.location.host.startsWith("192")
 )
 
-const entities = new Ecs2.Entities<HumanoidSchema>()
+const entities = new Ecs3.Entities<HumanoidSchema>()
 
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
@@ -61,17 +61,17 @@ realm.entities.create(Archetypes.hemi({
 	intensity: .6,
 }))
 
-// realm.entities.create(Archetypes.physicsBox({
-// 	density: 1000,
-// 	position: [0, 5, 2],
-// 	scale: [1, 1, 1],
-// 	rotation: quat.identity(),
-// }))
-
-realm.entities.create({
-	physics_joints: {},
+realm.entities.create(Archetypes.physicsBox({
+	density: 1000,
 	position: [0, 5, 2],
-})
+	scale: [1, 1, 1],
+	rotation: quat.identity(),
+}))
+
+// realm.entities.create({
+// 	physics_joints: {},
+// 	position: [0, 5, 2],
+// })
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")
@@ -110,17 +110,44 @@ realm.entities.create({
 let count = 0
 let last_time = performance.now()
 
+
+
+
+
+// realm.stage.remote.onTick(() => {
+// 	const last = last_time
+
+// 	const tick: HumanoidTick = {
+// 		tick: count++,
+// 		deltaTime: scalar.clamp(
+// 			((last_time = performance.now()) - last),
+// 			0,
+// 			100, // clamp to 100ms delta to avoid crazy over-corrections
+// 		) / 1000,
+// 	}
+
+// 	realm.physics.step()
+// 	executor.execute_all(tick)
+// })
+
+// realm.stage.remote.start()
+
+// console.log("realm", realm)
+
+
+
+
 const measures = {
 	physics: new RunningAverage(),
 	tick: new RunningAverage(),
-	systems: new Map<string, RunningAverage>(executor.systems.map(s => [s.name, new RunningAverage()])),
+	executables: new Map<string, RunningAverage>(executor.executables.map(s => [s.name, new RunningAverage()])),
 }
 
 function systemDiagnostics() {
-	const diagnostics = new Map<Ecs2.System<HumanoidTick, HumanoidSchema, any>, number>()
+	const diagnostics = new Map<Ecs3.Executable<HumanoidTick, HumanoidSchema, any>, number>()
 	const commit = () => {
 		for (const [system, ms] of diagnostics)
-			measures.systems.get(system.name)!.add(ms)
+			measures.executables.get(system.name)!.add(ms)
 	}
 	return {diagnostics, commit}
 }
@@ -130,7 +157,7 @@ function logMeasurements() {
 	console.log(`- physics ${human.performance(measures.physics.average)}`)
 	console.log(`- tick    ${human.performance(measures.tick.average)}`)
 	console.log(`- systems:`)
-	for (const [system, time] of measures.systems)
+	for (const [system, time] of measures.executables)
 		console.log(`  - ${system} ${human.performance(time.average)}`)
 }
 
@@ -143,7 +170,7 @@ realm.stage.remote.onTick(() => {
 
 	measures.tick.add(measure(() => {
 		const {diagnostics, commit} = systemDiagnostics()
-		executor.execute_all_systems({
+		executor.execute_all({
 			tick: count++,
 			deltaTime: scalar.clamp(
 				((last_time = performance.now()) - last),
@@ -161,4 +188,6 @@ realm.stage.remote.onTick(() => {
 realm.stage.remote.start()
 
 console.log("realm", realm)
+
+
 
