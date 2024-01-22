@@ -1,11 +1,11 @@
 
-import {threadable} from "../hub.js"
+import {hub} from "../hub.js"
 import {scalar} from "@benev/toolbox"
 
-export const freelook_system = threadable.processor
-	("freelook")
-	("intent", "gimbal")
-	(() => () => state => {
+export const freelook_system = hub
+	.behavior("freelook")
+	.select("intent", "gimbal")
+	.processor(() => () => state => {
 
 	const [gimbalX, gimbalY] = state.gimbal
 	const [glanceX, glanceY] = state.intent.glance

@@ -1,11 +1,12 @@
 
-import {Ecs, Physics, Porthole, Stage, debug_colors} from "@benev/toolbox"
+import {Ecs3, Physics, Porthole, Stage, debug_colors} from "@benev/toolbox"
 
 import {MeshStore} from "./parts/mesh_store.js"
 import {HumanoidSchema} from "../../ecs/schema.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {CharacterContainer} from "../character/container.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
+import { PhysicsStore } from "./parts/physics_store.js"
 
 export type HumanoidContainers = {
 	gym: AssetContainer
@@ -19,13 +20,14 @@ export type Realm = {
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
 	physics: Physics
-	entities: Ecs.Entities<HumanoidSchema>
+	entities: Ecs3.Entities<HumanoidSchema>
 	meshStore: MeshStore
+	physicsStore: PhysicsStore
 	containers: HumanoidContainers
 }
 
 export async function makeRealm({entities, tickrate, glb_links}: {
-		entities: Ecs.Entities<HumanoidSchema>
+		entities: Ecs3.Entities<HumanoidSchema>
 		tickrate: number
 		glb_links: {
 			gym: string
@@ -69,6 +71,7 @@ export async function makeRealm({entities, tickrate, glb_links}: {
 		physics,
 		entities,
 		meshStore: new MeshStore(),
+		physicsStore: new PhysicsStore(),
 		containers: {gym, character},
 	}
 }

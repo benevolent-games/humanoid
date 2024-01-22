@@ -3,20 +3,22 @@ import {Vector3} from "@babylonjs/core/Maths/math.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
-import {mainthread} from "../hub.js"
+import {hub} from "../hub.js"
 import {flatten} from "./utils/flatten.js"
 import {gimbaltool} from "./utils/gimbaltool.js"
 import {Vec2, Vec3, babylonian, scalar, vec3} from "@benev/toolbox"
 
-export const spectator_system = mainthread.lifecycle
-	("spectator")(
+export const spectator_system = hub
+	.behavior("spectator")
+	.select(
 		"spectator",
 		"force",
 		"gimbal",
 		"position",
 		"speeds",
 		"camera",
-	)(realm => (state, id) => {
+	)
+	.lifecycle(realm => (state, id) => {
 
 	const {stage} = realm
 	const name = (n: string) => `${n}::${id}`

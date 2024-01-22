@@ -2,13 +2,13 @@
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 
-import {mainthread} from "../hub.js"
+import {hub} from "../hub.js"
 import {babylonian, obtain_babylon_quaternion_from_mesh} from "@benev/toolbox"
 
-export const environment_system = mainthread.lifecycle
-	("environment")
-	("environment")
-	(realm => ({environment}) => {
+export const environment_system = hub
+	.behavior("environment")
+	.select("environment")
+	.lifecycle(realm => ({environment}) => {
 
 	const container = (() => {
 		switch (environment) {
