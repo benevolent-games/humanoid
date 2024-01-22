@@ -1,6 +1,7 @@
 
+import {Ecs3, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
+
 import {HumanoidContainers} from "../models/realm/realm.js"
-import {Ecs, Ecs2, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
 import {Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
@@ -8,7 +9,7 @@ export type HumanoidTick = {
 	deltaTime: number
 }
 
-export type HumanoidSchema = Ecs.AsSchema<{
+export type HumanoidSchema = Ecs3.AsSchema<{
 	debug: boolean
 	environment: keyof HumanoidContainers
 
@@ -36,7 +37,7 @@ export type HumanoidSchema = Ecs.AsSchema<{
 	physical: "dynamic" | "fixed"
 	physics_actor_ref: number
 	joint: {
-		parts: [Ecs2.Id, Ecs2.Id]
+		parts: [Ecs3.Id, Ecs3.Id]
 		anchors: [Vec3, Vec3]
 	}
 	shape: "box"
