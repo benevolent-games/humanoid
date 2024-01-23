@@ -1,17 +1,12 @@
 
-import {Ecs3, Physics, Porthole, Stage, debug_colors} from "@benev/toolbox"
+import {Ecs3, Physics, Porthole, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
-import {MeshStore} from "./parts/mesh_store.js"
+import {Spawn} from "./parts/spawn.js"
+import {Prop, Meshoid} from "./types.js"
+import {RefStore} from "./parts/ref_store.js"
 import {HumanoidSchema} from "../../ecs/schema.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {CharacterContainer} from "../character/container.js"
-import {AssetContainer} from "@babylonjs/core/assetContainer.js"
-import { PhysicsStore } from "./parts/physics_store.js"
-
-export type HumanoidContainers = {
-	gym: AssetContainer
-	character: CharacterContainer
-}
 
 export type Realm = {
 	tickrate: number
@@ -21,9 +16,12 @@ export type Realm = {
 	impulse: HumanoidImpulse
 	physics: Physics
 	entities: Ecs3.Entities<HumanoidSchema>
-	meshStore: MeshStore
-	physicsStore: PhysicsStore
-	containers: HumanoidContainers
+	spawn: Spawn
+	stores: {
+		meshes: RefStore<Meshoid>
+		props: RefStore<Prop>
+		physics_rigids: RefStore<Rapier.RigidBody>
+	}
 }
 
 export async function makeRealm({entities, tickrate, glb_links}: {
@@ -59,9 +57,6 @@ export async function makeRealm({entities, tickrate, glb_links}: {
 			.then(container => new CharacterContainer(container)),
 	])
 
-	for (const light of gym.lights)
-		light.intensity /= 1000
-
 	return {
 		tickrate,
 		porthole,
@@ -70,9 +65,12 @@ export async function makeRealm({entities, tickrate, glb_links}: {
 		impulse,
 		physics,
 		entities,
-		meshStore: new MeshStore(),
-		physicsStore: new PhysicsStore(),
-		containers: {gym, character},
+		spawn: new Spawn({gym, character}),
+		stores: {
+			props: new RefStore<Prop>("props"),
+			meshes: new RefStore<Meshoid>("meshes"),
+			physics_rigids: new RefStore<Rapier.RigidBody>("physics_rigids"),
+		},
 	}
 }
 

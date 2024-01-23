@@ -1,5 +1,4 @@
 
-import {Vec3} from "@benev/toolbox"
 import {CharacterInstance} from "./instance.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {animation_association} from "./utils/animation_association.js"
@@ -13,8 +12,8 @@ export class CharacterContainer {
 		animation_association.mark(container.animationGroups)
 	}
 
-	instance(position: Vec3) {
-		return new CharacterInstance(this.#container, position)
+	instance() {
+		return new CharacterInstance(this.#container)
 	}
 }
 

@@ -1,7 +1,7 @@
 
 import {Ecs3, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
 
-import {HumanoidContainers} from "../models/realm/realm.js"
+import {Ref} from "../models/realm/parts/ref_store.js"
 import {Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
@@ -11,14 +11,15 @@ export type HumanoidTick = {
 
 export type HumanoidSchema = Ecs3.AsSchema<{
 	debug: boolean
-	environment: keyof HumanoidContainers
+	environment: "gym"
 
 	position: Vec3
 	rotation: Quat
 	scale: Vec3
 	velocity: Vec3
 
-	mesh: number
+	mesh: Ref
+	prop: Ref
 
 	light: "hemi"
 	density: number
@@ -34,8 +35,8 @@ export type HumanoidSchema = Ecs3.AsSchema<{
 		maxZ: number
 	}
 
-	physical: "dynamic" | "fixed"
-	physics_actor_ref: number
+	physical: "dynamic" | "fixed" | "fixture"
+	physics_rigid: Ref
 	joint: {
 		parts: [Ecs3.Id, Ecs3.Id]
 		anchors: [Vec3, Vec3]

@@ -2,12 +2,11 @@
 import {Scene} from "@babylonjs/core/scene.js"
 import {Quat, Vec3, babylonian, label} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-
-import {CharacterContainer} from "../../../models/character/container.js"
+import {CharacterInstance} from "../../../models/character/instance.js"
 
 export function prepare_choreographer_babylon_parts(o: {
 		scene: Scene
-		characterContainer: CharacterContainer
+		character: CharacterInstance
 		state: {
 			height: number
 			position: Vec3
@@ -15,10 +14,10 @@ export function prepare_choreographer_babylon_parts(o: {
 		}
 	}) {
 
-	const {scene, characterContainer, state} = o
+	const {scene, character, state} = o
 
 	const transform = new TransformNode(label("choreographyTransform"), scene)
-	const character = characterContainer.instance([0, -(state.height / 2), 0])
+	character.position = [0, -(state.height / 2), 0]
 	character.root.setParent(transform)
 
 	const position

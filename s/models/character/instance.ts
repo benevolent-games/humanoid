@@ -9,7 +9,7 @@ export class CharacterInstance extends Disposable {
 	root: TransformNode
 	instanced: InstantiatedEntries
 
-	constructor(container: AssetContainer, position: Vec3) {
+	constructor(container: AssetContainer) {
 		super()
 
 		const instanced = container.instantiateModelsToScene()
@@ -17,7 +17,6 @@ export class CharacterInstance extends Disposable {
 
 		const [__root__] = instanced.rootNodes
 		const root = __root__.getChildren()[0] as TransformNode
-		root.position = babylonian.from.vec3(position)
 		this.root = root
 
 		this.disposable(() => instanced.dispose())

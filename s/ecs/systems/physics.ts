@@ -2,7 +2,7 @@
 import {hub} from "../hub.js"
 import {HumanoidSchema} from "../schema.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
-import {Ecs3, Phys, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
+import {Ecs3, Phys, Rapier, Vec3, babylonian} from "@benev/toolbox"
 
 export const physics_dynamics_system = hub
 	.behavior("physics_dynamics")
@@ -31,7 +31,7 @@ export const physics_dynamics_system = hub
 			dispose = () => actor.dispose()
 			realm.entities.update(id, {
 				...init,
-				physics_actor_ref: realm.physicsStore.keep(actor),
+				physics_rigid: realm.stores.physics_rigids.keep(actor.rigid),
 			})
 		} break
 		default: {
@@ -59,12 +59,12 @@ export const physics_fixed_system = hub
 	)
 	.lifecycle(realm => (init, id) => {
 
-	const mesh = realm.meshStore.recall(init.mesh)
+	const mesh = realm.stores.meshes.recall(init.mesh)
 	const actor = realm.physics.trimesh(mesh)
 
 	realm.entities.update(id, {
 		...init,
-		physics_actor_ref: realm.physicsStore.keep(actor),
+		physics_rigid: realm.stores.physics_rigids.keep(actor.rigid),
 	})
 
 	return {
@@ -72,6 +72,27 @@ export const physics_fixed_system = hub
 		dispose() {
 			actor.dispose()
 		},
+	}
+})
+
+export const physics_fixture = hub
+	.behavior("physics_fixture")
+	.select("physical", "position")
+	.lifecycle(realm => (init, id) => {
+
+	let dispose = () => {}
+
+	if (init.physical === "fixture") {
+		const fixture = realm.physics.fixture({position: init.position})
+		const physics_rigid = realm.stores.physics_rigids.keep(fixture.rigid)
+		realm.entities.update(id, {...init, physics_rigid})
+		dispose = fixture.dispose
+		console.log("FIXTURIZED")
+	}
+
+	return {
+		execute() {},
+		dispose,
 	}
 })
 
@@ -91,30 +112,30 @@ export const physics_joints_system = hub
 	}
 
 	const jointRecords = new Map<Ecs3.Id, JointRecord>()
-	const actorRecords = new Map<Ecs3.Id, Phys.Actor>()
+	const rigidRecords = new Map<Ecs3.Id, Rapier.RigidBody>()
 	const pendingJoints = new Map<Ecs3.Id, PendingJoint>()
 
 	function make_physics_joint(
-			alpha: Phys.Actor,
-			bravo: Phys.Actor,
+			alpha: Rapier.RigidBody,
+			bravo: Rapier.RigidBody,
 			anchors: [Vec3, Vec3],
 		) {
 		return realm.physics.joint_spherical({
-			bodies: [alpha.rigid, bravo.rigid],
+			bodies: [alpha, bravo],
 			anchors,
 		})
 	}
 
 	return passes({
 		physicals: pass({
-			query: ["physics_actor_ref"],
+			query: ["physics_rigid"],
 			events: {
 				initialize(id, state) {
-					const actor = realm.physicsStore.recall(state.physics_actor_ref)
-					actorRecords.set(id, actor)
+					const rigid = realm.stores.physics_rigids.recall(state.physics_rigid)
+					rigidRecords.set(id, rigid)
 				},
 				dispose(id) {
-					actorRecords.delete(id)
+					rigidRecords.delete(id)
 					for (const [jointId, jointRecord] of [...jointRecords]) {
 						const part_of_joint_is_gone = (
 							jointRecord.alphaId === id ||
@@ -149,8 +170,8 @@ export const physics_joints_system = hub
 			pending.attempts += 1
 
 			const {parts: [id1, id2], anchors} = pending.joint
-			const alpha = actorRecords.get(id1)
-			const bravo = actorRecords.get(id2)
+			const alpha = rigidRecords.get(id1)
+			const bravo = rigidRecords.get(id2)
 
 			if (alpha && bravo) {
 				jointRecords.set(id, {

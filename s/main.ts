@@ -37,10 +37,10 @@ const realm = await nexus.context.realmOp.load(
 		entities,
 		tickrate: 60,
 		glb_links: localTesting ? {
-			gym: "/temp/gym13.glb",
+			gym: "/temp/gym14.glb",
 			character: "/temp/knightanimations35.glb",
 		} : {
-			gym: "https://filebin.net/zyl9swjbx26uo5ij/gym13.glb",
+			gym: "https://filebin.net/5gtpcvcs5uti6et6/gym14.glb",
 			character: "https://filebin.net/zyl9swjbx26uo5ij/knightanimations35.glb",
 		},
 	})
@@ -106,10 +106,13 @@ realm.entities.create({
 	}
 
 	function humanoidState() {
-		const id = realm.entities.create(Archetypes.humanoid({
-			debug: false,
-			position: [0, 5, 0],
-		}))
+		const id = realm.entities.create({
+			...Archetypes.humanoid({
+				debug: false,
+				position: [0, 5, 0],
+			}),
+			gimbal: [0.5, 0.5],
+		})
 		next = () => {
 			realm.entities.delete(id)
 			spectatorState()

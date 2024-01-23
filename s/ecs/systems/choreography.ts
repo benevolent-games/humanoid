@@ -30,9 +30,9 @@ export const choreography_system = hub
 	.lifecycle(realm => init => {
 
 	const babylon = prepare_choreographer_babylon_parts({
-		scene: realm.stage.scene,
-		characterContainer: realm.containers.character,
 		state: init,
+		scene: realm.stage.scene,
+		character: realm.spawn.character(),
 	})
 
 	const anims = setup_character_anims(babylon.characterInstance)

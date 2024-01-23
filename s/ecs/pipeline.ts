@@ -9,7 +9,7 @@ import {spectator_system} from "./systems/spectator.js"
 import {environment_system} from "./systems/environment.js"
 import {choreography_system} from "./systems/choreography.js"
 import {velocity_calculator_system} from "./systems/velocity_calculator.js"
-import {physics_dynamics_system, physics_fixed_system, physics_joints_system} from "./systems/physics.js"
+import {physics_dynamics_system, physics_fixed_system, physics_fixture, physics_joints_system} from "./systems/physics.js"
 
 export const mainpipe = hub.pipeline(
 	intention_system,
@@ -18,6 +18,7 @@ export const mainpipe = hub.pipeline(
 	environment_system,
 	lighting_system,
 	physics_fixed_system,
+	physics_fixture,
 	physics_joints_system,
 	physics_dynamics_system,
 	spectator_system,
