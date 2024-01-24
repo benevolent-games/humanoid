@@ -1,8 +1,7 @@
 
-import {Ecs3, Physics, Porthole, Rapier, Stage, debug_colors} from "@benev/toolbox"
+import {Ecs3, Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
 import {Spawn} from "./parts/spawn.js"
-import {Prop, Meshoid} from "./types.js"
 import {RefStore} from "./parts/ref_store.js"
 import {HumanoidSchema} from "../../ecs/schema.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"

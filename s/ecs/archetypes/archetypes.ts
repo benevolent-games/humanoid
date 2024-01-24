@@ -85,7 +85,7 @@ export namespace Archetypes {
 			rotation: Quat
 			density: number
 		}) => ({
-		physical: "dynamic",
+		physical_dynamic: {},
 		shape: "box",
 		density,
 		position,

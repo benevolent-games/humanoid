@@ -30,10 +30,10 @@ export const environment_system = hub
 			))
 
 		for (const mesh of static_meshes) {
-			const meshId = realm.stores.meshes.keep(mesh)
+			const prop_ref = realm.stores.props.keep(mesh)
 			const entityId = realm.entities.create({
-				physical: "fixed",
-				mesh: meshId,
+				physical_static: {},
+				prop_ref,
 				scale: babylonian.to.vec3(mesh.scaling),
 				position: babylonian.to.vec3(mesh.position),
 				rotation: babylonian.to.quat(
@@ -42,7 +42,7 @@ export const environment_system = hub
 			})
 			disposables.add(() => {
 				realm.entities.delete(entityId)
-				realm.stores.meshes.forget(meshId)
+				realm.stores.meshes.forget(prop_ref)
 			})
 		}
 
@@ -62,7 +62,7 @@ export const environment_system = hub
 					anchors: [[0, 0, 0], [0, 1, 0]],
 					parts: [
 						realm.entities.create({
-							physical: "fixture",
+							physical_fixture: {},
 							position,
 						}),
 						realm.entities.create(Archetypes.physicsBox({
@@ -86,7 +86,7 @@ export const environment_system = hub
 					anchors: [[0, 0, 0], [0, 1, 0]],
 					parts: [
 						realm.entities.create({
-							physical: "fixture",
+							physical_fixture: {},
 							position,
 						}),
 						realm.entities.create(Archetypes.physicsBox({
@@ -105,9 +105,7 @@ export const environment_system = hub
 	}
 
 	return {
-		execute() {
-
-		},
+		execute() {},
 		dispose() {
 			for (const dispose of disposables)
 				dispose()

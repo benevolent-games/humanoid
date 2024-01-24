@@ -1,13 +1,12 @@
 
 import {hub} from "../hub.js"
 import {HumanoidSchema} from "../schema.js"
-import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
-import {Ecs3, Phys, Rapier, Vec3, babylonian} from "@benev/toolbox"
+import {Ecs3, Phys, Rapier, Vec3, babylonian, prop_is_meshoid} from "@benev/toolbox"
 
 export const physics_dynamics_system = hub
 	.behavior("physics_dynamics")
 	.select(
-		"physical",
+		"physical_dynamic",
 		"shape",
 		"position",
 		"rotation",
@@ -16,32 +15,32 @@ export const physics_dynamics_system = hub
 	)
 	.lifecycle(realm => (init, id) => {
 
-	let mesh: Mesh
-	let dispose = () => {}
-
-	switch (init.shape) {
-		case "box": {
-			const actor = realm.physics.box({
-				scale: init.scale,
-				density: init.density,
-				position: init.position,
-				rotation: init.rotation,
-			})
-			mesh = actor.mesh
-			dispose = () => actor.dispose()
-			realm.entities.update(id, {
-				...init,
-				physics_rigid: realm.stores.physics_rigids.keep(actor.rigid),
-			})
-		} break
-		default: {
+	const subject = (() => {switch (init.shape) {
+		case "box": return realm.physics.box({
+			scale: init.scale,
+			density: init.density,
+			position: init.position,
+			rotation: init.rotation,
+		})
+		default:
 			throw new Error(`unknown shape "${init.shape}"`)
-		}
-	}
+	}})()
+
+	const refs = {
+		prop_ref: realm.stores.props.keep(subject.mesh),
+		physics_rigid_ref: realm.stores.physics_rigids.keep(subject.rigid),
+	} satisfies Partial<HumanoidSchema>
+
+	realm.entities.update(id, {...init, ...refs})
 
 	return {
-		dispose,
+		dispose() {
+			subject.dispose()
+			realm.stores.props.forget(refs.prop_ref)
+			realm.stores.physics_rigids.forget(refs.physics_rigid_ref)
+		},
 		execute(_tick, state) {
+			const {mesh} = subject
 			state.position = babylonian.to.vec3(mesh.position)
 			state.rotation = babylonian.to.quat(mesh.absoluteRotationQuaternion)
 		},
@@ -49,50 +48,48 @@ export const physics_dynamics_system = hub
 })
 
 export const physics_fixed_system = hub
-	.behavior("physics_fixed")
+	.behavior("static physics")
 	.select(
-		"physical",
-		"mesh",
+		"physical_static",
+		"prop_ref",
 		"position",
 		"rotation",
 		"scale",
 	)
 	.lifecycle(realm => (init, id) => {
 
-	const mesh = realm.stores.meshes.recall(init.mesh)
-	const actor = realm.physics.trimesh(mesh)
+	const prop = realm.stores.props.recall(init.prop_ref)
 
-	realm.entities.update(id, {
-		...init,
-		physics_rigid: realm.stores.physics_rigids.keep(actor.rigid),
-	})
+	if (!prop_is_meshoid(prop)) {
+		realm.entities.delete(id)
+		return Ecs3.no_life
+	}
+
+	const actor = realm.physics.trimesh(prop)
+	const physics_rigid_ref = realm.stores.physics_rigids.keep(actor.rigid)
+	realm.entities.update(id, {...init, physics_rigid_ref})
 
 	return {
 		execute() {},
 		dispose() {
 			actor.dispose()
+			realm.stores.physics_rigids.forget(physics_rigid_ref)
 		},
 	}
 })
 
 export const physics_fixture = hub
 	.behavior("physics_fixture")
-	.select("physical", "position")
+	.select("physical_fixture", "position")
 	.lifecycle(realm => (init, id) => {
 
-	let dispose = () => {}
-
-	if (init.physical === "fixture") {
-		const fixture = realm.physics.fixture({position: init.position})
-		const physics_rigid = realm.stores.physics_rigids.keep(fixture.rigid)
-		realm.entities.update(id, {...init, physics_rigid})
-		dispose = fixture.dispose
-		console.log("FIXTURIZED")
-	}
+	const fixture = realm.physics.fixture({position: init.position})
+	const physics_rigid_ref = realm.stores.physics_rigids.keep(fixture.rigid)
+	realm.entities.update(id, {...init, physics_rigid_ref})
 
 	return {
 		execute() {},
-		dispose,
+		dispose: fixture.dispose,
 	}
 })
 
@@ -128,10 +125,10 @@ export const physics_joints_system = hub
 
 	return passes({
 		physicals: pass({
-			query: ["physics_rigid"],
+			query: ["physics_rigid_ref"],
 			events: {
 				initialize(id, state) {
-					const rigid = realm.stores.physics_rigids.recall(state.physics_rigid)
+					const rigid = realm.stores.physics_rigids.recall(state.physics_rigid_ref)
 					rigidRecords.set(id, rigid)
 				},
 				dispose(id) {
@@ -182,7 +179,7 @@ export const physics_joints_system = hub
 				pendingJoints.delete(id)
 			}
 			else if (pending.attempts > 10) {
-				console.warn(`failed to create joint`, pending)
+				console.warn(`failed to create joint`, pending, {alpha, bravo})
 				pendingJoints.delete(id)
 			}
 		}

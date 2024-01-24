@@ -68,27 +68,27 @@ realm.entities.create(Archetypes.hemi({
 // 	rotation: quat.identity(),
 // }))
 
-realm.entities.create({
-	joint: {
-		anchors: [[0, 0, 0], [2, 0, 0]],
-		parts: [
+// realm.entities.create({
+// 	joint: {
+// 		anchors: [[0, 0, 0], [2, 0, 0]],
+// 		parts: [
 
-			realm.entities.create(Archetypes.physicsBox({
-				density: 1000,
-				position: [-1, 5, 2],
-				scale: [1, 1, 1],
-				rotation: quat.identity(),
-			})),
+// 			realm.entities.create(Archetypes.physicsBox({
+// 				density: 1000,
+// 				position: [-1, 5, 2],
+// 				scale: [1, 1, 1],
+// 				rotation: quat.identity(),
+// 			})),
 
-			realm.entities.create(Archetypes.physicsBox({
-				density: 1000,
-				position: [1, 5, 2],
-				scale: [1, 1, 1],
-				rotation: quat.identity(),
-			})),
-		],
-	}
-})
+// 			realm.entities.create(Archetypes.physicsBox({
+// 				density: 1000,
+// 				position: [1, 5, 2],
+// 				scale: [1, 1, 1],
+// 				rotation: quat.identity(),
+// 			})),
+// 		],
+// 	}
+// })
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")

@@ -1,5 +1,5 @@
 
-import {Prop, Meshoid} from "../types.js"
+import {Meshoid, Prop} from "@benev/toolbox"
 import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {CharacterContainer} from "../../character/container.js"
