@@ -18,13 +18,15 @@ export type HumanoidSchema = Ecs3.AsSchema<{
 	scale: Vec3
 	velocity: Vec3
 
-	// mesh: Ref
 	prop_ref: Ref
+	child_prop_refs: Ref[]
 	physics_rigid_ref: Ref
 
 	light: "hemi"
 	density: number
 	mass: number
+	damping_linear: number
+	damping_angular: number
 	height: number
 	radius: number
 	direction: Vec3
@@ -36,7 +38,6 @@ export type HumanoidSchema = Ecs3.AsSchema<{
 		maxZ: number
 	}
 
-	// physical: "dynamic" | "fixed" | "fixture"
 	physical_dynamic: {}
 	physical_static: {}
 	physical_fixture: {}

@@ -1,5 +1,6 @@
 
 import {archetype} from "./types.js"
+import {Ref} from "../../models/realm/parts/ref_store.js"
 import {Quat, Vec3, quat, vec2, vec3} from "@benev/toolbox"
 
 export namespace Archetypes {
@@ -75,22 +76,34 @@ export namespace Archetypes {
 	}))
 
 	export const physicsBox = archetype(({
+			debug,
 			density,
 			position,
 			rotation,
 			scale,
+			damping_linear = 0,
+			damping_angular = 0,
+			child_prop_refs = [],
 		}: {
+			debug: boolean
 			scale: Vec3
 			position: Vec3
 			rotation: Quat
 			density: number
+			damping_linear?: number
+			damping_angular?: number
+			child_prop_refs?: Ref[]
 		}) => ({
+		debug,
 		physical_dynamic: {},
 		shape: "box",
 		density,
 		position,
 		rotation,
 		scale,
+		damping_linear,
+		damping_angular,
+		child_prop_refs,
 	}))
 }
 

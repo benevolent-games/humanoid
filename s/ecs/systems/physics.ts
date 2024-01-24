@@ -6,12 +6,15 @@ import {Ecs3, Phys, Rapier, Vec3, babylonian, prop_is_meshoid} from "@benev/tool
 export const physics_dynamics_system = hub
 	.behavior("physics_dynamics")
 	.select(
+		"debug",
 		"physical_dynamic",
 		"shape",
 		"position",
 		"rotation",
 		"scale",
 		"density",
+		"damping_linear",
+		"damping_angular",
 	)
 	.lifecycle(realm => (init, id) => {
 
@@ -21,6 +24,11 @@ export const physics_dynamics_system = hub
 			density: init.density,
 			position: init.position,
 			rotation: init.rotation,
+			linearDamping: init.damping_linear,
+			angularDamping: init.damping_angular,
+			material: init.debug
+				? realm.physics.colors.cyan
+				: undefined,
 		})
 		default:
 			throw new Error(`unknown shape "${init.shape}"`)

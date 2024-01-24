@@ -55,7 +55,12 @@ export const environment_system = hub
 		for (const ball of balls) {
 			const instance = ball.instantiateHierarchy()!
 			const position = babylonian.to.vec3(instance.absolutePosition)
-			instance.setEnabled(false)
+			const prop_ref = realm.stores.props.keep(instance)
+
+			disposables.add(() => {
+				instance.dispose()
+				realm.stores.props.forget(prop_ref)
+			})
 
 			realm.entities.create({
 				joint: {
@@ -66,10 +71,14 @@ export const environment_system = hub
 							position,
 						}),
 						realm.entities.create(Archetypes.physicsBox({
+							debug: false,
 							scale: [.75, .75, .75],
 							density: 1000,
 							rotation: quat.identity(),
 							position: vec3.add(position, [0, -1, 0]),
+							damping_linear: .3,
+							damping_angular: .3,
+							child_prop_refs: [prop_ref],
 						})),
 					],
 				}
@@ -79,7 +88,12 @@ export const environment_system = hub
 		for (const bag of bags) {
 			const instance = bag.instantiateHierarchy()!
 			const position = babylonian.to.vec3(instance.absolutePosition)
-			instance.setEnabled(false)
+			const prop_ref = realm.stores.props.keep(instance)
+
+			disposables.add(() => {
+				instance.dispose()
+				realm.stores.props.forget(prop_ref)
+			})
 
 			realm.entities.create({
 				joint: {
@@ -90,10 +104,14 @@ export const environment_system = hub
 							position,
 						}),
 						realm.entities.create(Archetypes.physicsBox({
+							debug: false,
 							scale: [0.5, 1.5, 0.5],
 							density: 1000,
 							rotation: quat.identity(),
 							position: vec3.add(position, [0, -1, 0]),
+							damping_linear: .5,
+							damping_angular: .5,
+							child_prop_refs: [prop_ref],
 						})),
 					],
 				}

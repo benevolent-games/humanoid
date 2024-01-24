@@ -6,6 +6,7 @@ import {freelook_system} from "./systems/freelook.js"
 import {humanoid_system} from "./systems/humanoid.js"
 import {intention_system} from "./systems/intention.js"
 import {spectator_system} from "./systems/spectator.js"
+import {parenting_system} from "./systems/parenting.js"
 import {environment_system} from "./systems/environment.js"
 import {choreography_system} from "./systems/choreography.js"
 import {velocity_calculator_system} from "./systems/velocity_calculator.js"
@@ -16,6 +17,7 @@ export const mainpipe = hub.pipeline(
 	force_system,
 	freelook_system,
 	environment_system,
+	parenting_system,
 	lighting_system,
 	physics_fixed_system,
 	physics_fixture,
