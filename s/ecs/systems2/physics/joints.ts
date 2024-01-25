@@ -31,7 +31,7 @@ export const joints = system("joints", realm => {
 	}
 
 	return [
-		behavior("rigid bodies")
+		behavior("collect rigid bodies which could be involved in joints")
 			.select("physics_rigid_ref")
 			.lifecycle(() => (init, id) => {
 				const rigid = realm.stores.physics_rigids.recall(init.physics_rigid_ref)
@@ -52,7 +52,7 @@ export const joints = system("joints", realm => {
 				}
 			}),
 
-		behavior("create joints")
+		behavior("establish pending joints")
 			.select("joint")
 			.lifecycle(() => ({joint}, id) => {
 				pendingJoints.set(id, {joint, attempts: 0})
@@ -69,7 +69,7 @@ export const joints = system("joints", realm => {
 				}
 			}),
 
-		behavior("execute joint logic")
+		behavior("transform pending joints into real joints")
 			.always(() => () => {
 				for (const [id, pending] of [...pendingJoints]) {
 					pending.attempts += 1
@@ -86,8 +86,8 @@ export const joints = system("joints", realm => {
 						})
 						pendingJoints.delete(id)
 					}
-					else if (pending.attempts > 10) {
-						console.warn(`failed to create joint`, pending, {alpha, bravo})
+					else if (pending.attempts >= 10) {
+						console.warn(`failed to create joint`, id, pending, {alpha, bravo})
 						pendingJoints.delete(id)
 					}
 				}
