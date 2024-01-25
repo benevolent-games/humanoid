@@ -1,6 +1,6 @@
 
-import {behavior, system} from "../../../hub.js"
-import {HumanoidSchema} from "../../../schema.js"
+import {behavior, system} from "../../hub.js"
+import {HumanoidSchema} from "../../schema.js"
 import {Ecs4, Phys, Rapier, Vec3} from "@benev/toolbox"
 
 type JointRecord = {

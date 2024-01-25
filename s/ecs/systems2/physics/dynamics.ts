@@ -1,7 +1,7 @@
 
-import {behavior} from "../../../hub.js"
+import {behavior} from "../../hub.js"
 import {babylonian} from "@benev/toolbox"
-import {HumanoidSchema} from "../../../schema.js"
+import {HumanoidSchema} from "../../schema.js"
 
 export const dynamics = behavior("dynamics")
 

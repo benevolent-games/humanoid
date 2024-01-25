@@ -1,5 +1,5 @@
 
-import {behavior} from "../../../hub.js"
+import {behavior} from "../../hub.js"
 import {Ecs4, prop_is_meshoid} from "@benev/toolbox"
 
 export const statics = behavior("statics")

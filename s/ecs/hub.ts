@@ -9,9 +9,6 @@ export const hub = new Ecs3.Hub<
 	HumanoidSchema
 >()
 
-export const {
-	setup,
-	system,
-	behavior,
-} = new Ecs4.Hub<Realm, HumanoidTick, HumanoidSchema>()
+export const hub2 = new Ecs4.Hub<Realm, HumanoidTick, HumanoidSchema>()
+export const {system, behavior} = hub2
 

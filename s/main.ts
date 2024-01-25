@@ -11,15 +11,15 @@ import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {register_to_dom} from "@benev/slate"
-import {human, measure, quat, scalar, RunningAverage, Ecs3} from "@benev/toolbox"
+import {human, measure, quat, scalar, RunningAverage, Ecs4} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
-import {hub} from "./ecs/hub.js"
-import {mainpipe} from "./ecs/pipeline.js"
+import {systems} from "./ecs/systems.js"
 import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {HumanoidSchema, HumanoidTick} from "./ecs/schema.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
+import { hub2 } from "./ecs/hub.js"
 
 register_to_dom({BenevHumanoid})
 
@@ -30,7 +30,7 @@ const localTesting = (
 	window.location.host.startsWith("192")
 )
 
-const entities = new Ecs3.Entities<HumanoidSchema>()
+const entities = new Ecs4.Entities<HumanoidSchema>()
 
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
@@ -50,7 +50,9 @@ realm.porthole.resolution = localTesting
 	? 0.5
 	: 1
 
-const executor = hub.executor(realm, realm.entities, mainpipe)
+// const executor = hub.executor(realm, realm.entities, mainpipe)
+
+const executor = hub2.executor(realm, realm.entities, systems)
 
 realm.entities.create({
 	environment: "gym",
@@ -133,25 +135,12 @@ let last_time = performance.now()
 const measures = {
 	physics: new RunningAverage(),
 	tick: new RunningAverage(),
-	executables: new Map<string, RunningAverage>(executor.executables.map(s => [s.name, new RunningAverage()])),
-}
-
-function systemDiagnostics() {
-	const diagnostics = new Map<Ecs3.Executable<HumanoidTick, HumanoidSchema, any>, number>()
-	const commit = () => {
-		for (const [system, ms] of diagnostics)
-			measures.executables.get(system.name)!.add(ms)
-	}
-	return {diagnostics, commit}
 }
 
 function logMeasurements() {
-	console.log("\nmeasurements")
+	console.log("\ndiagnostics")
 	console.log(`- physics ${human.performance(measures.physics.average)}`)
 	console.log(`- tick    ${human.performance(measures.tick.average)}`)
-	console.log(`- systems:`)
-	for (const [system, time] of measures.executables)
-		console.log(`  - ${system} ${human.performance(time.average)}`)
 }
 
 realm.stage.remote.onTick(() => {
@@ -162,7 +151,6 @@ realm.stage.remote.onTick(() => {
 	}))
 
 	measures.tick.add(measure(() => {
-		const {diagnostics, commit} = systemDiagnostics()
 		const tick: HumanoidTick = {
 			tick: count++,
 			deltaTime: scalar.clamp(
@@ -171,8 +159,9 @@ realm.stage.remote.onTick(() => {
 				100, // clamp to 100ms delta to avoid large over-corrections
 			) / 1000,
 		}
-		executor.execute_all(tick, diagnostics)
-		commit()
+		measures.tick.add(measure(() => {
+			executor.execute(tick)
+		}))
 	}))
 
 	if (count % (realm.tickrate * 5) === 0)
