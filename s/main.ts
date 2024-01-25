@@ -11,15 +11,15 @@ import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {register_to_dom} from "@benev/slate"
-import {human, measure, quat, scalar, RunningAverage, Ecs4} from "@benev/toolbox"
+import {human, measure, scalar, RunningAverage, Ecs4} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
+import {hub2} from "./ecs/hub.js"
 import {systems} from "./ecs/systems.js"
 import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {HumanoidSchema, HumanoidTick} from "./ecs/schema.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
-import { hub2 } from "./ecs/hub.js"
 
 register_to_dom({BenevHumanoid})
 
@@ -50,8 +50,6 @@ realm.porthole.resolution = localTesting
 	? 0.5
 	: 1
 
-// const executor = hub.executor(realm, realm.entities, mainpipe)
-
 const executor = hub2.executor(realm, realm.entities, systems)
 
 realm.entities.create({
@@ -62,35 +60,6 @@ realm.entities.create(Archetypes.hemi({
 	direction: [.234, 1, .123],
 	intensity: .6,
 }))
-
-// realm.entities.create(Archetypes.physicsBox({
-// 	density: 1000,
-// 	position: [0, 5, 2],
-// 	scale: [1, 1, 1],
-// 	rotation: quat.identity(),
-// }))
-
-// realm.entities.create({
-// 	joint: {
-// 		anchors: [[0, 0, 0], [2, 0, 0]],
-// 		parts: [
-
-// 			realm.entities.create(Archetypes.physicsBox({
-// 				density: 1000,
-// 				position: [-1, 5, 2],
-// 				scale: [1, 1, 1],
-// 				rotation: quat.identity(),
-// 			})),
-
-// 			realm.entities.create(Archetypes.physicsBox({
-// 				density: 1000,
-// 				position: [1, 5, 2],
-// 				scale: [1, 1, 1],
-// 				rotation: quat.identity(),
-// 			})),
-// 		],
-// 	}
-// })
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")
