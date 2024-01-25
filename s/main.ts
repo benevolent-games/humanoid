@@ -14,7 +14,7 @@ import {register_to_dom} from "@benev/slate"
 import {human, measure, scalar, RunningAverage, Ecs4} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
-import {hub2} from "./ecs/hub.js"
+import {hub} from "./ecs/hub.js"
 import {systems} from "./ecs/systems.js"
 import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
@@ -50,7 +50,7 @@ realm.porthole.resolution = localTesting
 	? 0.5
 	: 1
 
-const executor = hub2.executor(realm, realm.entities, systems)
+const executor = hub.executor(realm, realm.entities, systems)
 
 realm.entities.create({
 	environment: "gym",
