@@ -40,8 +40,8 @@ const realm = await nexus.context.realmOp.load(
 			gym: "/temp/gym14.glb",
 			character: "/temp/knightanimations35.glb",
 		} : {
-			gym: "https://filebin.net/5gtpcvcs5uti6et6/gym14.glb",
-			character: "https://filebin.net/zyl9swjbx26uo5ij/knightanimations35.glb",
+			gym: "https://filebin.net/wli9orfaihftl4qq/gym14.glb",
+			character: "https://filebin.net/wli9orfaihftl4qq/knightanimations35.glb",
 		},
 	})
 )
