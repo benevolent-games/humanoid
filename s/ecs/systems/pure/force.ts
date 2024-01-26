@@ -3,30 +3,51 @@ import {vec3} from "@benev/toolbox"
 import {behavior} from "../../hub.js"
 import {molasses3d} from "../utils/molasses.js"
 
-export const force = behavior("force")
-	.select("force", "intent", "smoothing", "speeds")
+export const force = behavior("calculate force based on intent and stance")
+	.select("force", "stance", "intent", "smoothing", "speeds")
 	.processor(_realm => tick => state => {
 
-	const {force, intent, smoothing, speeds} = state
-	const [x, y, z] = intent.amble
+	const {force, stance, intent, smoothing, speeds} = state
+	const {amble} = intent
+	const [x, y, z] = amble
 
 	let cool = vec3.zero()
 
-	if (z > 0 && intent.fast) {
+	if (stance === "fly") {
 		cool = vec3.multiplyBy(
-			vec3.normalize([
-				x / 2,
-				y / 2,
-				z,
-			]),
-			speeds.fast,
+			intent.amble,
+			intent.fast ? speeds.fast
+				: intent.slow ? speeds.slow
+				: speeds.base,
 		)
 	}
-	else {
-		const foundation_speed = (intent.slow)
-			? speeds.slow
-			: speeds.base
-		cool = vec3.multiplyBy(intent.amble, foundation_speed)
+
+	if (stance === "stand") {
+		if (z > 0 && intent.fast)
+			cool = vec3.multiplyBy(
+				vec3.normalize([
+					x / 2,
+					y / 2,
+					z,
+				]),
+				speeds.fast,
+			)
+		else {
+			cool = vec3.multiplyBy(
+				intent.amble,
+				intent.slow
+					? speeds.slow
+					: speeds.base,
+			)
+		}
+	}
+	else if (stance === "crouch") {
+		cool = vec3.multiplyBy(
+			intent.amble,
+			intent.slow
+				? speeds.slow / 3
+				: speeds.slow,
+		)
 	}
 
 	const target = vec3.multiplyBy(cool, tick.deltaTime)

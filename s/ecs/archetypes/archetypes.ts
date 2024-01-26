@@ -45,6 +45,7 @@ export namespace Archetypes {
 			position: Vec3
 		}) => ({
 		...freecam({position}),
+		stance: "fly",
 		spectator: {},
 		smoothing: 5,
 		speeds: {base: 20, fast: 50, slow: 5},
@@ -56,6 +57,7 @@ export namespace Archetypes {
 		}) => ({
 		...freecam({position}),
 		humanoid: {},
+		stance: "stand",
 		debug,
 		third_person_cam_distance: 1.5,
 		height: 1.75,

@@ -13,6 +13,7 @@ export const humanoid = behavior("humanoid")
 	.select(
 		"debug",
 		"humanoid",
+		"stance",
 		"third_person_cam_distance",
 		"camera",
 		"radius",

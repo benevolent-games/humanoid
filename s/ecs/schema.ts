@@ -58,6 +58,7 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	gimbal: Vec2
 
 	choreography: Choreography
+	stance: "stand" | "crouch" | "fly"
 
 	speeds: Speeds
 	sensitivity: {

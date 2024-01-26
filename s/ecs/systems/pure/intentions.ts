@@ -53,5 +53,15 @@ export const intentions = system("intentions", () => [
 			state.intent.fast = fast
 			state.intent.slow = slow
 		}),
+
+	behavior("apply crouch/stand stance")
+		.select("humanoid", "stance", "intent")
+		.processor(realm => () => state => {
+			state.stance = state.intent.fast
+				? "stand"
+				: realm.impulse.report.humanoid.buttons.crouch
+					? "crouch"
+					: "stand"
+		}),
 ])
 

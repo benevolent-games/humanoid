@@ -13,6 +13,7 @@ import {apply_adjustments, calculate_ambulatory_report, swivel_effected_by_glanc
 export const choreography = behavior("choreography")
 	.select(
 		"humanoid",
+		"stance",
 		"height",
 		"speeds",
 		"position",
@@ -63,6 +64,7 @@ export const choreography = behavior("choreography")
 			)
 
 			sync_character_anims({
+				stance: state.stance,
 				gimbal: state.gimbal,
 				choreo: state.choreography,
 				anims,

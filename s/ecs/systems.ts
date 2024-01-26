@@ -17,13 +17,20 @@ import {intentions} from "./systems/pure/intentions.js"
 import {velocity} from "./systems/pure/velocity.js"
 
 export const systems = system("pipeline", () => [
+	system("pure", () => [
+		intentions,
+		freelook,
+		force,
+		velocity,
+	]),
+
 	system("babylon", () => [
 		environment,
 		lighting,
 		parenting,
+		humanoid,
 		spectator,
 		choreography,
-		humanoid,
 	]),
 
 	system("physics", () => [
@@ -31,13 +38,6 @@ export const systems = system("pipeline", () => [
 		fixtures,
 		statics,
 		joints,
-	]),
-
-	system("pure", () => [
-		intentions,
-		freelook,
-		force,
-		velocity,
 	]),
 ])
 
