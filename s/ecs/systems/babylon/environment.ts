@@ -1,10 +1,9 @@
 
-import {hub} from "../hub.js"
-import {Archetypes} from "../archetypes/archetypes.js"
+import {behavior} from "../../hub.js"
+import {Archetypes} from "../../archetypes/archetypes.js"
 import {babylonian, obtain_babylon_quaternion_from_mesh, quat, vec3} from "@benev/toolbox"
 
-export const environment_system = hub
-	.behavior("environment")
+export const environment = behavior("environment")
 	.select("environment")
 	.lifecycle(realm => ({environment}) => {
 
@@ -109,8 +108,8 @@ export const environment_system = hub
 							density: 1000,
 							rotation: quat.identity(),
 							position: vec3.add(position, [0, -1, 0]),
-							damping_linear: .5,
-							damping_angular: .5,
+							damping_linear: .3,
+							damping_angular: .3,
 							child_prop_refs: [prop_ref],
 						})),
 					],
@@ -123,8 +122,8 @@ export const environment_system = hub
 	}
 
 	return {
-		execute() {},
-		dispose() {
+		tick() {},
+		end() {
 			for (const dispose of disposables)
 				dispose()
 		},

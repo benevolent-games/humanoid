@@ -1,16 +1,10 @@
 
-import {hub} from "../hub.js"
 import {vec3} from "@benev/toolbox"
-import {molasses3d} from "./utils/molasses.js"
+import {behavior} from "../../hub.js"
+import {molasses3d} from "../utils/molasses.js"
 
-export const force_system = hub
-	.behavior("force")
-	.select(
-		"force",
-		"intent",
-		"smoothing",
-		"speeds",
-	)
+export const force = behavior("force")
+	.select("force", "intent", "smoothing", "speeds")
 	.processor(_realm => tick => state => {
 
 	const {force, intent, smoothing, speeds} = state

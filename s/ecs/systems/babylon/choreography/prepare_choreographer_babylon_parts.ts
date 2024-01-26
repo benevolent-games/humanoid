@@ -2,7 +2,7 @@
 import {Scene} from "@babylonjs/core/scene.js"
 import {Quat, Vec3, babylonian, label} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {CharacterInstance} from "../../../models/character/instance.js"
+import {CharacterInstance} from "../../../../models/character/instance.js"
 
 export function prepare_choreographer_babylon_parts(o: {
 		scene: Scene

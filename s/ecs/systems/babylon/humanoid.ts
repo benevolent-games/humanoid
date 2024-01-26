@@ -1,16 +1,15 @@
 
-import {Quaternion} from "@babylonjs/core/Maths/math.js"
+import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {Vec2, Vec3, babylonian, labeler, scalar, vec3} from "@benev/toolbox"
 
-import {hub} from "../hub.js"
-import {gimbaltool} from "./utils/gimbaltool.js"
-import {molasses, molasses3d} from "./utils/molasses.js"
+import {behavior} from "../../hub.js"
+import {gimbaltool} from "../utils/gimbaltool.js"
+import {molasses, molasses3d} from "../utils/molasses.js"
 
-export const humanoid_system = hub
-	.behavior("humanoid")
+export const humanoid = behavior("humanoid")
 	.select(
 		"debug",
 		"humanoid",
@@ -121,7 +120,7 @@ export const humanoid_system = hub
 	let smoothed_y = init.position[1]
 
 	return {
-		execute(_tick, state) {
+		tick(_tick, state) {
 			const moddedGimbal = modGimbal(state.gimbal)
 			const localForce = gimbaltool(moddedGimbal).rotate(state.force)
 			const quaternions = gimbaltool(moddedGimbal).quaternions()
@@ -154,7 +153,7 @@ export const humanoid_system = hub
 				)
 			)
 		},
-		dispose() {
+		end() {
 			if (realm.stage.rendering.camera === third_person_cam)
 				realm.stage.rendering.setCamera(null)
 

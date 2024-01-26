@@ -1,9 +1,8 @@
 
-import {hub} from "../hub.js"
+import {behavior} from "../../hub.js"
 import {scalar} from "@benev/toolbox"
 
-export const freelook_system = hub
-	.behavior("freelook")
+export const freelook = behavior("freelook")
 	.select("intent", "gimbal")
 	.processor(() => () => state => {
 

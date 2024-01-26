@@ -1,9 +1,8 @@
 
-import {hub} from "../hub.js"
+import {behavior} from "../../hub.js"
 import {Vec2, Vec3, get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 
-export const intention_system = hub
-	.behavior("intention")
+export const intention = behavior("intention")
 	.select("intent", "sensitivity")
 	.lifecycle(realm => () => {
 
@@ -13,7 +12,7 @@ export const intention_system = hub
 	const invert_y_axis = (v: Vec2) => vec2.multiply(v, [1, -1])
 
 	return {
-		execute(_tick, state) {
+		tick(_tick, state) {
 			const {sensitivity} = state
 
 			const mouselook = invert_y_axis(mouseMovement.steal())
@@ -48,7 +47,7 @@ export const intention_system = hub
 				slow: impulse.report.humanoid.buttons.slow,
 			}
 		},
-		dispose() {
+		end() {
 			mouseMovement.dispose()
 		},
 	}

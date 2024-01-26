@@ -1,5 +1,5 @@
 
-import {Ecs3, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
+import {Ecs4, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ref} from "../models/realm/parts/ref_store.js"
 import {Choreography} from "../models/choreographer/types.js"
@@ -9,7 +9,7 @@ export type HumanoidTick = {
 	deltaTime: number
 }
 
-export type HumanoidSchema = Ecs3.AsSchema<{
+export type HumanoidSchema = Ecs4.AsSchema<{
 	debug: boolean
 	environment: "gym"
 
@@ -42,7 +42,7 @@ export type HumanoidSchema = Ecs3.AsSchema<{
 	physical_static: {}
 	physical_fixture: {}
 	joint: {
-		parts: [Ecs3.Id, Ecs3.Id]
+		parts: [Ecs4.Id, Ecs4.Id]
 		anchors: [Vec3, Vec3]
 	}
 	shape: "box"

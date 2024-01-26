@@ -3,13 +3,12 @@ import {Vector3} from "@babylonjs/core/Maths/math.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
-import {hub} from "../hub.js"
-import {flatten} from "./utils/flatten.js"
-import {gimbaltool} from "./utils/gimbaltool.js"
+import {behavior} from "../../hub.js"
+import {flatten} from "../utils/flatten.js"
+import {gimbaltool} from "../utils/gimbaltool.js"
 import {Vec2, Vec3, babylonian, scalar, vec3} from "@benev/toolbox"
 
-export const spectator_system = hub
-	.behavior("spectator")
+export const spectator = behavior("spectator")
 	.select(
 		"spectator",
 		"force",
@@ -56,7 +55,7 @@ export const spectator_system = hub
 	}
 
 	return {
-		execute(_tick, state) {
+		tick(_tick, state) {
 			const {force} = state
 			const quaternions = gimbaltool(state.gimbal).quaternions()
 
@@ -71,7 +70,7 @@ export const spectator_system = hub
 			transformB.rotationQuaternion = quaternions.vertical
 			transformA.rotationQuaternion = quaternions.horizontal
 		},
-		dispose() {
+		end() {
 			if (stage.rendering.camera === camera)
 				stage.rendering.setCamera(null)
 			camera.dispose()

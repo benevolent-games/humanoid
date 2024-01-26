@@ -1,8 +1,7 @@
 
-import {hub} from "../hub.js"
+import {behavior} from "../../hub.js"
 
-export const parenting_system = hub
-	.behavior("parenting")
+export const parenting = behavior("parenting")
 	.select("prop_ref", "child_prop_refs")
 	.lifecycle(realm => init => {
 
@@ -14,8 +13,8 @@ export const parenting_system = hub
 	}
 
 	return {
-		execute(_tick, _state) {},
-		dispose() {},
+		tick() {},
+		end() {},
 	}
 })
 

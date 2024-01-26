@@ -1,21 +1,20 @@
 
 import {scalar, vec3} from "@benev/toolbox"
 
-import {hub} from "../hub.js"
-import {flatten} from "./utils/flatten.js"
-import {molasses3d} from "./utils/molasses.js"
-import {gimbaltool} from "./utils/gimbaltool.js"
-import {AdjustmentAnims} from "../../models/choreographer/types.js"
+import {behavior} from "../../hub.js"
+import {flatten} from "../utils/flatten.js"
+import {molasses3d} from "../utils/molasses.js"
+import {gimbaltool} from "../utils/gimbaltool.js"
+import {AdjustmentAnims} from "../../../models/choreographer/types.js"
 import {make_dummy_anim_group} from "./choreography/dummy_anim_group.js"
 import {sync_character_anims} from "./choreography/sync_character_anims.js"
 import {setup_character_anims} from "./choreography/setup_character_anims.js"
 import {adjustment_anim_for_direction} from "./choreography/adjustment_anim_for_direction.js"
 import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
-import {calculate_adjustment_weight} from "../../models/choreographer/utils/calculate_adjustment_weight.js"
-import {calculate_ambulatory_report, apply_adjustments, swivel_effected_by_glance} from "./choreography/calculations.js"
+import {calculate_adjustment_weight} from "../../../models/choreographer/utils/calculate_adjustment_weight.js"
+import {apply_adjustments, calculate_ambulatory_report, swivel_effected_by_glance} from "./choreography/calculations.js"
 
-export const choreography_system = hub
-	.behavior("choreography")
+export const choreography = behavior("choreography")
 	.select(
 		"humanoid",
 		"height",
@@ -104,7 +103,7 @@ export const choreography_system = hub
 	let smoothed_velocity = init.velocity
 
 	return {
-		execute(tick, state) {
+		tick(tick, state) {
 			babylon.position.set(...state.position)
 			babylon.rotation.set(...state.rotation)
 
@@ -139,7 +138,7 @@ export const choreography_system = hub
 				anim_speed_modifier: 1.3,
 			})
 		},
-		dispose() {
+		end() {
 			babylon.dispose()
 			boss_anim.dispose()
 		},

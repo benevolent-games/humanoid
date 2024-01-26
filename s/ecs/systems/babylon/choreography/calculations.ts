@@ -1,8 +1,8 @@
 
 import {Vec2, scalar, vec2} from "@benev/toolbox"
 
-import {molasses} from "../utils/molasses.js"
-import {AdjustmentAnims, Ambulatory, ChoreoSwivelAdjustment, Choreography} from "../../../models/choreographer/types.js"
+import {molasses} from "../../utils/molasses.js"
+import {AdjustmentAnims, Ambulatory, ChoreoSwivelAdjustment, Choreography} from "../../../../models/choreographer/types.js"
 
 export const swivel_midpoint = 0.5
 

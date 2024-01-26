@@ -1,9 +1,9 @@
 
-import {BasedAnim} from "../../../models/choreographer/anims/based.js"
-import {CharacterInstance} from "../../../models/character/instance.js"
-import {ManualAnim} from "../../../models/choreographer/anims/manual.js"
-import {manifest_anims} from "../../../models/choreographer/utils/manifest_anims.js"
-import {ManualAdditiveAnim} from "../../../models/choreographer/anims/manual_additive.js"
+import {BasedAnim} from "../../../../models/choreographer/anims/based.js"
+import {CharacterInstance} from "../../../../models/character/instance.js"
+import {ManualAnim} from "../../../../models/choreographer/anims/manual.js"
+import {manifest_anims} from "../../../../models/choreographer/utils/manifest_anims.js"
+import {ManualAdditiveAnim} from "../../../../models/choreographer/anims/manual_additive.js"
 
 export type CharacterAnims = ReturnType<typeof setup_character_anims>
 
