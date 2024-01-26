@@ -13,7 +13,7 @@ import {lighting} from "./systems/babylon/lighting.js"
 import {spectator} from "./systems/babylon/spectator.js"
 import {force} from "./systems/pure/force.js"
 import {freelook} from "./systems/pure/freelook.js"
-import {intention} from "./systems/pure/intention.js"
+import {intentions} from "./systems/pure/intentions.js"
 import {velocity} from "./systems/pure/velocity.js"
 
 export const systems = system("pipeline", () => [
@@ -25,14 +25,16 @@ export const systems = system("pipeline", () => [
 		choreography,
 		humanoid,
 	]),
+
 	system("physics", () => [
 		dynamics,
 		fixtures,
 		statics,
 		joints,
 	]),
+
 	system("pure", () => [
-		intention,
+		intentions,
 		freelook,
 		force,
 		velocity,

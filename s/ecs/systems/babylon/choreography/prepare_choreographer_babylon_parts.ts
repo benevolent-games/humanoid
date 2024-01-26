@@ -30,7 +30,7 @@ export function prepare_choreographer_babylon_parts(o: {
 
 	return {
 		transform,
-		characterInstance: character,
+		character,
 		position,
 		rotation,
 		dispose() {
