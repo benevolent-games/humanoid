@@ -12,7 +12,6 @@ import {apply_adjustments, calculate_ambulatory_report, swivel_effected_by_glanc
 
 export const choreography = behavior("choreography")
 	.select(
-		"humanoid",
 		"stance",
 		"height",
 		"speeds",

@@ -1,34 +1,21 @@
 
+import {Vec3, babylonian, labeler, scalar, vec3} from "@benev/toolbox"
+
+import {HumanoidSchema} from "../../../schema.js"
+import {Realm} from "../../../../models/realm/realm.js"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {Vec2, Vec3, babylonian, labeler, scalar, vec3} from "@benev/toolbox"
 
-import {behavior} from "../../hub.js"
-import {gimbaltool} from "../utils/gimbaltool.js"
-import {molasses, molasses3d} from "../utils/molasses.js"
-
-export const humanoid = behavior("humanoid")
-	.select(
-		"debug",
-		"humanoid",
-		"stance",
-		"third_person_cam_distance",
-		"camera",
-		"radius",
-		"height",
-		"mass",
-		"smoothing",
-		"position",
-		"rotation",
-		"sensitivity",
-		"gimbal",
-		"speeds",
-		"force",
-		"choreography",
-	)
-	.lifecycle(realm => init => {
+export function create_humanoid_babylon_parts(realm: Realm, init: {
+		height: number
+		radius: number
+		third_person_cam_distance: number
+		camera: HumanoidSchema["camera"]
+		position: Vec3
+		debug: boolean
+	}) {
 
 	const {stage, colors} = realm
 	const {scene} = stage
@@ -113,54 +100,14 @@ export const humanoid = behavior("humanoid")
 	torus.setEnabled(debug)
 	headbox.setEnabled(debug)
 
-	function modGimbal([x, y]: Vec2): Vec2 {
-		y = scalar.spline.quickLinear(y, [0.1, 0.5, 0.7])
-		return [x, y]
-	}
-
-	let smoothed_y = init.position[1]
-
 	return {
-		tick(_tick, state) {
-			const moddedGimbal = modGimbal(state.gimbal)
-			const localForce = gimbaltool(moddedGimbal).rotate(state.force)
-			const quaternions = gimbaltool(moddedGimbal).quaternions()
-
-			transform.rotationQuaternion = quaternions.horizontal
-			torusRoot.rotationQuaternion = quaternions.vertical
-
-			capsule.applyMovement(localForce)
-
-			smoothed_y = molasses(
-				3,
-				smoothed_y,
-				capsule.position.y,
-			)
-
-			const smoothed_position: Vec3 = [
-				capsule.position.x,
-				smoothed_y,
-				capsule.position.z,
-			]
-
-			state.position = smoothed_position
-			state.rotation = babylonian.to.quat(transform.rotationQuaternion)
-
-			transform.position = babylonian.from.vec3(
-				molasses3d(
-					state.smoothing,
-					babylonian.to.vec3(transform.position),
-					state.position,
-				)
-			)
-		},
-		end() {
-			if (realm.stage.rendering.camera === third_person_cam)
-				realm.stage.rendering.setCamera(null)
-
+		transform,
+		torusRoot,
+		capsule,
+		dispose() {
 			for (const dispose of disposables)
 				dispose()
 		},
 	}
-})
+}
 
