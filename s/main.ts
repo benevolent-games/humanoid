@@ -102,34 +102,40 @@ let count = 0
 let last_time = performance.now()
 
 const measures = {
-	physics: new RunningAverage(),
 	tick: new RunningAverage(),
+	physics: new RunningAverage(),
+	logic: new RunningAverage(),
 }
 
 function logMeasurements() {
-	console.log("\ndiagnostics")
-	console.log(`- physics ${human.performance(measures.physics.average)}`)
-	console.log(`- tick    ${human.performance(measures.tick.average)}`)
+	console.log([
+		`== diagnostics ==`,
+		`     tick ${human.performance(measures.tick.average)}`,
+		`  physics ${human.performance(measures.physics.average)}`,
+		`    logic ${human.performance(measures.logic.average)}`,
+	].join("\n"))
 }
 
 realm.stage.remote.onTick(() => {
 	const last = last_time
 
-	measures.physics.add(measure(() => {
-		realm.physics.step()
-	}))
-
 	measures.tick.add(measure(() => {
-		const tick: HumanoidTick = {
-			tick: count++,
-			deltaTime: scalar.clamp(
-				((last_time = performance.now()) - last),
-				0,
-				100, // clamp to 100ms delta to avoid large over-corrections
-			) / 1000,
-		}
-		measures.tick.add(measure(() => {
-			executor.execute(tick)
+		measures.physics.add(measure(() => {
+			realm.physics.step()
+		}))
+
+		measures.logic.add(measure(() => {
+			const tick: HumanoidTick = {
+				tick: count++,
+				deltaTime: scalar.clamp(
+					((last_time = performance.now()) - last),
+					0,
+					100, // clamp to 100ms delta to avoid large over-corrections
+				) / 1000,
+			}
+			measures.logic.add(measure(() => {
+				executor.execute(tick)
+			}))
 		}))
 	}))
 
