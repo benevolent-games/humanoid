@@ -43,7 +43,10 @@ export const intentions = system("intentions", () => [
 				west: buttons.leftward,
 				east: buttons.rightward,
 			})
-			state.intent.amble = [x, 0, z]
+			let y = buttons.jump ? 1
+				: buttons.crouch ? -1
+				: 0
+			state.intent.amble = [x, y, z]
 		}),
 
 	behavior("apply fast and slow to intent")
@@ -62,6 +65,13 @@ export const intentions = system("intentions", () => [
 				: realm.impulse.report.humanoid.buttons.crouch
 					? "crouch"
 					: "stand"
+		}),
+
+	behavior("apply jump action")
+		.select("jump")
+		.processor(realm => () => state => {
+			const {buttons} = realm.impulse.report.humanoid
+			state.jump.button = buttons.jump
 		}),
 ])
 

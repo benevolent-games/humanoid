@@ -53,7 +53,14 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 		fast: boolean
 		slow: boolean
 	}
+	jump: {
+		button: boolean
+		tick: number
+		cooldown: number
+	}
+	grounded: boolean
 	smoothing: number
+	localForce: Vec3
 	force: Vec3
 	gimbal: Vec2
 

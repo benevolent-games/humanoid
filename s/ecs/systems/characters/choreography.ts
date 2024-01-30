@@ -1,5 +1,5 @@
 
-import {vec3} from "@benev/toolbox"
+import {human, vec3} from "@benev/toolbox"
 
 import {behavior} from "../../hub.js"
 import {flatten} from "../utils/flatten.js"
