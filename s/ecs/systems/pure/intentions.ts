@@ -42,10 +42,10 @@ export const intentions = system("intentions", () => [
 		.processor(realm => _tick => state => {
 			const {buttons} = realm.impulse.report.humanoid
 			const keylook = get_trajectory_from_cardinals({
-				north: buttons.up,
-				south: buttons.down,
-				west: buttons.left,
-				east: buttons.right,
+				north: buttons.up.down,
+				south: buttons.down.down,
+				west: buttons.left.down,
+				east: buttons.right.down,
 			})
 			state.intent.glance = vec2.add(
 				state.intent.glance,
@@ -58,10 +58,10 @@ export const intentions = system("intentions", () => [
 		.processor(realm => () => state => {
 			const {buttons} = realm.impulse.report.humanoid
 			const [x, z] = get_trajectory_from_cardinals({
-				north: buttons.forward,
-				south: buttons.backward,
-				west: buttons.leftward,
-				east: buttons.rightward,
+				north: buttons.forward.down,
+				south: buttons.backward.down,
+				west: buttons.leftward.down,
+				east: buttons.rightward.down,
 			})
 			let y = buttons.jump ? 1
 				: buttons.crouch ? -1
@@ -76,8 +76,8 @@ export const intentions = system("intentions", () => [
 		.select("intent")
 		.processor(realm => () => state => {
 			const {fast, slow} = realm.impulse.report.humanoid.buttons
-			state.intent.fast = fast
-			state.intent.slow = slow
+			state.intent.fast = fast.down
+			state.intent.slow = slow.down
 		}),
 
 	behavior("apply crouch/stand stance")
@@ -94,7 +94,7 @@ export const intentions = system("intentions", () => [
 		.select("jump")
 		.processor(realm => () => state => {
 			const {buttons} = realm.impulse.report.humanoid
-			state.jump.button = buttons.jump
+			state.jump.button = buttons.jump.down
 		}),
 ])
 
