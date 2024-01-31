@@ -2,7 +2,7 @@
 import {behavior} from "../../hub.js"
 import {scalar} from "@benev/toolbox"
 
-export const freelook = behavior("freelook")
+export const freelook = behavior("apply freelook intent from glance onto gimbal")
 	.select("intent", "gimbal")
 	.processor(() => () => state => {
 

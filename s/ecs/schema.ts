@@ -6,7 +6,7 @@ import {Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
 	tick: number
-	deltaTime: number
+	deltaSeconds: number
 }
 
 export type HumanoidSchema = Ecs4.AsSchema<{
@@ -65,7 +65,7 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	gimbal: Vec2
 
 	choreography: Choreography
-	stance: "stand" | "crouch" | "fly"
+	stance: "stand" | "crouch"
 
 	speeds: Speeds
 	sensitivity: {

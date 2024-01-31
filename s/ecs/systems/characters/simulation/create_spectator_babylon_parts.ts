@@ -30,6 +30,15 @@ export function create_spectator_babylon_parts(realm: Realm, init: {
 
 	stage.rendering.setCamera(camera)
 
-	return {transformA, transformB, camera}
+	const dispose = () => {
+		transformB.dispose()
+		transformA.dispose()
+
+		if (realm.stage.rendering.camera === camera)
+			realm.stage.rendering.setCamera(null)
+		camera.dispose()
+	}
+
+	return {transformA, transformB, camera, dispose}
 }
 

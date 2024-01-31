@@ -1,5 +1,5 @@
 
-import {Ecs4, Vec3, babylonian} from "@benev/toolbox"
+import {Ecs4, Vec3, babylonian, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
 import {gimbaltool} from "../utils/gimbaltool.js"
@@ -15,10 +15,14 @@ export const humanoid = system("humanoid simulation", realm => {
 		behavior("create babylon parts")
 			.select("humanoid", "height", "radius", "third_person_cam_distance", "camera", "position", "debug")
 			.lifecycle(() => (init, id) => {
-				store.set(id, create_humanoid_babylon_parts(realm, init))
+				const parts = create_humanoid_babylon_parts(realm, init)
+				store.set(id, parts)
 				return {
 					tick: () => {},
-					end: () => store.delete(id),
+					end: () => {
+						store.delete(id)
+						parts.dispose()
+					},
 				}
 			}),
 
@@ -32,11 +36,44 @@ export const humanoid = system("humanoid simulation", realm => {
 				torusRoot.rotationQuaternion = quaternions.vertical
 			}),
 
-		behavior("calculate local forces")
-			.select("humanoid", "localForce", "intent", "gimbal", "force")
-			.processor(() => () => state => {
+		behavior("calculate local forces, accounting for speeds and stance")
+			.select("humanoid", "localForce", "gimbal", "force", "intent", "speeds", "stance")
+			.processor(() => tick => state => {
+				const {stance, force, intent, speeds} = state
+				const [x, y, z] = force
+				let target = vec3.zero()
+
+				if (stance === "stand") {
+					if (z > 0 && intent.fast) {
+						target = vec3.multiplyBy(
+							vec3.normalize([
+								x / 2,
+								y / 2,
+								z,
+							]),
+							speeds.fast * tick.deltaSeconds,
+						)
+					}
+					else {
+						target = vec3.multiplyBy(
+							force,
+							intent.slow
+								? speeds.slow
+								: speeds.base,
+						)
+					}
+				}
+				else if (stance === "crouch") {
+					target = vec3.multiplyBy(
+						force,
+						intent.slow
+							? speeds.slow / 3
+							: speeds.slow,
+					)
+				}
+
 				const moddedGimbal = apply_spline_to_gimbal_y(state.gimbal, [.1, .5, .7])
-				state.localForce = gimbaltool(moddedGimbal).rotate(state.force)
+				state.localForce = gimbaltool(moddedGimbal).rotate(target)
 			}),
 
 		behavior("apply capsule movement")
@@ -87,75 +124,4 @@ export const humanoid = system("humanoid simulation", realm => {
 			}),
 	]
 })
-
-// export const humanoid = system("characters", () => [
-
-// 	behavior("create and simulate humanoid capsule")
-// 		.select(
-// 			"humanoid",
-// 			"debug",
-// 			"third_person_cam_distance",
-// 			"camera",
-// 			"radius",
-// 			"height",
-// 			"jump",
-// 			"smoothing",
-// 			"position",
-// 			"rotation",
-// 			"gimbal",
-// 			"force",
-// 		)
-// 		.lifecycle(realm => init => {
-// 			const {
-// 				transform,
-// 				torusRoot,
-// 				capsule,
-// 			} = create_humanoid_babylon_parts(realm, init)
-
-// 			let smoothed_y = init.position[1]
-
-// 			return {
-// 				tick(tick, state) {
-// 					const moddedGimbal = modGimbal(state.gimbal)
-// 					const localForce = gimbaltool(moddedGimbal).rotate(state.force)
-// 					const quaternions = gimbaltool(moddedGimbal).quaternions()
-
-// 					transform.rotationQuaternion = quaternions.horizontal
-// 					torusRoot.rotationQuaternion = quaternions.vertical
-
-// 					const {grounded} = capsule.applyMovement(localForce)
-
-// 					if (grounded && state.jump.button) {
-// 						const since = tick.tick - state.jump.tick
-// 						if (since > state.jump.cooldown) {
-// 						}
-// 					}
-
-// 					smoothed_y = molasses(
-// 						3,
-// 						smoothed_y,
-// 						capsule.position.y,
-// 					)
-
-// 					const smoothed_position: Vec3 = [
-// 						capsule.position.x,
-// 						smoothed_y,
-// 						capsule.position.z,
-// 					]
-
-// 					state.position = smoothed_position
-// 					state.rotation = babylonian.to.quat(transform.rotationQuaternion)
-
-// 					transform.position = babylonian.from.vec3(
-// 						molasses3d(
-// 							state.smoothing,
-// 							babylonian.to.vec3(transform.position),
-// 							state.position,
-// 						)
-// 					)
-// 				},
-// 				end() {},
-// 			}
-// 		}),
-// ])
 

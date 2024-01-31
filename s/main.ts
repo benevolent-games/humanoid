@@ -127,7 +127,7 @@ realm.stage.remote.onTick(() => {
 		measures.logic.add(measure(() => {
 			const tick: HumanoidTick = {
 				tick: count++,
-				deltaTime: scalar.clamp(
+				deltaSeconds: scalar.clamp(
 					((last_time = performance.now()) - last),
 					0,
 					100, // clamp to 100ms delta to avoid large over-corrections

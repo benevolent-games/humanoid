@@ -45,7 +45,8 @@ export namespace Archetypes {
 			position: Vec3
 		}) => ({
 		...freecam({position}),
-		stance: "fly",
+		force: vec3.zero(),
+		localForce: vec3.zero(),
 		spectator: {},
 		smoothing: 5,
 		speeds: {base: 20, fast: 50, slow: 5},

@@ -61,7 +61,7 @@ export function sync_character_anims({
 	if (adjustment)
 		adjustment_anims.update(adjustment)
 
-	if (stance === "stand" || stance === "fly") {
+	if (stance === "stand") {
 		const sprint = scalar.clamp(ambulatory.north - 1)
 		const noSprint = 1 - sprint
 		anims.stand.weight = ambulatory.stillness

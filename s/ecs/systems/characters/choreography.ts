@@ -1,5 +1,5 @@
 
-import {human, vec3} from "@benev/toolbox"
+import {vec3} from "@benev/toolbox"
 
 import {behavior} from "../../hub.js"
 import {flatten} from "../utils/flatten.js"
@@ -44,7 +44,7 @@ export const choreography = behavior("choreography")
 			smoothed_velocity = molasses3d(
 				5,
 				smoothed_velocity,
-				vec3.divideBy(state.velocity, state.speeds.base * tick.deltaTime),
+				vec3.divideBy(state.velocity, state.speeds.base * tick.deltaSeconds),
 			)
 
 			state.choreography.swivel = swivel_effected_by_glance(
