@@ -16,6 +16,8 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	position: Vec3
 	rotation: Quat
 	scale: Vec3
+
+	// actual measured velocity
 	velocity: Vec3
 
 	prop_ref: Ref
@@ -47,12 +49,23 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	}
 	shape: "box"
 
+	controllable: {}
 	intent: {
-		amble: Vec3
+		amble: Vec2
 		glance: Vec2
 		fast: boolean
 		slow: boolean
 	}
+
+	// smoothed amble
+	force: Vec2
+
+	// will be applied as velocity
+	impetus: Vec3
+
+	// rotational qualities
+	gimbal: Vec2
+
 	jump: {
 		button: boolean
 		tick: number
@@ -60,9 +73,6 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	}
 	grounded: boolean
 	smoothing: number
-	localForce: Vec3
-	force: Vec3
-	gimbal: Vec2
 
 	choreography: Choreography
 	stance: "stand" | "crouch"

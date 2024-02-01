@@ -1,5 +1,5 @@
 
-import {Ecs4, Vec3, babylonian, vec3} from "@benev/toolbox"
+import {Ecs4, Vec3, babylonian, human, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
 import {gimbaltool} from "../utils/gimbaltool.js"
@@ -36,27 +36,23 @@ export const humanoid = system("humanoid simulation", realm => {
 				torusRoot.rotationQuaternion = quaternions.vertical
 			}),
 
-		behavior("calculate local forces, accounting for speeds and stance")
-			.select("humanoid", "localForce", "gimbal", "force", "intent", "speeds", "stance")
+		behavior("set final impetus, based on force, speeds, and stance")
+			.select("humanoid", "gimbal", "force", "intent", "speeds", "stance", "impetus")
 			.processor(() => tick => state => {
 				const {stance, force, intent, speeds} = state
-				const [x, y, z] = force
+				const [x, z] = force
 				let target = vec3.zero()
 
 				if (stance === "stand") {
 					if (z > 0 && intent.fast) {
 						target = vec3.multiplyBy(
-							vec3.normalize([
-								x / 2,
-								y / 2,
-								z,
-							]),
+							vec3.normalize([(x / 2), 0, z]),
 							speeds.fast * tick.deltaSeconds,
 						)
 					}
 					else {
 						target = vec3.multiplyBy(
-							force,
+							[x, 0, z],
 							intent.slow
 								? speeds.slow
 								: speeds.base,
@@ -65,22 +61,24 @@ export const humanoid = system("humanoid simulation", realm => {
 				}
 				else if (stance === "crouch") {
 					target = vec3.multiplyBy(
-						force,
+						[x, 0, z],
 						intent.slow
 							? speeds.slow / 3
 							: speeds.slow,
 					)
 				}
 
+				target[1] = -.1
+
 				const moddedGimbal = apply_spline_to_gimbal_y(state.gimbal, [.1, .5, .7])
-				state.localForce = gimbaltool(moddedGimbal).rotate(target)
+				state.impetus = gimbaltool(moddedGimbal).rotate(target)
 			}),
 
 		behavior("apply capsule movement")
-			.select("humanoid", "localForce", "grounded")
+			.select("humanoid", "impetus", "grounded")
 			.processor(() => () => (state, id) => {
 				const {capsule} = store.get(id)!
-				const {grounded} = capsule.applyMovement(state.localForce)
+				const {grounded} = capsule.applyMovement(state.impetus)
 				state.grounded = grounded
 			}),
 

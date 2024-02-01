@@ -38,11 +38,10 @@ export function sync_character_anims({
 			: w
 	}
 
-	const b = (w: number) => scalar.spline.quickLinear(scalar.clamp(w), [
-		0,
-		.9,
-		1,
-	])
+	const b = (w: number) => scalar.spline.quickLinear(
+		scalar.clamp(w),
+		[0, .9, 1],
+	)
 
 	const mag = scalar.spline.linear(
 		ambulatory.magnitude,
@@ -73,10 +72,10 @@ export function sync_character_anims({
 	}
 	else if (stance === "crouch") {
 		anims.crouch.weight = ambulatory.stillness
-		anims.crouch_forward.weight = b(mod(ambulatory.north))
-		anims.crouch_backward.weight = b(mod(ambulatory.south))
-		anims.crouch_leftward.weight = b(mod(ambulatory.west))
-		anims.crouch_rightward.weight = b(mod(ambulatory.east))
+		anims.crouch_forward.weight = b(mod(ambulatory.north * 2))
+		anims.crouch_backward.weight = b(mod(ambulatory.south * 2))
+		anims.crouch_leftward.weight = b(mod(ambulatory.west * 2))
+		anims.crouch_rightward.weight = b(mod(ambulatory.east * 2))
 	}
 
 	anims.twohander.weight = ambulatory.stillness
