@@ -34,6 +34,8 @@ export const choreography = behavior("choreography")
 		establish_anim_coordination(realm, babylon.character)
 	)
 
+	console.log({anims})
+
 	let smoothed_velocity = init.velocity
 
 	return {

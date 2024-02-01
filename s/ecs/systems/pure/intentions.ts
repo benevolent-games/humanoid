@@ -1,6 +1,6 @@
 
 import {behavior, system} from "../../hub.js"
-import {Vec2, get_trajectory_from_cardinals, vec2, vec3} from "@benev/toolbox"
+import {Vec2, get_trajectory_from_cardinals, human, vec2, vec3} from "@benev/toolbox"
 
 export const intentions = system("intentions", () => [
 
@@ -9,14 +9,14 @@ export const intentions = system("intentions", () => [
 		.processor(() => () => state => {
 			state.intent = {
 				glance: vec2.zero(),
-				amble: vec3.zero(),
+				amble: vec2.zero(),
 				fast: false,
 				slow: false,
 			}
 		}),
 
 	behavior("add mouse movements to glance")
-		.select("intent", "sensitivity")
+		.select("controllable", "intent", "sensitivity")
 		.lifecycle(realm => () => {
 			const {impulse, stage} = realm
 			const mouseMovement = impulse.devices.mouse.make_accumulator()
@@ -38,14 +38,14 @@ export const intentions = system("intentions", () => [
 		}),
 
 	behavior("add keyboard looking to glance")
-		.select("intent", "sensitivity")
+		.select("controllable", "intent", "sensitivity")
 		.processor(realm => _tick => state => {
 			const {buttons} = realm.impulse.report.humanoid
 			const keylook = get_trajectory_from_cardinals({
-				north: buttons.up,
-				south: buttons.down,
-				west: buttons.left,
-				east: buttons.right,
+				north: buttons.up.down,
+				south: buttons.down.down,
+				west: buttons.left.down,
+				east: buttons.right.down,
 			})
 			state.intent.glance = vec2.add(
 				state.intent.glance,
@@ -53,77 +53,46 @@ export const intentions = system("intentions", () => [
 			)
 		}),
 
-	// behavior("set intent.glance based on mouse and key inputs")
-	// 	.select("intent", "sensitivity")
-	// 	.lifecycle(realm => () => {
-	// 		const {impulse, stage} = realm
-	// 		const {buttons} = impulse.report.humanoid
-	// 		const mouseMovement = impulse.devices.mouse.make_accumulator()
-	// 		const invert_y_axis = (v: Vec2) => vec2.multiply(v, [1, -1])
-	// 		return {
-	// 			tick(_, state) {
-	// 				const mouselook = invert_y_axis(mouseMovement.steal())
-	// 				const keylook = get_trajectory_from_cardinals({
-	// 					north: buttons.up,
-	// 					south: buttons.down,
-	// 					west: buttons.left,
-	// 					east: buttons.right,
-	// 				})
-	// 				state.intent.glance = vec2.add(
-	// 					vec2.multiplyBy(keylook, state.sensitivity.keys),
-	// 					stage.pointerLocker.locked
-	// 						? vec2.multiplyBy(mouselook, state.sensitivity.mouse)
-	// 						: vec2.zero(),
-	// 				)
-	// 			},
-	// 			end() {
-	// 				mouseMovement.dispose()
-	// 			},
-	// 		}
-	// 	}),
-
 	behavior("add move keys to amble")
-		.select("intent")
+		.select("controllable", "intent")
 		.processor(realm => () => state => {
 			const {buttons} = realm.impulse.report.humanoid
-			const [x, z] = get_trajectory_from_cardinals({
-				north: buttons.forward,
-				south: buttons.backward,
-				west: buttons.leftward,
-				east: buttons.rightward,
+			const vector = get_trajectory_from_cardinals({
+				north: buttons.forward.down,
+				south: buttons.backward.down,
+				west: buttons.leftward.down,
+				east: buttons.rightward.down,
 			})
-			let y = buttons.jump ? 1
-				: buttons.crouch ? -1
-				: 0
-			state.intent.amble = vec3.add(
+			state.intent.amble = vec2.add(
 				state.intent.amble,
-				[x, y, z],
+				vector,
 			)
 		}),
 
 	behavior("apply fast and slow to intent")
-		.select("intent")
+		.select("controllable", "intent")
 		.processor(realm => () => state => {
 			const {fast, slow} = realm.impulse.report.humanoid.buttons
-			state.intent.fast = fast
-			state.intent.slow = slow
+			state.intent.fast = fast.down
+			state.intent.slow = slow.down
 		}),
 
-	behavior("apply crouch/stand stance")
-		.select("humanoid", "stance", "intent")
+	behavior("change stance")
+		.select("controllable", "intent", "stance")
 		.processor(realm => () => state => {
-			state.stance = state.intent.fast
-				? "stand"
-				: realm.impulse.report.humanoid.buttons.crouch
-					? "crouch"
-					: "stand"
+			const {crouch} = realm.impulse.report.humanoid.buttons
+			state.stance = (
+				state.intent.fast ? "stand"
+				: crouch.down ? "crouch"
+				: "stand"
+			)
 		}),
 
-	behavior("apply jump action")
-		.select("jump")
-		.processor(realm => () => state => {
-			const {buttons} = realm.impulse.report.humanoid
-			state.jump.button = buttons.jump
-		}),
+	// behavior("apply jump action")
+	// 	.select("jump")
+	// 	.processor(realm => () => state => {
+	// 		const {buttons} = realm.impulse.report.humanoid
+	// 		state.jump.button = buttons.jump.down
+	// 	}),
 ])
 

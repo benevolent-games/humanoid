@@ -22,13 +22,14 @@ export namespace Archetypes {
 			minZ: 0.1,
 			maxZ: 1_000,
 		},
+		controllable: {},
 		intent: {
-			amble: vec3.zero(),
+			amble: vec2.zero(),
 			glance: vec2.zero(),
 			fast: false,
 			slow: false,
 		},
-		force: vec3.zero(),
+		force: vec2.zero(),
 		gimbal: [0, 0.5],
 	}))
 
@@ -45,8 +46,8 @@ export namespace Archetypes {
 			position: Vec3
 		}) => ({
 		...freecam({position}),
-		force: vec3.zero(),
-		localForce: vec3.zero(),
+		force: vec2.zero(),
+		impetus: vec3.zero(),
 		spectator: {},
 		smoothing: 5,
 		speeds: {base: 20, fast: 50, slow: 5},
@@ -69,7 +70,7 @@ export namespace Archetypes {
 		velocity: vec3.zero(),
 		speeds: {base: 3, fast: 5, slow: 1.5},
 		grounded: false,
-		localForce: vec3.zero(),
+		impetus: vec3.zero(),
 		jump: {
 			button: false,
 			cooldown: 30,
