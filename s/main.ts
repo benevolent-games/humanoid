@@ -36,13 +36,34 @@ const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
 		entities,
 		tickrate: 60,
-		glb_links: localTesting ? {
-			gym: "/temp/gym14.glb",
-			character: "/temp/knightanimations38.glb",
-		} : {
-			gym: "https://filebin.net/hkcu6u1ujwxolvra/gym14.glb",
-			character: "https://filebin.net/hkcu6u1ujwxolvra/knightanimations38.glb",
-		},
+		...(localTesting ? {
+			glb_links: {
+				gym: "/temp/gym14.glb",
+				character: "/temp/knightanimations38.glb",
+			},
+			skybox_links: {
+				px: "/temp/sky_01/px.webp",
+				py: "/temp/sky_01/py.webp",
+				pz: "/temp/sky_01/nz.webp",
+				nx: "/temp/sky_01/nx.webp",
+				ny: "/temp/sky_01/ny.webp",
+				nz: "/temp/sky_01/pz.webp",
+			},
+		}
+		: {
+			glb_links: {
+				gym: "https://filebin.net/k0fe8w1g3kkaz1c8/gym14.glb",
+				character: "https://filebin.net/k0fe8w1g3kkaz1c8/knightanimations38.glb",
+			},
+			skybox_links: {
+				px: "https://filebin.net/k0fe8w1g3kkaz1c8/px.webp",
+				py: "https://filebin.net/k0fe8w1g3kkaz1c8/py.webp",
+				pz: "https://filebin.net/k0fe8w1g3kkaz1c8/nz.webp",
+				nx: "https://filebin.net/k0fe8w1g3kkaz1c8/nx.webp",
+				ny: "https://filebin.net/k0fe8w1g3kkaz1c8/ny.webp",
+				nz: "https://filebin.net/k0fe8w1g3kkaz1c8/pz.webp",
+			},
+		})
 	})
 )
 
@@ -54,6 +75,13 @@ const executor = hub.executor(realm, realm.entities, systems)
 
 realm.entities.create({
 	environment: "gym",
+})
+
+realm.entities.create({
+	sky: {
+		size: 1_000,
+		rotation: 180,
+	},
 })
 
 realm.entities.create(Archetypes.hemi({

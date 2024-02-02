@@ -6,6 +6,7 @@ import {statics} from "./systems/physics/statics.js"
 import {dynamics} from "./systems/physics/dynamics.js"
 import {fixtures} from "./systems/physics/fixtures.js"
 import {environment} from "./systems/babylon/environment.js"
+import {sky} from "./systems/babylon/sky.js"
 import {parenting} from "./systems/babylon/parenting.js"
 import {lighting} from "./systems/babylon/lighting.js"
 import {force} from "./systems/pure/force.js"
@@ -27,6 +28,7 @@ export const systems = system("pipeline", () => [
 
 	system("babylon", () => [
 		environment,
+		sky,
 		lighting,
 		parenting,
 	]),

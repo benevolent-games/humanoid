@@ -189,6 +189,34 @@ export const Panel = nexus.shadow_view(use => (realm: Realm) => {
 				}])}
 			</header>
 			<section ?data-hidden="${!active.ssr}">
+				${NuiCheckbox([{
+					label: "debug",
+					checked: ssr.debug,
+					set: x => ssr.debug = x,
+				}])}
+				${NuiCheckbox([{
+					label: "useFresnel",
+					checked: ssr.useFresnel,
+					set: x => ssr.useFresnel = x,
+				}])}
+				${NuiRange([{
+					label: "maxSteps",
+					min: 0, max: 2_000, step: 1,
+					value: ssr.maxSteps,
+					set: x => ssr.maxSteps = x,
+				}])}
+				${NuiRange([{
+					label: "maxDistance",
+					min: 0, max: 10_000, step: 10,
+					value: ssr.maxDistance,
+					set: x => ssr.maxDistance = x,
+				}])}
+				${NuiRange([{
+					label: "ssrDownsample",
+					min: 0, max: 5, step: .1,
+					value: ssr.ssrDownsample,
+					set: x => ssr.ssrDownsample = x,
+				}])}
 				${NuiRange([{
 					label: "strength",
 					min: 0, max: 3, step: .1,
@@ -196,33 +224,28 @@ export const Panel = nexus.shadow_view(use => (realm: Realm) => {
 					set: x => ssr.strength = x,
 				}])}
 				${NuiRange([{
-					label: "blur",
+					label: "blurDispersionStrength",
 					min: 0, max: 3, step: .1,
-					value: ssr.blur,
-					set: x => ssr.blur = x,
-				}])}
-				${NuiCheckbox([{
-					label: "fresnel",
-					checked: ssr.fresnel,
-					set: x => ssr.fresnel = x,
+					value: ssr.blurDispersionStrength,
+					set: x => ssr.blurDispersionStrength = x,
 				}])}
 				${NuiRange([{
-					label: "threshold",
+					label: "reflectivityThreshold",
 					min: 0, max: .1, step: .001,
-					value: ssr.threshold,
-					set: x => ssr.threshold = x,
+					value: ssr.reflectivityThreshold,
+					set: x => ssr.reflectivityThreshold = x,
 				}])}
 				${NuiRange([{
-					label: "falloff",
+					label: "reflectionSpecularFalloffExponent",
 					min: 0, max: 5, step: .1,
-					value: ssr.falloff,
-					set: x => ssr.falloff = x,
+					value: ssr.reflectionSpecularFalloffExponent,
+					set: x => ssr.reflectionSpecularFalloffExponent = x,
 				}])}
 				${NuiRange([{
-					label: "downsample",
+					label: "blurDownsample",
 					min: 0, max: 5, step: .1,
-					value: ssr.downsample,
-					set: x => ssr.downsample = x,
+					value: ssr.blurDownsample,
+					set: x => ssr.blurDownsample = x,
 				}])}
 			</section>
 		</article>
