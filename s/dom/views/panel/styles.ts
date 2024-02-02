@@ -99,9 +99,9 @@ section {
 	padding-left: 0.5em;
 
 	> * {
-		font-size: 0.8em;
+		font-size: 0.5em;
 		flex: 0 0 auto;
-		width: 8rem;
+		width: 12rem;
 		padding: 0.1rem;
 		max-width: 100%;
 	}
