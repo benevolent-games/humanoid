@@ -1,8 +1,7 @@
 
 import {behavior} from "../../hub.js"
 import {Archetypes} from "../../archetypes/archetypes.js"
-import {make_skybox} from "../../../tools/make_skybox.js"
-import {babylonian, obtain_babylon_quaternion_from_mesh, quat, scalar, vec3} from "@benev/toolbox"
+import {babylonian, obtain_babylon_quaternion_from_mesh, quat, vec3} from "@benev/toolbox"
 
 export const environment = behavior("environment")
 	.select("environment")
@@ -14,22 +13,6 @@ export const environment = behavior("environment")
 		const gym = realm.spawn.gym()
 		console.log("gym", gym)
 		disposables.add(gym.dispose)
-
-		const skytex = (s: string) => `/temp/sky_01/${s}`
-		const sky = make_skybox({
-			scene: realm.stage.scene,
-			size: 1_000,
-			yaw: scalar.radians.from.degrees(180),
-			urls: {
-				px: skytex("px.webp"),
-				py: skytex("py.webp"),
-				pz: skytex("nz.webp"),
-				nx: skytex("nx.webp"),
-				ny: skytex("ny.webp"),
-				nz: skytex("pz.webp"),
-			},
-		})
-		disposables.add(sky.dispose)
 
 		const static_meshes = gym
 			.all_meshes

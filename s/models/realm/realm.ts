@@ -5,6 +5,7 @@ import {Spawn} from "./parts/spawn.js"
 import {RefStore} from "./parts/ref_store.js"
 import {HumanoidSchema} from "../../ecs/schema.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
+import {SkyboxLinks} from "../../tools/make_skybox.js"
 import {CharacterContainer} from "../character/container.js"
 
 export type Realm = {
@@ -16,6 +17,7 @@ export type Realm = {
 	physics: Physics
 	entities: Ecs4.Entities<HumanoidSchema>
 	spawn: Spawn
+	skybox_links: SkyboxLinks
 	stores: {
 		meshes: RefStore<Meshoid>
 		props: RefStore<Prop>
@@ -23,9 +25,12 @@ export type Realm = {
 	}
 }
 
-export async function makeRealm({entities, tickrate, glb_links}: {
+export async function makeRealm({
+		entities, tickrate, glb_links, skybox_links,
+	}: {
 		entities: Ecs4.Entities<HumanoidSchema>
 		tickrate: number
+		skybox_links: SkyboxLinks
 		glb_links: {
 			gym: string
 			character: string
@@ -64,6 +69,7 @@ export async function makeRealm({entities, tickrate, glb_links}: {
 		impulse,
 		physics,
 		entities,
+		skybox_links,
 		spawn: new Spawn({gym, character}),
 		stores: {
 			props: new RefStore<Prop>("props"),

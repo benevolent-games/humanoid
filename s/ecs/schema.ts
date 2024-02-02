@@ -12,6 +12,10 @@ export type HumanoidTick = {
 export type HumanoidSchema = Ecs4.AsSchema<{
 	debug: boolean
 	environment: "gym"
+	sky: {
+		size: number
+		rotation: number
+	}
 
 	position: Vec3
 	rotation: Quat
