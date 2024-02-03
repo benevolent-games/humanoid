@@ -74,6 +74,10 @@ export function establish_anim_coordination(realm: Realm, character: CharacterIn
 		},
 	}
 
-	return {anims, boss_anim, adjustment_anims}
+	function dispose() {
+		boss_anim.dispose()
+	}
+
+	return {anims, boss_anim, adjustment_anims, dispose}
 }
 

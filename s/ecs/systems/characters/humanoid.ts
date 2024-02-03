@@ -1,5 +1,5 @@
 
-import {Ecs4, Vec3, babylonian, human, vec3} from "@benev/toolbox"
+import {Ecs4, Vec3, babylonian, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
 import {gimbaltool} from "../utils/gimbaltool.js"
