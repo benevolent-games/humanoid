@@ -1,6 +1,6 @@
 
 import {behavior, system} from "../../hub.js"
-import {Vec2, get_trajectory_from_cardinals, human, vec2, vec3} from "@benev/toolbox"
+import {Vec2, get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 
 export const intentions = system("intentions", () => [
 
@@ -87,12 +87,5 @@ export const intentions = system("intentions", () => [
 				: "stand"
 			)
 		}),
-
-	// behavior("apply jump action")
-	// 	.select("jump")
-	// 	.processor(realm => () => state => {
-	// 		const {buttons} = realm.impulse.report.humanoid
-	// 		state.jump.button = buttons.jump.down
-	// 	}),
 ])
 

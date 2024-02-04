@@ -1,5 +1,5 @@
 
-import {vec2, vec3} from "@benev/toolbox"
+import {vec2} from "@benev/toolbox"
 import {behavior} from "../../hub.js"
 import {molasses2d} from "../utils/molasses.js"
 

@@ -16,6 +16,7 @@ import {velocity} from "./systems/pure/velocity.js"
 import {humanoid} from "./systems/characters/humanoid.js"
 import {spectator} from "./systems/characters/spectator.js"
 import {choreography} from "./systems/characters/choreography.js"
+import {ambulation} from "./systems/pure/ambulation.js"
 
 export const systems = system("pipeline", () => [
 
@@ -24,6 +25,7 @@ export const systems = system("pipeline", () => [
 		freelook,
 		force,
 		velocity,
+		ambulation,
 	]),
 
 	system("babylon", () => [

@@ -76,6 +76,14 @@ export namespace Archetypes {
 			cooldown: 30,
 			tick: 0,
 		},
+		ambulatory: {
+			north: 0,
+			south: 0,
+			west: 0,
+			east: 0,
+			magnitude: 0,
+			stillness: 1,
+		},
 		choreography: {
 			swivel: .5,
 			adjustment: null,

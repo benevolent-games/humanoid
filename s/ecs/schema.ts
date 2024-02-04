@@ -2,10 +2,10 @@
 import {Ecs4, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ref} from "../models/realm/parts/ref_store.js"
-import {Choreography} from "../models/choreographer/types.js"
+import {Ambulatory, Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
-	tick: number
+	count: number
 	deltaSeconds: number
 }
 
@@ -79,6 +79,7 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	smoothing: number
 
 	choreography: Choreography
+	ambulatory: Ambulatory
 	stance: "stand" | "crouch"
 
 	speeds: Speeds
