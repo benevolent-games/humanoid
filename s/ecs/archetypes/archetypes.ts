@@ -77,6 +77,7 @@ export namespace Archetypes {
 			tick: 0,
 		},
 		ambulatory: {
+			standing: 1,
 			north: 0,
 			south: 0,
 			west: 0,

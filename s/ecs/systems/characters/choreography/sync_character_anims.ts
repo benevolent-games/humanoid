@@ -35,24 +35,6 @@ export function sync_character_anims({
 	const run = 3.0
 	const sprint = 5.0
 
-	// // 0  bottom  slow  walk  run  sprint
-	// // |     |     |     |     |     |
-	// // ['''''|'''''|'''''|'''''|''''']
-	// // 1.....0
-	// const stillness = scalar.clamp(
-	// 	scalar.remap(ambulatory.magnitude, [bottom, 0])
-	// )
-
-	// // 0  bottom  slow  walk  run  sprint
-	// // |     |     |     |     |     |
-	// // ['''''|'''''|'''''|'''''|''''']
-	// // 1.....0
-	// function unstillness(m: number) {
-	// 	return scalar.clamp(
-	// 		scalar.remap(m, [0, bottom])
-	// 	)
-	// }
-
 	// 0  bottom  slow  walk  run  sprint
 	// |     |     |     |     |     |
 	// ['''''|'''''|'''''|'''''|''''']
@@ -88,30 +70,54 @@ export function sync_character_anims({
 	// 0  bottom  slow  walk  run  sprint
 	// |     |     |     |     |     |
 	// ['''''|'''''|'''''|'''''|''''']
-	// 0.................1.....2
-	const crouchSpeed = scalar.clamp(
-		scalar.spline.linear(ambulatory.magnitude, [
-			[0, 0],
-			[walk, 1],
-			[run, 2],
-		])
-	)
+	// 0..........0.5....1.....2
+	const crouchSpeed = scalar.spline.linear(ambulatory.magnitude, [
+		[0, 0],
+		[slow, 0.5],
+		[walk, 1],
+		[run, 2],
+	])
+
+	const u = ambulatory.unstillness
+	const standing = (x: number) => scalar.map(ambulatory.standing, [0, x])
+	const crouching = (x: number) => scalar.map(ambulatory.standing, [x, 0])
+	const ultimate_speed = scalar.map(ambulatory.standing, [crouchSpeed, runSpeed])
 
 	// reset all anim weights
 	for (const anim of Object.values(anims))
 		anim.weight = 0
 
+	boss_anim.speedRatio = ultimate_speed
+	anims.stand.weight = standing(ambulatory.stillness)
+	anims.crouch.weight = crouching(ambulatory.stillness)
+
+	anims.stand_sprint.weight = standing(u * sprintiness(ambulatory.north))
+	anims.stand_forward.weight = standing(u * runniness(ambulatory.north))
+	anims.stand_backward.weight = standing(u * runniness(ambulatory.south))
+	anims.stand_leftward.weight = standing(u * runniness(ambulatory.west))
+	anims.stand_rightward.weight = standing(u * runniness(ambulatory.east))
+
+	anims.crouch_forward.weight = crouching(u * runniness(ambulatory.north))
+	anims.crouch_backward.weight = crouching(u * runniness(ambulatory.south))
+	anims.crouch_leftward.weight = crouching(u * runniness(ambulatory.west))
+	anims.crouch_rightward.weight = crouching(u * runniness(ambulatory.east))
+
 	if (stance === "stand") {
-		boss_anim.speedRatio = runSpeed
-		const u = ambulatory.unstillness
-		anims.stand.weight = ambulatory.stillness
-		anims.stand_sprint.weight = u * sprintiness(ambulatory.north)
-		anims.stand_forward.weight = u * runniness(ambulatory.north)
-		anims.stand_backward.weight = u * runniness(ambulatory.south)
-		anims.stand_leftward.weight = u * runniness(ambulatory.west)
-		anims.stand_rightward.weight = u * runniness(ambulatory.east)
+		// anims.stand.weight = ambulatory.stillness
+		// anims.stand_sprint.weight = u * sprintiness(ambulatory.north)
+		// anims.stand_forward.weight = u * runniness(ambulatory.north)
+		// anims.stand_backward.weight = u * runniness(ambulatory.south)
+		// anims.stand_leftward.weight = u * runniness(ambulatory.west)
+		// anims.stand_rightward.weight = u * runniness(ambulatory.east)
 	}
 	else if (stance === "crouch") {
+		// boss_anim.speedRatio = crouchSpeed
+		// anims.crouch.weight = ambulatory.stillness
+		// anims.crouch_forward.weight = u * runniness(ambulatory.north)
+		// anims.crouch_backward.weight = u * runniness(ambulatory.south)
+		// anims.crouch_leftward.weight = u * runniness(ambulatory.west)
+		// anims.crouch_rightward.weight = u * runniness(ambulatory.east)
+
 		// const speed = scalar.spline.linear(ambulatory.magnitude, [
 		// 	[0.0, 0.2],
 		// 	[1.5, 1.0],

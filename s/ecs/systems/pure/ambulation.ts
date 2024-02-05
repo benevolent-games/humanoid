@@ -14,16 +14,18 @@ export type Ambulatory = {
 	east: number
 	stillness: number
 	unstillness: number
+	standing: number
 }
 
 export const ambulation = behavior("calculate ambulatory")
-	.select("velocity", "ambulatory", "speeds", "gimbal")
+	.select("velocity", "ambulatory", "speeds", "gimbal", "stance")
 	.lifecycle(() => () => {
 
 	const smooth = {
 		globalvel: vec2.zero(),
 		unstillness: 0,
 		normal: vec2.zero(),
+		standing: 1,
 	}
 
 	const bottom = 0.1
@@ -60,12 +62,21 @@ export const ambulation = behavior("calculate ambulatory")
 				),
 			)
 
+			smooth.standing = molasses(
+				smoothing,
+				smooth.standing,
+				state.stance === "stand"
+					? 1
+					: 0,
+			)
+
 			const stillness = 1 - smooth.unstillness
 			const magnitude = vec2.magnitude(smooth.globalvel)
 
 			state.ambulatory = {
 				magnitude,
 				stillness,
+				standing: smooth.standing,
 				unstillness: smooth.unstillness,
 				...cardinalize(
 					gimbaltool(state.gimbal)
