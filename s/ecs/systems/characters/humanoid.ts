@@ -44,7 +44,7 @@ export const humanoid = system("humanoid simulation", realm => {
 				let target = vec3.zero()
 
 				if (stance === "stand") {
-					if (z > 0 && intent.fast) {
+					if (z > 0.01 && intent.fast) {
 						target = vec3.multiplyBy(
 							vec3.normalize([(x / 2), 0, z]),
 							speeds.fast * tick.seconds,
@@ -69,9 +69,7 @@ export const humanoid = system("humanoid simulation", realm => {
 				}
 
 				target[1] = -.1
-
-				const moddedGimbal = apply_spline_to_gimbal_y(state.gimbal, [.1, .5, .7])
-				state.impetus = gimbaltool(moddedGimbal).rotate(target)
+				state.impetus = gimbaltool(state.gimbal).rotate(target)
 			}),
 
 		behavior("apply capsule movement")
