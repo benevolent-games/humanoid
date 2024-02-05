@@ -39,7 +39,7 @@ const realm = await nexus.context.realmOp.load(
 		...(localTesting ? {
 			glb_links: {
 				gym: "/temp/gym14.glb",
-				character: "/temp/knightanimations38.glb",
+				character: "/temp/knightanimations40.glb",
 			},
 			skybox_links: {
 				px: "/temp/sky_01/px.webp",
