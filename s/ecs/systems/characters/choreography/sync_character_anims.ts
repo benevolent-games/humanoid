@@ -8,10 +8,11 @@ import {HumanoidSchema, HumanoidTick} from "../../../schema.js"
 import {AdjustmentAnims, Choreography} from "../../../../models/choreographer/types.js"
 
 export function sync_character_anims({
-		gimbal: [,vertical],
 		anims,
-		ambulatory,
+		choreo,
 		boss_anim,
+		ambulatory,
+		gimbal: [,vertical],
 	}: {
 		tick: HumanoidTick
 		stance: HumanoidSchema["stance"]
@@ -23,7 +24,7 @@ export function sync_character_anims({
 		adjustment_anims: AdjustmentAnims
 	}) {
 
-	// const {swivel, adjustment} = choreo
+	const {swivel} = choreo
 
 	const bottom = 0.1
 	const slow = 0.5
@@ -107,7 +108,7 @@ export function sync_character_anims({
 	anims.spine_bend.weight = 1
 	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)
 
-	// anims.hips_swivel.weight = 1
-	// anims.hips_swivel.forceFrame(swivel * anims.hips_swivel.to)
+	anims.hips_swivel.weight = 1
+	anims.hips_swivel.forceFrame(swivel * anims.hips_swivel.to)
 }
 

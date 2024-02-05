@@ -1,9 +1,7 @@
 
-import {Ecs4, Vec3, vec3} from "@benev/toolbox"
+import {Ecs4} from "@benev/toolbox"
 
-import {flatten} from "../utils/flatten.js"
-import {molasses3d} from "../utils/molasses.js"
-import {gimbaltool} from "../utils/gimbaltool.js"
+import {molasses} from "../utils/molasses.js"
 import {behavior, system, kinds} from "../../hub.js"
 import {swivel_effected_by_glance} from "./choreography/calculations.js"
 import {sync_character_anims} from "./choreography/sync_character_anims.js"
@@ -86,15 +84,18 @@ export const choreography = system("choreography", realm => {
 				const local = map.get(id)!
 				const {adjustment_anims, anims, boss_anim} = local.coordination
 
-				// if ((tick.count % 60) === 0)
-				// 	console.log("ambulatory", state.ambulatory.north.toFixed(2))
-
 				// apply_adjustments(
 				// 	adjustment_anims,
 				// 	ambulatory,
 				// 	state.choreography,
 				// 	10,
 				// )
+
+				state.choreography.swivel = molasses(
+					20,
+					state.choreography.swivel,
+					0.5,
+				)
 
 				sync_character_anims({
 					tick,
