@@ -52,16 +52,16 @@ const realm = await nexus.context.realmOp.load(
 		}
 		: {
 			glb_links: {
-				gym: "https://filebin.net/k0fe8w1g3kkaz1c8/gym14.glb",
-				character: "https://filebin.net/k0fe8w1g3kkaz1c8/knightanimations38.glb",
+				gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
+				character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations40.glb",
 			},
 			skybox_links: {
-				px: "https://filebin.net/k0fe8w1g3kkaz1c8/px.webp",
-				py: "https://filebin.net/k0fe8w1g3kkaz1c8/py.webp",
-				pz: "https://filebin.net/k0fe8w1g3kkaz1c8/nz.webp",
-				nx: "https://filebin.net/k0fe8w1g3kkaz1c8/nx.webp",
-				ny: "https://filebin.net/k0fe8w1g3kkaz1c8/ny.webp",
-				nz: "https://filebin.net/k0fe8w1g3kkaz1c8/pz.webp",
+				px: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/px.webp",
+				py: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/py.webp",
+				pz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nz.webp", // note the remapping
+				nx: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nx.webp",
+				ny: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/ny.webp",
+				nz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/pz.webp", // note the remapping
 			},
 		})
 	})
