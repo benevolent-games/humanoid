@@ -1,8 +1,9 @@
 
-import {Vec2, scalar, vec2} from "@benev/toolbox"
+import {Vec2, scalar} from "@benev/toolbox"
 
 import {molasses} from "../../utils/molasses.js"
-import {AdjustmentAnims, Ambulatory, ChoreoSwivelAdjustment, Choreography} from "../../../../models/choreographer/types.js"
+import {Ambulatory} from "../../pure/ambulation.js"
+import {AdjustmentAnims, ChoreoSwivelAdjustment, Choreography} from "../../../../models/choreographer/types.js"
 
 export const swivel_midpoint = 0.5
 
@@ -10,16 +11,6 @@ export function swivel_effected_by_glance(swivel: number, [x]: Vec2) {
 	return scalar.clamp(swivel + (x * 2))
 }
 
-export function calculate_ambulatory_report(velocity: Vec2): Ambulatory {
-	const magnitude = vec2.magnitude(velocity)
-	const stillness = scalar.clamp(1 - magnitude)
-	const [x, y] = velocity
-	const north = y
-	const west = -x
-	const south = -y
-	const east = x
-	return {magnitude, stillness, north, west, south, east}
-}
 
 export function apply_adjustments(
 		adjustment_anims: AdjustmentAnims,

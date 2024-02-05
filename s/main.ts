@@ -153,17 +153,19 @@ realm.stage.remote.onTick(() => {
 		}))
 
 		measures.logic.add(measure(() => {
+			const seconds = scalar.clamp(
+				((last_time = performance.now()) - last),
+				0,
+				100, // clamp to 100ms delta to avoid large over-corrections
+			) / 1000
+
 			const tick: HumanoidTick = {
 				count: count++,
-				deltaSeconds: scalar.clamp(
-					((last_time = performance.now()) - last),
-					0,
-					100, // clamp to 100ms delta to avoid large over-corrections
-				) / 1000,
+				seconds,
+				rate: 1 / seconds,
 			}
-			measures.logic.add(measure(() => {
-				executor.execute(tick)
-			}))
+
+			executor.execute(tick)
 		}))
 	}))
 

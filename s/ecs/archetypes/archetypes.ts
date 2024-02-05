@@ -83,6 +83,7 @@ export namespace Archetypes {
 			east: 0,
 			magnitude: 0,
 			stillness: 1,
+			unstillness: 0,
 		},
 		choreography: {
 			swivel: .5,

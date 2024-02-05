@@ -2,11 +2,13 @@
 import {Ecs4, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ref} from "../models/realm/parts/ref_store.js"
-import {Ambulatory, Choreography} from "../models/choreographer/types.js"
+import {Ambulatory} from "./systems/pure/ambulation.js"
+import {Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
 	count: number
-	deltaSeconds: number
+	rate: number
+	seconds: number
 }
 
 export type HumanoidSchema = Ecs4.AsSchema<{

@@ -1,10 +1,11 @@
 
-import {Vec2, scalar} from "@benev/toolbox"
+import {Vec2, ascii_progress_bar, human, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
-import {HumanoidSchema, HumanoidTick} from "../../../schema.js"
+import {Ambulatory} from "../../pure/ambulation.js"
 import {CharacterAnims} from "./setup_character_anims.js"
-import {AdjustmentAnims, Ambulatory, Choreography} from "../../../../models/choreographer/types.js"
+import {HumanoidSchema, HumanoidTick} from "../../../schema.js"
+import {AdjustmentAnims, Choreography} from "../../../../models/choreographer/types.js"
 
 export function sync_character_anims({
 		tick,
@@ -28,51 +29,111 @@ export function sync_character_anims({
 
 	// const {swivel, adjustment} = choreo
 
-	function setSpeed(s: number) {
-		boss_anim.speedRatio = s
+	const bottom = 0.1
+	const slow = 0.5
+	const walk = 1.5
+	const run = 3.0
+	const sprint = 5.0
+
+	// // 0  bottom  slow  walk  run  sprint
+	// // |     |     |     |     |     |
+	// // ['''''|'''''|'''''|'''''|''''']
+	// // 1.....0
+	// const stillness = scalar.clamp(
+	// 	scalar.remap(ambulatory.magnitude, [bottom, 0])
+	// )
+
+	// // 0  bottom  slow  walk  run  sprint
+	// // |     |     |     |     |     |
+	// // ['''''|'''''|'''''|'''''|''''']
+	// // 1.....0
+	// function unstillness(m: number) {
+	// 	return scalar.clamp(
+	// 		scalar.remap(m, [0, bottom])
+	// 	)
+	// }
+
+	// 0  bottom  slow  walk  run  sprint
+	// |     |     |     |     |     |
+	// ['''''|'''''|'''''|'''''|''''']
+	//                         0.....1
+	function sprintiness(m: number) {
+		return scalar.clamp(
+			scalar.remap(m, [run, sprint])
+		)
 	}
+
+	// 0  bottom  slow  walk  run  sprint
+	// |     |     |     |     |     |
+	// ['''''|'''''|'''''|'''''|''''']
+	//                         1.....0
+	function runniness(m: number) {
+		const s = sprintiness(m)
+		return scalar.clamp(m - s)
+		// return scalar.clamp(
+		// 	scalar.remap(m, [run, sprint], [1, 0])
+		// )
+	}
+
+	// 0  bottom  slow  walk  run  sprint
+	// |     |     |     |     |     |
+	// ['''''|'''''|'''''|'''''|''''']
+	// 0.............................2
+	const runSpeed = scalar.clamp(
+		scalar.remap(ambulatory.magnitude, [bottom, sprint], [0, 2]),
+		0,
+		2,
+	)
+
+	// 0  bottom  slow  walk  run  sprint
+	// |     |     |     |     |     |
+	// ['''''|'''''|'''''|'''''|''''']
+	// 0.................1.....2
+	const crouchSpeed = scalar.clamp(
+		scalar.spline.linear(ambulatory.magnitude, [
+			[0, 0],
+			[walk, 1],
+			[run, 2],
+		])
+	)
 
 	// reset all anim weights
 	for (const anim of Object.values(anims))
 		anim.weight = 0
 
 	if (stance === "stand") {
-		setSpeed(scalar.spline.linear(ambulatory.magnitude, [
-			[0, 0.2],
-			[1, 0.5],
-			[3, 1.4],
-			[5, 2.0],
-		]))
+		boss_anim.speedRatio = runSpeed
+		const u = ambulatory.unstillness
 		anims.stand.weight = ambulatory.stillness
-		anims.stand_forward.weight = scalar.clamp(ambulatory.north)
-		anims.stand_backward.weight = scalar.clamp(ambulatory.south)
-		anims.stand_leftward.weight = scalar.clamp(ambulatory.west)
-		anims.stand_rightward.weight = scalar.clamp(ambulatory.east)
+		anims.stand_sprint.weight = u * sprintiness(ambulatory.north)
+		anims.stand_forward.weight = u * runniness(ambulatory.north)
+		anims.stand_backward.weight = u * runniness(ambulatory.south)
+		anims.stand_leftward.weight = u * runniness(ambulatory.west)
+		anims.stand_rightward.weight = u * runniness(ambulatory.east)
 	}
 	else if (stance === "crouch") {
-		const speed = scalar.spline.linear(ambulatory.magnitude, [
-			[0.0, 0.2],
-			[1.5, 1.0],
-			[5.0, 2.0],
-		])
-		setSpeed(speed)
-		// [.....|.......|.........]
-		// 0    0.5     1.0      2.0
-		const b = (x: number) => scalar.clamp(
-			scalar.spline.linear(x, [
-				[0.0, 0.0],
-				[0.4, 1.0],
-			])
-		)
-		anims.crouch.weight = stillness
-		if ((tick.count % 60) === 0) {
-			console.log("speed", speed.toFixed(2))
-			console.log("stillness", stillness.toFixed(2))
-		}
-		anims.crouch_forward.weight = b(ambulatory.north)
-		anims.crouch_backward.weight = b(ambulatory.south)
-		anims.crouch_leftward.weight = b(ambulatory.west)
-		anims.crouch_rightward.weight = b(ambulatory.east)
+		// const speed = scalar.spline.linear(ambulatory.magnitude, [
+		// 	[0.0, 0.2],
+		// 	[1.5, 1.0],
+		// 	[5.0, 2.0],
+		// ])
+		// boss_anim.speedRatio = speed
+
+		// const b = (x: number) => scalar.clamp(
+		// 	scalar.spline.linear(x, [
+		// 		[0.0, 0.0],
+		// 		[0.4, 1.0],
+		// 	])
+		// )
+		// anims.crouch.weight = stillness
+		// if ((tick.count % 60) === 0) {
+		// 	console.log("speed", speed.toFixed(2))
+		// 	console.log("stillness", stillness.toFixed(2))
+		// }
+		// anims.crouch_forward.weight = b(ambulatory.north)
+		// anims.crouch_backward.weight = b(ambulatory.south)
+		// anims.crouch_leftward.weight = b(ambulatory.west)
+		// anims.crouch_rightward.weight = b(ambulatory.east)
 	}
 
 	// // if (adjustment)

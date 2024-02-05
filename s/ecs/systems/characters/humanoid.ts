@@ -47,7 +47,7 @@ export const humanoid = system("humanoid simulation", realm => {
 					if (z > 0 && intent.fast) {
 						target = vec3.multiplyBy(
 							vec3.normalize([(x / 2), 0, z]),
-							speeds.fast * tick.deltaSeconds,
+							speeds.fast * tick.seconds,
 						)
 					}
 					else {

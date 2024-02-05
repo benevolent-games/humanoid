@@ -7,7 +7,7 @@ export const force = behavior("calculate force based on intent and smoothing")
 	.select("force", "intent", "smoothing")
 	.processor(_realm => tick => state => {
 		const {force, intent, smoothing} = state
-		const target = vec2.multiplyBy(intent.amble, tick.deltaSeconds)
+		const target = vec2.multiplyBy(intent.amble, tick.seconds)
 		state.force = molasses2d(smoothing, force, target)
 })
 

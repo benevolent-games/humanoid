@@ -5,10 +5,10 @@ import {flatten} from "../utils/flatten.js"
 import {molasses3d} from "../utils/molasses.js"
 import {gimbaltool} from "../utils/gimbaltool.js"
 import {behavior, system, kinds} from "../../hub.js"
+import {swivel_effected_by_glance} from "./choreography/calculations.js"
+import {sync_character_anims} from "./choreography/sync_character_anims.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
-import {calculate_ambulatory_report, swivel_effected_by_glance} from "./choreography/calculations.js"
-import { sync_character_anims } from "./choreography/sync_character_anims.js"
 
 export const choreography = system("choreography", realm => {
 	type Locals = {
