@@ -1,84 +1,113 @@
 
-import {vec3} from "@benev/toolbox"
+import {Ecs4} from "@benev/toolbox"
 
-import {behavior} from "../../hub.js"
-import {flatten} from "../utils/flatten.js"
-import {molasses3d} from "../utils/molasses.js"
-import {gimbaltool} from "../utils/gimbaltool.js"
+import {molasses} from "../utils/molasses.js"
+import {behavior, system, kinds} from "../../hub.js"
+import {swivel_effected_by_glance} from "./choreography/calculations.js"
 import {sync_character_anims} from "./choreography/sync_character_anims.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
-import {apply_adjustments, calculate_ambulatory_report, swivel_effected_by_glance} from "./choreography/calculations.js"
 
-export const choreography = behavior("choreography")
-	.select(
-		"stance",
+export const choreography = system("choreography", realm => {
+	type Locals = {
+		parts: ReturnType<typeof prepare_choreographer_babylon_parts>
+		coordination: ReturnType<typeof establish_anim_coordination>
+	}
+
+	const map = new Map<Ecs4.Id, Locals>()
+
+	const selection = kinds(
+		"choreography",
 		"height",
-		"speeds",
 		"position",
 		"rotation",
-		"gimbal",
-		"intent",
 		"velocity",
-		"choreography",
-	)
-	.lifecycle(realm => init => {
-
-	const babylon = prepare_choreographer_babylon_parts({
-		state: init,
-		scene: realm.stage.scene,
-		character: realm.spawn.character(),
-	})
-
-	const {anims, boss_anim, adjustment_anims} = (
-		establish_anim_coordination(realm, babylon.character)
+		"speeds",
+		"intent",
+		"gimbal",
+		"stance",
+		"ambulatory",
 	)
 
-	console.log({anims})
+	return [
+		behavior("create local parts")
+			.select(...selection)
+			.lifecycle(() => (init, id) => {
+				const parts = prepare_choreographer_babylon_parts(
+					realm.stage.scene,
+					realm.spawn.character(),
+					init.height,
+				)
 
-	let smoothed_velocity = init.velocity
+				parts.position.set(...init.position)
+				parts.rotation.set(...init.rotation)
 
-	return {
-		tick(tick, state) {
-			babylon.position.set(...state.position)
-			babylon.rotation.set(...state.rotation)
+				const coordination = (
+					establish_anim_coordination(realm, parts.character)
+				)
 
-			smoothed_velocity = molasses3d(
-				5,
-				smoothed_velocity,
-				vec3.divideBy(state.velocity, state.speeds.base * tick.deltaSeconds),
-			)
+				map.set(id, {
+					parts,
+					coordination,
+				})
 
-			state.choreography.swivel = swivel_effected_by_glance(
-				state.choreography.swivel,
-				state.intent.glance,
-			)
+				return {
+					tick() {},
+					end() {
+						parts.dispose()
+						coordination.dispose()
+						map.delete(id)
+					},
+				}
+			}),
 
-			const local_velocity = gimbaltool(state.gimbal).unrotate(smoothed_velocity)
-			const ambulatory = calculate_ambulatory_report(flatten(local_velocity))
+		behavior("sync babylon parts")
+			.select(...selection)
+			.processor(() => () => (state, id) => {
+				const {parts} = map.get(id)!
+				parts.position.set(...state.position)
+				parts.rotation.set(...state.rotation)
+			}),
 
-			apply_adjustments(
-				adjustment_anims,
-				ambulatory,
-				state.choreography,
-				10,
-			)
+		behavior("set swivel")
+			.select(...selection)
+			.processor(() => () => state => {
+				state.choreography.swivel = swivel_effected_by_glance(
+					state.choreography.swivel,
+					state.intent.glance,
+				)
+			}),
 
-			sync_character_anims({
-				stance: state.stance,
-				gimbal: state.gimbal,
-				choreo: state.choreography,
-				anims,
-				ambulatory,
-				boss_anim,
-				adjustment_anims,
-				anim_speed_modifier: 1.3,
-			})
-		},
-		end() {
-			boss_anim.dispose()
-			babylon.dispose()
-		},
-	}
+		behavior("animate the armature")
+			.select(...selection)
+			.processor(() => tick => (state, id) => {
+				const local = map.get(id)!
+				const {adjustment_anims, anims, boss_anim} = local.coordination
+
+				// apply_adjustments(
+				// 	adjustment_anims,
+				// 	ambulatory,
+				// 	state.choreography,
+				// 	10,
+				// )
+
+				state.choreography.swivel = molasses(
+					20,
+					state.choreography.swivel,
+					0.5,
+				)
+
+				sync_character_anims({
+					tick,
+					stance: state.stance,
+					gimbal: state.gimbal,
+					choreo: state.choreography,
+					ambulatory: state.ambulatory,
+					anims,
+					boss_anim,
+					adjustment_anims,
+				})
+			}),
+	]
 })
 

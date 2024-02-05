@@ -1,100 +1,126 @@
 
-import {Vec2, scalar} from "@benev/toolbox"
+import {Vec2, ascii_progress_bar, human, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
-import {HumanoidSchema} from "../../../schema.js"
+import {Ambulatory} from "../../pure/ambulation.js"
 import {CharacterAnims} from "./setup_character_anims.js"
-import {AdjustmentAnims, Ambulatory, Choreography} from "../../../../models/choreographer/types.js"
+import {HumanoidSchema, HumanoidTick} from "../../../schema.js"
+import {AdjustmentAnims, Choreography} from "../../../../models/choreographer/types.js"
 
 export function sync_character_anims({
-		stance,
-		gimbal: [,vertical],
 		anims,
 		choreo,
-		ambulatory,
 		boss_anim,
-		adjustment_anims,
-		anim_speed_modifier,
+		ambulatory,
+		gimbal: [,vertical],
 	}: {
+		tick: HumanoidTick
 		stance: HumanoidSchema["stance"]
 		gimbal: Vec2
 		choreo: Choreography
 		ambulatory: Ambulatory
 		anims: CharacterAnims
 		boss_anim: AnimationGroup
-		anim_speed_modifier: number
 		adjustment_anims: AdjustmentAnims
 	}) {
 
-	const {swivel, adjustment} = choreo
+	const {swivel} = choreo
 
-	function setSpeed(s: number) {
-		boss_anim.speedRatio = s * anim_speed_modifier
+	const bottom = 0.1
+	const slow = 0.5
+	const walk = 1.5
+	const run = 3.0
+	const sprint = 5.0
+
+	// 0  bottom  slow  walk  run  sprint
+	// ['''''|'''''|'''''|'''''|''''']
+	//                         0.....1
+	function sprintiness(m: number) {
+		return scalar.clamp(
+			scalar.remap(m, [run, sprint])
+		)
 	}
 
-	const mod = function modulate_leg_weight(w: number) {
-		return adjustment
-			? scalar.clamp(w - calculate_adjustment_weight(adjustment.progress))
-			: w
+	// 0  bottom  slow  walk  run  sprint
+	// ['''''|'''''|'''''|'''''|''''']
+	//                         1.....0
+	function runniness(m: number) {
+		const s = sprintiness(m)
+		return scalar.clamp(m - s)
 	}
 
-	const b = (w: number) => scalar.spline.quickLinear(
-		scalar.clamp(w),
-		[0, .9, 1],
+	// 0  bottom  slow  walk  run  sprint
+	// ['''''|'''''|'''''|'''''|''''']
+	// 0.............................2
+	const runSpeed = scalar.clamp(
+		scalar.remap(ambulatory.magnitude, [0, sprint], [0, 2]),
+		0,
+		2,
 	)
 
-	const mag = scalar.spline.linear(
-		ambulatory.magnitude,
-		[
-			[0.0, 0.0],
-			[1.0, 1.0],
-			[3.0, 1.5],
-		],
-	)
+	// 0  bottom  slow  walk  run  sprint
+	// ['''''|'''''|'''''|'''''|''''']
+	// 0..........0.3...0.7....2
+	const crouchSpeed = scalar.spline.linear(ambulatory.magnitude, [
+		[0, 0],
+		[slow, 0.3],
+		[walk, 0.7],
+		[run, 2],
+	])
 
-	setSpeed(mag)
+	const {standing, north, south, west, east} = ambulatory
+	const u = scalar.clamp(ambulatory.magnitude)
+	const calc_stillness = (...weights: number[]) => {
+		const unstill = scalar.clamp(weights.reduce((a, b) => a + b, 0))
+		return scalar.clamp(1 - unstill)
+	}
+	const calc_standing = (x: number) => scalar.clamp(x * standing)
+	const calc_crouching = (x: number) => scalar.clamp(x * (1 - standing))
+	const ultimate_speed = scalar.map(standing, [crouchSpeed, runSpeed])
 
+	// reset all anim weights
 	for (const anim of Object.values(anims))
 		anim.weight = 0
 
-	if (adjustment)
-		adjustment_anims.update(adjustment)
+	boss_anim.speedRatio = ultimate_speed
 
-	if (stance === "stand") {
-		const sprint = scalar.clamp(ambulatory.north - 1)
-		const noSprint = 1 - sprint
-		anims.stand.weight = ambulatory.stillness
-		anims.stand_sprint.weight = sprint * b(mod(ambulatory.north))
-		anims.stand_forward.weight = noSprint * b(mod(ambulatory.north))
-		anims.stand_backward.weight = b(mod(ambulatory.south))
-		anims.stand_leftward.weight = b(mod(ambulatory.west))
-		anims.stand_rightward.weight = b(mod(ambulatory.east))
-	}
-	else if (stance === "crouch") {
-		anims.crouch.weight = ambulatory.stillness
-		anims.crouch_forward.weight = b(mod(ambulatory.north * 2))
-		anims.crouch_backward.weight = b(mod(ambulatory.south * 2))
-		anims.crouch_leftward.weight = b(mod(ambulatory.west * 2))
-		anims.crouch_rightward.weight = b(mod(ambulatory.east * 2))
-	}
+	anims.stand_sprint.weight = calc_standing(u * sprintiness(north))
+	anims.stand_forward.weight = calc_standing(u * runniness(north))
+	anims.stand_backward.weight = calc_standing(u * runniness(south))
+	anims.stand_leftward.weight = calc_standing(u * runniness(west))
+	anims.stand_rightward.weight = calc_standing(u * runniness(east))
 
-	anims.twohander.weight = ambulatory.stillness
-	anims.twohander_forward.weight = b(ambulatory.north)
-	anims.twohander_backward.weight = b(ambulatory.south)
-	anims.twohander_leftward.weight = b(ambulatory.west)
-	anims.twohander_rightward.weight = b(ambulatory.east)
+	anims.crouch_forward.weight = calc_crouching(u * runniness(north))
+	anims.crouch_backward.weight = calc_crouching(u * runniness(south))
+	anims.crouch_leftward.weight = calc_crouching(u * runniness(west))
+	anims.crouch_rightward.weight = calc_crouching(u * runniness(east))
+
+	const stillness = calc_stillness(
+		anims.stand_sprint.weight,
+		anims.stand_forward.weight,
+		anims.stand_backward.weight,
+		anims.stand_leftward.weight,
+		anims.stand_rightward.weight,
+
+		anims.crouch_forward.weight,
+		anims.crouch_backward.weight,
+		anims.crouch_leftward.weight,
+		anims.crouch_rightward.weight,
+	)
+
+	anims.stand.weight = calc_standing(stillness)
+	anims.crouch.weight = calc_crouching(stillness)
+
+	anims.twohander.weight = stillness
+	anims.twohander_forward.weight = u * north
+	anims.twohander_backward.weight = u * south
+	anims.twohander_leftward.weight = u * west
+	anims.twohander_rightward.weight = u * east
 
 	anims.spine_bend.weight = 1
 	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)
 
 	anims.hips_swivel.weight = 1
 	anims.hips_swivel.forceFrame(swivel * anims.hips_swivel.to)
-}
-
-////////////////////////////////////////
-////////////////////////////////////////
-
-function calculate_adjustment_weight(progress: number) {
-	return scalar.spline.quickLinear(progress, [0, 1, 1, 0])
 }
 

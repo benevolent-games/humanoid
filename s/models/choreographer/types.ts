@@ -10,15 +10,6 @@ export type ChoreographySettings = {
 	swivel_readjustment_margin: number
 }
 
-export type Ambulatory = {
-	magnitude: number
-	stillness: number
-	north: number
-	west: number
-	south: number
-	east: number
-}
-
 export type AdjustmentDirection = "left" | "right"
 
 export type ChoreoSwivelAdjustment = {

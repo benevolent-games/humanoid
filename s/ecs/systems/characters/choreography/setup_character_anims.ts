@@ -9,12 +9,6 @@ export type CharacterAnims = ReturnType<typeof setup_character_anims>
 
 export const setup_character_anims = (character: CharacterInstance) => manifest_anims({
 	tpose: g => new ManualAnim(g),
-	spine_bend: g => new ManualAdditiveAnim(g, 50),
-	spine_lean: g => new ManualAdditiveAnim(g, 50),
-	hips_swivel: g => new ManualAdditiveAnim(g, 50),
-	head_scale: g => new ManualAdditiveAnim(g, 50),
-	grip_left: g => new ManualAnim(g),
-	grip_right: g => new ManualAnim(g),
 
 	jump: g => new BasedAnim(g),
 	stand: g => new BasedAnim(g),
@@ -26,13 +20,13 @@ export const setup_character_anims = (character: CharacterInstance) => manifest_
 	stand_legadjust_left: g => new ManualAdditiveAnim(g, 0),
 	stand_legadjust_right: g => new ManualAdditiveAnim(g, 0),
 
-	crouch: g => new BasedAnim(g),
 	crouch_forward: g => new BasedAnim(g),
 	crouch_backward: g => new BasedAnim(g),
 	crouch_leftward: g => new BasedAnim(g),
 	crouch_rightward: g => new BasedAnim(g),
 	crouch_legadjust_left: g => new ManualAdditiveAnim(g, 0),
 	crouch_legadjust_right: g => new ManualAdditiveAnim(g, 0),
+	crouch: g => new BasedAnim(g),
 
 	unarmed: g => new BasedAnim(g),
 	unarmed_forward: g => new BasedAnim(g),
@@ -78,5 +72,13 @@ export const setup_character_anims = (character: CharacterInstance) => manifest_
 	twohander_attack_6: g => new ManualAnim(g),
 	twohander_attack_7: g => new ManualAnim(g),
 	twohander_attack_8: g => new ManualAnim(g),
+
+	hips_swivel: g => new ManualAdditiveAnim(g, 50),
+	head_scale: g => new ManualAdditiveAnim(g, 50),
+	grip_left: g => new ManualAnim(g),
+	grip_right: g => new ManualAnim(g),
+	spine_lean: g => new ManualAdditiveAnim(g, 50),
+	spine_bend: g => new ManualAdditiveAnim(g, 50),
+
 }, name => character.get_animation_group(name))
 
