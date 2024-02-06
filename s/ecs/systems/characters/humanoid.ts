@@ -99,7 +99,7 @@ export const humanoid = system("humanoid simulation", realm => {
 			behavior("airborne player control")
 				.select("humanoid", "gimbal", "force", "grounding", "airborne_trajectory")
 				.processor(() => tick => state => {
-					const factor = 1 / 4
+					const factor = 1 / 3
 					const maxSpeed = 5 * tick.seconds
 					const {force, grounding, gimbal, airborne_trajectory} = state
 
@@ -162,8 +162,8 @@ export const humanoid = system("humanoid simulation", realm => {
 				const {intent, jump, grounding} = state
 				const {grounded} = grounding
 
-				const cooldown = 0.1
 				const power = 7
+				const cooldown = 0.1
 
 				function phase_start_jump(jump: boolean): jump is false {
 					return !!(!jump && grounded && (grounding.seconds > cooldown) && intent.jump)
@@ -188,8 +188,8 @@ export const humanoid = system("humanoid simulation", realm => {
 				else if (phase_sustain_jump(jump)) {
 					y += scalar.spline.linear(grounding.seconds, [
 						[0.0, kick],
-						[0.2, force],
-						[0.4, 0],
+						[0.1, force],
+						[0.5, 0],
 					])
 				}
 				else if (phase_end_jump(jump)) {

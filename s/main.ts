@@ -156,7 +156,7 @@ realm.stage.remote.onTick(() => {
 			const seconds = scalar.clamp(
 				((last_time = performance.now()) - last),
 				0,
-				1000 / 60, // clamp delta to avoid large over-corrections
+				1000 / 30, // clamp delta to avoid large over-corrections
 			) / 1000
 
 			const tick: HumanoidTick = {
