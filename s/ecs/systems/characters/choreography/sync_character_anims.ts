@@ -110,15 +110,17 @@ export function sync_character_anims({
 		anims.crouch_rightward.weight,
 	)
 
-	anims.jump.weight = airborne
 	anims.stand.weight = groundage * calc_standing(stillness)
 	anims.crouch.weight = groundage * calc_crouching(stillness)
 
-	anims.twohander.weight = stillness
-	anims.twohander_forward.weight = unstillness * north
-	anims.twohander_backward.weight = unstillness * south
-	anims.twohander_leftward.weight = unstillness * west
-	anims.twohander_rightward.weight = unstillness * east
+	anims.twohander.weight = groundage * stillness
+	anims.twohander_forward.weight = groundage * unstillness * north
+	anims.twohander_backward.weight = groundage * unstillness * south
+	anims.twohander_leftward.weight = groundage * unstillness * west
+	anims.twohander_rightward.weight = groundage * unstillness * east
+
+	anims.airborne.weight = airborne
+	anims.unarmed_airborne.weight = airborne
 
 	anims.spine_bend.weight = 1
 	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)

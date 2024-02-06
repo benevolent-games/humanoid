@@ -10,7 +10,8 @@ export type CharacterAnims = ReturnType<typeof setup_character_anims>
 export const setup_character_anims = (character: CharacterInstance) => manifest_anims({
 	tpose: g => new ManualAnim(g),
 
-	jump: g => new BasedAnim(g),
+	airborne: g => new BasedAnim(g),
+
 	stand: g => new BasedAnim(g),
 	stand_forward: g => new BasedAnim(g),
 	stand_backward: g => new BasedAnim(g),
@@ -29,6 +30,7 @@ export const setup_character_anims = (character: CharacterInstance) => manifest_
 	crouch: g => new BasedAnim(g),
 
 	unarmed: g => new BasedAnim(g),
+	unarmed_airborne: g => new BasedAnim(g),
 	unarmed_forward: g => new BasedAnim(g),
 	unarmed_backward: g => new BasedAnim(g),
 	unarmed_leftward: g => new BasedAnim(g),
@@ -59,6 +61,7 @@ export const setup_character_anims = (character: CharacterInstance) => manifest_
 	fists_attack_8: g => new ManualAnim(g),
 
 	twohander: g => new BasedAnim(g),
+	twohander_airborne: g => new BasedAnim(g),
 	twohander_forward: g => new BasedAnim(g),
 	twohander_backward: g => new BasedAnim(g),
 	twohander_leftward: g => new BasedAnim(g),
