@@ -28,6 +28,7 @@ export namespace Archetypes {
 			glance: vec2.zero(),
 			fast: false,
 			slow: false,
+			jump: false,
 		},
 		force: vec2.zero(),
 		gimbal: [0, 0.5],
@@ -74,11 +75,7 @@ export namespace Archetypes {
 			seconds: 0,
 		},
 		impetus: vec3.zero(),
-		jump: {
-			button: false,
-			cooldown: 30,
-			tick: 0,
-		},
+		jump: false,
 		ambulatory: {
 			magnitude: 0,
 			groundage: 0,

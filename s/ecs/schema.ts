@@ -61,6 +61,7 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 		glance: Vec2
 		fast: boolean
 		slow: boolean
+		jump: boolean
 	}
 
 	// smoothed amble
@@ -72,11 +73,8 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	// rotational qualities
 	gimbal: Vec2
 
-	jump: {
-		button: boolean
-		tick: number
-		cooldown: number
-	}
+	jump: boolean
+
 	grounding: {
 		grounded: boolean
 		seconds: number

@@ -28,7 +28,7 @@ register_to_dom({BenevHumanoid})
 const localTesting = (
 	window.location.host.startsWith("localhost") ||
 	window.location.host.startsWith("192")
-)
+) && !window.location.search.includes("cloud")
 
 const entities = new Ecs4.Entities<HumanoidSchema>()
 
@@ -156,7 +156,7 @@ realm.stage.remote.onTick(() => {
 			const seconds = scalar.clamp(
 				((last_time = performance.now()) - last),
 				0,
-				100, // clamp to 100ms delta to avoid large over-corrections
+				1000 / 60, // clamp delta to avoid large over-corrections
 			) / 1000
 
 			const tick: HumanoidTick = {

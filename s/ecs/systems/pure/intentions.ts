@@ -12,6 +12,7 @@ export const intentions = system("intentions", () => [
 				amble: vec2.zero(),
 				fast: false,
 				slow: false,
+				jump: false,
 			}
 		}),
 
@@ -86,6 +87,13 @@ export const intentions = system("intentions", () => [
 				: crouch.down ? "crouch"
 				: "stand"
 			)
+		}),
+
+	behavior("set jump intent")
+		.select("controllable", "intent")
+		.processor(realm => () => state => {
+			const {jump} = realm.impulse.report.humanoid.buttons
+			state.intent.jump = jump.down && !jump.repeat
 		}),
 ])
 

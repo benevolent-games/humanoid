@@ -1,11 +1,12 @@
 
-import {Ecs4, Vec3, babylonian, vec3} from "@benev/toolbox"
+import {Ecs4, Vec3, ascii_progress_bar, babylonian, scalar, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
 import {gimbaltool} from "../utils/gimbaltool.js"
 import {molasses, molasses3d} from "../utils/molasses.js"
 import {apply_spline_to_gimbal_y} from "./simulation/apply_spline_to_gimbal_y.js"
 import {create_humanoid_babylon_parts} from "./simulation/create_humanoid_babylon_parts.js"
+import { HumanoidSchema } from "../../schema.js"
 
 export const humanoid = system("humanoid simulation", realm => {
 	type Parts = ReturnType<typeof create_humanoid_babylon_parts>
@@ -36,7 +37,7 @@ export const humanoid = system("humanoid simulation", realm => {
 				torusRoot.rotationQuaternion = quaternions.vertical
 			}),
 
-		behavior("set impetus, based on force, speeds, and stance")
+		behavior("establish impetus, based on force, speeds, and stance")
 			.select("humanoid", "gimbal", "force", "intent", "speeds", "stance", "impetus", "grounding")
 			.processor(() => tick => state => {
 				const {stance, force, intent, speeds, grounding} = state
@@ -73,11 +74,11 @@ export const humanoid = system("humanoid simulation", realm => {
 				}
 			}),
 
-		behavior("apply artificial gravity to impetus")
+		behavior("set artificial gravity to impetus")
 			.select("humanoid", "impetus", "grounding")
 			.processor(() => tick => state => {
 				const {grounded, seconds} = state.grounding
-				const subtle_grounding_force = 0.1
+				const subtle_grounding_force = 0.5 * tick.seconds
 
 				let y = -subtle_grounding_force
 
@@ -99,6 +100,49 @@ export const humanoid = system("humanoid simulation", realm => {
 				}
 
 				state.impetus[1] = y
+			}),
+
+		behavior("add jump power to impetus")
+			.select("humanoid", "impetus", "grounding", "intent", "jump")
+			.processor(() => tick => state => {
+				const {intent, jump, grounding} = state
+				const {grounded} = grounding
+
+				const cooldown = 0.1
+				const power = 7
+
+				function phase_start_jump(jump: boolean): jump is false {
+					return !!(!jump && grounded && (grounding.seconds > cooldown) && intent.jump)
+				}
+
+				function phase_sustain_jump(jump: boolean): jump is true {
+					return !!(jump && !grounded)
+				}
+
+				function phase_end_jump(jump: boolean): jump is true {
+					return !!(jump && grounded)
+				}
+
+				const force = power * tick.seconds
+				const kick = force * (9 / 10)
+				let y = 0
+
+				if (phase_start_jump(jump)) {
+					state.jump = true
+					y += kick
+				}
+				else if (phase_sustain_jump(jump)) {
+					y += scalar.spline.linear(grounding.seconds, [
+						[0.0, kick],
+						[0.2, force],
+						[0.4, 0],
+					])
+				}
+				else if (phase_end_jump(jump)) {
+					state.jump = false
+				}
+
+				state.impetus[1] += y
 			}),
 
 		behavior("apply capsule movement")
