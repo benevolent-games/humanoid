@@ -160,9 +160,9 @@ realm.stage.remote.onTick(() => {
 			) / 1000
 
 			const tick: HumanoidTick = {
-				count: count++,
 				seconds,
-				rate: 1 / seconds,
+				count: count++,
+				hz: 1 / seconds,
 			}
 
 			executor.execute(tick)

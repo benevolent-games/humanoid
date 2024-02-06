@@ -1,5 +1,5 @@
 
-import {Vec2, ascii_progress_bar, human, scalar} from "@benev/toolbox"
+import {Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../pure/ambulation.js"
@@ -26,7 +26,7 @@ export function sync_character_anims({
 
 	const {swivel} = choreo
 
-	const bottom = 0.1
+	// const bottom = 0.1
 	const slow = 0.5
 	const walk = 1.5
 	const run = 3.0

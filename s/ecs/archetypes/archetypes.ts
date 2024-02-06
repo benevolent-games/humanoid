@@ -69,7 +69,10 @@ export namespace Archetypes {
 		rotation: quat.identity(),
 		velocity: vec3.zero(),
 		speeds: {base: 3, fast: 5, slow: 1.5},
-		grounded: false,
+		grounding: {
+			grounded: false,
+			seconds: 0,
+		},
 		impetus: vec3.zero(),
 		jump: {
 			button: false,
@@ -83,8 +86,6 @@ export namespace Archetypes {
 			west: 0,
 			east: 0,
 			magnitude: 0,
-			stillness: 1,
-			unstillness: 0,
 		},
 		choreography: {
 			swivel: .5,

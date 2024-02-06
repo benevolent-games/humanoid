@@ -6,8 +6,8 @@ import {Ambulatory} from "./systems/pure/ambulation.js"
 import {Choreography} from "../models/choreographer/types.js"
 
 export type HumanoidTick = {
+	hz: number
 	count: number
-	rate: number
 	seconds: number
 }
 
@@ -77,7 +77,10 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 		tick: number
 		cooldown: number
 	}
-	grounded: boolean
+	grounding: {
+		grounded: boolean
+		seconds: number
+	}
 	smoothing: number
 
 	choreography: Choreography

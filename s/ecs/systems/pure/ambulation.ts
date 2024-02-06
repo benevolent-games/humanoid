@@ -12,8 +12,6 @@ export type Ambulatory = {
 	west: number
 	south: number
 	east: number
-	stillness: number
-	unstillness: number
 	standing: number
 }
 
@@ -36,7 +34,7 @@ export const ambulation = behavior("calculate ambulatory")
 		tick(tick, state) {
 			const globalvel = vec2.multiplyBy(
 				flatten(state.velocity),
-				tick.rate,
+				tick.hz,
 			)
 
 			smooth.globalvel = molasses2d(
@@ -70,14 +68,11 @@ export const ambulation = behavior("calculate ambulatory")
 					: 0,
 			)
 
-			const stillness = 1 - smooth.unstillness
 			const magnitude = vec2.magnitude(smooth.globalvel)
 
 			state.ambulatory = {
 				magnitude,
-				stillness,
 				standing: smooth.standing,
-				unstillness: smooth.unstillness,
 				...cardinalize(
 					gimbaltool(state.gimbal)
 						.unrotate2d(smooth.normal)

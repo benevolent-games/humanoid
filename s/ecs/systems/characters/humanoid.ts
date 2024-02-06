@@ -36,48 +36,83 @@ export const humanoid = system("humanoid simulation", realm => {
 				torusRoot.rotationQuaternion = quaternions.vertical
 			}),
 
-		behavior("set final impetus, based on force, speeds, and stance")
-			.select("humanoid", "gimbal", "force", "intent", "speeds", "stance", "impetus")
+		behavior("set impetus, based on force, speeds, and stance")
+			.select("humanoid", "gimbal", "force", "intent", "speeds", "stance", "impetus", "grounding")
 			.processor(() => tick => state => {
-				const {stance, force, intent, speeds} = state
+				const {stance, force, intent, speeds, grounding} = state
 				const [x, z] = force
 				let target = vec3.zero()
 
-				if (stance === "stand") {
-					if (z > 0.01 && intent.fast) {
-						target = vec3.multiplyBy(
-							vec3.normalize([(x / 2), 0, z]),
-							speeds.fast * tick.seconds,
-						)
+				if (grounding.grounded) {
+					if (stance === "stand") {
+						if (z > 0.01 && intent.fast) {
+							target = vec3.multiplyBy(
+								vec3.normalize([(x / 2), 0, z]),
+								speeds.fast * tick.seconds,
+							)
+						}
+						else {
+							target = vec3.multiplyBy(
+								[x, 0, z],
+								intent.slow
+									? speeds.slow
+									: speeds.base,
+							)
+						}
 					}
-					else {
+					else if (stance === "crouch") {
 						target = vec3.multiplyBy(
 							[x, 0, z],
 							intent.slow
-								? speeds.slow
-								: speeds.base,
+								? speeds.slow / 3
+								: speeds.slow,
 						)
 					}
+
+					state.impetus = gimbaltool(state.gimbal).rotate(target)
 				}
-				else if (stance === "crouch") {
-					target = vec3.multiplyBy(
-						[x, 0, z],
-						intent.slow
-							? speeds.slow / 3
-							: speeds.slow,
+			}),
+
+		behavior("apply artificial gravity to impetus")
+			.select("humanoid", "impetus", "grounding")
+			.processor(() => tick => state => {
+				const {grounded, seconds} = state.grounding
+				const subtle_grounding_force = 0.1
+
+				let y = -subtle_grounding_force
+
+				if (!grounded) {
+					const magic_bonus = 1
+					const terminal_velocity = 50
+					const velocity_based_on_airtime = magic_bonus + (9.81 * seconds)
+
+					const gravity_in_meters_per_second = Math.min(
+						velocity_based_on_airtime,
+						terminal_velocity,
 					)
+
+					const gravity_for_this_tick = (
+						gravity_in_meters_per_second * tick.seconds
+					)
+
+					y = -gravity_for_this_tick
 				}
 
-				target[1] = -.1
-				state.impetus = gimbaltool(state.gimbal).rotate(target)
+				state.impetus[1] = y
 			}),
 
 		behavior("apply capsule movement")
-			.select("humanoid", "impetus", "grounded")
-			.processor(() => () => (state, id) => {
+			.select("humanoid", "impetus", "grounding")
+			.processor(() => tick => (state, id) => {
 				const {capsule} = store.get(id)!
 				const {grounded} = capsule.applyMovement(state.impetus)
-				state.grounded = grounded
+
+				const isChanged = grounded !== state.grounding.grounded
+				if (isChanged)
+					state.grounding.seconds = 0
+
+				state.grounding.grounded = grounded
+				state.grounding.seconds += tick.seconds
 			}),
 
 		behavior("update position and rotation")
