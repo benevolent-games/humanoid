@@ -1,12 +1,12 @@
 
-import {Ecs4, Vec3, ascii_progress_bar, babylonian, scalar, vec3} from "@benev/toolbox"
+import {Ecs4, Vec3, ascii_progress_bar, babylonian, scalar, vec2, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
+import {unflatten} from "../utils/flatten.js"
 import {gimbaltool} from "../utils/gimbaltool.js"
 import {molasses, molasses3d} from "../utils/molasses.js"
 import {apply_spline_to_gimbal_y} from "./simulation/apply_spline_to_gimbal_y.js"
 import {create_humanoid_babylon_parts} from "./simulation/create_humanoid_babylon_parts.js"
-import { HumanoidSchema } from "../../schema.js"
 
 export const humanoid = system("humanoid simulation", realm => {
 	type Parts = ReturnType<typeof create_humanoid_babylon_parts>
@@ -37,14 +37,21 @@ export const humanoid = system("humanoid simulation", realm => {
 				torusRoot.rotationQuaternion = quaternions.vertical
 			}),
 
-		behavior("establish impetus, based on force, speeds, and stance")
+		behavior("reset impetus")
+			.select("humanoid", "impetus")
+			.processor(() => () => state => {
+				state.impetus = vec3.zero()
+			}),
+
+		behavior("impetus for walking around")
 			.select("humanoid", "gimbal", "force", "intent", "speeds", "stance", "impetus", "grounding")
 			.processor(() => tick => state => {
-				const {stance, force, intent, speeds, grounding} = state
+				const {stance, force, intent, speeds, grounding, gimbal, impetus} = state
 				const [x, z] = force
-				let target = vec3.zero()
 
 				if (grounding.grounded) {
+					let target = vec3.zero()
+
 					if (stance === "stand") {
 						if (z > 0.01 && intent.fast) {
 							target = vec3.multiplyBy(
@@ -70,11 +77,58 @@ export const humanoid = system("humanoid simulation", realm => {
 						)
 					}
 
-					state.impetus = gimbaltool(state.gimbal).rotate(target)
+					state.impetus = vec3.add(
+						impetus,
+						gimbaltool(gimbal).rotate(target),
+					)
 				}
 			}),
 
-		behavior("set artificial gravity to impetus")
+		system("airborne", () => [
+			behavior("airborne trajectory damping")
+				.select("humanoid", "airborne_trajectory")
+				.processor(() => () => state => {
+					const {airborne_trajectory} = state
+					state.airborne_trajectory = molasses3d(
+						100,
+						airborne_trajectory,
+						vec3.zero(),
+					)
+				}),
+
+			behavior("airborne player control")
+				.select("humanoid", "gimbal", "force", "grounding", "airborne_trajectory")
+				.processor(() => tick => state => {
+					const factor = 1 / 4
+					const maxSpeed = 5 * tick.seconds
+					const {force, grounding, gimbal, airborne_trajectory} = state
+
+					if (!grounding.grounded) {
+						const global_airforce = unflatten(vec2.multiplyBy(force, factor))
+						const airforce = gimbaltool(gimbal).rotate(global_airforce)
+						const new_trajectory = vec3.add(airborne_trajectory, airforce)
+
+						if (vec3.magnitude(new_trajectory) > maxSpeed) {
+							const direction = vec3.normalize(new_trajectory)
+							const scaled_airforce = vec3.multiplyBy(direction, maxSpeed - vec3.magnitude(airborne_trajectory))
+							state.airborne_trajectory = vec3.add(airborne_trajectory, scaled_airforce)
+						}
+						else {
+							state.airborne_trajectory = new_trajectory
+						}
+					}
+				}),
+
+			behavior("apply airborne trajectory to impetus")
+				.select("humanoid", "impetus", "grounding", "airborne_trajectory")
+				.processor(() => () => state => {
+					const {grounding, impetus, airborne_trajectory} = state
+					if (!grounding.grounded)
+						state.impetus = vec3.add(impetus, airborne_trajectory)
+				}),
+		]),
+
+		behavior("apply artificial gravity on impetus")
 			.select("humanoid", "impetus", "grounding")
 			.processor(() => tick => state => {
 				const {grounded, seconds} = state.grounding
@@ -83,7 +137,7 @@ export const humanoid = system("humanoid simulation", realm => {
 				let y = -subtle_grounding_force
 
 				if (!grounded) {
-					const magic_bonus = 1
+					const magic_bonus = 0
 					const terminal_velocity = 50
 					const velocity_based_on_airtime = magic_bonus + (9.81 * seconds)
 
@@ -145,15 +199,20 @@ export const humanoid = system("humanoid simulation", realm => {
 				state.impetus[1] += y
 			}),
 
-		behavior("apply capsule movement")
-			.select("humanoid", "impetus", "grounding")
+		behavior("apply capsule movement, set grounding and airborne_trajectory")
+			.select("humanoid", "impetus", "grounding", "airborne_trajectory")
 			.processor(() => tick => (state, id) => {
 				const {capsule} = store.get(id)!
 				const {grounded} = capsule.applyMovement(state.impetus)
 
 				const isChanged = grounded !== state.grounding.grounded
-				if (isChanged)
+				if (isChanged) {
 					state.grounding.seconds = 0
+					if (grounded)
+						state.airborne_trajectory = vec3.zero()
+					else
+						state.airborne_trajectory = state.impetus
+				}
 
 				state.grounding.grounded = grounded
 				state.grounding.seconds += tick.seconds

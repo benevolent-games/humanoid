@@ -75,6 +75,7 @@ export namespace Archetypes {
 			seconds: 0,
 		},
 		impetus: vec3.zero(),
+		airborne_trajectory: vec3.zero(),
 		jump: false,
 		ambulatory: {
 			magnitude: 0,

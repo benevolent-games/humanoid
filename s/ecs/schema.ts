@@ -67,6 +67,8 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	// smoothed amble
 	force: Vec2
 
+	airborne_trajectory: Vec3
+
 	// will be applied as velocity
 	impetus: Vec3
 
@@ -79,6 +81,7 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 		grounded: boolean
 		seconds: number
 	}
+
 	smoothing: number
 
 	choreography: Choreography
