@@ -80,12 +80,13 @@ export namespace Archetypes {
 			tick: 0,
 		},
 		ambulatory: {
+			magnitude: 0,
+			groundage: 0,
 			standing: 1,
 			north: 0,
 			south: 0,
 			west: 0,
 			east: 0,
-			magnitude: 0,
 		},
 		choreography: {
 			swivel: .5,

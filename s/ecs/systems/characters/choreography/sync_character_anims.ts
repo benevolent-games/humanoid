@@ -68,9 +68,10 @@ export function sync_character_anims({
 		[run, 2],
 	])
 
-	const {standing, north, south, west, east} = ambulatory
+	const {standing, groundage, north, south, west, east} = ambulatory
 	const unstillness = scalar.clamp(ambulatory.magnitude)
 	const ultimate_speed = scalar.map(standing, [crouchSpeed, runSpeed])
+	const airborne = scalar.clamp(1 - groundage)
 
 	const calc_stillness = (...weights: number[]) => {
 		const unstill = scalar.clamp(weights.reduce((a, b) => a + b, 0))
@@ -85,16 +86,16 @@ export function sync_character_anims({
 
 	boss_anim.speedRatio = ultimate_speed
 
-	anims.stand_sprint.weight = calc_standing(unstillness * sprintiness(north))
-	anims.stand_forward.weight = calc_standing(unstillness * runniness(north))
-	anims.stand_backward.weight = calc_standing(unstillness * runniness(south))
-	anims.stand_leftward.weight = calc_standing(unstillness * runniness(west))
-	anims.stand_rightward.weight = calc_standing(unstillness * runniness(east))
+	anims.stand_sprint.weight = groundage * calc_standing(unstillness * sprintiness(north))
+	anims.stand_forward.weight = groundage * calc_standing(unstillness * runniness(north))
+	anims.stand_backward.weight = groundage * calc_standing(unstillness * runniness(south))
+	anims.stand_leftward.weight = groundage * calc_standing(unstillness * runniness(west))
+	anims.stand_rightward.weight = groundage * calc_standing(unstillness * runniness(east))
 
-	anims.crouch_forward.weight = calc_crouching(unstillness * runniness(north))
-	anims.crouch_backward.weight = calc_crouching(unstillness * runniness(south))
-	anims.crouch_leftward.weight = calc_crouching(unstillness * runniness(west))
-	anims.crouch_rightward.weight = calc_crouching(unstillness * runniness(east))
+	anims.crouch_forward.weight = groundage * calc_crouching(unstillness * runniness(north))
+	anims.crouch_backward.weight = groundage * calc_crouching(unstillness * runniness(south))
+	anims.crouch_leftward.weight = groundage * calc_crouching(unstillness * runniness(west))
+	anims.crouch_rightward.weight = groundage * calc_crouching(unstillness * runniness(east))
 
 	const stillness = calc_stillness(
 		anims.stand_sprint.weight,
@@ -109,8 +110,9 @@ export function sync_character_anims({
 		anims.crouch_rightward.weight,
 	)
 
-	anims.stand.weight = calc_standing(stillness)
-	anims.crouch.weight = calc_crouching(stillness)
+	anims.jump.weight = airborne
+	anims.stand.weight = groundage * calc_standing(stillness)
+	anims.crouch.weight = groundage * calc_crouching(stillness)
 
 	anims.twohander.weight = stillness
 	anims.twohander_forward.weight = unstillness * north
