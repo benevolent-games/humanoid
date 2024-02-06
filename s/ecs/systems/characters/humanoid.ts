@@ -132,7 +132,7 @@ export const humanoid = system("humanoid simulation", realm => {
 			.select("humanoid", "impetus", "grounding")
 			.processor(() => tick => state => {
 				const {grounded, seconds} = state.grounding
-				const subtle_grounding_force = 0.5 * tick.seconds
+				const subtle_grounding_force = 5 * tick.seconds
 
 				let y = -subtle_grounding_force
 
