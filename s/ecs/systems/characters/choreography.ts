@@ -92,7 +92,9 @@ export const choreography = system("choreography", realm => {
 				// )
 
 				state.choreography.swivel = molasses(
-					20,
+					state.ambulatory.magnitude > 0.1
+						? 2
+						: 20,
 					state.choreography.swivel,
 					0.5,
 				)
