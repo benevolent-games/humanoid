@@ -6,6 +6,7 @@ export class HumanoidImpulse extends Impulse<HumanoidBinds> {
 	devices = {
 		keyboard: new HumanoidImpulse.Keyboard(window),
 		mouse: new HumanoidImpulse.PointerMovements(window, "mouse"),
+		mouseButtons: new HumanoidImpulse.PointerButtons(window),
 	}
 
 	constructor() {
