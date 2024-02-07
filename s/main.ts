@@ -39,7 +39,7 @@ const realm = await nexus.context.realmOp.load(
 		...(localTesting ? {
 			glb_links: {
 				gym: "/temp/gym14.glb",
-				character: "/temp/knightanimations42.glb",
+				character: "/temp/knightanimations43.glb",
 			},
 			skybox_links: {
 				px: "/temp/sky_01/px.webp",
@@ -53,7 +53,7 @@ const realm = await nexus.context.realmOp.load(
 		: {
 			glb_links: {
 				gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
-				character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations42.glb",
+				character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43.glb",
 			},
 			skybox_links: {
 				px: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/px.webp",
