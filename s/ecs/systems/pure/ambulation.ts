@@ -27,7 +27,6 @@ export const ambulation = behavior("calculate ambulatory")
 		groundage: 0,
 	}
 
-	// const bottom = 0.1
 	const smoothing = 5
 
 	return {

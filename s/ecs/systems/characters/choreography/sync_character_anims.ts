@@ -110,11 +110,14 @@ export function sync_character_anims({
 		anims.crouch_rightward.weight,
 	)
 
+	const tinyfix = 1 / 1000
+	const c = scalar.clamp
+
 	anims.stand.weight = groundage * calc_standing(stillness)
 	anims.crouch.weight = groundage * calc_crouching(stillness)
 
 	anims.twohander.weight = groundage * stillness
-	anims.twohander_forward.weight = groundage * unstillness * north
+	anims.twohander_forward.weight = c(tinyfix + groundage * unstillness * north)
 	anims.twohander_backward.weight = groundage * unstillness * south
 	anims.twohander_leftward.weight = groundage * unstillness * west
 	anims.twohander_rightward.weight = groundage * unstillness * east
