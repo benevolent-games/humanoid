@@ -27,6 +27,7 @@ export const choreography = system("choreography", realm => {
 		"gimbal",
 		"stance",
 		"ambulatory",
+		"attackage",
 	)
 
 	return [
@@ -106,12 +107,13 @@ export const choreography = system("choreography", realm => {
 				)
 
 				sync_character_anims({
-					speeds: {...state.speeds, creep: 1.5},
-					gimbal: state.gimbal,
-					choreo: state.choreography,
-					ambulatory: state.ambulatory,
 					anims,
 					boss_anim,
+					gimbal: state.gimbal,
+					choreo: state.choreography,
+					attackage: state.attackage,
+					ambulatory: state.ambulatory,
+					speeds: {...state.speeds, creep: 1.5},
 				})
 			}),
 	]

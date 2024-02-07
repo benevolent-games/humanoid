@@ -1,6 +1,6 @@
 
 import {behavior, system} from "../../hub.js"
-import {AttackPhase, phase_report} from "./attacking/attacks.js"
+import {AttackPhase, attack_report} from "./attacking/attacks.js"
 
 export const attacking = system("attacking mechanics", () => [
 
@@ -27,7 +27,7 @@ export const attacking = system("attacking mechanics", () => [
 		.processor(() => () => state => {
 			const {attackage} = state
 			if (attackage.attack !== 0) {
-				const report = phase_report(attackage.seconds)
+				const report = attack_report(attackage.seconds)
 				if (report.phase === AttackPhase.None) {
 					console.log("end attack")
 					state.attackage.attack = 0
