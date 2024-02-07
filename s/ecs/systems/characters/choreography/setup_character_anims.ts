@@ -7,7 +7,11 @@ import {ManualAdditiveAnim} from "../../../../models/choreographer/anims/manual_
 
 export type CharacterAnims = ReturnType<typeof setup_character_anims>
 
-export const setup_character_anims = (character: CharacterInstance) => manifest_anims({
+export const setup_character_anims = (
+		character: CharacterInstance,
+		onMissingAnim: (name: string) => void,
+	) => manifest_anims({
+
 	tpose: g => new ManualAnim(g),
 
 	airborne: g => new BasedAnim(g),
@@ -36,14 +40,6 @@ export const setup_character_anims = (character: CharacterInstance) => manifest_
 	unarmed_leftward: g => new BasedAnim(g),
 	unarmed_rightward: g => new BasedAnim(g),
 	unarmed_sprint: g => new BasedAnim(g),
-	unarmed_attack_1: g => new ManualAnim(g),
-	unarmed_attack_2: g => new ManualAnim(g),
-	unarmed_attack_3: g => new ManualAnim(g),
-	unarmed_attack_4: g => new ManualAnim(g),
-	unarmed_attack_5: g => new ManualAnim(g),
-	unarmed_attack_6: g => new ManualAnim(g),
-	unarmed_attack_7: g => new ManualAnim(g),
-	unarmed_attack_8: g => new ManualAnim(g),
 
 	fists: g => new BasedAnim(g),
 	fists_forward: g => new BasedAnim(g),
@@ -83,5 +79,5 @@ export const setup_character_anims = (character: CharacterInstance) => manifest_
 	spine_lean: g => new ManualAdditiveAnim(g, 50),
 	spine_bend: g => new ManualAdditiveAnim(g, 50),
 
-}, name => character.get_animation_group(name))
+}, name => character.get_animation_group(name), onMissingAnim)
 

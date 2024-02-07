@@ -42,8 +42,14 @@ export const choreography = system("choreography", realm => {
 				parts.position.set(...init.position)
 				parts.rotation.set(...init.rotation)
 
-				const coordination = (
-					establish_anim_coordination(realm, parts.character)
+				const onMissingAnim = (name: string) => {
+					console.warn(`missing character animation "${name}"`)
+				}
+
+				const coordination = establish_anim_coordination(
+					realm,
+					parts.character,
+					onMissingAnim,
 				)
 
 				map.set(id, {

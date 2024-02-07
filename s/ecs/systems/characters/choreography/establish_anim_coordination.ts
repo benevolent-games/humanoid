@@ -9,10 +9,10 @@ import {CharacterInstance} from "../../../../models/character/instance.js"
 import {adjustment_anim_for_direction} from "./adjustment_anim_for_direction.js"
 import {calculate_adjustment_weight} from "../../../../models/choreographer/utils/calculate_adjustment_weight.js"
 
-export function establish_anim_coordination(realm: Realm, character: CharacterInstance) {
+export function establish_anim_coordination(realm: Realm, character: CharacterInstance, onMissingAnim: (name: string) => void) {
 	console.log("character", character)
 
-	const anims = setup_character_anims(character)
+	const anims = setup_character_anims(character, onMissingAnim)
 	console.log("anims", anims)
 
 	const ambulation_anims = [
