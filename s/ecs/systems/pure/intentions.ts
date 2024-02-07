@@ -5,7 +5,7 @@ import {Vec2, get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 export const intentions = system("intentions", () => [
 
 	behavior("wipe intent")
-		.select("intent")
+		.select("controllable", "intent")
 		.processor(() => () => state => {
 			state.intent = {
 				glance: vec2.zero(),
@@ -13,7 +13,15 @@ export const intentions = system("intentions", () => [
 				fast: false,
 				slow: false,
 				jump: false,
+				attack: false,
 			}
+		}),
+
+	behavior("set attack button status")
+		.select("controllable", "intent")
+		.processor(realm => () => state => {
+			const {buttons} = realm.impulse.report.humanoid
+			state.intent.attack = buttons.attack.down && !buttons.attack.repeat
 		}),
 
 	behavior("add mouse movements to glance")

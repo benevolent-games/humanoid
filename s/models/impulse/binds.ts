@@ -4,7 +4,7 @@ import {binds} from "@benev/toolbox"
 export type HumanoidBinds = ReturnType<typeof humanoid_binds>
 
 export const humanoid_binds = () => binds(({
-		mode, buttons, b, modless, ctrl, shift, alt,
+		mode, buttons, b, modless, // ctrl, shift, alt,
 	}) => ({
 
 	universal: mode({
@@ -36,6 +36,8 @@ export const humanoid_binds = () => binds(({
 			down: buttons(modless("KeyK")),
 			left: buttons(modless("KeyJ")),
 			right: buttons(modless("KeyL")),
+
+			attack: buttons(modless("Semicolon"), modless("LMB")),
 
 			test_bracket_left: buttons(modless("BracketLeft")),
 			test_bracket_right: buttons(modless("BracketRight")),

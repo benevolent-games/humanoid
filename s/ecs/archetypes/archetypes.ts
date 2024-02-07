@@ -29,6 +29,7 @@ export namespace Archetypes {
 			fast: false,
 			slow: false,
 			jump: false,
+			attack: false,
 		},
 		force: vec2.zero(),
 		gimbal: [0, 0.5],
@@ -77,6 +78,10 @@ export namespace Archetypes {
 		impetus: vec3.zero(),
 		airborne_trajectory: vec3.zero(),
 		jump: false,
+		attackage: {
+			attack: 0,
+			seconds: 0,
+		},
 		ambulatory: {
 			magnitude: 0,
 			groundage: 0,
