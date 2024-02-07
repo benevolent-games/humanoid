@@ -1,5 +1,4 @@
 
-import {is} from "@benev/slate"
 import {behavior, system} from "../../hub.js"
 import {AttackPhase, phase_report} from "./attacking/attacks.js"
 
