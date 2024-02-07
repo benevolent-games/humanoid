@@ -27,6 +27,7 @@ export const choreography = system("choreography", realm => {
 		"gimbal",
 		"stance",
 		"ambulatory",
+		"attackage",
 	)
 
 	return [
@@ -42,8 +43,14 @@ export const choreography = system("choreography", realm => {
 				parts.position.set(...init.position)
 				parts.rotation.set(...init.rotation)
 
-				const coordination = (
-					establish_anim_coordination(realm, parts.character)
+				const onMissingAnim = (name: string) => {
+					console.warn(`missing character animation "${name}"`)
+				}
+
+				const coordination = establish_anim_coordination(
+					realm,
+					parts.character,
+					onMissingAnim,
 				)
 
 				map.set(id, {
@@ -80,7 +87,7 @@ export const choreography = system("choreography", realm => {
 
 		behavior("animate the armature")
 			.select(...selection)
-			.processor(() => tick => (state, id) => {
+			.processor(() => () => (state, id) => {
 				const local = map.get(id)!
 				const {adjustment_anims, anims, boss_anim} = local.coordination
 
@@ -100,14 +107,13 @@ export const choreography = system("choreography", realm => {
 				)
 
 				sync_character_anims({
-					tick,
-					stance: state.stance,
-					gimbal: state.gimbal,
-					choreo: state.choreography,
-					ambulatory: state.ambulatory,
 					anims,
 					boss_anim,
-					adjustment_anims,
+					gimbal: state.gimbal,
+					choreo: state.choreography,
+					attackage: state.attackage,
+					ambulatory: state.ambulatory,
+					speeds: {...state.speeds, creep: 1.5},
 				})
 			}),
 	]

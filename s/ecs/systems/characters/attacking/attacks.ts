@@ -5,14 +5,16 @@ import {scalar} from "@benev/toolbox"
 // [''''''''|''''''''|'''''''']
 // a........b........c........d
 
-const windup = 1
-const release = 1
-const recovery = 1
+const windup = 0.5
+const release = 0.5
+const recovery = 0.5
 
 const a = 0
 const b = windup
 const c = windup + release
 const d = windup + release + recovery
+
+export const attack_milestones = {a, b, c, d}
 
 export enum AttackPhase {
 	None,
@@ -27,7 +29,7 @@ export type AttackTimes = {
 	recovery: null | number
 }
 
-export function phase_report(seconds: number) {
+export function attack_report(seconds: number) {
 	const phase: AttackPhase = (
 		scalar.within(seconds, a, b) ? AttackPhase.Windup
 		: scalar.within(seconds, b, c) ? AttackPhase.Release

@@ -8,7 +8,8 @@ export type AnimManifest = Pojo<AnimManifestFn<Anim>>
 
 export function manifest_anims<M extends Pojo<AnimManifestFn<Anim>>>(
 		manifest: M,
-		getAnimationGroup: (name: keyof M) => (AnimationGroup | undefined)
+		getAnimationGroup: (name: keyof M) => (AnimationGroup | undefined),
+		onMissingAnim: (name: string) => void,
 	) {
 
 	// set play order
@@ -16,9 +17,9 @@ export function manifest_anims<M extends Pojo<AnimManifestFn<Anim>>>(
 		const group = getAnimationGroup(name)
 		if (group)
 			group.playOrder = index + 1
+		else
+			onMissingAnim(name)
 	})
-
-
 
 	// instantiate anim classes
 	return ob(manifest).map((fn, name) => {
