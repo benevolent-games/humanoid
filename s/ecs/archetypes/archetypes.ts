@@ -66,7 +66,7 @@ export namespace Archetypes {
 		third_person_cam_distance: 1.5,
 		height: 1.75,
 		mass: 70,
-		radius: .3,
+		radius: .2,
 		smoothing: 4,
 		rotation: quat.identity(),
 		velocity: vec3.zero(),
@@ -81,6 +81,63 @@ export namespace Archetypes {
 		attackage: {
 			attack: 0,
 			seconds: 0,
+		},
+		ambulatory: {
+			magnitude: 0,
+			groundage: 0,
+			standing: 1,
+			north: 0,
+			south: 0,
+			west: 0,
+			east: 0,
+		},
+		choreography: {
+			swivel: .5,
+			adjustment: null,
+			settings: {
+				swivel_readjustment_margin: .1,
+				swivel_duration: 20,
+			},
+		},
+	}))
+
+	export const bot = archetype(({debug, position}: {
+			debug: boolean
+			position: Vec3
+		}) => ({
+		humanoid: {},
+		position,
+		force: vec2.zero(),
+		gimbal: [0, 0.5],
+
+		stance: "stand",
+		debug,
+		third_person_cam_distance: 1.5,
+		height: 1.75,
+		mass: 70,
+		radius: .2,
+		smoothing: 4,
+		rotation: quat.identity(),
+		velocity: vec3.zero(),
+		speeds: {base: 3, fast: 5, slow: 1.5},
+		grounding: {
+			grounded: false,
+			seconds: 0,
+		},
+		impetus: vec3.zero(),
+		airborne_trajectory: vec3.zero(),
+		jump: false,
+		attackage: {
+			attack: 0,
+			seconds: 0,
+		},
+		intent: {
+			amble: vec2.zero(),
+			glance: vec2.zero(),
+			fast: false,
+			slow: false,
+			jump: false,
+			attack: false,
 		},
 		ambulatory: {
 			magnitude: 0,

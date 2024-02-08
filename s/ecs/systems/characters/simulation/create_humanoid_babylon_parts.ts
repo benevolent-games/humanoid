@@ -1,21 +1,36 @@
 
-import {Vec3, babylonian, labeler, scalar, vec3} from "@benev/toolbox"
+import {Phys, Vec3, babylonian, labeler, scalar, vec3} from "@benev/toolbox"
 
 import {HumanoidSchema} from "../../../schema.js"
+import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Realm} from "../../../../models/realm/realm.js"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
-export function create_humanoid_babylon_parts(realm: Realm, init: {
+export type HumanoidCore = {
+	transform: TransformNode
+	torusRoot: TransformNode
+	capsule: Phys.CharacterActor
+	headbox: Mesh
+	dispose: () => void
+}
+
+export type HumanoidViewable = {
+	dispose: () => void
+}
+
+export type HumanoidControllable = {
+	dispose: () => void
+}
+
+export function humanoid_core(realm: Realm, init: {
+		debug: boolean
 		height: number
 		radius: number
-		third_person_cam_distance: number
-		camera: HumanoidSchema["camera"]
 		position: Vec3
-		debug: boolean
-	}) {
+	}): HumanoidCore {
 
 	const {stage, colors} = realm
 	const {scene} = stage
@@ -46,7 +61,7 @@ export function create_humanoid_babylon_parts(realm: Realm, init: {
 
 	const torusDiameter = init.height - 0.3
 	const torus = MeshBuilder.CreateTorus(label("torus"), {
-		diameter: init.height - 0.3,
+		diameter: torusDiameter,
 		thickness: 0.1,
 		tessellation: 48,
 	}, scene)
@@ -62,23 +77,12 @@ export function create_humanoid_babylon_parts(realm: Realm, init: {
 		{size: 0.2},
 		scene,
 	)
-	const third_person_cam = new TargetCamera(
-		label("third_person_cam"),
-		babylonian.from.vec3([0, 0, -init.third_person_cam_distance]),
-		scene,
-	)
-	third_person_cam.setTarget(headbox.position)
-	third_person_cam.fov = scalar.radians.from.degrees(init.camera.fov)
-	third_person_cam.minZ = init.camera.minZ
-	third_person_cam.maxZ = init.camera.maxZ
-	stage.rendering.setCamera(third_person_cam)
 	headbox.position.y = torusDiameter / 2
 	headbox.material = colors.green
 
 	const torusRoot = new TransformNode(label("torusRoot"), scene)
 
 	// parenting
-	third_person_cam.parent = headbox
 	headbox.setParent(torusRoot)
 	torus.setParent(torusRoot)
 	torusRoot.setParent(transform)
@@ -89,7 +93,6 @@ export function create_humanoid_babylon_parts(realm: Realm, init: {
 
 	disposables
 		.add(() => capsule.dispose())
-		.add(() => third_person_cam.dispose())
 		.add(() => headbox.dispose())
 		.add(() => torus.dispose())
 		.add(() => torusRoot.dispose())
@@ -101,9 +104,49 @@ export function create_humanoid_babylon_parts(realm: Realm, init: {
 	headbox.setEnabled(debug)
 
 	return {
-		transform,
 		torusRoot,
+		transform,
+		headbox,
 		capsule,
+		dispose() {
+			for (const dispose of disposables)
+				dispose()
+		},
+	}
+}
+
+export function humanoid_viewable(realm: Realm, init: {
+		core: HumanoidCore
+		camera: HumanoidSchema["camera"]
+		third_person_cam_distance: number
+	}) {
+
+	const {stage} = realm
+	const {scene} = stage
+	const label = labeler("humanoid")
+	const {headbox} = init.core
+	const disposables: (() => void)[] = []
+
+	const position_center = babylonian.from.vec3(vec3.zero())
+	const position_receded = babylonian.from.vec3([0, 0, -init.third_person_cam_distance])
+
+	const third_person_cam = new TargetCamera(
+		label("third_person_cam"),
+		position_receded,
+		scene,
+	)
+	third_person_cam.setTarget(position_center)
+	third_person_cam.fov = scalar.radians.from.degrees(init.camera.fov)
+	third_person_cam.minZ = init.camera.minZ
+	third_person_cam.maxZ = init.camera.maxZ
+	disposables.push(() => third_person_cam.dispose())
+
+	stage.rendering.setCamera(third_person_cam)
+
+	// parenting
+	third_person_cam.parent = headbox
+
+	return {
 		dispose() {
 			for (const dispose of disposables)
 				dispose()

@@ -11,7 +11,7 @@ import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {register_to_dom} from "@benev/slate"
-import {human, measure, scalar, RunningAverage, Ecs4} from "@benev/toolbox"
+import {human, measure, scalar, RunningAverage, Ecs4, Vec3} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
 import {hub} from "./ecs/hub.js"
@@ -88,6 +88,24 @@ realm.entities.create(Archetypes.hemi({
 	direction: [.234, 1, .123],
 	intensity: .6,
 }))
+
+const botspots: Vec3[] = [
+	// [2, 5, 1],
+	// [1, 5, 1],
+	[0, 5, 1],
+	// [-1, 5, 1],
+	// [-2, 5, 1],
+	// [-3, 5, 1],
+	// [-4, 5, 1],
+]
+
+for (const position of botspots)
+	realm.entities.create({
+		...Archetypes.bot({
+			debug: false,
+			position,
+		}),
+	})
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")
