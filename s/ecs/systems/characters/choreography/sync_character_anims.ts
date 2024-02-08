@@ -86,6 +86,7 @@ export function sync_character_anims({
 	// upper-body
 	//
 
+	const tinyfix = 1 / 1000
 	const {a, b, c, d} = attack_milestones
 	const {attack, seconds} = attackage
 	const blendtime = 0.1
@@ -98,7 +99,6 @@ export function sync_character_anims({
 			[d + blendtime, 0],
 		])
 	const notAttacking = inverse(attacking)
-
 
 	if (attacking > 0) {
 		const attackframe = scalar.spline.linear(seconds, [
@@ -116,7 +116,7 @@ export function sync_character_anims({
 
 	anims.twohander_airborne.weight = airborne
 
-	anims.twohander.weight = notAttacking * groundage * stillness
+	anims.twohander.weight = tinyfix + (notAttacking * groundage * stillness)
 	anims.twohander_forward.weight = north * notAttacking * groundage * unstillness
 	anims.twohander_backward.weight = south * notAttacking * groundage * unstillness
 	anims.twohander_leftward.weight = west * notAttacking * groundage * unstillness
