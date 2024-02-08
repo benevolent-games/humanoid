@@ -1,5 +1,5 @@
 
-import {Noise} from "@benev/toolbox"
+import {Noise, scalar} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
 import {molasses2d} from "../utils/molasses.js"
 
@@ -26,16 +26,15 @@ export const ai = system("ai", _realm => [
 			// console.log(noise2d(tick.gametime, state.seed))
 
 			const scale = 1 / 3
+			const strafe = scalar.center(noise.sample(scale * tick.gametime, state.seed + 100))
+			const walk = scalar.clamp(
+				noise.sample(tick.gametime) +
+				scalar.center(noise.sample(scale * tick.gametime, state.seed))
+			)
 
-			state.intent.amble = molasses2d(20, state.intent.amble, [
-				noise.sample(scale * tick.gametime, state.seed),
-				noise.sample(scale * tick.gametime, state.seed + 100),
-			])
+			state.intent.amble = molasses2d(20, state.intent.amble, [walk, strafe])
 
-			// state.intent.amble = molasses2d(10, state.intent.amble, [
-			// 	n(bell()),
-			// 	clamp((r()) + Math.abs(n(r()))),
-			// ])
+			// state.intent.glance[0] = noise.sample(1 / 3 + tick.gametime, state.seed + 200),
 
 			// state.intent.glance[0] = n(r()) / 100
 			// state.gimbal[1] = molasses(10, state.gimbal[1], bell())
