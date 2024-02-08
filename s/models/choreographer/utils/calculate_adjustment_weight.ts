@@ -1,7 +1,7 @@
 
-import {scalar} from "@benev/toolbox"
+import {spline} from "@benev/toolbox"
 
 export function calculate_adjustment_weight(progress: number) {
-	return scalar.spline.quickLinear(progress, [0, 1, 1, 0])
+	return spline.ez.linear(progress, [0, 1, 1, 0])
 }
 

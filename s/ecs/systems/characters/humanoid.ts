@@ -1,12 +1,12 @@
 
-import {Ecs4, Vec3, babylonian, scalar, vec2, vec3} from "@benev/toolbox"
+import {Ecs4, Vec3, babylonian, spline, vec2, vec3} from "@benev/toolbox"
 
 import {behavior, kinds, system} from "../../hub.js"
 import {unflatten} from "../utils/flatten.js"
 import {gimbaltool} from "../utils/gimbaltool.js"
 import {molasses, molasses3d} from "../utils/molasses.js"
 import {apply_spline_to_gimbal_y} from "./simulation/apply_spline_to_gimbal_y.js"
-import {HumanoidCore, HumanoidViewable, humanoid_core, humanoid_viewable} from "./simulation/create_humanoid_babylon_parts.js"
+import {HumanoidCore, humanoid_core, humanoid_viewable} from "./simulation/create_humanoid_babylon_parts.js"
 
 const select = {
 	core: kinds("humanoid", "position", "debug", "height", "radius"),
@@ -205,7 +205,7 @@ export const humanoid = system("humanoid", realm => {
 						y += kick
 					}
 					else if (phase_sustain_jump(jump)) {
-						y += scalar.spline.linear(grounding.seconds, [
+						y += spline.linear(grounding.seconds, [
 							[0.0, kick],
 							[0.1, force],
 							[0.5, 0],
