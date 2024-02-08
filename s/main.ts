@@ -11,7 +11,7 @@ import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {register_to_dom} from "@benev/slate"
-import {human, measure, scalar, RunningAverage, Ecs4, Vec3} from "@benev/toolbox"
+import {human, measure, scalar, RunningAverage, Ecs4, Vec3, loop2d} from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
 import {hub} from "./ecs/hub.js"
@@ -39,7 +39,7 @@ const realm = await nexus.context.realmOp.load(
 		...(localTesting ? {
 			glb_links: {
 				gym: "/temp/gym14.glb",
-				character: "/temp/knightanimations43.glb",
+				character: "/temp/knightanimations43lowpoly.glb",
 			},
 			skybox_links: {
 				px: "/temp/sky_01/px.webp",
@@ -53,7 +53,7 @@ const realm = await nexus.context.realmOp.load(
 		: {
 			glb_links: {
 				gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
-				character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43.glb",
+				character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43lowpoly.glb",
 			},
 			skybox_links: {
 				px: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/px.webp",
@@ -89,23 +89,38 @@ realm.entities.create(Archetypes.hemi({
 	intensity: .6,
 }))
 
-const botspots: Vec3[] = [
-	// [2, 5, 1],
-	// [1, 5, 1],
-	[0, 5, 1],
-	// [-1, 5, 1],
-	// [-2, 5, 1],
-	// [-3, 5, 1],
-	// [-4, 5, 1],
-]
+function* setup_bot_spawnpoints() {
+	while (true) {
+		for (const [x, z] of loop2d([5, 5]))
+			yield [x, 3, z] as Vec3
+	}
+}
 
-for (const position of botspots)
-	realm.entities.create({
-		...Archetypes.bot({
-			debug: false,
-			position,
-		}),
-	})
+const bot_spawnpoints = setup_bot_spawnpoints()
+
+const bots: Ecs4.Id[] = []
+
+realm.impulse.on.universal.buttons.bot_spawn(input => {
+	if (input.down) {
+		const position = bot_spawnpoints.next().value!
+		const id = realm.entities.create({
+			...Archetypes.bot({
+				debug: false,
+				position,
+			}),
+			gimbal: [0.5, 0.5],
+		})
+		bots.push(id)
+	}
+})
+
+realm.impulse.on.universal.buttons.bot_delete(input => {
+	if (input.down) {
+		const id = bots.shift()
+		if (id)
+			realm.entities.delete(id)
+	}
+})
 
 {
 	realm.impulse.modes.assign("universal", "humanoid")
@@ -128,7 +143,7 @@ for (const position of botspots)
 				debug: false,
 				position: [0, 5, 0],
 			}),
-			gimbal: [0.5, 0.5],
+			gimbal: [0, 0.5],
 		})
 		next = () => {
 			realm.entities.delete(id)
