@@ -1,7 +1,7 @@
 
 import {archetype} from "./types.js"
 import {Ref} from "../../models/realm/parts/ref_store.js"
-import {Quat, Vec3, quat, vec2, vec3} from "@benev/toolbox"
+import {Quat, Vec3, loop, quat, vec2, vec3} from "@benev/toolbox"
 
 export namespace Archetypes {
 	export const std_sensitivity = archetype(() => ({
@@ -155,6 +155,19 @@ export namespace Archetypes {
 				swivel_readjustment_margin: .1,
 				swivel_duration: 20,
 			},
+		},
+	}))
+
+	export const aiBrain = archetype(() => ({
+		seed: Math.floor(Math.random() * 1000),
+		ai: {
+			track: [
+				0,
+				...[...loop(10)]
+					.map(() => Math.random())
+					.map(x => (x * 2) - 1),
+				0,
+			],
 		},
 	}))
 

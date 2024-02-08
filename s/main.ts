@@ -20,6 +20,7 @@ import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {HumanoidSchema, HumanoidTick} from "./ecs/schema.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
+import { random_ai_track } from "./ecs/systems/ai/ai.js"
 
 register_to_dom({BenevHumanoid})
 
@@ -91,27 +92,27 @@ realm.entities.create(Archetypes.hemi({
 
 function* setup_bot_spawnpoints() {
 	while (true) {
-		for (const [x, z] of loop2d([5, 5]))
-			yield [x, 3, z] as Vec3
+		for (const [x, z] of loop2d([3, 3]))
+			yield [x, 5, z + 3] as Vec3
 	}
 }
 
+const bots: Ecs4.Id[] = []
 const bot_spawnpoints = setup_bot_spawnpoints()
 
-const bots: Ecs4.Id[] = []
+function spawn_a_bot() {
+	const position = bot_spawnpoints.next().value!
+	const id = realm.entities.create({
+		...Archetypes.bot({debug: false, position}),
+		...Archetypes.aiBrain(),
+		gimbal: [0.5, 0.5],
+	})
+	bots.push(id)
+}
 
 realm.impulse.on.universal.buttons.bot_spawn(input => {
-	if (input.down) {
-		const position = bot_spawnpoints.next().value!
-		const id = realm.entities.create({
-			...Archetypes.bot({
-				debug: false,
-				position,
-			}),
-			gimbal: [0.5, 0.5],
-		})
-		bots.push(id)
-	}
+	if (input.down)
+		spawn_a_bot()
 })
 
 realm.impulse.on.universal.buttons.bot_delete(input => {
@@ -152,6 +153,7 @@ realm.impulse.on.universal.buttons.bot_delete(input => {
 	}
 
 	humanoidState()
+	spawn_a_bot()
 
 	realm.impulse.on.universal.buttons.respawn(input => {
 		if (input.down && !input.repeat)
@@ -160,6 +162,7 @@ realm.impulse.on.universal.buttons.bot_delete(input => {
 }
 
 let count = 0
+let gametime = 0
 let last_time = performance.now()
 
 const measures = {
@@ -192,8 +195,11 @@ realm.stage.remote.onTick(() => {
 				1000 / 30, // clamp delta to avoid large over-corrections
 			) / 1000
 
+			gametime += seconds
+
 			const tick: HumanoidTick = {
 				seconds,
+				gametime,
 				count: count++,
 				hz: 1 / seconds,
 			}
