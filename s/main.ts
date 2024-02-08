@@ -20,7 +20,6 @@ import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {HumanoidSchema, HumanoidTick} from "./ecs/schema.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
-import { random_ai_track } from "./ecs/systems/ai/ai.js"
 
 register_to_dom({BenevHumanoid})
 

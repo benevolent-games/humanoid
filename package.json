@@ -22,7 +22,8 @@
 		"@benev/toolbox": "^0.5.0-x.11",
 		"@dimforge/rapier3d": "^0.12.0",
 		"@dimforge/rapier3d-compat": "^0.12.0",
-		"es-module-shims": "^1.8.2"
+		"es-module-shims": "^1.8.2",
+		"simplex-noise": "^4.0.1"
 	},
 	"peerDependencies": {
 		"@babylonjs/core": "^6.41.2",

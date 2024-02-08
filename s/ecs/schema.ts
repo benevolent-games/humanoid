@@ -56,9 +56,7 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 	}
 	shape: "box"
 
-	ai: {
-		track: number[]
-	}
+	ai: {}
 	seed: number
 	desired_direction: Vec2
 
