@@ -8,9 +8,7 @@ export const attacking = system("attacking mechanics", () => [
 		.select("attackage", "intent")
 		.processor(() => () => state => {
 			const {intent, attackage} = state
-
 			if (intent.attack && attackage.attack === 0) {
-				console.log("start attack")
 				state.attackage.attack = 3
 				state.attackage.seconds = 0
 			}
@@ -29,7 +27,6 @@ export const attacking = system("attacking mechanics", () => [
 			if (attackage.attack !== 0) {
 				const report = attack_report(attackage.seconds)
 				if (report.phase === AttackPhase.None) {
-					console.log("end attack")
 					state.attackage.attack = 0
 				}
 			}

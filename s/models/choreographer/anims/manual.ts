@@ -11,7 +11,7 @@ export class ManualAnim extends Anim {
 
 	// TODO prefer this over forceFrame??
 	forceProgress(fraction: number) {
-		const frame = scalar.between(
+		const frame = scalar.lerp(
 			fraction,
 			this.group?.from ?? 0,
 			this.group?.to ?? 100,

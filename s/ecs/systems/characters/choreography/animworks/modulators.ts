@@ -1,5 +1,5 @@
 
-import {Speeds, scalar} from "@benev/toolbox"
+import {Speeds, scalar, spline} from "@benev/toolbox"
 import {Ambulatory} from "../../../pure/ambulation.js"
 
 export function setup_anim_modulators({
@@ -39,7 +39,7 @@ export function setup_anim_modulators({
 	// 0  bottom creep  slow  run  sprint
 	// ['''''|'''''|'''''|'''''|''''']
 	// 0..........0.3...0.7....2
-	const crouchSpeed = scalar.spline.linear(magnitude, [
+	const crouchSpeed = spline.linear(magnitude, [
 		[0, 0],
 		[creep, 0.3],
 		[slow, 0.7],

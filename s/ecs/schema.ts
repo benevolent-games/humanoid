@@ -1,5 +1,5 @@
 
-import {Ecs4, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
+import {Cardinals, Ecs4, Quat, Speeds, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ref} from "../models/realm/parts/ref_store.js"
 import {Ambulatory} from "./systems/pure/ambulation.js"
@@ -9,6 +9,7 @@ export type HumanoidTick = {
 	hz: number
 	count: number
 	seconds: number
+	gametime: number
 }
 
 export type HumanoidSchema = Ecs4.AsSchema<{
@@ -54,6 +55,10 @@ export type HumanoidSchema = Ecs4.AsSchema<{
 		anchors: [Vec3, Vec3]
 	}
 	shape: "box"
+
+	ai: {}
+	seed: number
+	desired_direction: Vec2
 
 	controllable: {}
 	intent: {

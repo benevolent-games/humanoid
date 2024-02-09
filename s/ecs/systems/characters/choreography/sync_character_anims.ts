@@ -1,13 +1,13 @@
 
-import {Speeds, Vec2, scalar} from "@benev/toolbox"
+import {Speeds, Vec2, scalar, spline} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {HumanoidSchema} from "../../../schema.js"
 import {Ambulatory} from "../../pure/ambulation.js"
+import {attack_milestones} from "../attacking/attacks.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {setup_anim_modulators} from "./animworks/modulators.js"
 import {Choreography} from "../../../../models/choreographer/types.js"
-import { attack_milestones, attack_report } from "../attacking/attacks.js"
 
 export function sync_character_anims({
 		anims,
@@ -86,12 +86,13 @@ export function sync_character_anims({
 	// upper-body
 	//
 
+	const tinyfix = 1 / 1000
 	const {a, b, c, d} = attack_milestones
 	const {attack, seconds} = attackage
 	const blendtime = 0.1
 	const attacking = attack === 0
 		? 0
-		: scalar.spline.linear(seconds, [
+		: spline.linear(seconds, [
 			[a, 0],
 			[a + blendtime, 1],
 			[c + blendtime, 1],
@@ -99,9 +100,8 @@ export function sync_character_anims({
 		])
 	const notAttacking = inverse(attacking)
 
-
 	if (attacking > 0) {
-		const attackframe = scalar.spline.linear(seconds, [
+		const attackframe = spline.linear(seconds, [
 			[a, 0],
 			[b, 20],
 			[c, 65],
@@ -116,7 +116,7 @@ export function sync_character_anims({
 
 	anims.twohander_airborne.weight = airborne
 
-	anims.twohander.weight = notAttacking * groundage * stillness
+	anims.twohander.weight = tinyfix + (notAttacking * groundage * stillness)
 	anims.twohander_forward.weight = north * notAttacking * groundage * unstillness
 	anims.twohander_backward.weight = south * notAttacking * groundage * unstillness
 	anims.twohander_leftward.weight = west * notAttacking * groundage * unstillness

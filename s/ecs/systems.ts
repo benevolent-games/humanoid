@@ -18,6 +18,7 @@ import {spectator} from "./systems/characters/spectator.js"
 import {choreography} from "./systems/characters/choreography.js"
 import {ambulation} from "./systems/pure/ambulation.js"
 import {attacking} from "./systems/characters/attacking.js"
+import {ai} from "./systems/ai/ai.js"
 
 export const systems = system("pipeline", () => [
 
@@ -41,6 +42,7 @@ export const systems = system("pipeline", () => [
 		spectator,
 		choreography,
 		attacking,
+		ai,
 	]),
 
 	system("physics", () => [
@@ -49,5 +51,6 @@ export const systems = system("pipeline", () => [
 		statics,
 		joints,
 	]),
+
 ])
 
