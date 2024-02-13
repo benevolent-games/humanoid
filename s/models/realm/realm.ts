@@ -1,21 +1,19 @@
 
-import {Ecs4, Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
+import {Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
 import {Spawn} from "./parts/spawn.js"
 import {RefStore} from "./parts/ref_store.js"
-import {HumanoidSchema} from "../../ecs/schema.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {SkyboxLinks} from "../../tools/make_skybox.js"
 import {CharacterContainer} from "../character/container.js"
 
-export type Realm = {
+export type HumanoidRealm = {
 	tickrate: number
 	porthole: Porthole
 	stage: Stage
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
 	physics: Physics
-	entities: Ecs4.Entities<HumanoidSchema>
 	spawn: Spawn
 	skybox_links: SkyboxLinks
 	stores: {
@@ -26,16 +24,15 @@ export type Realm = {
 }
 
 export async function makeRealm({
-		entities, tickrate, glb_links, skybox_links,
+		tickrate, glb_links, skybox_links,
 	}: {
-		entities: Ecs4.Entities<HumanoidSchema>
 		tickrate: number
 		skybox_links: SkyboxLinks
 		glb_links: {
 			gym: string
 			character: string
 		}
-	}): Promise<Realm> {
+	}): Promise<HumanoidRealm> {
 
 	const impulse = new HumanoidImpulse()
 	const porthole = new Porthole()
@@ -68,7 +65,6 @@ export async function makeRealm({
 		colors,
 		impulse,
 		physics,
-		entities,
 		skybox_links,
 		spawn: new Spawn({gym, character}),
 		stores: {
