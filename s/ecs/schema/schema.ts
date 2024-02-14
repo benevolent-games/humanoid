@@ -1,7 +1,8 @@
 
 import {Component, Id} from "@benev/toolbox/x/ecs/ecs5.js"
 import {Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
-import {Ambulatory as Ambulatory2} from "../../ecs/systems/pure/ambulation.js"
+
+import {Ambulatory as Ambulatory2} from "./types.js"
 import {Choreography as Choreography2} from "../../models/choreographer/types.js"
 
 export class Debug extends Component<boolean> {}

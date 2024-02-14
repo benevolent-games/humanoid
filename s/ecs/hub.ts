@@ -1,5 +1,5 @@
 
-import {Hub} from "@benev/toolbox/x/ecs/ecs5.js"
+import {Hub} from "@benev/toolbox/x/ecs/ecs6.js"
 import {HumanoidRealm} from "../models/realm/realm.js"
 
 export type HumanoidTick = {

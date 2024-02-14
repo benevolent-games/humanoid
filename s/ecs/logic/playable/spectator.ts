@@ -1,11 +1,11 @@
 
 import {vec3} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
+import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {Spectator} from "../../schema/hybrids/spectator.js"
-import {gimbaltool} from "../../../ecs/systems/utils/gimbaltool.js"
-import {flatten, unflatten} from "../../../ecs/systems/utils/flatten.js"
+import {flatten, unflatten} from "../../../tools/flatten.js"
 import {Force, Gimbal, Impetus, Intent, Position, Speeds} from "../../schema/schema.js"
-import {apply_3d_rotation_to_movement} from "../../../ecs/systems/characters/simulation/apply_3d_rotation_to_movement.js"
+import {apply_3d_rotation_to_movement} from "./simulation/apply_3d_rotation_to_movement.js"
 
 export const spectator = system("spectator", [
 	behavior("set gimbal quaternions")

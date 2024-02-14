@@ -2,9 +2,9 @@
 import {Vec2, scalar, vec2} from "@benev/toolbox"
 
 import {behavior} from "../../hub.js"
-import {flatten} from "../../../ecs/systems/utils/flatten.js"
-import {gimbaltool} from "../../../ecs/systems/utils/gimbaltool.js"
-import {molasses, molasses2d} from "../../../ecs/systems/utils/molasses.js"
+import {flatten} from "../../../tools/flatten.js"
+import {gimbaltool} from "../../../tools/gimbaltool.js"
+import {molasses, molasses2d} from "../../../tools/molasses.js"
 import {Ambulatory, Gimbal, Grounding, Speeds, Stance, Velocity} from "../../schema/schema.js"
 
 const smoothing = 5

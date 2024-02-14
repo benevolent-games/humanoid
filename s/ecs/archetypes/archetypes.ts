@@ -3,9 +3,9 @@ import {Vec3, vec2, vec3} from "@benev/toolbox"
 import {Selectors} from "./selectors.js"
 import {arch, params} from "./helpers.js"
 import {Children, Sensitivity} from "../schema/schema.js"
-import { hub } from "../hub.js"
-import { Transform } from "../schema/hybrids/transform.js"
-import { Camera } from "../schema/hybrids/camera.js"
+import {hub} from "../hub.js"
+import {Camera} from "../schema/hybrids/camera.js"
+import {Transform} from "../schema/hybrids/transform.js"
 
 export namespace Archetypes {
 	export const sensitivity = arch({Sensitivity}, () => ({
@@ -52,7 +52,7 @@ export namespace Archetypes {
 			position: Vec3
 		}) => {
 
-		const [cameraId, camera] = world.create({Camera}, {
+		const camera = world.createEntity({Camera}, {
 			camera: {
 				fov: 90,
 				minZ: 0.1,
@@ -60,15 +60,17 @@ export namespace Archetypes {
 			},
 		})
 
-		const [transformBId, transformB] = world.create({Transform, Children}, {
+		const transformB = world.createEntity({Transform, Children}, {
 			transform: {},
-			children: [cameraId],
+			children: [camera.id],
 		})
 
-		const transformA = world.create({Transform, Children}, {
+		const transformA = world.createEntity({Transform, Children}, {
 			transform: {},
-			children: [transformBId],
+			children: [transformB.id],
 		})
+
+
 	})
 }
 

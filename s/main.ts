@@ -10,17 +10,17 @@ import "@babylonjs/core/Physics/physicsEngineComponent.js"
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
+import {scalar} from "@benev/toolbox"
 import {register_to_dom} from "@benev/slate"
-import { scalar } from "@benev/toolbox"
 
 import {nexus} from "./nexus.js"
+import {root} from "./ecs/logic/root.js"
+import {HumanoidTick, hub} from "./ecs/hub.js"
+import {Sky} from "./ecs/schema/hybrids/sky.js"
 import {makeRealm} from "./models/realm/realm.js"
+import {Archetypes} from "./ecs/archetypes/archetypes.js"
+import {Environment} from "./ecs/schema/hybrids/environment.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
-import { HumanoidTick, hub } from "./ecs5/hub.js"
-import { root } from "./ecs5/logic/root.js"
-import { Environment } from "./ecs5/schema/hybrids/environment.js"
-import { Sky } from "./ecs5/schema/hybrids/sky.js"
-import { Archetypes } from "./ecs5/archetypes/archetypes.js"
 
 register_to_dom({BenevHumanoid})
 
