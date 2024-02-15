@@ -31,12 +31,15 @@ const localTesting = (
 	window.location.host.startsWith("192")
 ) && !window.location.search.includes("cloud")
 
+// https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb
+
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
 		tickrate: 60,
 		...(localTesting ? {
 			glb_links: {
-				gym: "/temp/gym14.glb",
+				// gym: "/temp/gym14.glb",
+				gym: "/temp/the_grand_opening13.glb",
 				character: "/temp/knightanimations43lowpoly.glb",
 			},
 			skybox_links: {
@@ -50,7 +53,8 @@ const realm = await nexus.context.realmOp.load(
 		}
 		: {
 			glb_links: {
-				gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
+				// gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
+				gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb",
 				character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43lowpoly.glb",
 			},
 			skybox_links: {

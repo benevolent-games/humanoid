@@ -8,6 +8,33 @@ import {Force, Impetus, Intent, Position, Spectator, Speeds} from "../../schema/
 import {apply_3d_rotation_to_movement} from "./simulation/apply_3d_rotation_to_movement.js"
 
 export const spectator = system("spectator", [
+	responder("parenting the camera")
+		.select({Spectator, Camera, Gimbal})
+		.respond(() => ({
+			added(c, id) {
+				console.log("PARENTED", id)
+				c.camera.node.parent = c.gimbal.transformB
+			},
+			removed(c, id) {
+				console.log("UNPARENTED", id)
+				if (c.camera.node.parent === c.gimbal.transformB)
+					c.camera.node.parent = null
+			},
+		})),
+
+	responder("assign spectator camera")
+		.select({Spectator, Camera})
+		.respond(({realm}) => ({
+			added(c) {
+				console.log("CAMERAED")
+				realm.stage.rendering.setCamera(c.camera.node)
+			},
+			removed() {
+				console.log("UNCAMERAED")
+				realm.stage.rendering.setCamera(null)
+			},
+		})),
+
 	behavior("calculate local force")
 		.select({Spectator, Force, Intent, Speeds, Impetus})
 		.act(() => c => {
@@ -39,16 +66,5 @@ export const spectator = system("spectator", [
 		.act(() => c => {
 			c.gimbal.transformA.position.set(...c.position)
 		}),
-
-	responder("assign spectator camera")
-		.select({Spectator, Camera})
-		.respond(({realm}) => ({
-			added(c) {
-				realm.stage.rendering.setCamera(c.camera.node)
-			},
-			removed() {
-				realm.stage.rendering.setCamera(null)
-			},
-		})),
 ])
 

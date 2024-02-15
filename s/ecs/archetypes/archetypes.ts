@@ -33,7 +33,6 @@ export namespace Archetypes {
 			jump: false,
 			attack: false,
 		},
-		force: vec2.zero(),
 		gimbal: [0, 0.5],
 	}))
 
@@ -41,6 +40,7 @@ export namespace Archetypes {
 		...params(freecam({position})),
 		force: vec2.zero(),
 		impetus: vec3.zero(),
+		position,
 		spectator: {},
 		smoothing: 5,
 		speeds: {base: 20, fast: 50, slow: 5},
