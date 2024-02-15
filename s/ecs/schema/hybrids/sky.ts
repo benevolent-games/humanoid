@@ -1,10 +1,12 @@
 
-import {scalar} from "@benev/toolbox"
-import {HumanoidRealm} from "../../../models/realm/realm.js"
+import {scalar, HybridComponent} from "@benev/toolbox"
 import {make_skybox} from "../../../tools/make_skybox.js"
-import {HybridComponent} from "@benev/toolbox/x/ecs/ecs5.js"
+import {HumanoidRealm} from "../../../models/realm/realm.js"
 
-export class Sky extends HybridComponent<HumanoidRealm, {size: number, rotation: number}> {
+export class Sky extends HybridComponent<HumanoidRealm, {
+		size: number
+		rotation: number
+	}> {
 
 	skybox = make_skybox({
 		scene: this.realm.stage.scene,
@@ -13,7 +15,8 @@ export class Sky extends HybridComponent<HumanoidRealm, {size: number, rotation:
 		yaw: scalar.radians.from.degrees(this.state.rotation),
 	})
 
-	init() {}
+	created() {}
+	updated() {}
 	deleted() {
 		this.skybox.dispose()
 	}

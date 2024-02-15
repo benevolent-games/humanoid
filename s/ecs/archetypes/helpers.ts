@@ -1,13 +1,16 @@
 
-import {Selector, ComponentParams} from "@benev/toolbox/x/ecs/ecs5.js"
+import {Selector, CParams} from "@benev/toolbox"
 
-export type Pair<Sel extends Selector> = [Sel, ComponentParams<Sel>]
+export type Pair<Sel extends Selector> = [Sel, CParams<Sel>]
 
 export function select<Sel extends Selector>(sel: Sel) {
 	return sel
 }
 
-export function arch<Sel extends Selector, Fn extends (...args: any[]) => ComponentParams<Sel>>(selector: Sel, fn: Fn) {
+export function arch<
+		Sel extends Selector,
+		Fn extends (...args: any[]) => CParams<Sel>,
+	>(selector: Sel, fn: Fn) {
 	return (...p: Parameters<Fn>) => ([selector, fn(...p)] as Pair<Sel>)
 }
 

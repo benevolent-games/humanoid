@@ -1,6 +1,6 @@
 
-import {labeler, scalar} from "@benev/toolbox"
-import {HybridComponent} from "@benev/toolbox/x/ecs/ecs5.js"
+import {label, scalar} from "@benev/toolbox"
+import {HybridComponent} from "@benev/toolbox"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 
@@ -12,19 +12,18 @@ export class Camera extends HybridComponent<HumanoidRealm, {
 		maxZ: number
 	}> {
 
-	label = labeler("camera")
-	camera = new TargetCamera(this.label("camera"), Vector3.Zero())
+	node = new TargetCamera(label("camera"), Vector3.Zero())
 
-	init() {
-		const {camera, state} = this
-		camera.fov = scalar.radians.from.degrees(state.fov)
-		camera.minZ = state.minZ
-		camera.maxZ = state.maxZ
-		camera.ignoreParentScaling = true
+	created() {
+		const {node, state} = this
+		node.fov = scalar.radians.from.degrees(state.fov)
+		node.minZ = state.minZ
+		node.maxZ = state.maxZ
+		node.ignoreParentScaling = true
 	}
-
+	updated() {}
 	deleted() {
-		this.camera.dispose()
+		this.node.dispose()
 	}
 }
 

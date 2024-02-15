@@ -3,9 +3,10 @@ import {Vec2, scalar, vec2} from "@benev/toolbox"
 
 import {behavior} from "../../hub.js"
 import {flatten} from "../../../tools/flatten.js"
+import {Gimbal} from "../../schema/hybrids/gimbal.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {molasses, molasses2d} from "../../../tools/molasses.js"
-import {Ambulatory, Gimbal, Grounding, Speeds, Stance, Velocity} from "../../schema/schema.js"
+import {Ambulatory, Grounding, Speeds, Stance, Velocity} from "../../schema/schema.js"
 
 const smoothing = 5
 
@@ -55,7 +56,7 @@ export const ambulation = behavior("calculate ambulatory data")
 			standing: smooth.standing,
 			groundage: smooth.groundage,
 			...cardinalize(
-				gimbaltool(state.gimbal)
+				gimbaltool(state.gimbal.state)
 					.unrotate2d(smooth.normal)
 			),
 		}

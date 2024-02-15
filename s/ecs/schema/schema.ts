@@ -1,6 +1,6 @@
 
-import {Component, Id} from "@benev/toolbox/x/ecs/ecs5.js"
-import {Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
+import {Id} from "@benev/toolbox/x/ecs6/core/types.js"
+import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ambulatory as Ambulatory2} from "./types.js"
 import {Choreography as Choreography2} from "../../models/choreographer/types.js"
@@ -59,7 +59,6 @@ export class Attackage extends Component<{
 export class Force extends Component<Vec2> {}
 export class AirborneTrajectory extends Component<Vec3> {}
 export class Impetus extends Component<Vec3> {}
-export class Gimbal extends Component<Vec2> {}
 export class Jump extends Component<boolean> {}
 
 export class Grounding extends Component<{
@@ -86,5 +85,6 @@ export class Sensitivity extends Component<{
 	stick: number
 }> {}
 
+export class Spectator extends Component<{}> {}
 export class Humanoid extends Component<{}> {}
 

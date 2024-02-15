@@ -1,12 +1,11 @@
 
 import {HumanoidRealm} from "../../../models/realm/realm.js"
-import {HybridComponent} from "@benev/toolbox/x/ecs/ecs5.js"
-import {Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
+import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
 
 export class Environment extends HybridComponent<HumanoidRealm, {asset: string}> {
 	disposables: (() => void)[] = []
 
-	init() {
+	created() {
 		const {disposables, realm, state: {asset}} = this
 
 		if (asset === "gym") {
@@ -83,6 +82,8 @@ export class Environment extends HybridComponent<HumanoidRealm, {asset: string}>
 		})
 		this.disposables.push(() => joint.dispose())
 	}
+
+	updated() {}
 
 	deleted() {
 		for (const dispose of this.disposables)

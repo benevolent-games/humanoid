@@ -1,22 +1,13 @@
 
 import {vec3} from "@benev/toolbox"
-import {behavior, system} from "../../hub.js"
-import {gimbaltool} from "../../../tools/gimbaltool.js"
-import {Spectator} from "../../schema/hybrids/spectator.js"
+import {Camera} from "../../schema/hybrids/camera.js"
+import {Gimbal} from "../../schema/hybrids/gimbal.js"
+import {behavior, responder, system} from "../../hub.js"
 import {flatten, unflatten} from "../../../tools/flatten.js"
-import {Force, Gimbal, Impetus, Intent, Position, Speeds} from "../../schema/schema.js"
+import {Force, Impetus, Intent, Position, Spectator, Speeds} from "../../schema/schema.js"
 import {apply_3d_rotation_to_movement} from "./simulation/apply_3d_rotation_to_movement.js"
 
 export const spectator = system("spectator", [
-	behavior("set gimbal quaternions")
-		.select({Spectator, Gimbal})
-		.act(() => c => {
-			const {transformA, transformB} = c.spectator
-			const quaternions = gimbaltool(c.gimbal).quaternions()
-			transformB.rotationQuaternion = quaternions.vertical
-			transformA.rotationQuaternion = quaternions.horizontal
-		}),
-
 	behavior("calculate local force")
 		.select({Spectator, Force, Intent, Speeds, Impetus})
 		.act(() => c => {
@@ -30,9 +21,9 @@ export const spectator = system("spectator", [
 		}),
 
 	behavior("apply force to position")
-		.select({Spectator, Impetus, Position})
+		.select({Spectator, Gimbal, Impetus, Position})
 		.act(() => c => {
-			const {transformA, transformB} = c.spectator
+			const {transformA, transformB} = c.gimbal
 			c.position = (
 				apply_3d_rotation_to_movement(
 					transformB,
@@ -44,10 +35,20 @@ export const spectator = system("spectator", [
 		}),
 
 	behavior("apply position to transform")
-		.select({Spectator, Position})
+		.select({Spectator, Gimbal, Position})
 		.act(() => c => {
-			const {transformA} = c.spectator
-			transformA.position.set(...c.position)
+			c.gimbal.transformA.position.set(...c.position)
 		}),
+
+	responder("assign spectator camera")
+		.select({Spectator, Camera})
+		.respond(({realm}) => ({
+			added(c) {
+				realm.stage.rendering.setCamera(c.camera.node)
+			},
+			removed() {
+				realm.stage.rendering.setCamera(null)
+			},
+		})),
 ])
 

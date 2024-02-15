@@ -1,10 +1,10 @@
 
 import {select} from "./helpers.js"
 import {Camera} from "../schema/hybrids/camera.js"
-import {Spectator} from "../schema/hybrids/spectator.js"
+import {Gimbal} from "../schema/hybrids/gimbal.js"
 import {Transform} from "../schema/hybrids/transform.js"
 import {MouseAccumulator} from "../schema/hybrids/mouse_accumulator.js"
-import {Controllable, Force, Gimbal, Impetus, Intent, Sensitivity, Smoothing, Speeds} from "../schema/schema.js"
+import {Controllable, Force, Impetus, Intent, Sensitivity, Smoothing, Spectator, Speeds} from "../schema/schema.js"
 
 export namespace Selectors {
 	export const freecam = select({

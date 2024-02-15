@@ -2,12 +2,10 @@
 import {Vec3, vec2, vec3} from "@benev/toolbox"
 import {Selectors} from "./selectors.js"
 import {arch, params} from "./helpers.js"
-import {Children, Sensitivity} from "../schema/schema.js"
-import {hub} from "../hub.js"
-import {Camera} from "../schema/hybrids/camera.js"
-import {Transform} from "../schema/hybrids/transform.js"
+import {Sensitivity} from "../schema/schema.js"
 
 export namespace Archetypes {
+
 	export const sensitivity = arch({Sensitivity}, () => ({
 		sensitivity: {
 			keys: 100 / 10_000,
@@ -48,29 +46,30 @@ export namespace Archetypes {
 		speeds: {base: 20, fast: 50, slow: 5},
 	}))
 
-	export const spectator2 = hub.archetype(world => ({position}: {
-			position: Vec3
-		}) => {
+	// export const spectator2 = hub.archetype(world => ({position}: {
+	// 		position: Vec3
+	// 	}) => {
 
-		const camera = world.createEntity({Camera}, {
-			camera: {
-				fov: 90,
-				minZ: 0.1,
-				maxZ: 1_000,
-			},
-		})
+	// 	const camera = world.createEntity({Camera}, {
+	// 		camera: {
+	// 			fov: 90,
+	// 			minZ: 0.1,
+	// 			maxZ: 1_000,
+	// 		},
+	// 	})
 
-		const transformB = world.createEntity({Transform, Children}, {
-			transform: {},
-			children: [camera.id],
-		})
+	// 	const transformB = world.createEntity({Transform, Children}, {
+	// 		transform: {},
+	// 		children: [camera.id],
+	// 	})
 
-		const transformA = world.createEntity({Transform, Children}, {
-			transform: {},
-			children: [transformB.id],
-		})
-
-
-	})
+	// 	const transformA = world.createEntity({
+	// 			Transform,
+	// 			Children,
+	// 		}, {
+	// 		transform: {},
+	// 		children: [transformB.id],
+	// 	})
+	// })
 }
 

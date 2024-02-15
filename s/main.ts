@@ -72,15 +72,15 @@ realm.porthole.resolution = localTesting
 const world = hub.world(realm)
 const executive = hub.executive(realm, world, root)
 
-world.create({Environment}, {
+world.createEntity({Environment}, {
 	environment: {asset: "gym"},
 })
 
-world.create({Sky}, {
+world.createEntity({Sky}, {
 	sky: {size: 1_000, rotation: 180},
 })
 
-world.create(...Archetypes.spectator({
+world.createEntity(...Archetypes.spectator({
 	position: [0, 5, 0],
 }))
 

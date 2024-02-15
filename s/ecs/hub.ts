@@ -1,5 +1,5 @@
 
-import {Hub} from "@benev/toolbox/x/ecs/ecs6.js"
+import {Hub} from "@benev/toolbox"
 import {HumanoidRealm} from "../models/realm/realm.js"
 
 export type HumanoidTick = {
@@ -10,5 +10,5 @@ export type HumanoidTick = {
 }
 
 export const hub = new Hub<HumanoidRealm, HumanoidTick>()
-export const {system, behavior} = hub
+export const {system, behavior, responder} = hub
 
