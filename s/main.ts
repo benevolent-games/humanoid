@@ -1,13 +1,14 @@
 
 console.log("🤖 humanoid")
 
+import "@babylonjs/core/Culling/ray.js"
 import "@babylonjs/loaders/glTF/index.js"
 import "@babylonjs/core/Engines/index.js"
-import "@babylonjs/core/Culling/ray.js"
 import "@babylonjs/core/Animations/index.js"
 import "@babylonjs/core/Rendering/edgesRenderer.js"
 import "@babylonjs/core/Physics/physicsEngineComponent.js"
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
+import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {scalar} from "@benev/toolbox"
@@ -31,41 +32,50 @@ const localTesting = (
 	window.location.host.startsWith("192")
 ) && !window.location.search.includes("cloud")
 
-// https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb
-
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
 		tickrate: 60,
-		...(localTesting ? {
-			glb_links: {
-				// gym: "/temp/gym14.glb",
-				gym: "/temp/the_grand_opening13.glb",
-				character: "/temp/knightanimations43lowpoly.glb",
-			},
-			skybox_links: {
-				px: "/temp/sky_01/px.webp",
-				py: "/temp/sky_01/py.webp",
-				pz: "/temp/sky_01/nz.webp",
-				nx: "/temp/sky_01/nx.webp",
-				ny: "/temp/sky_01/ny.webp",
-				nz: "/temp/sky_01/pz.webp",
-			},
-		}
-		: {
-			glb_links: {
-				// gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
-				gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb",
-				character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43lowpoly.glb",
-			},
-			skybox_links: {
-				px: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/px.webp",
-				py: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/py.webp",
-				pz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nz.webp", // note the remapping
-				nx: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nx.webp",
-				ny: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/ny.webp",
-				nz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/pz.webp", // note the remapping
-			},
-		})
+		links: localTesting
+
+			//
+			// LOCAL TESTING TEMP LINKS
+			//
+			? {
+				glbs: {
+					// gym: "/temp/gym14.glb",
+					gym: "/temp/the_grand_opening13.glb",
+					character: "/temp/knightanimations43lowpoly.glb",
+				},
+				image_based_lighting: "/temp/wrynthinteriors2.env",
+				skybox: {
+					px: "/temp/sky_01/px.webp",
+					py: "/temp/sky_01/py.webp",
+					pz: "/temp/sky_01/nz.webp",
+					nx: "/temp/sky_01/nx.webp",
+					ny: "/temp/sky_01/ny.webp",
+					nz: "/temp/sky_01/pz.webp",
+				},
+			}
+
+			//
+			// PRODUCTION CDN LINKS
+			//
+			: {
+				glbs: {
+					// gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
+					gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb",
+					character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43lowpoly.glb",
+				},
+				image_based_lighting: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/wrynthinteriors2.env",
+				skybox: {
+					px: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/px.webp",
+					py: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/py.webp",
+					pz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nz.webp", // note the remapping
+					nx: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nx.webp",
+					ny: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/ny.webp",
+					nz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/pz.webp", // note the remapping
+				},
+			}
 	})
 )
 

@@ -7,7 +7,17 @@ import {HumanoidImpulse} from "../impulse/impulse.js"
 import {SkyboxLinks} from "../../tools/make_skybox.js"
 import {CharacterContainer} from "../character/container.js"
 
+export type HumanoidLinks = {
+	skybox: SkyboxLinks
+	image_based_lighting: string
+	glbs: {
+		gym: string
+		character: string
+	}
+}
+
 export type HumanoidRealm = {
+	links: HumanoidLinks
 	tickrate: number
 	porthole: Porthole
 	stage: Stage
@@ -15,7 +25,6 @@ export type HumanoidRealm = {
 	impulse: HumanoidImpulse
 	physics: Physics
 	spawn: Spawn
-	skybox_links: SkyboxLinks
 	stores: {
 		meshes: RefStore<Meshoid>
 		props: RefStore<Prop>
@@ -23,15 +32,9 @@ export type HumanoidRealm = {
 	}
 }
 
-export async function makeRealm({
-		tickrate, glb_links, skybox_links,
-	}: {
+export async function makeRealm({tickrate, links}: {
+		links: HumanoidLinks
 		tickrate: number
-		skybox_links: SkyboxLinks
-		glb_links: {
-			gym: string
-			character: string
-		}
 	}): Promise<HumanoidRealm> {
 
 	const impulse = new HumanoidImpulse()
@@ -53,8 +56,8 @@ export async function makeRealm({
 	})
 
 	const [gym, character] = await Promise.all([
-		stage.load_glb(glb_links.gym),
-		stage.load_glb(glb_links.character)
+		stage.load_glb(links.glbs.gym),
+		stage.load_glb(links.glbs.character)
 			.then(container => new CharacterContainer(container)),
 	])
 
@@ -65,7 +68,7 @@ export async function makeRealm({
 		colors,
 		impulse,
 		physics,
-		skybox_links,
+		links,
 		spawn: new Spawn({gym, character}),
 		stores: {
 			props: new RefStore<Prop>("props"),
