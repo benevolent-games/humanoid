@@ -12,7 +12,7 @@ export class HumanoidImpulse extends Impulse<HumanoidBinds> {
 	constructor() {
 		super({
 			binds: humanoid_binds(),
-			modes: ["humanoid"],
+			modes: ["universal", "humanoid"],
 		})
 
 		for (const device of Object.values(this.devices))

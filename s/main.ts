@@ -18,10 +18,8 @@ import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
 import {HumanoidTick, hub} from "./ecs/hub.js"
 import {makeRealm} from "./models/realm/realm.js"
-import {Level} from "./ecs/schema/hybrids/level.js"
-import {Skybox} from "./ecs/schema/hybrids/skybox.js"
-import {Envmap} from "./ecs/schema/hybrids/envmap.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
+import {LevelSwitcher} from "./models/level_switcher/switcher.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
 
 register_to_dom({BenevHumanoid})
@@ -86,17 +84,13 @@ realm.porthole.resolution = localTesting
 
 const world = hub.world(realm)
 const executive = hub.executive(realm, world, root)
+const levelSwitcher = new LevelSwitcher(world)
 
-world.createEntity({Level}, {
-	level: {asset: "gym"},
-})
+levelSwitcher.swap()
 
-world.createEntity({Skybox}, {
-	skybox: {size: 1_000, rotate_degrees: 180},
-})
-
-world.createEntity({Envmap}, {
-	envmap: {},
+realm.impulse.on.universal.buttons.level_swap(button => {
+	if (button.down && !button.repeat)
+		levelSwitcher.swap()
 })
 
 world.createEntity(...Archetypes.spectator({
