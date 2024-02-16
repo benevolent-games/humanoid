@@ -1,23 +1,38 @@
 
-import {Ecs4, Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
+import {AssetContainer} from "@babylonjs/core/assetContainer.js"
+import {Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
-import {Spawn} from "./parts/spawn.js"
+import {oneOff} from "../../tools/once.js"
 import {RefStore} from "./parts/ref_store.js"
-import {HumanoidSchema} from "../../ecs/schema.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {SkyboxLinks} from "../../tools/make_skybox.js"
 import {CharacterContainer} from "../character/container.js"
 
-export type Realm = {
+export type HumanoidLinks = {
+	skybox: SkyboxLinks
+	envmap: string
+	assets: {
+		gym: string
+		character: string
+		wrynth_dungeon: string
+	}
+}
+
+export type HumanoidGlbs = {
+	gym: () => Promise<AssetContainer>
+	wrynth_dungeon: () => Promise<AssetContainer>
+	character: () => Promise<CharacterContainer>
+}
+
+export type HumanoidRealm = {
+	links: HumanoidLinks
 	tickrate: number
 	porthole: Porthole
 	stage: Stage
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
 	physics: Physics
-	entities: Ecs4.Entities<HumanoidSchema>
-	spawn: Spawn
-	skybox_links: SkyboxLinks
+	glbs: HumanoidGlbs
 	stores: {
 		meshes: RefStore<Meshoid>
 		props: RefStore<Prop>
@@ -25,17 +40,10 @@ export type Realm = {
 	}
 }
 
-export async function makeRealm({
-		entities, tickrate, glb_links, skybox_links,
-	}: {
-		entities: Ecs4.Entities<HumanoidSchema>
+export async function makeRealm({tickrate, links}: {
+		links: HumanoidLinks
 		tickrate: number
-		skybox_links: SkyboxLinks
-		glb_links: {
-			gym: string
-			character: string
-		}
-	}): Promise<Realm> {
+	}): Promise<HumanoidRealm> {
 
 	const impulse = new HumanoidImpulse()
 	const porthole = new Porthole()
@@ -55,11 +63,18 @@ export async function makeRealm({
 		gravity: [0, -9.81, 0],
 	})
 
-	const [gym, character] = await Promise.all([
-		stage.load_glb(glb_links.gym),
-		stage.load_glb(glb_links.character)
-			.then(container => new CharacterContainer(container)),
-	])
+	const glbs: HumanoidGlbs = {
+		gym: oneOff(
+			() => stage.load_glb(links.assets.gym)
+		),
+		wrynth_dungeon: oneOff(
+			() => stage.load_glb(links.assets.wrynth_dungeon)
+		),
+		character: oneOff(
+			() => stage.load_glb(links.assets.character)
+				.then(container => new CharacterContainer(container))
+		),
+	}
 
 	return {
 		tickrate,
@@ -68,9 +83,8 @@ export async function makeRealm({
 		colors,
 		impulse,
 		physics,
-		entities,
-		skybox_links,
-		spawn: new Spawn({gym, character}),
+		links,
+		glbs,
 		stores: {
 			props: new RefStore<Prop>("props"),
 			meshes: new RefStore<Meshoid>("meshes"),

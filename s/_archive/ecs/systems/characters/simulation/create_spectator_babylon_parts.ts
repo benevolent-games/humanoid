@@ -5,9 +5,9 @@ import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
 import {HumanoidSchema} from "../../../schema.js"
-import {Realm} from "../../../../models/realm/realm.js"
+import {HumanoidRealm} from "../../../../models/realm/realm.js"
 
-export function create_spectator_babylon_parts(realm: Realm, init: {
+export function create_spectator_babylon_parts(realm: HumanoidRealm, init: {
 		position: Vec3
 		camera: HumanoidSchema["camera"]
 	}) {

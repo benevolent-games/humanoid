@@ -4,7 +4,7 @@ import {binds} from "@benev/toolbox"
 export type HumanoidBinds = ReturnType<typeof humanoid_binds>
 
 export const humanoid_binds = () => binds(({
-		mode, buttons, b, modless, shift, // ctrl, alt,
+		mode, buttons, b, modless, shift, // alt, ctrl,
 	}) => ({
 
 	universal: mode({
@@ -13,6 +13,7 @@ export const humanoid_binds = () => binds(({
 			respawn: buttons(b("Tab")),
 			bot_spawn: buttons(b("KeyB")),
 			bot_delete: buttons(b("KeyB", shift)),
+			level_swap: buttons(modless("KeyR")),
 		},
 	}),
 

@@ -1,8 +1,14 @@
 
-import {Ecs4} from "@benev/toolbox"
-import {Realm} from "../models/realm/realm.js"
-import {HumanoidSchema, HumanoidTick} from "./schema.js"
+import {Hub} from "@benev/toolbox"
+import {HumanoidRealm} from "../models/realm/realm.js"
 
-export const hub = new Ecs4.Hub<Realm, HumanoidTick, HumanoidSchema>()
-export const {system, behavior, kinds} = hub
+export type HumanoidTick = {
+	hz: number
+	count: number
+	seconds: number
+	gametime: number
+}
+
+export const hub = new Hub<HumanoidRealm, HumanoidTick>()
+export const {system, behavior, responder} = hub
 

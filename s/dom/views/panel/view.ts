@@ -4,10 +4,10 @@ import {TemplateResult, clone, debounce, html, reactor} from "@benev/slate"
 import {styles} from "./styles.js"
 import {nexus} from "../../../nexus.js"
 import {Toggler} from "./parts/toggler.js"
-import {Realm} from "../../../models/realm/realm.js"
+import {HumanoidRealm} from "../../../models/realm/realm.js"
 import {Effects, NuiCheckbox, NuiRange, Stage} from "@benev/toolbox"
 
-export const Panel = nexus.shadow_view(use => (realm: Realm) => {
+export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	use.name("panel")
 	use.styles(styles)
 

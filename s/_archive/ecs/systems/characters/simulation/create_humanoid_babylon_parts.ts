@@ -3,7 +3,7 @@ import {Phys, Vec3, babylonian, labeler, scalar, vec3} from "@benev/toolbox"
 
 import {HumanoidSchema} from "../../../schema.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
-import {Realm} from "../../../../models/realm/realm.js"
+import {HumanoidRealm} from "../../../../models/realm/realm.js"
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
@@ -25,7 +25,7 @@ export type HumanoidControllable = {
 	dispose: () => void
 }
 
-export function humanoid_core(realm: Realm, init: {
+export function humanoid_core(realm: HumanoidRealm, init: {
 		debug: boolean
 		height: number
 		radius: number
@@ -115,7 +115,7 @@ export function humanoid_core(realm: Realm, init: {
 	}
 }
 
-export function humanoid_viewable(realm: Realm, init: {
+export function humanoid_viewable(realm: HumanoidRealm, init: {
 		core: HumanoidCore
 		camera: HumanoidSchema["camera"]
 		third_person_cam_distance: number

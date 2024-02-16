@@ -1,10 +1,10 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
+import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial.js"
-import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 
 export type SkyboxLinks = {
 	px: string
