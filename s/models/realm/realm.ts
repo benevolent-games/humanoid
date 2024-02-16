@@ -1,9 +1,12 @@
 
+import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
+import {oneOff} from "../../tools/once.js"
 import {RefStore} from "./parts/ref_store.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {SkyboxLinks} from "../../tools/make_skybox.js"
+import {CharacterContainer} from "../character/container.js"
 
 export type HumanoidLinks = {
 	skybox: SkyboxLinks
@@ -15,6 +18,12 @@ export type HumanoidLinks = {
 	}
 }
 
+export type HumanoidGlbs = {
+	gym: () => Promise<AssetContainer>
+	wrynth_dungeon: () => Promise<AssetContainer>
+	character: () => Promise<CharacterContainer>
+}
+
 export type HumanoidRealm = {
 	links: HumanoidLinks
 	tickrate: number
@@ -23,6 +32,7 @@ export type HumanoidRealm = {
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
 	physics: Physics
+	glbs: HumanoidGlbs
 	stores: {
 		meshes: RefStore<Meshoid>
 		props: RefStore<Prop>
@@ -53,11 +63,18 @@ export async function makeRealm({tickrate, links}: {
 		gravity: [0, -9.81, 0],
 	})
 
-	// const [gym, character] = await Promise.all([
-	// 	stage.load_glb(links.assets.gym),
-	// 	stage.load_glb(links.assets.character)
-	// 		.then(container => new CharacterContainer(container)),
-	// ])
+	const glbs: HumanoidGlbs = {
+		gym: oneOff(
+			() => stage.load_glb(links.assets.gym)
+		),
+		wrynth_dungeon: oneOff(
+			() => stage.load_glb(links.assets.wrynth_dungeon)
+		),
+		character: oneOff(
+			() => stage.load_glb(links.assets.character)
+				.then(container => new CharacterContainer(container))
+		),
+	}
 
 	return {
 		tickrate,
@@ -67,6 +84,7 @@ export async function makeRealm({tickrate, links}: {
 		impulse,
 		physics,
 		links,
+		glbs,
 		stores: {
 			props: new RefStore<Prop>("props"),
 			meshes: new RefStore<Meshoid>("meshes"),

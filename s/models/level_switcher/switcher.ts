@@ -1,44 +1,62 @@
 
 import {World} from "@benev/toolbox"
+import {Cycle} from "../../tools/cycle.js"
+import {Loading} from "../../tools/loading.js"
 import {HumanoidRealm} from "../realm/realm.js"
-import {Level} from "../../ecs/schema/hybrids/level.js"
 import {Skybox} from "../../ecs/schema/hybrids/skybox.js"
 import {Envmap} from "../../ecs/schema/hybrids/envmap.js"
+import {Level, LevelAsset} from "../../ecs/schema/hybrids/level.js"
 
 export class LevelSwitcher {
-	#level: ReturnType<typeof spawn_level> | null = null
-	constructor(public readonly world: World<HumanoidRealm>) {}
+	#loading = new Loading()
+	#dispose: (() => void) | null = null
 
-	swap() {
-		if (this.#level)
-			this.#delete()
-		else
-			this.#level = spawn_level(this.world)
-	}
+	constructor(
+		public readonly realm: HumanoidRealm,
+		public readonly world: World<HumanoidRealm>,
+	) {}
 
-	#delete() {
-		const world = this.world
-		const level = this.#level
-		if (level) {
-			this.#level = null
-			world.deleteEntity(level.level.id)
-			world.deleteEntity(level.skybox.id)
-			world.deleteEntity(level.envmap.id)
+	toggle() {
+		if (this.#loading.currently)
+			return
+
+		if (this.#dispose) {
+			this.#dispose()
+			this.#dispose = null
 		}
-	}
-}
 
-function spawn_level(world: World<HumanoidRealm>) {
-	return {
-		level: world.createEntity({Level}, {
-			level: {asset: "gym"},
-		}),
-		skybox: world.createEntity({Skybox}, {
-			skybox: {size: 1_000, rotate_degrees: 180},
-		}),
-		envmap: world.createEntity({Envmap}, {
-			envmap: {},
-		}),
+		this.#cycle.grab()()
 	}
+
+	#level(asset: LevelAsset) {
+		return this.#loading.fn(async() => {
+			const {world} = this
+
+			const level = world.createEntity({Level}, {
+				level: {asset},
+			})
+
+			const skybox = world.createEntity({Skybox}, {
+				skybox: {size: 1_000, rotate_degrees: 180},
+			})
+
+			const envmap = world.createEntity({Envmap}, {
+				envmap: {},
+			})
+
+			this.#dispose = () => {
+				world.deleteEntity(level.id)
+				world.deleteEntity(skybox.id)
+				world.deleteEntity(envmap.id)
+			}
+
+			await level.data.level.doneLoading
+		})
+	}
+
+	#cycle = new Cycle([
+		this.#level("gym"),
+		this.#level("wrynth_dungeon"),
+	] as const)
 }
 

@@ -84,13 +84,13 @@ realm.porthole.resolution = localTesting
 
 const world = hub.world(realm)
 const executive = hub.executive(realm, world, root)
-const levelSwitcher = new LevelSwitcher(world)
+const levelSwitcher = new LevelSwitcher(realm, world)
 
-levelSwitcher.swap()
+// levelSwitcher.toggle()
 
 realm.impulse.on.universal.buttons.level_swap(button => {
 	if (button.down && !button.repeat)
-		levelSwitcher.swap()
+		levelSwitcher.toggle()
 })
 
 world.createEntity(...Archetypes.spectator({
