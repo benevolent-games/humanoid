@@ -43,7 +43,7 @@ const realm = await nexus.context.realmOp.load(
 				assets: {
 					gym: "/temp/gym14.glb",
 					character: "/temp/knightanimations43lowpoly.glb",
-					wrynth_dungeon: "/temp/the_grand_opening13.glb",
+					wrynth_dungeon: "/temp/the_grand_opening13.1.glb",
 				},
 				envmap: "/temp/wrynthinteriors2.env",
 				skybox: {
@@ -63,7 +63,7 @@ const realm = await nexus.context.realmOp.load(
 				assets: {
 					gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
 					character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43lowpoly.glb",
-					wrynth_dungeon: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb",
+					wrynth_dungeon: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.1.glb",
 				},
 				envmap: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/wrynthinteriors2.env",
 				skybox: {
@@ -86,7 +86,7 @@ const world = hub.world(realm)
 const executive = hub.executive(realm, world, root)
 const levelSwitcher = new LevelSwitcher(realm, world)
 
-// levelSwitcher.toggle()
+levelSwitcher.toggle()
 
 realm.impulse.on.universal.buttons.level_swap(button => {
 	if (button.down && !button.repeat)

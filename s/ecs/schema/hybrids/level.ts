@@ -27,10 +27,10 @@ export class Level extends HybridComponent<HumanoidRealm, {asset: LevelAsset}> {
 		}
 	}
 
-	#spawn_level(promise: Promise<AssetContainer>) {
+	#spawn_level(promise: Promise<AssetContainer>, physics: boolean) {
 		return promise
 			.then(instance_level)
-			.then(setup_level_accoutrements(this.realm))
+			.then(setup_level_accoutrements(this.realm, physics))
 			.then(this.#make_level_disposer)
 			.then(() => this.#promise.resolve())
 	}
@@ -39,10 +39,10 @@ export class Level extends HybridComponent<HumanoidRealm, {asset: LevelAsset}> {
 		const {state: {asset}} = this
 
 		if (asset === "gym")
-			this.#spawn_level(this.realm.glbs.gym())
+			this.#spawn_level(this.realm.glbs.gym(), false)
 
 		else if (asset === "wrynth_dungeon")
-			this.#spawn_level(this.realm.glbs.wrynth_dungeon())
+			this.#spawn_level(this.realm.glbs.wrynth_dungeon(), false)
 
 		else
 			console.warn(`unknown environment asset "${asset}"`)
@@ -106,7 +106,7 @@ async function instance_level(asset: AssetContainer) {
 
 type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
 
-function setup_level_accoutrements(realm: HumanoidRealm) {
+function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
 
@@ -167,19 +167,22 @@ function setup_level_accoutrements(realm: HumanoidRealm) {
 		}
 
 		dynamic_nodes.forEach(p => p.setEnabled(false))
-		static_meshes.forEach(apply_static_physics)
 
-		balls.forEach(p => create_hanging_physical_toy(p, {
-			position_offset: [0, -1, 0],
-			scale: [.75, .75, .75],
-			density: 1000,
-		}))
+		if (physics) {
+			static_meshes.forEach(apply_static_physics)
 
-		bags.forEach(p => create_hanging_physical_toy(p, {
-			position_offset: [0, -1, 0],
-			scale: [.5, 1.5, 1.5],
-			density: 1000,
-		}))
+			balls.forEach(p => create_hanging_physical_toy(p, {
+				position_offset: [0, -1, 0],
+				scale: [.75, .75, .75],
+				density: 1000,
+			}))
+
+			bags.forEach(p => create_hanging_physical_toy(p, {
+				position_offset: [0, -1, 0],
+				scale: [.5, 1.5, 1.5],
+				density: 1000,
+			}))
+		}
 
 		const accoutrement = {
 			dispose: () => {

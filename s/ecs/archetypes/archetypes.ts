@@ -42,7 +42,7 @@ export namespace Archetypes {
 		position,
 		spectator: {},
 		smoothing: 5,
-		speeds: {base: 5, fast: 25, slow: 1},
+		speeds: {base: 5, fast: 40, slow: 1},
 	}))
 }
 
