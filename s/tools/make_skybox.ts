@@ -1,10 +1,10 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
+import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial.js"
-import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 
 export type SkyboxLinks = {
 	px: string
@@ -13,17 +13,6 @@ export type SkyboxLinks = {
 	nx: string
 	ny: string
 	nz: string
-}
-
-export function make_image_based_lighting_environment(scene: Scene, link: string) {
-	const hdrTexture = CubeTexture.CreateFromPrefilteredData(link, scene)
-	scene.environmentTexture = hdrTexture
-	return {
-		dispose() {
-			scene.environmentTexture = null
-			hdrTexture.dispose()
-		},
-	}
 }
 
 export function make_skybox({

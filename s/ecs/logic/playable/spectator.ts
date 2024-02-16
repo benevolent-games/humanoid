@@ -11,12 +11,10 @@ export const spectator = system("spectator", [
 	responder("parenting the camera")
 		.select({Spectator, Camera, Gimbal})
 		.respond(() => ({
-			added(c, id) {
-				console.log("PARENTED", id)
+			added(c) {
 				c.camera.node.parent = c.gimbal.transformB
 			},
-			removed(c, id) {
-				console.log("UNPARENTED", id)
+			removed(c) {
 				if (c.camera.node.parent === c.gimbal.transformB)
 					c.camera.node.parent = null
 			},
@@ -26,11 +24,9 @@ export const spectator = system("spectator", [
 		.select({Spectator, Camera})
 		.respond(({realm}) => ({
 			added(c) {
-				console.log("CAMERAED")
 				realm.stage.rendering.setCamera(c.camera.node)
 			},
 			removed() {
-				console.log("UNCAMERAED")
 				realm.stage.rendering.setCamera(null)
 			},
 		})),

@@ -1,5 +1,6 @@
 
 import {behavior, system} from "../../hub.js"
+import {invert_y_axis} from "../../../tools/invert_y_axis.js"
 import {get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 import {MouseAccumulator} from "../../schema/hybrids/mouse_accumulator.js"
 import {Controllable, Intent, Sensitivity, Stance} from "../../schema/schema.js"
@@ -32,7 +33,7 @@ export const intentions = system("intentions", [
 			c.intent.glance = vec2.add(
 				c.intent.glance,
 				realm.stage.pointerLocker.locked
-					? vec2.multiplyBy(mouselook, c.sensitivity.mouse)
+					? vec2.multiplyBy(invert_y_axis(mouselook), c.sensitivity.mouse)
 					: vec2.zero(),
 			)
 		}),

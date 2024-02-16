@@ -17,10 +17,11 @@ import {register_to_dom} from "@benev/slate"
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
 import {HumanoidTick, hub} from "./ecs/hub.js"
-import {Sky} from "./ecs/schema/hybrids/sky.js"
 import {makeRealm} from "./models/realm/realm.js"
+import {Level} from "./ecs/schema/hybrids/level.js"
+import {Skybox} from "./ecs/schema/hybrids/skybox.js"
+import {Envmap} from "./ecs/schema/hybrids/envmap.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
-import {Environment} from "./ecs/schema/hybrids/environment.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
 
 register_to_dom({BenevHumanoid})
@@ -41,12 +42,12 @@ const realm = await nexus.context.realmOp.load(
 			// LOCAL TESTING TEMP LINKS
 			//
 			? {
-				glbs: {
-					// gym: "/temp/gym14.glb",
-					gym: "/temp/the_grand_opening13.glb",
+				assets: {
+					gym: "/temp/gym14.glb",
 					character: "/temp/knightanimations43lowpoly.glb",
+					wrynth_dungeon: "/temp/the_grand_opening13.glb",
 				},
-				image_based_lighting: "/temp/wrynthinteriors2.env",
+				envmap: "/temp/wrynthinteriors2.env",
 				skybox: {
 					px: "/temp/sky_01/px.webp",
 					py: "/temp/sky_01/py.webp",
@@ -61,12 +62,12 @@ const realm = await nexus.context.realmOp.load(
 			// PRODUCTION CDN LINKS
 			//
 			: {
-				glbs: {
-					// gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
-					gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb",
+				assets: {
+					gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/gym14.glb",
 					character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/knightanimations43lowpoly.glb",
+					wrynth_dungeon: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/the_grand_opening13.glb",
 				},
-				image_based_lighting: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/wrynthinteriors2.env",
+				envmap: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/wrynthinteriors2.env",
 				skybox: {
 					px: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/px.webp",
 					py: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/py.webp",
@@ -86,12 +87,16 @@ realm.porthole.resolution = localTesting
 const world = hub.world(realm)
 const executive = hub.executive(realm, world, root)
 
-world.createEntity({Environment}, {
-	environment: {asset: "gym"},
+world.createEntity({Level}, {
+	level: {asset: "gym"},
 })
 
-world.createEntity({Sky}, {
-	sky: {size: 1_000, rotation: 180},
+world.createEntity({Skybox}, {
+	skybox: {size: 1_000, rotate_degrees: 180},
+})
+
+world.createEntity({Envmap}, {
+	envmap: {},
 })
 
 world.createEntity(...Archetypes.spectator({
@@ -127,153 +132,4 @@ realm.stage.remote.onTick(() => {
 realm.stage.remote.start()
 
 console.log("realm", realm)
-
-
-
-
-
-
-// const executor = hub.executor(realm, realm.entities, systems)
-
-// realm.entities.create({
-// 	environment: "gym",
-// })
-
-// realm.entities.create({
-// 	sky: {
-// 		size: 1_000,
-// 		rotation: 180,
-// 	},
-// })
-
-// realm.entities.create(Archetypes.hemi({
-// 	direction: [.234, 1, .123],
-// 	intensity: .6,
-// }))
-
-// function* setup_bot_spawnpoints() {
-// 	while (true) {
-// 		for (const [x, z] of loop2d([3, 3]))
-// 			yield [x, 5, z + 3] as Vec3
-// 	}
-// }
-
-// const bots: Ecs4.Id[] = []
-// const bot_spawnpoints = setup_bot_spawnpoints()
-
-// function spawn_a_bot() {
-// 	const position = bot_spawnpoints.next().value!
-// 	const id = realm.entities.create({
-// 		...Archetypes.bot({debug: false, position}),
-// 		...Archetypes.aiBrain(),
-// 		gimbal: [0.5, 0.5],
-// 	})
-// 	bots.push(id)
-// }
-
-// realm.impulse.on.universal.buttons.bot_spawn(input => {
-// 	if (input.down)
-// 		spawn_a_bot()
-// })
-
-// realm.impulse.on.universal.buttons.bot_delete(input => {
-// 	if (input.down) {
-// 		const id = bots.shift()
-// 		if (id)
-// 			realm.entities.delete(id)
-// 	}
-// })
-
-// {
-// 	realm.impulse.modes.assign("universal", "humanoid")
-
-// 	let next: () => void = () => {}
-
-// 	function spectatorState() {
-// 		const id = realm.entities.create(Archetypes.spectator({
-// 			position: [0, 1, -2],
-// 		}))
-// 		next = () => {
-// 			realm.entities.delete(id)
-// 			humanoidState()
-// 		}
-// 	}
-
-// 	function humanoidState() {
-// 		const id = realm.entities.create({
-// 			...Archetypes.humanoid({
-// 				debug: false,
-// 				position: [0, 5, 0],
-// 			}),
-// 			gimbal: [0, 0.5],
-// 		})
-// 		next = () => {
-// 			realm.entities.delete(id)
-// 			spectatorState()
-// 		}
-// 	}
-
-// 	humanoidState()
-// 	spawn_a_bot()
-
-// 	realm.impulse.on.universal.buttons.respawn(input => {
-// 		if (input.down && !input.repeat)
-// 			next()
-// 	})
-// }
-
-// let count = 0
-// let gametime = 0
-// let last_time = performance.now()
-
-// const measures = {
-// 	tick: new RunningAverage(),
-// 	physics: new RunningAverage(),
-// 	logic: new RunningAverage(),
-// }
-
-// function logMeasurements() {
-// 	console.log([
-// 		`== diagnostics ==`,
-// 		`     tick ${human.performance(measures.tick.average)}`,
-// 		`  physics ${human.performance(measures.physics.average)}`,
-// 		`    logic ${human.performance(measures.logic.average)}`,
-// 	].join("\n"))
-// }
-
-// realm.stage.remote.onTick(() => {
-// 	const last = last_time
-
-// 	measures.tick.add(measure(() => {
-// 		measures.physics.add(measure(() => {
-// 			realm.physics.step()
-// 		}))
-
-// 		measures.logic.add(measure(() => {
-// 			const seconds = scalar.clamp(
-// 				((last_time = performance.now()) - last),
-// 				0,
-// 				1000 / 30, // clamp delta to avoid large over-corrections
-// 			) / 1000
-
-// 			gametime += seconds
-
-// 			const tick: HumanoidTick = {
-// 				seconds,
-// 				gametime,
-// 				count: count++,
-// 				hz: 1 / seconds,
-// 			}
-
-// 			executor.execute(tick)
-// 		}))
-// 	}))
-
-// 	if (count % (realm.tickrate * 5) === 0)
-// 		logMeasurements()
-// })
-
-// realm.stage.remote.start()
-
-// console.log("realm", realm)
 

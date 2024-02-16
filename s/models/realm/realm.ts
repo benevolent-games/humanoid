@@ -1,18 +1,17 @@
 
 import {Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
-import {Spawn} from "./parts/spawn.js"
 import {RefStore} from "./parts/ref_store.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {SkyboxLinks} from "../../tools/make_skybox.js"
-import {CharacterContainer} from "../character/container.js"
 
 export type HumanoidLinks = {
 	skybox: SkyboxLinks
-	image_based_lighting: string
-	glbs: {
+	envmap: string
+	assets: {
 		gym: string
 		character: string
+		wrynth_dungeon: string
 	}
 }
 
@@ -24,7 +23,6 @@ export type HumanoidRealm = {
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
 	physics: Physics
-	spawn: Spawn
 	stores: {
 		meshes: RefStore<Meshoid>
 		props: RefStore<Prop>
@@ -55,11 +53,11 @@ export async function makeRealm({tickrate, links}: {
 		gravity: [0, -9.81, 0],
 	})
 
-	const [gym, character] = await Promise.all([
-		stage.load_glb(links.glbs.gym),
-		stage.load_glb(links.glbs.character)
-			.then(container => new CharacterContainer(container)),
-	])
+	// const [gym, character] = await Promise.all([
+	// 	stage.load_glb(links.assets.gym),
+	// 	stage.load_glb(links.assets.character)
+	// 		.then(container => new CharacterContainer(container)),
+	// ])
 
 	return {
 		tickrate,
@@ -69,7 +67,6 @@ export async function makeRealm({tickrate, links}: {
 		impulse,
 		physics,
 		links,
-		spawn: new Spawn({gym, character}),
 		stores: {
 			props: new RefStore<Prop>("props"),
 			meshes: new RefStore<Meshoid>("meshes"),
