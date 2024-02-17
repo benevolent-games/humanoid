@@ -63,6 +63,9 @@ nav {
 }
 
 header {
+	display: flex;
+	gap: 1em;
+
 	font-weight: bold;
 	background: #1118;
 	padding: 0.2em 0.5em;
@@ -76,6 +79,17 @@ header {
 
 * + header {
 	margin-top: 1em;
+}
+
+textarea {
+	width: 100%;
+	height: 3em;
+	background: black;
+	color: inherit;
+	border: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 article {

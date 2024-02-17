@@ -94,6 +94,18 @@ realm.impulse.on.universal.buttons.level_swap(button => {
 		levelSwitcher.toggle()
 })
 
+function defaultPreventer(event: KeyboardEvent) {
+	if (event.altKey || event.code === "AltLeft")
+		event.preventDefault()
+}
+window.addEventListener("keydown", defaultPreventer)
+window.addEventListener("keyup", defaultPreventer)
+
+window.onbeforeunload = (event: Event) => {
+	event.preventDefault()
+	return "woah, are you sure you want to close the game?"
+}
+
 world.createEntity(...Archetypes.spectator({
 	position: [0, 5, 0],
 }))

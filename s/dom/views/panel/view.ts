@@ -41,7 +41,22 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		depthOfField: false,
 	})
 
-	const apply_effects = use.once(() => debounce(500, (effects: Effects) => {
+	function collect() {
+		const effects = clone<Effects>({
+			ssao,
+			ssr,
+			default: {
+				antialiasing,
+				imageProcessing,
+				bloom,
+				grain,
+				sharpen,
+				chromaticAberration,
+				glow,
+				depthOfField,
+			},
+		})
+
 		if (!active.ssao)
 			effects.ssao = null
 
@@ -75,13 +90,20 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		if (!active.default)
 			effects.default = null
 
+		return effects
+	}
+
+	const json = use.signal(JSON.stringify(collect()))
+
+	const apply_the_effects = use.once(() => debounce(500, (effects: Effects) => {
+		json.value = JSON.stringify(effects)
 		realm.stage.rendering.setEffects(effects)
 	}))
 
 	use.mount(() => reactor.reaction(
-		() => clone({active, effects: {ssao, ssr, default: {antialiasing, imageProcessing, bloom, grain, sharpen, chromaticAberration, glow, depthOfField}}}),
-		({effects}) => apply_effects(effects)),
-	)
+		collect,
+		apply_the_effects,
+	))
 
 	use.mount(() => reactor.reaction(
 		() => realm.porthole.resolution = resolution.value / 100)
@@ -147,6 +169,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	function render_section<G extends Group>(
 			activeKey: keyof typeof active,
 			group: G,
+			docs?: TemplateResult,
 		) {
 		return (spec: NumSpec<G>) => html`
 			<header ?data-active="${active[activeKey]}">
@@ -155,6 +178,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 					checked: active[activeKey],
 					set: x => active[activeKey] = x,
 				}])}
+				${docs}
 			</header>
 			<section class=group ?data-hidden="${!active[activeKey]}">
 				${settings(group)(spec)}
@@ -162,7 +186,47 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		`
 	}
 
+	function handle_json_change(event: InputEvent) {
+		const textarea = event.currentTarget as HTMLTextAreaElement
+		const effects = JSON.parse(textarea.value) as Effects
+
+		active.ssao = !!effects.ssao
+		active.ssr = !!effects.ssr
+
+		Object.assign(ssao, effects.ssao)
+		Object.assign(ssr, effects.ssr)
+
+		active.default = !!effects.default
+
+		if (effects.default) {
+			active.antialiasing = !!effects.default?.antialiasing
+			active.imageProcessing = !!effects.default?.imageProcessing
+			active.bloom = !!effects.default?.bloom
+			active.grain = !!effects.default?.grain
+			active.sharpen = !!effects.default?.sharpen
+			active.chromaticAberration = !!effects.default?.chromaticAberration
+			active.glow = !!effects.default?.glow
+			active.depthOfField = !!effects.default?.depthOfField
+
+			Object.assign(antialiasing, effects.default.antialiasing)
+			Object.assign(imageProcessing, effects.default.imageProcessing)
+			Object.assign(bloom, effects.default.bloom)
+			Object.assign(grain, effects.default.grain)
+			Object.assign(sharpen, effects.default.sharpen)
+			Object.assign(chromaticAberration, effects.default.chromaticAberration)
+			Object.assign(glow, effects.default.glow)
+			Object.assign(depthOfField, effects.default.depthOfField)
+		}
+
+		apply_the_effects(effects)
+	}
+
 	return wrap(html`
+		<article>
+			<header>data</header>
+			<textarea @change="${handle_json_change}" .value="${json}"></textarea>
+		</article>
+
 		<article>
 			<header>general</header>
 			<section>
@@ -178,10 +242,11 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		<article>
 			<header ?data-active="${active.default}">
 				${NuiCheckbox([{
-					label: "core",
+					label: "default",
 					checked: active.default,
 					set: x => active.default = x,
 				}])}
+				<a target=_blank href="https://doc.babylonjs.com/features/featuresDeepDive/postProcesses/defaultRenderingPipeline">docs</a>
 			</header>
 			<article ?data-hidden="${!active.default}">
 				${render_section("antialiasing", antialiasing)({
@@ -231,7 +296,9 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		</article>
 
 		<article>
-			${render_section("ssao", ssao)({
+			${render_section("ssao", ssao, html`
+					<a target=_blank href="https://doc.babylonjs.com/typedoc/classes/BABYLON.SSAO2RenderingPipeline">ref</a>
+				`)({
 				ssaoRatio: granularity.medium,
 				blurRatio: granularity.medium,
 				totalStrength: granularity.medium,
@@ -248,7 +315,10 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		</article>
 
 		<article>
-			${render_section("ssr", ssr)({
+			${render_section("ssr", ssr, html`
+					<a target=_blank href="https://doc.babylonjs.com/features/featuresDeepDive/postProcesses/SSRRenderingPipeline">docs</a>
+					<a target=_blank href="https://doc.babylonjs.com/typedoc/classes/BABYLON.SSRRenderingPipeline">ref</a>
+				`)({
 				maxDistance: granularity.giant,
 				maxSteps: granularity.coarser,
 				reflectionSpecularFalloffExponent: granularity.medium,
