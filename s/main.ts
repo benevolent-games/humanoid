@@ -7,6 +7,7 @@ import "@babylonjs/core/Engines/index.js"
 import "@babylonjs/core/Animations/index.js"
 import "@babylonjs/core/Rendering/edgesRenderer.js"
 import "@babylonjs/core/Physics/physicsEngineComponent.js"
+import "@babylonjs/core/Rendering/depthRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
@@ -92,6 +93,18 @@ realm.impulse.on.universal.buttons.level_swap(button => {
 	if (button.down && !button.repeat)
 		levelSwitcher.toggle()
 })
+
+function defaultPreventer(event: KeyboardEvent) {
+	if (event.altKey || event.code === "AltLeft")
+		event.preventDefault()
+}
+window.addEventListener("keydown", defaultPreventer)
+window.addEventListener("keyup", defaultPreventer)
+
+window.onbeforeunload = (event: Event) => {
+	event.preventDefault()
+	return "woah, are you sure you want to close the game?"
+}
 
 world.createEntity(...Archetypes.spectator({
 	position: [0, 5, 0],
