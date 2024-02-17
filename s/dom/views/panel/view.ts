@@ -144,6 +144,24 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		}
 	}
 
+	function render_section<G extends Group>(
+			activeKey: keyof typeof active,
+			group: G,
+		) {
+		return (spec: NumSpec<G>) => html`
+			<header ?data-active="${active[activeKey]}">
+				${NuiCheckbox([{
+					label: activeKey,
+					checked: active[activeKey],
+					set: x => active[activeKey] = x,
+				}])}
+			</header>
+			<section class=group ?data-hidden="${!active[activeKey]}">
+				${settings(group)(spec)}
+			</section>
+		`
+	}
+
 	return wrap(html`
 		<article>
 			<header>general</header>
@@ -166,176 +184,86 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 				}])}
 			</header>
 			<article ?data-hidden="${!active.default}">
-				<header ?data-active="${active.antialiasing}">
-					${NuiCheckbox([{
-						label: "antialiasing",
-						checked: active.antialiasing,
-						set: x => active.antialiasing = x,
-					}])}
-				</header>
-				<section class=group ?data-hidden="${!active.antialiasing}">
-					${settings(antialiasing)({
-						samples: granularity.samples,
-					})}
-				</section>
+				${render_section("antialiasing", antialiasing)({
+					samples: granularity.samples,
+				})}
 
-				<header ?data-active="${active.imageProcessing}">
-					${NuiCheckbox([{
-						label: "imageProcessing",
-						checked: active.imageProcessing,
-						set: x => active.imageProcessing = x,
-					}])}
-				</header>
-				<section ?data-hidden="${!active.imageProcessing}">
-					${settings(imageProcessing)({
-						contrast: granularity.medium,
-						exposure: granularity.medium,
-					})}
-				</section>
+				${render_section("imageProcessing", imageProcessing)({
+					contrast: granularity.medium,
+					exposure: granularity.medium,
+				})}
 
-				<header ?data-active="${active.bloom}">
-					${NuiCheckbox([{
-						label: "bloom",
-						checked: active.bloom,
-						set: x => active.bloom = x,
-					}])}
-				</header>
-				<section ?data-hidden="${!active.bloom}">
-					${settings(bloom)({
-						weight: granularity.medium,
-						threshold: granularity.fine,
-						scale: granularity.medium,
-						kernel: granularity.bigSamples,
-					})}
-				</section>
+				${render_section("bloom", bloom)({
+					weight: granularity.medium,
+					threshold: granularity.fine,
+					scale: granularity.medium,
+					kernel: granularity.bigSamples,
+				})}
 
-				<header ?data-active="${active.chromaticAberration}">
-					${NuiCheckbox([{
-						label: "chromaticAberration",
-						checked: active.chromaticAberration,
-						set: x => active.chromaticAberration = x,
-					}])}
-				</header>
-				<section ?data-hidden="${!active.chromaticAberration}">
-					${settings(chromaticAberration)({
-						aberrationAmount: granularity.coarse,
-						radialIntensity: granularity.medium,
-						alphaMode: granularity.alphaMode,
-					})}
-				</section>
+				${render_section("chromaticAberration", chromaticAberration)({
+					aberrationAmount: granularity.coarse,
+					radialIntensity: granularity.medium,
+					alphaMode: granularity.alphaMode,
+				})}
 
-				<header ?data-active="${active.glow}">
-					${NuiCheckbox([{
-						label: "glow",
-						checked: active.glow,
-						set: x => active.glow = x,
-					}])}
-				</header>
-				<section ?data-hidden="${!active.glow}">
-					${settings(glow)({
-						intensity: granularity.medium,
-						blurKernelSize: granularity.samples,
-					})}
-				</section>
+				${render_section("glow", glow)({
+					intensity: granularity.medium,
+					blurKernelSize: granularity.samples,
+				})}
 
-				<header ?data-active="${active.grain}">
-					${NuiCheckbox([{
-						label: "grain",
-						checked: active.grain,
-						set: x => active.grain = x,
-					}])}
-				</header>
-				<section ?data-hidden="${!active.grain}">
-					${settings(grain)({
-						intensity: granularity.coarse,
-					})}
-				</section>
+				${render_section("grain", grain)({
+					intensity: granularity.coarse,
+				})}
 
-				<header ?data-active="${active.sharpen}">
-					${NuiCheckbox([{
-						label: "sharpen",
-						checked: active.sharpen,
-						set: x => active.sharpen = x,
-					}])}
-				</header>
-				<section ?data-hidden="${!active.sharpen}">
-					${settings(sharpen)({
-						colorAmount: granularity.medium,
-						edgeAmount: granularity.medium,
-					})}
-				</section>
+				${render_section("sharpen", sharpen)({
+					colorAmount: granularity.medium,
+					edgeAmount: granularity.medium,
+				})}
 
-				<header ?data-active="${active.depthOfField}">
-					${NuiCheckbox([{
-						label: "depthOfField",
-						checked: active.depthOfField,
-						set: x => active.depthOfField = x,
-					}])}
-				</header>
-				<section ?data-hidden="${!active.depthOfField}">
-					${settings(depthOfField)({
-						blurLevel: granularity.medium,
-						fStop: granularity.medium,
-						focalLength: granularity.coarse,
-						focusDistance: granularity.giant,
-						lensSize: granularity.coarser,
-					})}
-				</section>
+				${render_section("depthOfField", depthOfField)({
+					blurLevel: granularity.medium,
+					fStop: granularity.medium,
+					focalLength: granularity.coarse,
+					focusDistance: granularity.giant,
+					lensSize: granularity.coarser,
+				})}
 			</article>
 		</article>
 
 		<article>
-			<header ?data-active="${active.ssao}">
-				${NuiCheckbox([{
-					label: "ssao",
-					checked: active.ssao,
-					set: x => active.ssao = x,
-				}])}
-			</header>
-			<section ?data-hidden="${!active.ssao}">
-					${settings(ssao)({
-						ssaoRatio: granularity.medium,
-						blurRatio: granularity.medium,
-						totalStrength: granularity.medium,
-						base: granularity.medium,
-						bilateralSamples: granularity.bigSamples,
-						bilateralSoften: granularity.medium,
-						bilateralTolerance: granularity.medium,
-						maxZ: granularity.giant,
-						minZAspect: granularity.coarse,
-						radius: granularity.medium,
-						epsilon: granularity.fine,
-						samples: granularity.samples,
-					})}
-			</section>
+			${render_section("ssao", ssao)({
+				ssaoRatio: granularity.medium,
+				blurRatio: granularity.medium,
+				totalStrength: granularity.medium,
+				base: granularity.medium,
+				bilateralSamples: granularity.bigSamples,
+				bilateralSoften: granularity.medium,
+				bilateralTolerance: granularity.medium,
+				maxZ: granularity.giant,
+				minZAspect: granularity.coarse,
+				radius: granularity.medium,
+				epsilon: granularity.fine,
+				samples: granularity.samples,
+			})}
 		</article>
 
 		<article>
-			<header ?data-active="${active.ssr}">
-				${NuiCheckbox([{
-					label: "ssr",
-					checked: active.ssr,
-					set: x => active.ssr = x,
-				}])}
-			</header>
-			<section ?data-hidden="${!active.ssr}">
-				${settings(ssr)({
-					maxDistance: granularity.giant,
-					maxSteps: granularity.coarser,
-					reflectionSpecularFalloffExponent: granularity.medium,
-					roughnessFactor: granularity.fine,
-					strength: granularity.medium,
-					blurDispersionStrength: granularity.medium,
-					reflectivityThreshold: granularity.superfine,
-					blurDownsample: granularity.medium,
-					ssrDownsample: granularity.medium,
-					samples: granularity.coarse,
-					step: granularity.medium,
-					thickness: granularity.medium,
-					selfCollisionNumSkip: granularity.medium,
-					backfaceDepthTextureDownsample: granularity.medium,
-				})}
-			</section>
+			${render_section("ssr", ssr)({
+				maxDistance: granularity.giant,
+				maxSteps: granularity.coarser,
+				reflectionSpecularFalloffExponent: granularity.medium,
+				roughnessFactor: granularity.fine,
+				strength: granularity.medium,
+				blurDispersionStrength: granularity.medium,
+				reflectivityThreshold: granularity.superfine,
+				blurDownsample: granularity.medium,
+				ssrDownsample: granularity.medium,
+				samples: granularity.coarse,
+				step: granularity.medium,
+				thickness: granularity.medium,
+				selfCollisionNumSkip: granularity.medium,
+				backfaceDepthTextureDownsample: granularity.medium,
+			})}
 		</article>
 	`)
 })
