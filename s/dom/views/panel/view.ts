@@ -14,40 +14,72 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	const resolution = use.signal(realm.porthole.resolution * 100)
 	const std = use.once(() => Stage.effects.everything())
 
-	const antialiasing = use.flatstate(std.default.antialiasing)
-	const bloom = use.flatstate(std.default.bloom)
 	const ssao = use.flatstate(std.ssao)
 	const ssr = use.flatstate(std.ssr)
 
+	const antialiasing = use.flatstate(std.default.antialiasing)
+	const imageProcessing = use.flatstate(std.default.imageProcessing)
+	const bloom = use.flatstate(std.default.bloom)
+	const grain = use.flatstate(std.default.grain)
+	const sharpen = use.flatstate(std.default.sharpen)
+	const chromaticAberration = use.flatstate(std.default.chromaticAberration)
+	const glow = use.flatstate(std.default.glow)
+	const depthOfField = use.flatstate(std.default.depthOfField)
+
 	const active = use.flatstate({
-		default: false,
-		antialiasing: false,
-		bloom: false,
 		ssao: false,
 		ssr: false,
+
+		default: false,
+		antialiasing: false,
+		imageProcessing: false,
+		bloom: false,
+		grain: false,
+		sharpen: false,
+		chromaticAberration: false,
+		glow: false,
+		depthOfField: false,
 	})
 
 	const apply_effects = use.once(() => debounce(500, (effects: Effects) => {
-		if (!active.antialiasing)
-			effects.default!.antialiasing = null
-
-		if (!active.bloom)
-			effects.default!.bloom = null
-
-		if (!active.default)
-			effects.default = null
-
 		if (!active.ssao)
 			effects.ssao = null
 
 		if (!active.ssr)
 			effects.ssr = null
 
+		if (!active.antialiasing)
+			effects.default!.antialiasing = null
+
+		if (!active.imageProcessing)
+			effects.default!.imageProcessing = null
+
+		if (!active.bloom)
+			effects.default!.bloom = null
+
+		if (!active.grain)
+			effects.default!.grain = null
+
+		if (!active.sharpen)
+			effects.default!.sharpen = null
+
+		if (!active.chromaticAberration)
+			effects.default!.chromaticAberration = null
+
+		if (!active.glow)
+			effects.default!.glow = null
+
+		if (!active.depthOfField)
+			effects.default!.depthOfField = null
+
+		if (!active.default)
+			effects.default = null
+
 		realm.stage.rendering.setEffects(effects)
 	}))
 
 	use.mount(() => reactor.reaction(
-		() => clone({active, effects: {default: {antialiasing, bloom}, ssao, ssr}}),
+		() => clone({active, effects: {ssao, ssr, default: {antialiasing, imageProcessing, bloom, grain, sharpen, chromaticAberration, glow, depthOfField}}}),
 		({effects}) => apply_effects(effects)),
 	)
 
@@ -64,6 +96,53 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 			</div>
 		`)}
 	`
+
+	type Granularity = {
+		min: number
+		max: number
+		step: number
+	}
+	type Group = {[key: string]: number | boolean}
+	type NumSpec<G extends Group> = {
+		[K in keyof G as G[K] extends number ? K : never]: Granularity
+	}
+
+	const granularity = {
+		alphaMode: {min: 0, max: 5, step: 1},
+		samples: {min: 0, max: 64, step: 2},
+		bigSamples: {min: 0, max: 512, step: 8},
+		integer: {min: 0, max: 100, step: 1},
+		superfine: {min: 0, max: .2, step: .001},
+		fine: {min: 0, max: 1, step: .01},
+		medium: {min: 0, max: 10, step: .1},
+		coarse: {min: 0, max: 100, step: 1},
+		coarser: {min: 0, max: 1000, step: 10},
+		giant: {min: 0, max: 5_000, step: 10},
+	} satisfies Record<string, Granularity>
+
+	function settings<G extends Group>(group: G) {
+		return (spec: NumSpec<G>) => {
+			return Object.entries(group).map(([key, value]) => {
+				if (typeof value === "number") {
+					const granularity = spec[key as keyof typeof spec] as Granularity
+					return NuiRange([{
+						...granularity,
+						label: key,
+						value,
+						set: x => (group as any)[key] = x,
+					}])
+				}
+				else if (typeof value === "boolean") {
+					return NuiCheckbox([{
+						label: key,
+						checked: value,
+						set: x => (group as any)[key] = x,
+					}])
+				}
+				else throw new Error(`invalid setting "${key}"`)
+			})
+		}
+	}
 
 	return wrap(html`
 		<article>
@@ -95,17 +174,23 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 					}])}
 				</header>
 				<section class=group ?data-hidden="${!active.antialiasing}">
-					${NuiRange([{
-						label: "samples",
-						min: 2, max: 16, step: 2,
-						value: antialiasing.samples,
-						set: x => antialiasing.samples = x,
-					}])}
+					${settings(antialiasing)({
+						samples: granularity.samples,
+					})}
+				</section>
+
+				<header ?data-active="${active.imageProcessing}">
 					${NuiCheckbox([{
-						label: "fxaa",
-						checked: antialiasing.fxaa,
-						set: x => antialiasing.fxaa = x,
+						label: "imageProcessing",
+						checked: active.imageProcessing,
+						set: x => active.imageProcessing = x,
 					}])}
+				</header>
+				<section ?data-hidden="${!active.imageProcessing}">
+					${settings(imageProcessing)({
+						contrast: granularity.medium,
+						exposure: granularity.medium,
+					})}
 				</section>
 
 				<header ?data-active="${active.bloom}">
@@ -116,30 +201,85 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 					}])}
 				</header>
 				<section ?data-hidden="${!active.bloom}">
-					${NuiRange([{
-						label: "weight",
-						min: 0, max: 2, step: .1,
-						value: bloom.weight,
-						set: x => bloom.weight = x,
+					${settings(bloom)({
+						weight: granularity.medium,
+						threshold: granularity.fine,
+						scale: granularity.medium,
+						kernel: granularity.bigSamples,
+					})}
+				</section>
+
+				<header ?data-active="${active.chromaticAberration}">
+					${NuiCheckbox([{
+						label: "chromaticAberration",
+						checked: active.chromaticAberration,
+						set: x => active.chromaticAberration = x,
 					}])}
-					${NuiRange([{
-						label: "threshold",
-						min: 0, max: 1, step: .01,
-						value: bloom.threshold,
-						set: x => bloom.threshold = x,
+				</header>
+				<section ?data-hidden="${!active.chromaticAberration}">
+					${settings(chromaticAberration)({
+						aberrationAmount: granularity.coarse,
+						radialIntensity: granularity.medium,
+						alphaMode: granularity.alphaMode,
+					})}
+				</section>
+
+				<header ?data-active="${active.glow}">
+					${NuiCheckbox([{
+						label: "glow",
+						checked: active.glow,
+						set: x => active.glow = x,
 					}])}
-					${NuiRange([{
-						label: "scale",
-						min: 0, max: 3, step: .1,
-						value: bloom.scale,
-						set: x => bloom.scale = x,
+				</header>
+				<section ?data-hidden="${!active.glow}">
+					${settings(glow)({
+						intensity: granularity.medium,
+						blurKernelSize: granularity.samples,
+					})}
+				</section>
+
+				<header ?data-active="${active.grain}">
+					${NuiCheckbox([{
+						label: "grain",
+						checked: active.grain,
+						set: x => active.grain = x,
 					}])}
-					${NuiRange([{
-						label: "kernel",
-						min: 8, max: 256, step: 8,
-						value: bloom.kernel,
-						set: x => bloom.kernel = x,
+				</header>
+				<section ?data-hidden="${!active.grain}">
+					${settings(grain)({
+						intensity: granularity.coarse,
+					})}
+				</section>
+
+				<header ?data-active="${active.sharpen}">
+					${NuiCheckbox([{
+						label: "sharpen",
+						checked: active.sharpen,
+						set: x => active.sharpen = x,
 					}])}
+				</header>
+				<section ?data-hidden="${!active.sharpen}">
+					${settings(sharpen)({
+						colorAmount: granularity.medium,
+						edgeAmount: granularity.medium,
+					})}
+				</section>
+
+				<header ?data-active="${active.depthOfField}">
+					${NuiCheckbox([{
+						label: "depthOfField",
+						checked: active.depthOfField,
+						set: x => active.depthOfField = x,
+					}])}
+				</header>
+				<section ?data-hidden="${!active.depthOfField}">
+					${settings(depthOfField)({
+						blurLevel: granularity.medium,
+						fStop: granularity.medium,
+						focalLength: granularity.coarse,
+						focusDistance: granularity.giant,
+						lensSize: granularity.coarser,
+					})}
 				</section>
 			</article>
 		</article>
@@ -153,30 +293,20 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 				}])}
 			</header>
 			<section ?data-hidden="${!active.ssao}">
-				${NuiRange([{
-					label: "ratio",
-					min: 0, max: 3, step: .1,
-					value: ssao.ratio,
-					set: x => ssao.ratio = x,
-				}])}
-				${NuiRange([{
-					label: "blur",
-					min: 0, max: 3, step: .1,
-					value: ssao.blur,
-					set: x => ssao.blur = x,
-				}])}
-				${NuiRange([{
-					label: "strength",
-					min: 0, max: 5, step: .1,
-					value: ssao.strength,
-					set: x => ssao.strength = x,
-				}])}
-				${NuiRange([{
-					label: "radius",
-					min: 0, max: 5, step: .1,
-					value: ssao.radius,
-					set: x => ssao.radius = x,
-				}])}
+					${settings(ssao)({
+						ssaoRatio: granularity.medium,
+						blurRatio: granularity.medium,
+						totalStrength: granularity.medium,
+						base: granularity.medium,
+						bilateralSamples: granularity.bigSamples,
+						bilateralSoften: granularity.medium,
+						bilateralTolerance: granularity.medium,
+						maxZ: granularity.giant,
+						minZAspect: granularity.coarse,
+						radius: granularity.medium,
+						epsilon: granularity.fine,
+						samples: granularity.samples,
+					})}
 			</section>
 		</article>
 
@@ -189,64 +319,22 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 				}])}
 			</header>
 			<section ?data-hidden="${!active.ssr}">
-				${NuiCheckbox([{
-					label: "debug",
-					checked: ssr.debug,
-					set: x => ssr.debug = x,
-				}])}
-				${NuiCheckbox([{
-					label: "useFresnel",
-					checked: ssr.useFresnel,
-					set: x => ssr.useFresnel = x,
-				}])}
-				${NuiRange([{
-					label: "maxSteps",
-					min: 0, max: 2_000, step: 1,
-					value: ssr.maxSteps,
-					set: x => ssr.maxSteps = x,
-				}])}
-				${NuiRange([{
-					label: "maxDistance",
-					min: 0, max: 10_000, step: 10,
-					value: ssr.maxDistance,
-					set: x => ssr.maxDistance = x,
-				}])}
-				${NuiRange([{
-					label: "ssrDownsample",
-					min: 0, max: 5, step: .1,
-					value: ssr.ssrDownsample,
-					set: x => ssr.ssrDownsample = x,
-				}])}
-				${NuiRange([{
-					label: "strength",
-					min: 0, max: 3, step: .1,
-					value: ssr.strength,
-					set: x => ssr.strength = x,
-				}])}
-				${NuiRange([{
-					label: "blurDispersionStrength",
-					min: 0, max: 3, step: .1,
-					value: ssr.blurDispersionStrength,
-					set: x => ssr.blurDispersionStrength = x,
-				}])}
-				${NuiRange([{
-					label: "reflectivityThreshold",
-					min: 0, max: .1, step: .001,
-					value: ssr.reflectivityThreshold,
-					set: x => ssr.reflectivityThreshold = x,
-				}])}
-				${NuiRange([{
-					label: "reflectionSpecularFalloffExponent",
-					min: 0, max: 5, step: .1,
-					value: ssr.reflectionSpecularFalloffExponent,
-					set: x => ssr.reflectionSpecularFalloffExponent = x,
-				}])}
-				${NuiRange([{
-					label: "blurDownsample",
-					min: 0, max: 5, step: .1,
-					value: ssr.blurDownsample,
-					set: x => ssr.blurDownsample = x,
-				}])}
+				${settings(ssr)({
+					maxDistance: granularity.giant,
+					maxSteps: granularity.coarser,
+					reflectionSpecularFalloffExponent: granularity.medium,
+					roughnessFactor: granularity.fine,
+					strength: granularity.medium,
+					blurDispersionStrength: granularity.medium,
+					reflectivityThreshold: granularity.superfine,
+					blurDownsample: granularity.medium,
+					ssrDownsample: granularity.medium,
+					samples: granularity.coarse,
+					step: granularity.medium,
+					thickness: granularity.medium,
+					selfCollisionNumSkip: granularity.medium,
+					backfaceDepthTextureDownsample: granularity.medium,
+				})}
 			</section>
 		</article>
 	`)

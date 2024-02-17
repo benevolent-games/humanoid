@@ -40,7 +40,7 @@ nav {
 	top: 1.8em;
 	left: 0.1em;
 	width: 80%;
-	max-width: 28em;
+	max-width: 32em;
 	bottom: 0.5em;
 	padding: 1em;
 
