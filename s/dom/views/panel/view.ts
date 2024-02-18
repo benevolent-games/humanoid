@@ -2,6 +2,7 @@
 import {TemplateResult, clone, debounce, html, reactor, ob, flat} from "@benev/slate"
 
 import {styles} from "./styles.js"
+import {Meta} from "./parts/inputs.js"
 import {nexus} from "../../../nexus.js"
 import {Toggler} from "./parts/toggler.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
@@ -12,6 +13,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	use.styles(styles)
 
 	const resolution = use.signal(realm.porthole.resolution * 100)
+
 	const {effects, active} = use.once(() => {
 		const std = Rendering.effects.everything()
 		const effects = ob(std).map(effect => flat.state(effect)) as Effects
@@ -53,61 +55,55 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		`)}
 	`
 
-	type Granularity = {
-		min: number
-		max: number
-		step: number
-	}
-	type Group = {[key: string]: number | boolean | string}
-	type NumSpec<G extends Group> = {
-		[K in keyof G as G[K] extends number ? K : never]: Granularity
-	}
+	function render_input<G extends Effects[keyof Effects]>(group: G) {
+		return (metaGroup: Meta.Group<G>) => {
+			return Object.entries(metaGroup).map(([key, meta]) => {
+				const value = group[key as keyof typeof group] as any
 
-	const granularity = {
-		samples: {min: 0, max: 64, step: 2},
-		bigSamples: {min: 0, max: 512, step: 8},
-		integer: {min: 0, max: 100, step: 1},
-		superfine: {min: 0, max: .2, step: .001},
-		fine: {min: 0, max: 1, step: .01},
-		medium: {min: 0, max: 10, step: .1},
-		coarse: {min: 0, max: 100, step: 1},
-		coarser: {min: 0, max: 1000, step: 10},
-		giant: {min: 0, max: 5_000, step: 10},
-	} satisfies Record<string, Granularity>
-
-	function settings<G extends Group>(group: G) {
-		return (spec: NumSpec<G>) => {
-			return Object.entries(group).map(([key, value]) => {
-				if (typeof value === "number") {
-					const granularity = spec[key as keyof typeof spec] as Granularity
+				if (meta instanceof Meta.Number) {
 					return NuiRange([{
-						...granularity,
+						...meta.granularity,
 						label: key,
 						value,
 						set: x => (group as any)[key] = x,
 					}])
 				}
-				else if (typeof value === "boolean") {
+
+				else if (meta instanceof Meta.Boolean) {
 					return NuiCheckbox([{
 						label: key,
 						checked: value,
 						set: x => (group as any)[key] = x,
 					}])
 				}
-				else if (typeof value === "string") {
-					return html`<span>TODO dropdown</span>`
+
+				else if (meta instanceof Meta.SelectString) {
+					return html`
+						<select>
+							${meta.options.map(option => html`
+								<option>${option}</option>
+							`)}
+						</select>
+					`
 				}
+
+				else if (meta instanceof Meta.Color) {
+					return html`
+						<input type="color"/>
+					`
+				}
+
 				else throw new Error(`invalid setting "${key}"`)
 			})
 		}
 	}
 
-	function render_section<G extends Group>(
+	function render_section<G extends Effects[keyof Effects]>(
 			activeKey: keyof typeof active,
 			group: G,
 			docs?: TemplateResult,
 		) {
-		return (spec: NumSpec<G>) => html`
+		return (metaGroup: Meta.Group<G>) => html`
 			<header ?data-active="${active[activeKey]}">
 				${NuiCheckbox([{
 					label: activeKey,
@@ -117,7 +113,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 				${docs}
 			</header>
 			<section class=group ?data-hidden="${!active[activeKey]}">
-				${settings(group)(spec)}
+				${render_input(group)(metaGroup)}
 			</section>
 		`
 	}
@@ -153,89 +149,116 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 		</article>
 
 		<article>
+			${render_section("antialiasing", effects.antialiasing)({
+				fxaa: Meta.boolean,
+				samples: Meta.granularity.samples,
+			})}
+
+			${render_section("imageProcessing", effects.imageProcessing)({
+				contrast: Meta.granularity.medium,
+				exposure: Meta.granularity.medium,
+			})}
+
+			${render_section("tonemapping", effects.tonemapping)({
+				operator: new Meta.SelectString([
+					"Hable",
+					"HejiDawson",
+					"Reinhard",
+					"Photographic",
+				]),
+			})}
+
+			${render_section("vignette", effects.vignette)({
+				color: Meta.color,
+				weight: Meta.granularity.medium,
+				multiply: Meta.boolean,
+				stretch: Meta.granularity.coarse,
+			})}
+
+			${render_section("bloom", effects.bloom)({
+				weight: Meta.granularity.medium,
+				threshold: Meta.granularity.fine,
+				scale: Meta.granularity.medium,
+				kernel: Meta.granularity.bigSamples,
+			})}
+
+			${render_section("chromaticAberration", effects.chromaticAberration)({
+				aberrationAmount: Meta.granularity.coarse,
+				radialIntensity: Meta.granularity.medium,
+			})}
+
+			${render_section("glow", effects.glow)({
+				intensity: Meta.granularity.medium,
+				blurKernelSize: Meta.granularity.samples,
+			})}
+
+			${render_section("sharpen", effects.sharpen)({
+				colorAmount: Meta.granularity.medium,
+				edgeAmount: Meta.granularity.medium,
+			})}
+
 			${render_section("ssao", effects.ssao, html`
 					<a target=_blank href="https://doc.babylonjs.com/typedoc/classes/BABYLON.SSAO2RenderingPipeline">ref</a>
 				`)({
-				ssaoRatio: granularity.medium,
-				blurRatio: granularity.medium,
-				totalStrength: granularity.medium,
-				base: granularity.medium,
-				bilateralSamples: granularity.bigSamples,
-				bilateralSoften: granularity.medium,
-				bilateralTolerance: granularity.medium,
-				maxZ: granularity.giant,
-				minZAspect: granularity.coarse,
-				radius: granularity.medium,
-				epsilon: granularity.fine,
-				samples: granularity.samples,
+				bypassBlur: Meta.boolean,
+				expensiveBlur: Meta.boolean,
+				ssaoRatio: Meta.granularity.medium,
+				blurRatio: Meta.granularity.medium,
+				totalStrength: Meta.granularity.medium,
+				base: Meta.granularity.medium,
+				bilateralSamples: Meta.granularity.bigSamples,
+				bilateralSoften: Meta.granularity.medium,
+				bilateralTolerance: Meta.granularity.medium,
+				maxZ: Meta.granularity.giant,
+				minZAspect: Meta.granularity.coarse,
+				radius: Meta.granularity.medium,
+				epsilon: Meta.granularity.fine,
+				samples: Meta.granularity.integer,
 			})}
 
 			${render_section("ssr", effects.ssr, html`
 					<a target=_blank href="https://doc.babylonjs.com/features/featuresDeepDive/postProcesses/SSRRenderingPipeline">docs</a>
 					<a target=_blank href="https://doc.babylonjs.com/typedoc/classes/BABYLON.SSRRenderingPipeline">ref</a>
 				`)({
-				maxDistance: granularity.giant,
-				maxSteps: granularity.coarser,
-				reflectionSpecularFalloffExponent: granularity.medium,
-				roughnessFactor: granularity.fine,
-				strength: granularity.medium,
-				blurDispersionStrength: granularity.fine,
-				reflectivityThreshold: granularity.superfine,
-				blurDownsample: granularity.medium,
-				ssrDownsample: granularity.medium,
-				samples: granularity.coarse,
-				step: granularity.medium,
-				thickness: granularity.medium,
-				selfCollisionNumSkip: granularity.medium,
-				backfaceDepthTextureDownsample: granularity.medium,
+				debug: Meta.boolean,
+				useFresnel: Meta.boolean,
+				clipToFrustum: Meta.boolean,
+				attenuateFacingCamera: Meta.boolean,
+				attenuateScreenBorders: Meta.boolean,
+				enableSmoothReflections: Meta.boolean,
+				attenuateBackfaceReflection: Meta.boolean,
+				attenuateIntersectionDistance: Meta.boolean,
+				attenuateIntersectionIterations: Meta.boolean,
+				enableAutomaticThicknessComputation: Meta.boolean,
+				backfaceForceDepthWriteTransparentMeshes: Meta.boolean,
+				maxDistance: Meta.granularity.giant,
+				maxSteps: Meta.granularity.coarser,
+				reflectionSpecularFalloffExponent: Meta.granularity.medium,
+				roughnessFactor: Meta.granularity.fine,
+				strength: Meta.granularity.medium,
+				blurDispersionStrength: Meta.granularity.fine,
+				reflectivityThreshold: Meta.granularity.superfine,
+				blurDownsample: Meta.granularity.medium,
+				ssrDownsample: Meta.granularity.medium,
+				samples: Meta.granularity.coarse,
+				step: Meta.granularity.medium,
+				thickness: Meta.granularity.medium,
+				selfCollisionNumSkip: Meta.granularity.medium,
+				backfaceDepthTextureDownsample: Meta.granularity.medium,
 			})}
 
 			${render_section("lens", effects.lens)({
-				chromatic_aberration: granularity.fine,
-				edge_blur: granularity.fine,
-				distortion: granularity.fine,
-				grain_amount: granularity.fine,
-				dof_focus_distance: granularity.coarse,
-				dof_aperture: granularity.medium,
-				dof_darken: granularity.medium,
-				dof_gain: granularity.medium,
-				dof_threshold: granularity.medium,
-			})}
-
-			${render_section("antialiasing", effects.antialiasing)({
-				samples: granularity.samples,
-			})}
-
-			${render_section("imageProcessing", effects.imageProcessing)({
-				contrast: granularity.medium,
-				exposure: granularity.medium,
-			})}
-
-			${render_section("tonemapping", effects.tonemapping)({})}
-
-			${render_section("vignette", effects.vignette)({
-			})}
-
-			${render_section("bloom", effects.bloom)({
-				weight: granularity.medium,
-				threshold: granularity.fine,
-				scale: granularity.medium,
-				kernel: granularity.bigSamples,
-			})}
-
-			${render_section("chromaticAberration", effects.chromaticAberration)({
-				aberrationAmount: granularity.coarse,
-				radialIntensity: granularity.medium,
-			})}
-
-			${render_section("glow", effects.glow)({
-				intensity: granularity.medium,
-				blurKernelSize: granularity.samples,
-			})}
-
-			${render_section("sharpen", effects.sharpen)({
-				colorAmount: granularity.medium,
-				edgeAmount: granularity.medium,
+				blur_noise: Meta.boolean,
+				dof_pentagon: Meta.boolean,
+				chromatic_aberration: Meta.granularity.fine,
+				edge_blur: Meta.granularity.fine,
+				distortion: Meta.granularity.fine,
+				grain_amount: Meta.granularity.fine,
+				dof_focus_distance: Meta.granularity.coarse,
+				dof_aperture: Meta.granularity.medium,
+				dof_darken: Meta.granularity.medium,
+				dof_gain: Meta.granularity.medium,
+				dof_threshold: Meta.granularity.medium,
 			})}
 		</article>
 	`)
