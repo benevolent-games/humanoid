@@ -2,7 +2,7 @@
 import {TemplateResult, clone, debounce, html, reactor, ob, flat} from "@benev/slate"
 
 import {styles} from "./styles.js"
-import {Meta} from "./parts/inputs.js"
+import {Meta} from "./parts/meta.js"
 import {nexus} from "../../../nexus.js"
 import {Toggler} from "./parts/toggler.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
@@ -79,6 +79,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 
 				else if (meta instanceof Meta.SelectString) {
 					return html`
+						<strong>dropdown doesn't work yet lol →</strong>
 						<select>
 							${meta.options.map(option => html`
 								<option>${option}</option>
@@ -89,6 +90,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 
 				else if (meta instanceof Meta.Color) {
 					return html`
+						<strong>color input doesn't work yet lol →</strong>
 						<input type="color"/>
 					`
 				}
