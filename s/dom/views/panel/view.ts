@@ -1,12 +1,12 @@
 
 import {TemplateResult, clone, debounce, html, reactor, ob, flat} from "@benev/slate"
+import {Effects, NuiCheckbox, NuiColor, NuiRange, NuiSelect, Rendering} from "@benev/toolbox"
 
 import {styles} from "./styles.js"
 import {Meta} from "./parts/meta.js"
 import {nexus} from "../../../nexus.js"
 import {Toggler} from "./parts/toggler.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
-import {Effects, NuiCheckbox, NuiRange, Rendering} from "@benev/toolbox"
 
 export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	use.name("panel")
@@ -57,43 +57,39 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 
 	function render_input<G extends Effects[keyof Effects]>(group: G) {
 		return (metaGroup: Meta.Group<G>) => {
+			const g = group as any
 			return Object.entries(metaGroup).map(([key, meta]) => {
-				const value = group[key as keyof typeof group] as any
+				const value = g[key]
 
-				if (meta instanceof Meta.Number) {
+				if (meta instanceof Meta.Number)
 					return NuiRange([{
 						...meta.granularity,
 						label: key,
 						value,
-						set: x => (group as any)[key] = x,
+						set: x => g[key] = x,
 					}])
-				}
 
-				else if (meta instanceof Meta.Boolean) {
+				else if (meta instanceof Meta.Boolean)
 					return NuiCheckbox([{
 						label: key,
 						checked: value,
-						set: x => (group as any)[key] = x,
+						set: x => g[key] = x,
 					}])
-				}
 
-				else if (meta instanceof Meta.SelectString) {
-					return html`
-						<strong>dropdown doesn't work yet lol →</strong>
-						<select>
-							${meta.options.map(option => html`
-								<option>${option}</option>
-							`)}
-						</select>
-					`
-				}
+				else if (meta instanceof Meta.SelectString)
+					return NuiSelect([{
+						label: key,
+						options: meta.options,
+						selected: g[key],
+						set: x => g[key] = x,
+					}])
 
-				else if (meta instanceof Meta.Color) {
-					return html`
-						<strong>color input doesn't work yet lol →</strong>
-						<input type="color"/>
-					`
-				}
+				else if (meta instanceof Meta.Color)
+					return NuiColor([{
+						label: key,
+						initial_hex_color: "#000000",
+						set: ({color}) => g[key] = color,
+					}])
 
 				else throw new Error(`invalid setting "${key}"`)
 			})
