@@ -26,8 +26,7 @@ export type HumanoidGlbs = {
 
 export type HumanoidRealm = {
 	links: HumanoidLinks
-	tickrate: number
-	porthole: Porthole
+	tickrate_hz: number
 	stage: Stage
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
@@ -40,18 +39,16 @@ export type HumanoidRealm = {
 	}
 }
 
-export async function makeRealm({tickrate, links}: {
+export async function makeRealm({links, tickrate_hz}: {
 		links: HumanoidLinks
-		tickrate: number
+		tickrate_hz: number
 	}): Promise<HumanoidRealm> {
 
 	const impulse = new HumanoidImpulse()
-	const porthole = new Porthole()
 
 	const stage = new Stage({
-		canvas: porthole.canvas,
 		background: Stage.backgrounds.sky(),
-		tickrate,
+		tickrate_hz,
 	})
 
 	const colors = debug_colors(stage.scene)
@@ -77,8 +74,7 @@ export async function makeRealm({tickrate, links}: {
 	}
 
 	return {
-		tickrate,
-		porthole,
+		tickrate_hz,
 		stage,
 		colors,
 		impulse,

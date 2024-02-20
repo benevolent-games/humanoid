@@ -34,7 +34,7 @@ const localTesting = (
 
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
-		tickrate: 60,
+		tickrate_hz: 60,
 		links: localTesting
 
 			//
@@ -79,7 +79,7 @@ const realm = await nexus.context.realmOp.load(
 	})
 )
 
-realm.porthole.resolution = localTesting
+realm.stage.porthole.resolution = localTesting
 	? 0.5
 	: 1
 
@@ -114,7 +114,7 @@ let count = 0
 let gametime = 0
 let last_time = performance.now()
 
-realm.stage.remote.onTick(() => {
+realm.stage.gameloop.onTick(() => {
 	const last = last_time
 	realm.physics.step()
 
@@ -136,7 +136,7 @@ realm.stage.remote.onTick(() => {
 	executive.execute(tick)
 })
 
-realm.stage.remote.start()
+realm.stage.gameloop.start()
 
 console.log("realm", realm)
 
