@@ -8,8 +8,10 @@ import {nexus} from "../../../nexus.js"
 const notes: MenuItem = {
 	name: "notes",
 	panel: () => html`
-		<h1>hello new notes menu</h1>
-		<p>lol i added this neat notes menu</p>
+		<h1>new notes menu</h1>
+		<p>all new fancy menus system.</p>
+		<p>settings menu totally redone.</p>
+		<p>fixed the rendering pipeline bugs.</p>
 	`,
 }
 
