@@ -152,7 +152,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 				samples: Meta.granularity.samples,
 			})}
 
-			${render_section("imageProcessing", effects.imageProcessing)({
+			${render_section("image", effects.image)({
 				contrast: Meta.granularity.medium,
 				exposure: Meta.granularity.medium,
 			})}
@@ -174,7 +174,7 @@ export const Panel = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 			})}
 
 			${render_section("bloom", effects.bloom)({
-				weight: Meta.granularity.medium,
+				weight: new Meta.Number({min: 0, max: 10, step: .01}),
 				threshold: Meta.granularity.fine,
 				scale: Meta.granularity.medium,
 				kernel: Meta.granularity.bigSamples,
