@@ -19,7 +19,7 @@
 	},
 	"dependencies": {
 		"@benev/slate": "^0.1.0-x.7",
-		"@benev/toolbox": "^0.5.0-x.18",
+		"@benev/toolbox": "^0.5.0-x.19",
 		"@dimforge/rapier3d": "^0.12.0",
 		"@dimforge/rapier3d-compat": "^0.12.0",
 		"es-module-shims": "^1.8.2",

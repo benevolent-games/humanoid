@@ -12,6 +12,7 @@ const notes: MenuItem = {
 		<p>all new fancy menus system.</p>
 		<p>settings menu totally redone.</p>
 		<p>fixed the rendering pipeline bugs.</p>
+		<p>increased precision granularity on sliders.</p>
 	`,
 }
 
