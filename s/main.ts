@@ -62,9 +62,9 @@ const realm = await nexus.context.realmOp.load(
 			//
 			: {
 				assets: {
-					gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/gym15.0.glb",
-					character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/knightanimations43lowpoly.0.glb",
-					wrynth_dungeon: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/the_grand_opening37.0.glb",
+					gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/gym15.1.glb",
+					character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/knightanimations43lowpoly.1.glb",
+					wrynth_dungeon: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/the_grand_opening37.1.glb",
 				},
 				envmap: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/wrynthinteriors2.env",
 				skybox: {
