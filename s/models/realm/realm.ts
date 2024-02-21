@@ -1,9 +1,8 @@
 
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
-import {Meshoid, Physics, Porthole, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
+import {Meshoid, Physics, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
 import {oneOff} from "../../tools/once.js"
-import {RefStore} from "./parts/ref_store.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {SkyboxLinks} from "../../tools/make_skybox.js"
 import {CharacterContainer} from "../character/container.js"
@@ -32,11 +31,6 @@ export type HumanoidRealm = {
 	impulse: HumanoidImpulse
 	physics: Physics
 	glbs: HumanoidGlbs
-	stores: {
-		meshes: RefStore<Meshoid>
-		props: RefStore<Prop>
-		physics_rigids: RefStore<Rapier.RigidBody>
-	}
 }
 
 export async function makeRealm({links, tickrate_hz}: {
@@ -81,11 +75,6 @@ export async function makeRealm({links, tickrate_hz}: {
 		physics,
 		links,
 		glbs,
-		stores: {
-			props: new RefStore<Prop>("props"),
-			meshes: new RefStore<Meshoid>("meshes"),
-			physics_rigids: new RefStore<Rapier.RigidBody>("physics_rigids"),
-		},
 	}
 }
 
