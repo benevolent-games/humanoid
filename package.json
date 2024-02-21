@@ -11,10 +11,11 @@
 		"s"
 	],
 	"scripts": {
-		"prepare": "toolbox-cleanup-babylon",
+		"prepare": "babylon-cleanup",
 		"build": "turtle-standard && npm run links",
 		"links": "ln -s \"$(realpath temp)\" x/temp",
 		"start": "turtle-standard-watch",
+		"glbs": "glbx temp x/glbs",
 		"test": "cynic node x/tests.test.js"
 	},
 	"dependencies": {

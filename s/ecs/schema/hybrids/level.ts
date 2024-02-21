@@ -110,9 +110,6 @@ function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
 
-		for (const light of level.lights)
-			light.intensity /= 1000
-
 		const static_meshes = level
 			.meshes
 			.filter(mesh => !(
