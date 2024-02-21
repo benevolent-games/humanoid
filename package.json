@@ -11,15 +11,16 @@
 		"s"
 	],
 	"scripts": {
-		"prepare": "toolbox-cleanup-babylon",
+		"prepare": "babylon-cleanup",
 		"build": "turtle-standard && npm run links",
 		"links": "ln -s \"$(realpath temp)\" x/temp",
 		"start": "turtle-standard-watch",
+		"glbs": "glbx temp x/glbs",
 		"test": "cynic node x/tests.test.js"
 	},
 	"dependencies": {
-		"@benev/slate": "^0.1.0-x.7",
-		"@benev/toolbox": "^0.5.0-x.20",
+		"@benev/slate": "^0.1.0-x.12",
+		"@benev/toolbox": "^0.5.0-x.21",
 		"@dimforge/rapier3d": "^0.12.0",
 		"@dimforge/rapier3d-compat": "^0.12.0",
 		"es-module-shims": "^1.8.2",
