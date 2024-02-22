@@ -1,5 +1,6 @@
 
 import {system} from "../hub.js"
+import {humanoid} from "./playable/humanoid.js"
 import {spectator} from "./playable/spectator.js"
 import {ambulation} from "./pure/ambulation.js"
 import {force} from "./pure/force.js"
@@ -17,6 +18,7 @@ export const root = system("root", [
 	]),
 	system("character", [
 		spectator,
+		humanoid,
 	])
 ])
 
