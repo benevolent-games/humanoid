@@ -1,21 +1,21 @@
 
 import {vec3} from "@benev/toolbox"
 import {Camera} from "../../schema/hybrids/camera.js"
-import {Gimbal} from "../../schema/hybrids/gimbal.js"
 import {behavior, responder, system} from "../../hub.js"
+import {GimbalRig} from "../../schema/hybrids/gimbal_rig.js"
 import {flatten, unflatten} from "../../../tools/flatten.js"
-import {Force, Impetus, Intent, Position, Spectator, Speeds} from "../../schema/schema.js"
+import {Force, Gimbal, Impetus, Intent, Position, Spectator, Speeds} from "../../schema/schema.js"
 import {apply_3d_rotation_to_movement} from "./simulation/apply_3d_rotation_to_movement.js"
 
 export const spectator = system("spectator", [
 	responder("parenting the camera")
-		.select({Spectator, Camera, Gimbal})
+		.select({Spectator, Camera, GimbalRig})
 		.respond(() => ({
 			added(c) {
-				c.camera.node.parent = c.gimbal.transformB
+				c.camera.node.parent = c.gimbalRig.transformB
 			},
 			removed(c) {
-				if (c.camera.node.parent === c.gimbal.transformB)
+				if (c.camera.node.parent === c.gimbalRig.transformB)
 					c.camera.node.parent = null
 			},
 		})),
@@ -44,9 +44,9 @@ export const spectator = system("spectator", [
 		}),
 
 	behavior("apply force to position")
-		.select({Spectator, Gimbal, Impetus, Position})
+		.select({Spectator, GimbalRig, Impetus, Position})
 		.act(() => c => {
-			const {transformA, transformB} = c.gimbal
+			const {transformA, transformB} = c.gimbalRig
 			c.position = (
 				apply_3d_rotation_to_movement(
 					transformB,
@@ -58,9 +58,15 @@ export const spectator = system("spectator", [
 		}),
 
 	behavior("apply position to transform")
-		.select({Spectator, Gimbal, Position})
+		.select({Spectator, GimbalRig, Position})
 		.act(() => c => {
-			c.gimbal.transformA.position.set(...c.position)
+			c.gimbalRig.transformA.position.set(...c.position)
+		}),
+
+	behavior("apply gimbal to gimbalRig")
+		.select({Spectator, Gimbal, GimbalRig, Position})
+		.act(() => c => {
+			c.gimbalRig.applyGimbal(c.gimbal)
 		}),
 ])
 

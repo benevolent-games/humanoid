@@ -1,13 +1,13 @@
 
 import {scalar} from "@benev/toolbox"
 import {behavior} from "../../hub.js"
-import {Intent} from "../../schema/schema.js"
-import {Gimbal} from "../../schema/hybrids/gimbal.js"
+import {Gimbal, Intent} from "../../schema/schema.js"
+import {GimbalRig} from "../../schema/hybrids/gimbal_rig.js"
 
 export const freelook = behavior("apply freelook, onto glance and gimbal based on intent")
-	.select({Intent, Gimbal})
+	.select({Intent, Gimbal, GimbalRig})
 	.act(() => c => {
-		const [gimbalX, gimbalY] = c.gimbal.state
+		const [gimbalX, gimbalY] = c.gimbal
 		const [glanceX, glanceY] = c.intent.glance
 
 		const x = gimbalX + glanceX
@@ -20,6 +20,6 @@ export const freelook = behavior("apply freelook, onto glance and gimbal based o
 		//  - thus, to compensate, we double our influence on gimbalY.
 		const y = gimbalY + (glanceY * 2)
 
-		c.gimbal.state = [scalar.wrap(x), scalar.clamp(y)]
+		c.gimbal = [scalar.wrap(x), scalar.clamp(y)]
 	})
 
