@@ -13,9 +13,8 @@
 	"scripts": {
 		"prepare": "babylon-cleanup",
 		"build": "turtle-standard && npm run links",
-		"links": "ln -s \"$(realpath temp)\" x/temp",
+		"links": "ln -s \"$(realpath assets)\" x/assets",
 		"start": "turtle-standard-watch",
-		"glbs": "glbx temp x/glbs",
 		"mount": "s/bin/mount",
 		"unmount": "s/bin/unmount",
 		"assets-down": "s/bin/assets-down",
@@ -25,7 +24,7 @@
 	},
 	"dependencies": {
 		"@benev/slate": "^0.1.0-x.13",
-		"@benev/toolbox": "^0.5.0-x.21",
+		"@benev/toolbox": "^0.5.0-x.22",
 		"@dimforge/rapier3d": "^0.12.0",
 		"@dimforge/rapier3d-compat": "^0.12.0",
 		"es-module-shims": "^1.8.2",

@@ -1,22 +1,18 @@
 
 import {World} from "@benev/toolbox"
+import {signals} from "@benev/slate"
 import {Cycle} from "../../tools/cycle.js"
 import {Loading} from "../../tools/loading.js"
-import {HumanoidRealm} from "../realm/realm.js"
-import {Skybox} from "../../ecs/schema/hybrids/skybox.js"
-import {Envmap} from "../../ecs/schema/hybrids/envmap.js"
 import {Level, LevelName} from "../../ecs/schema/hybrids/level.js"
 
 export class LevelSwitcher {
 	#loading = new Loading()
 	#dispose: (() => void) | null = null
+	current = signals.signal("n/a")
 
-	constructor(
-		public readonly realm: HumanoidRealm,
-		public readonly world: World<HumanoidRealm>,
-	) {}
+	constructor(public readonly world: World<any>) {}
 
-	toggle() {
+	next() {
 		if (this.#loading.currently)
 			return
 
@@ -25,33 +21,21 @@ export class LevelSwitcher {
 			this.#dispose = null
 		}
 
-		this.#cycle.grab()()
+		const {name, load} = this.#cycle.next()
+		this.current.value = name
+		load()
 	}
 
 	#level(name: LevelName) {
-		return this.#loading.fn(async() => {
-			const {world} = this
-
-			const level = world.createEntity({Level}, {
-				level: {name},
+		return {
+			name,
+			load: this.#loading.fn(async() => {
+				const {world} = this
+				const level = world.createEntity({Level}, {level: {name}})
+				this.#dispose = () => world.deleteEntity(level.id)
+				await level.data.level.doneLoading
 			})
-
-			const skybox = world.createEntity({Skybox}, {
-				skybox: {size: 1_000, rotate_degrees: 180},
-			})
-
-			const envmap = world.createEntity({Envmap}, {
-				envmap: {},
-			})
-
-			this.#dispose = () => {
-				world.deleteEntity(level.id)
-				world.deleteEntity(skybox.id)
-				world.deleteEntity(envmap.id)
-			}
-
-			await level.data.level.doneLoading
-		})
+		}
 	}
 
 	#cycle = new Cycle([

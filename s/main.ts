@@ -17,44 +17,54 @@ import {register_to_dom} from "@benev/slate"
 
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
+import {Quality} from "./tools/quality.js"
 import {HumanoidTick, hub} from "./ecs/hub.js"
-import {Quality} from "./models/assets/assets.js"
 import {makeRealm} from "./models/realm/realm.js"
+import {Skybox} from "./ecs/schema/hybrids/skybox.js"
+import {Envmap} from "./ecs/schema/hybrids/envmap.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {LevelSwitcher} from "./models/level_switcher/switcher.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
+import {determine_quality_mode} from "./tools/determine_quality_mode.js"
 import {determine_local_dev_mode} from "./tools/determine_local_dev_mode.js"
 
 register_to_dom({BenevHumanoid})
 ;(window as any).nexus = nexus
 
-const realm = await nexus.context.realmOp.load(
+const realm = (window as any).realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
 		tickrate_hz: 60,
-		quality: Quality.Fancy,
-		local_dev_mode: determine_local_dev_mode(),
+		quality: determine_quality_mode(location.href, Quality.Mid),
+		local_dev_mode: determine_local_dev_mode(location.href),
 	})
 )
 
-realm.stage.porthole.resolution = realm.local_dev_mode
+realm.stage.porthole.resolution = realm.quality === Quality.Potato
 	? 0.5
 	: 1
 
 const world = hub.world(realm)
 const executive = hub.executive(realm, world, root)
-const levelSwitcher = new LevelSwitcher(realm, world)
 
-levelSwitcher.toggle()
+world.createEntity({Envmap}, {envmap: {}})
+world.createEntity({Skybox}, {
+	skybox: {size: 1_000, rotate_degrees: 180},
+})
+
+const levelSwitcher = new LevelSwitcher(world)
+nexus.context.zoneOp.setReady({levelSwitcher})
+levelSwitcher.next()
 
 realm.impulse.on.universal.buttons.level_swap(button => {
 	if (button.down && !button.repeat)
-		levelSwitcher.toggle()
+		levelSwitcher.next()
 })
 
 function defaultPreventer(event: KeyboardEvent) {
 	if (event.altKey || event.code === "AltLeft")
 		event.preventDefault()
 }
+
 window.addEventListener("keydown", defaultPreventer)
 window.addEventListener("keyup", defaultPreventer)
 
@@ -63,9 +73,7 @@ window.onbeforeunload = (event: Event) => {
 	return "woah, are you sure you want to close the game?"
 }
 
-world.createEntity(...Archetypes.spectator({
-	position: [0, 5, 0],
-}))
+world.createEntity(...Archetypes.spectator({position: [0, 5, 0]}))
 
 let count = 0
 let gametime = 0

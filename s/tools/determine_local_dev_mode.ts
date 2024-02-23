@@ -1,8 +1,10 @@
 
-export function determine_local_dev_mode() {
+export function determine_local_dev_mode(url: string) {
+	const {host, search} = new URL(url)
+	const params = new URLSearchParams(search)
 	return (
-		window.location.host.startsWith("localhost") ||
-		window.location.host.startsWith("192")
-	) && !window.location.search.includes("cloud")
+		host.startsWith("localhost") ||
+		host.startsWith("192")
+	) && !params.has("cloud")
 }
 

@@ -1,29 +1,25 @@
 
-import {html} from "@benev/slate"
-import {MenuItem, Theater, op_effect} from "@benev/toolbox"
+import {Op, html} from "@benev/slate"
+import {Theater, op_effect, settingsMenu} from "@benev/toolbox"
 
 import {styles} from "./styles.js"
 import {nexus} from "../../../nexus.js"
-
-const notes: MenuItem = {
-	name: "notes",
-	panel: () => html`
-		<h1>new notes menu</h1>
-		<p>all new fancy menus system.</p>
-		<p>settings menu totally redone.</p>
-		<p>fixed the rendering pipeline bugs.</p>
-		<p>increased precision granularity on sliders.</p>
-	`,
-}
+import {notesMenu} from "./menus/notes.js"
+import {qualityMenu} from "./menus/quality.js"
 
 export const BenevHumanoid = nexus.shadow_component(use => {
 	use.styles(styles)
+	const {realmOp, zoneOp} = use.context
 
 	return html`
-		${op_effect.braille(use.context.realmOp.value, realm =>
+		${op_effect.braille(Op.all(realmOp.value, zoneOp.value), ([realm, zone]) =>
 			Theater([{
 				stage: realm.stage,
-				menu: [notes],
+				menus: [
+					settingsMenu(),
+					qualityMenu(realm),
+					notesMenu(realm, zone),
+				],
 			}])
 		)}
 	`

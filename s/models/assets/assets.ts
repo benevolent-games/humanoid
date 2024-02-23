@@ -5,28 +5,10 @@ import {Scene} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {once} from "../../tools/once.js"
+import {AssetLinks} from "./parts/types.js"
+import {Quality} from "../../tools/quality.js"
 import {make_envmap} from "../../tools/make_envmap.js"
 import {SkyboxParams, make_skybox, skybox_image_links} from "../../tools/make_skybox.js"
-
-export type AssetLinks = {
-	root: string
-	glbs: {
-		levels: Pojo<string>
-		characters: Pojo<string>
-	}
-	shaders: Pojo<string>
-	envmaps: Pojo<string>
-	skyboxes: Pojo<{
-		directory: string
-		extension: string
-	}>
-}
-
-export enum Quality {
-	Fancy = 0,
-	Mid = 1,
-	Potato = 2,
-}
 
 export class Assets<L extends AssetLinks> {
 	static links<A extends AssetLinks>(links: A) {

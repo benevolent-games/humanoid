@@ -14,9 +14,3 @@ rsync -vham \
 	mount/benev-storage/assets \
 	.
 
-# --include="*.env" \
-# --include="*.json" \
-# --include="*.webp" \
-# --include="*.jpg" \
-# --include="*.png" \
-
