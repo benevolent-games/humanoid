@@ -22,64 +22,19 @@ import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {LevelSwitcher} from "./models/level_switcher/switcher.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
+import {determine_local_dev_mode} from "./tools/determine_local_dev_mode.js"
 
 register_to_dom({BenevHumanoid})
-
 ;(window as any).nexus = nexus
-
-const localTesting = (
-	window.location.host.startsWith("localhost") ||
-	window.location.host.startsWith("192")
-) && !window.location.search.includes("cloud")
 
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
+		local_dev_mode: determine_local_dev_mode(),
 		tickrate_hz: 60,
-		links: localTesting
-
-			//
-			// LOCAL TESTING TEMP LINKS
-			//
-			? {
-				assets: {
-					gym: "/glbs/gym15.2.glb",
-					character: "/glbs/knightanimations43lowpoly.2.glb",
-					wrynth_dungeon: "/glbs/the_grand_opening37.2.glb",
-				},
-				envmap: "/temp/wrynthinteriors2.env",
-				skybox: {
-					px: "/temp/sky_01/px.webp",
-					py: "/temp/sky_01/py.webp",
-					pz: "/temp/sky_01/nz.webp",
-					nx: "/temp/sky_01/nx.webp",
-					ny: "/temp/sky_01/ny.webp",
-					nz: "/temp/sky_01/pz.webp",
-				},
-			}
-
-			//
-			// PRODUCTION CDN LINKS
-			//
-			: {
-				assets: {
-					gym: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/gym15.1.glb",
-					character: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/knightanimations43lowpoly.1.glb",
-					wrynth_dungeon: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/glbs/the_grand_opening37.1.glb",
-				},
-				envmap: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/wrynthinteriors2.env",
-				skybox: {
-					px: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/px.webp",
-					py: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/py.webp",
-					pz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nz.webp", // note the remapping
-					nx: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/nx.webp",
-					ny: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/ny.webp",
-					nz: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/sky_01/pz.webp", // note the remapping
-				},
-			}
 	})
 )
 
-realm.stage.porthole.resolution = localTesting
+realm.stage.porthole.resolution = realm.local_dev_mode
 	? 0.5
 	: 1
 

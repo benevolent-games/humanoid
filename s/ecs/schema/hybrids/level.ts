@@ -8,11 +8,12 @@ import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
 
+import {HumanoidAssets} from "../../../asset_links.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
 
-export type LevelAsset = "gym" | "wrynth_dungeon"
+export type LevelName = keyof HumanoidAssets["glbs"]["levels"]
 
-export class Level extends HybridComponent<HumanoidRealm, {asset: LevelAsset}> {
+export class Level extends HybridComponent<HumanoidRealm, {name: LevelName}> {
 	#dispose: (() => void) | null = null
 	#promise = explode_promise<void>()
 
@@ -36,16 +37,8 @@ export class Level extends HybridComponent<HumanoidRealm, {asset: LevelAsset}> {
 	}
 
 	created() {
-		const {state: {asset}} = this
-
-		if (asset === "gym")
-			this.#spawn_level(this.realm.glbs.gym(), false)
-
-		else if (asset === "wrynth_dungeon")
-			this.#spawn_level(this.realm.glbs.wrynth_dungeon(), false)
-
-		else
-			console.warn(`unknown environment asset "${asset}"`)
+		const {state: {name}} = this
+		this.#spawn_level(this.realm.assets.glbs.levels[name](), false)
 	}
 
 	updated() {}
