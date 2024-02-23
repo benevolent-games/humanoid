@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "assert remote x directory"
+mkdir -p mount/benev-storage/x
+
+echo "wipe remote x/assets"
+rm -rfv mount/benev-storage/x/assets
+
+echo "upload processed assets back to storage"
+rsync -vham --progress assets mount/benev-storage/x
+
