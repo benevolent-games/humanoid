@@ -39,9 +39,10 @@ export const NotesMenu = nexus.shadow_view(use => (
 
 	return html`
 		<section>
-			<h1>welcome to the humanoid.</h1>
-			<p>humanoid is in early development.</p>
+			<h1>welcome to humanoid.</h1>
+			<p>the humanoid sandbox is under development.</p>
 			<p>we're using it to make super cool games.</p>
+			<p>join our <a target=_blank href="https://discord.gg/BnZx2utdev">discord</a> community.</p>
 		</section>
 		<section>
 			<h1>
@@ -51,7 +52,7 @@ export const NotesMenu = nexus.shadow_view(use => (
 			<p>press R or <button @click="${switchLevel}">click here</button> to switch levels.</p>
 			<p>we now have the ${level("gym")}, ${level("mt_pimsley")}, ${level("teleporter")}, and ${level("wrynth_dungeon")}.</p>
 			<p>added the new "quality" menu.</p>
-			<p>there's still plenty of optimizations to be done.</p>
+			<p><strong>thin instances!</strong> we've thinnified the foliage on mt_pimsley, for some reason some of the trees turn naked, more research is needed..</p>
 		</section>
 		<section>
 			<h1>new notes menu</h1>

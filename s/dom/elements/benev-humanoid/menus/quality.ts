@@ -3,7 +3,7 @@ import {menu} from "@benev/toolbox"
 import {css, html} from "@benev/slate"
 import {nexus} from "../../../../nexus.js"
 import {HumanoidRealm} from "../../../../models/realm/realm.js"
-import { QualityString, quality_from_string } from "../../../../tools/quality.js"
+import {QualityString, quality_from_string} from "../../../../tools/quality.js"
 
 export const qualityMenu = (realm: HumanoidRealm) => menu("quality", () => QualityMenu([realm]))
 
@@ -11,6 +11,7 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	use.name("quality-menu")
 	use.styles(css`
 		:host > * + * { margin-top: 1em; }
+
 		section {
 			padding: 1em;
 		}
@@ -19,6 +20,11 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 			display: flex;
 			gap: 0.5em;
 			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		.notice {
+			text-align: center;
 		}
 
 		button {
@@ -28,7 +34,7 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 			justify-content: center;
 			align-items: center;
 			padding: 1em;
-			background: #ff8227b8;
+			background: #ff822775;
 			color: white;
 			font-weight: bold;
 			text-shadow: 1px 2px 2px #0004;
@@ -37,7 +43,7 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 			border-top: 1px solid #fff4;
 			border-radius: 0.3em;
 
-			&:hover { background: #ff6b00; }
+			&:hover { background: #ff6b0099; }
 
 			&[disabled] {
 				background: #0003;
@@ -45,10 +51,12 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 				border: none;
 				border-bottom: 1px solid #fff1;
 			}
+
+			.emoji { font-size: 1.5em; }
 		}
 	`)
 
-	function button(label: QualityString, urlquality: string = label) {
+	function button(emoji: string, label: QualityString, urlquality: string = label) {
 		const href = `?quality=${urlquality}`
 		const active = realm.quality === quality_from_string(label)
 		const click = () => window.location.assign(href)
@@ -56,7 +64,7 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 			<button
 				@click="${click}"
 				?disabled="${active}">
-				${label}
+				<span class=emoji>${emoji}</span> <span>${label}</span>
 			</button>
 		`
 	}
@@ -64,12 +72,12 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	return html`
 		<section>
 			<div>
-				${button("fancy")}
-				${button("mid")}
-				${button("potato", "bingus")}
+				${button("🥔", "potato", "bingus")}
+				${button("😐", "mid")}
+				${button("🧐", "fancy")}
 			</div>
 			<br/>
-			<p>changing quality mode will restart the game. <em>i'm sorry.</em></p>
+			<p class=notice>changing quality mode will restart the game. <em>i'm sorry.</em></p>
 		</section>
 	`
 })
