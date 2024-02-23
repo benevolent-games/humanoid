@@ -2,7 +2,7 @@
 import {Physics, Stage, debug_colors} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
-import {Assets} from "../assets/assets.js"
+import {Assets, Quality} from "../assets/assets.js"
 import {assetLinks} from "../../asset_links.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {CharacterContainer} from "../character/container.js"
@@ -16,6 +16,7 @@ export type HumanoidGlbs = {
 }
 
 export type HumanoidRealm = {
+	quality: Quality
 	local_dev_mode: boolean
 	tickrate_hz: number
 	stage: Stage
@@ -26,18 +27,19 @@ export type HumanoidRealm = {
 }
 
 export async function makeRealm(params: {
+		quality: Quality
 		tickrate_hz: number
 		local_dev_mode: boolean
 	}): Promise<HumanoidRealm> {
 
-	const {tickrate_hz, local_dev_mode} = params
+	const {quality, tickrate_hz, local_dev_mode} = params
 
 	const stage = new Stage({
 		background: Stage.backgrounds.sky(),
 		tickrate_hz,
 	})
 
-	const assets = new Assets(stage.scene, assetLinks(local_dev_mode))
+	const assets = new Assets(stage.scene, quality, assetLinks(local_dev_mode))
 
 	const impulse = new HumanoidImpulse()
 
@@ -51,6 +53,7 @@ export async function makeRealm(params: {
 	})
 
 	return {
+		quality,
 		local_dev_mode,
 		tickrate_hz,
 		stage,

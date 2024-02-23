@@ -18,6 +18,7 @@ import {register_to_dom} from "@benev/slate"
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
 import {HumanoidTick, hub} from "./ecs/hub.js"
+import {Quality} from "./models/assets/assets.js"
 import {makeRealm} from "./models/realm/realm.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {LevelSwitcher} from "./models/level_switcher/switcher.js"
@@ -29,8 +30,9 @@ register_to_dom({BenevHumanoid})
 
 const realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
-		local_dev_mode: determine_local_dev_mode(),
 		tickrate_hz: 60,
+		quality: Quality.Fancy,
+		local_dev_mode: determine_local_dev_mode(),
 	})
 )
 

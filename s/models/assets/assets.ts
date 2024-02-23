@@ -22,9 +22,24 @@ export type AssetLinks = {
 	}>
 }
 
+export enum Quality {
+	Fancy = 0,
+	Mid = 1,
+	Potato = 2,
+}
+
 export class Assets<L extends AssetLinks> {
 	static links<A extends AssetLinks>(links: A) {
 		return links
+	}
+
+	static glb_quality(url: string, quality: Quality) {
+		const slashed = url.split("/")
+		const filename = slashed.pop()!
+		const dotted = filename.split(".")
+		const extension = dotted.pop()!
+		const name = dotted.join(".")
+		return `${slashed.join("/")}/${name}.${quality}.${extension}`
 	}
 
 	#scene: Scene
@@ -36,25 +51,25 @@ export class Assets<L extends AssetLinks> {
 	readonly envmaps: {[K in keyof L["envmaps"]]: () => ReturnType<typeof make_envmap>}
 	readonly skyboxes: {[K in keyof L["skyboxes"]]: ({}: SkyboxParams) => ReturnType<typeof make_skybox>}
 
-	constructor(scene: Scene, spec: L) {
+	constructor(scene: Scene, quality: Quality, spec: L) {
 		this.#scene = scene
 		this.#spec = spec
 
 		this.glbs = ob(this.#spec.glbs).map(
 			group => ob(group).map(
-				link => once(async() => this.#load_glb(this.#url(link)))
+				link => once(async() => this.#load_glb(this.#url(Assets.glb_quality(link, quality))))
 			)
 		) as any
 
 		this.envmaps = ob(this.#spec.envmaps).map(
-			link => make_envmap(scene, this.#url(link))
+			link => () => make_envmap(scene, this.#url(link))
 		) as any
 
 		this.skyboxes = ob(this.#spec.skyboxes).map(
 			({directory, extension}) => (p: SkyboxParams) => make_skybox({
 				...p,
 				scene,
-				links: skybox_image_links(directory, extension),
+				links: skybox_image_links(this.#url(directory), extension),
 			})
 		) as any
 	}

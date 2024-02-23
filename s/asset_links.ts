@@ -7,7 +7,7 @@ export type HumanoidAssets = Assets<HumanoidAssetLinks>
 export const assetLinks = (local_dev_mode: boolean) => Assets.links({
 
 	root: local_dev_mode ?
-		"x/assets" :
+		"/assets" :
 		"https://benev-storage.sfo2.cdn.digitaloceanspaces.com/assets",
 
 	glbs: {
