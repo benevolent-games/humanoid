@@ -3,24 +3,23 @@ import {Vec2, scalar, vec2} from "@benev/toolbox"
 
 import {behavior} from "../../hub.js"
 import {flatten} from "../../../tools/flatten.js"
-import {Gimbal} from "../../schema/hybrids/gimbal.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {molasses, molasses2d} from "../../../tools/molasses.js"
-import {Ambulatory, Grounding, Speeds, Stance, Velocity} from "../../schema/schema.js"
+import {Ambulatory, Gimbal, Grounding, Speeds, Stance, Velocity} from "../../schema/schema.js"
 
 const smoothing = 5
 
 export const ambulation = behavior("calculate ambulatory data")
 	.select({Ambulatory, Velocity, Speeds, Gimbal, Stance, Grounding})
-	.act(({tick}) => state => {
-		const {smooth} = state.ambulatory
+	.act(({tick}) => c => {
+		const {smooth} = c.ambulatory
 
 		const globalvel = vec2.multiplyBy(
-			flatten(state.velocity),
+			flatten(c.velocity),
 			tick.hz,
 		)
 
-		state.ambulatory.smooth.globalvel = molasses2d(
+		c.ambulatory.smooth.globalvel = molasses2d(
 			smoothing,
 			smooth.globalvel,
 			globalvel,
@@ -35,7 +34,7 @@ export const ambulation = behavior("calculate ambulatory data")
 		smooth.standing = molasses(
 			smoothing,
 			smooth.standing,
-			state.stance === "stand"
+			c.stance === "stand"
 				? 1
 				: 0,
 		)
@@ -43,20 +42,20 @@ export const ambulation = behavior("calculate ambulatory data")
 		smooth.groundage = molasses(
 			smoothing,
 			smooth.groundage,
-			state.grounding.grounded
+			c.grounding.grounded
 				? 1
 				: 0,
 		)
 
 		const magnitude = vec2.magnitude(smooth.globalvel)
 
-		state.ambulatory = {
+		c.ambulatory = {
 			smooth,
 			magnitude,
 			standing: smooth.standing,
 			groundage: smooth.groundage,
 			...cardinalize(
-				gimbaltool(state.gimbal.state)
+				gimbaltool(c.gimbal)
 					.unrotate2d(smooth.normal)
 			),
 		}

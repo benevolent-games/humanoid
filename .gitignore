@@ -3,6 +3,7 @@
 /assets/temp
 /notes
 /temp
+/mount
 
 /node_modules
 /yarn.lock

@@ -5,7 +5,7 @@ import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
 
-export class Gimbal extends HybridComponent<HumanoidRealm, Vec2> {
+export class GimbalRig extends HybridComponent<HumanoidRealm, {}> {
 	transformA = new TransformNode(
 		label("transform-a"),
 		this.realm.stage.scene,
@@ -18,15 +18,17 @@ export class Gimbal extends HybridComponent<HumanoidRealm, Vec2> {
 		true,
 	)
 
+	applyGimbal(gimbal: Vec2) {
+		const quaternions = gimbaltool(gimbal).quaternions()
+		this.transformB.rotationQuaternion = quaternions.vertical
+		this.transformA.rotationQuaternion = quaternions.horizontal
+	}
+
 	created() {
 		this.transformB.setParent(this.transformA)
 	}
 
-	updated() {
-		const quaternions = gimbaltool(this.state).quaternions()
-		this.transformB.rotationQuaternion = quaternions.vertical
-		this.transformA.rotationQuaternion = quaternions.horizontal
-	}
+	updated() {}
 
 	deleted() {
 		this.transformB.dispose()

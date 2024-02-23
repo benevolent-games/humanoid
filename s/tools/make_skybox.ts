@@ -15,6 +15,22 @@ export type SkyboxLinks = {
 	nz: string
 }
 
+export type SkyboxParams = {
+	yaw: number
+	size: number
+}
+
+export function skybox_image_links(directory: string, extension: string): SkyboxLinks {
+	return {
+		px: `${directory}/px${extension}`,
+		py: `${directory}/py${extension}`,
+		pz: `${directory}/pz${extension}`,
+		nx: `${directory}/nx${extension}`,
+		ny: `${directory}/ny${extension}`,
+		nz: `${directory}/nz${extension}`,
+	}
+}
+
 export function make_skybox({
 			scene,
 			yaw,
@@ -22,10 +38,8 @@ export function make_skybox({
 			links,
 		}: {
 		scene: Scene
-		yaw: number
-		size: number
 		links: SkyboxLinks
-	}) {
+	} & SkyboxParams) {
 
 	const box = MeshBuilder.CreateBox("skyBox", {size}, scene)
 	box.infiniteDistance = true

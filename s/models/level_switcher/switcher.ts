@@ -5,7 +5,7 @@ import {Loading} from "../../tools/loading.js"
 import {HumanoidRealm} from "../realm/realm.js"
 import {Skybox} from "../../ecs/schema/hybrids/skybox.js"
 import {Envmap} from "../../ecs/schema/hybrids/envmap.js"
-import {Level, LevelAsset} from "../../ecs/schema/hybrids/level.js"
+import {Level, LevelName} from "../../ecs/schema/hybrids/level.js"
 
 export class LevelSwitcher {
 	#loading = new Loading()
@@ -28,12 +28,12 @@ export class LevelSwitcher {
 		this.#cycle.grab()()
 	}
 
-	#level(asset: LevelAsset) {
+	#level(name: LevelName) {
 		return this.#loading.fn(async() => {
 			const {world} = this
 
 			const level = world.createEntity({Level}, {
-				level: {asset},
+				level: {name},
 			})
 
 			const skybox = world.createEntity({Skybox}, {
@@ -56,6 +56,8 @@ export class LevelSwitcher {
 
 	#cycle = new Cycle([
 		this.#level("gym"),
+		this.#level("mt_pimsley"),
+		this.#level("teleporter"),
 		this.#level("wrynth_dungeon"),
 	] as const)
 }

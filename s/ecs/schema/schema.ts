@@ -12,6 +12,7 @@ export class Scale extends Component<Vec3> {}
 export class Position extends Component<Vec3> {}
 export class Rotation extends Component<Quat> {}
 export class Velocity extends Component<Vec3> {}
+export class Gimbal extends Component<Vec2> {}
 
 export class PreviousPosition extends Component<Vec3> {}
 
@@ -23,11 +24,8 @@ export class Density extends Component<number> {}
 export class Mass extends Component<number> {}
 export class DampingLinear extends Component<number> {}
 export class DampingAngular extends Component<number> {}
-export class Height extends Component<number> {}
-export class Radius extends Component<number> {}
 export class Direction extends Component<Vec3> {}
 export class Intensity extends Component<number> {}
-export class ThirdPersonCam extends Component<{distance: number}> {}
 
 // physical_dynamic
 // physical_fixture

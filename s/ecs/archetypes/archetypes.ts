@@ -33,6 +33,7 @@ export namespace Archetypes {
 			attack: false,
 		},
 		gimbal: [0, 0.5],
+		gimbalRig: {},
 	}))
 
 	export const spectator = arch(Selectors.spectator, ({position}: {position: Vec3}) => ({

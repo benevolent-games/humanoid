@@ -1,0 +1,11 @@
+#!/bin/bash
+
+mkdir -p mount/benev-storage
+
+s3fs benev-storage mount/benev-storage \
+	-o passwd_file=~/.passwd-s3fs \
+	-o url=https://sfo2.digitaloceanspaces.com/ \
+	-o use_path_request_style \
+	-o default_acl=public-read \
+		&& echo "mounted 'mount/benev-storage'"
+

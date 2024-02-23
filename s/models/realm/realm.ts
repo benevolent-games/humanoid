@@ -1,49 +1,47 @@
 
+import {Physics, Stage, debug_colors} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
-import {Meshoid, Physics, Prop, Rapier, Stage, debug_colors} from "@benev/toolbox"
 
-import {oneOff} from "../../tools/once.js"
+import {Assets, Quality} from "../assets/assets.js"
+import {assetLinks} from "../../asset_links.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
-import {SkyboxLinks} from "../../tools/make_skybox.js"
 import {CharacterContainer} from "../character/container.js"
-
-export type HumanoidLinks = {
-	skybox: SkyboxLinks
-	envmap: string
-	assets: {
-		gym: string
-		character: string
-		wrynth_dungeon: string
-	}
-}
 
 export type HumanoidGlbs = {
 	gym: () => Promise<AssetContainer>
+	mt_pimsley: () => Promise<AssetContainer>
+	teleporter: () => Promise<AssetContainer>
 	wrynth_dungeon: () => Promise<AssetContainer>
 	character: () => Promise<CharacterContainer>
 }
 
 export type HumanoidRealm = {
-	links: HumanoidLinks
+	quality: Quality
+	local_dev_mode: boolean
 	tickrate_hz: number
 	stage: Stage
 	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
 	physics: Physics
-	glbs: HumanoidGlbs
+	assets: Assets<ReturnType<typeof assetLinks>>
 }
 
-export async function makeRealm({links, tickrate_hz}: {
-		links: HumanoidLinks
+export async function makeRealm(params: {
+		quality: Quality
 		tickrate_hz: number
+		local_dev_mode: boolean
 	}): Promise<HumanoidRealm> {
 
-	const impulse = new HumanoidImpulse()
+	const {quality, tickrate_hz, local_dev_mode} = params
 
 	const stage = new Stage({
 		background: Stage.backgrounds.sky(),
 		tickrate_hz,
 	})
+
+	const assets = new Assets(stage.scene, quality, assetLinks(local_dev_mode))
+
+	const impulse = new HumanoidImpulse()
 
 	const colors = debug_colors(stage.scene)
 
@@ -54,27 +52,15 @@ export async function makeRealm({links, tickrate_hz}: {
 		gravity: [0, -9.81, 0],
 	})
 
-	const glbs: HumanoidGlbs = {
-		gym: oneOff(
-			() => stage.load_glb(links.assets.gym)
-		),
-		wrynth_dungeon: oneOff(
-			() => stage.load_glb(links.assets.wrynth_dungeon)
-		),
-		character: oneOff(
-			() => stage.load_glb(links.assets.character)
-				.then(container => new CharacterContainer(container))
-		),
-	}
-
 	return {
+		quality,
+		local_dev_mode,
 		tickrate_hz,
 		stage,
-		colors,
+		assets,
 		impulse,
+		colors,
 		physics,
-		links,
-		glbs,
 	}
 }
 

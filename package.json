@@ -16,6 +16,9 @@
 		"links": "ln -s \"$(realpath temp)\" x/temp",
 		"start": "turtle-standard-watch",
 		"glbs": "glbx temp x/glbs",
+		"mount": "s/bin/mount",
+		"unmount": "s/bin/unmount",
+		"rebuild-assets": "s/bin/rebuild-assets",
 		"test": "cynic node x/tests.test.js"
 	},
 	"dependencies": {
