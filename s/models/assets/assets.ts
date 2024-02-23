@@ -57,22 +57,3 @@ export class Assets<L extends AssetLinks> {
 	}
 }
 
-// const glbs: HumanoidGlbs = {
-// 	gym: once(
-// 		() => stage.load_glb(links.assets.gym)
-// 	),
-// 	mt_pimsley: once(
-// 		() => stage.load_glb(links.assets.mt_pimsley)
-// 	),
-// 	teleporter: once(
-// 		() => stage.load_glb(links.assets.teleporter)
-// 	),
-// 	wrynth_dungeon: once(
-// 		() => stage.load_glb(links.assets.wrynth_dungeon)
-// 	),
-// 	character: once(
-// 		() => stage.load_glb(links.assets.character)
-// 			.then(container => new CharacterContainer(container))
-// 	),
-// }
-
