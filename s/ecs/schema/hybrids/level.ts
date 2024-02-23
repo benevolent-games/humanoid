@@ -10,6 +10,8 @@ import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
 import {HumanoidAssets} from "../../../asset_links.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
+import { Scene } from "@babylonjs/core/scene.js"
+import { Matrix } from "@babylonjs/core/Maths/math.js"
 
 export type LevelName = keyof HumanoidAssets["glbs"]["levels"]
 
@@ -99,18 +101,48 @@ async function instance_level(asset: AssetContainer) {
 
 type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
 
+function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
+	console.log(`${mesh.name} ==> ${instances.length}`)
+	const matrices = new Float32Array(16 + (16 * instances.length))
+	const inverseParentMatrix = mesh.computeWorldMatrix(true).invert()
+	const matrix_for_original = Matrix.IdentityReadOnly
+	matrix_for_original.copyToArray(matrices, 0)
+
+	instances.forEach((instance, i) => {
+		const world = instance.getWorldMatrix()
+		const relative = world.multiply(inverseParentMatrix)
+		relative.copyToArray(matrices, 16 + (i * 16))
+		instance.dispose()
+	})
+
+	mesh.thinInstanceSetBuffer("matrix", matrices, 16)
+	mesh.thinInstanceRefreshBoundingInfo()
+}
+
 function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
 
-		const static_meshes = level.meshes.filter(mesh =>
+		const ghosts = level.meshes.filter(mesh =>
 			mesh.name.includes("::ghost") ||
 			mesh.material?.name.includes("::ghost")
 		)
 
-		for (const mesh of level.meshes) {
+		const ghostDaddies = ghosts.filter(mesh =>
+			mesh instanceof Mesh &&
+			mesh.instances.length > 0
+		) as Mesh[]
 
+		console.log({ghostDaddies})
+
+		let removed = 0
+
+		for (const daddy of ghostDaddies) {
+			removed += daddy.instances.length
+			convert_to_thin_instances(daddy, daddy.instances)
 		}
+
+		console.log(`thinned out ${removed} instances`)
 
 		// const static_meshes = level
 		// 	.meshes
