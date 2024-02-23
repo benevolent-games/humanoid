@@ -46,6 +46,13 @@ export const NotesMenu = nexus.shadow_view(use => (
 		</section>
 		<section>
 			<h1>
+				<span>prepping walkthrough demoability</span>
+				<small>2024-02-23</small>
+			</h1>
+			<p>fix ssr and ssao by reverting some optimizations.</p>
+		</section>
+		<section>
+			<h1>
 				<span>new levels.</span>
 				<small>2024-02-23</small>
 			</h1>
