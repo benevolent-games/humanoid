@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "wipe local assets"
+rm -rf assets && mkdir assets
+
+echo "download and process glbs"
+npx glbx mount/benev-storage/assets assets
+
+echo "download all other kinds of files"
+rsync -vham \
+	--progress \
+	--include="*/" \
+	--exclude="*.glb" \
+	mount/benev-storage/assets \
+	.
+

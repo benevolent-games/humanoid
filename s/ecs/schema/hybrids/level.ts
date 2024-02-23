@@ -3,13 +3,15 @@ import {explode_promise} from "@benev/slate"
 import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Light} from "@babylonjs/core/Lights/light.js"
+import {HybridComponent, Meshoid, Prop} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
 
 import {HumanoidAssets} from "../../../asset_links.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
+import { Scene } from "@babylonjs/core/scene.js"
+import { Matrix } from "@babylonjs/core/Maths/math.js"
 
 export type LevelName = keyof HumanoidAssets["glbs"]["levels"]
 
@@ -99,89 +101,130 @@ async function instance_level(asset: AssetContainer) {
 
 type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
 
+function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
+	console.log(`${mesh.name} ==> ${instances.length}`)
+	const matrices = new Float32Array(16 + (16 * instances.length))
+	const inverseParentMatrix = mesh.computeWorldMatrix(true).invert()
+	const matrix_for_original = Matrix.IdentityReadOnly
+	matrix_for_original.copyToArray(matrices, 0)
+
+	instances.forEach((instance, i) => {
+		const world = instance.getWorldMatrix()
+		const relative = world.multiply(inverseParentMatrix)
+		relative.copyToArray(matrices, 16 + (i * 16))
+		instance.dispose()
+	})
+
+	mesh.thinInstanceSetBuffer("matrix", matrices, 16)
+	mesh.thinInstanceRefreshBoundingInfo()
+}
+
 function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
 
-		const static_meshes = level
-			.meshes
-			.filter(mesh => !(
-				mesh.name.includes("feature") ||
-				mesh.name.includes("toy")
-			))
+		const ghosts = level.meshes.filter(mesh =>
+			mesh.name.includes("::ghost") ||
+			mesh.material?.name.includes("::ghost")
+		)
 
-		const dynamic_nodes = level
-			.top_level_nodes
-			.filter(node => (
-				node.name.includes("feature") ||
-				node.name.includes("toy")
-			))
+		const ghostDaddies = ghosts.filter(mesh =>
+			mesh instanceof Mesh &&
+			mesh.instances.length > 0
+		) as Mesh[]
 
-		const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))!
-		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))!
+		console.log({ghostDaddies})
 
-		const apply_static_physics = (meshoid: Meshoid) => {
-			const actor = realm.physics.trimesh(meshoid)
-			disposables.push(() => actor.dispose())
+		let removed = 0
+
+		for (const daddy of ghostDaddies) {
+			removed += daddy.instances.length
+			convert_to_thin_instances(daddy, daddy.instances)
 		}
 
-		const create_hanging_physical_toy = (prop: Prop, params: {
-				position_offset: Vec3
-				scale: Vec3
-				density: number
-			}) => {
+		console.log(`thinned out ${removed} instances`)
 
-			const instance = prop.instantiateHierarchy()!
-			const position = babylonian.to.vec3(instance.absolutePosition)
-			disposables.push(() => instance.dispose())
+		// const static_meshes = level
+		// 	.meshes
+		// 	.filter(mesh => !(
+		// 		mesh.name.includes("feature") ||
+		// 		mesh.name.includes("toy")
+		// 	))
 
-			const fixture = realm.physics.fixture({position})
-			disposables.push(() => fixture.dispose())
+		// const dynamic_nodes = level
+		// 	.top_level_nodes
+		// 	.filter(node => (
+		// 		node.name.includes("feature") ||
+		// 		node.name.includes("toy")
+		// 	))
 
-			const box = realm.physics.box({
-				position: vec3.add(position, params.position_offset),
-				scale: params.scale,
-				density: params.density,
-				rotation: quat.identity(),
-				linearDamping: .3,
-				angularDamping: .3,
-				material: undefined,
-			})
-			disposables.push(() => box.dispose())
+		// const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))!
+		// const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))!
 
-			const joint = realm.physics.joint_spherical({
-				bodies: [fixture.rigid, box.rigid],
-				anchors: [[0, 0, 0], [0, 1, 0]],
-			})
-			disposables.push(() => joint.dispose())
-		}
+		// const apply_static_physics = (meshoid: Meshoid) => {
+		// 	const actor = realm.physics.trimesh(meshoid)
+		// 	disposables.push(() => actor.dispose())
+		// }
 
-		dynamic_nodes.forEach(p => p.setEnabled(false))
+		// const create_hanging_physical_toy = (prop: Prop, params: {
+		// 		position_offset: Vec3
+		// 		scale: Vec3
+		// 		density: number
+		// 	}) => {
 
-		if (physics) {
-			static_meshes.forEach(apply_static_physics)
+		// 	const instance = prop.instantiateHierarchy()!
+		// 	const position = babylonian.to.vec3(instance.absolutePosition)
+		// 	disposables.push(() => instance.dispose())
 
-			balls.forEach(p => create_hanging_physical_toy(p, {
-				position_offset: [0, -1, 0],
-				scale: [.75, .75, .75],
-				density: 1000,
-			}))
+		// 	const fixture = realm.physics.fixture({position})
+		// 	disposables.push(() => fixture.dispose())
 
-			bags.forEach(p => create_hanging_physical_toy(p, {
-				position_offset: [0, -1, 0],
-				scale: [.5, 1.5, 1.5],
-				density: 1000,
-			}))
-		}
+		// 	const box = realm.physics.box({
+		// 		position: vec3.add(position, params.position_offset),
+		// 		scale: params.scale,
+		// 		density: params.density,
+		// 		rotation: quat.identity(),
+		// 		linearDamping: .3,
+		// 		angularDamping: .3,
+		// 		material: undefined,
+		// 	})
+		// 	disposables.push(() => box.dispose())
 
-		const accoutrement = {
-			dispose: () => {
-				for (const disposer of disposables)
-					disposer()
+		// 	const joint = realm.physics.joint_spherical({
+		// 		bodies: [fixture.rigid, box.rigid],
+		// 		anchors: [[0, 0, 0], [0, 1, 0]],
+		// 	})
+		// 	disposables.push(() => joint.dispose())
+		// }
+
+		// dynamic_nodes.forEach(p => p.setEnabled(false))
+
+		// if (physics) {
+		// 	static_meshes.forEach(apply_static_physics)
+
+		// 	balls.forEach(p => create_hanging_physical_toy(p, {
+		// 		position_offset: [0, -1, 0],
+		// 		scale: [.75, .75, .75],
+		// 		density: 1000,
+		// 	}))
+
+		// 	bags.forEach(p => create_hanging_physical_toy(p, {
+		// 		position_offset: [0, -1, 0],
+		// 		scale: [.5, 1.5, 1.5],
+		// 		density: 1000,
+		// 	}))
+		// }
+
+		return {
+			asset,
+			level,
+			accoutrement: {
+				dispose: () => {
+					for (const disposer of disposables)
+						disposer()
+				},
 			},
 		}
-
-		return {asset, level, accoutrement}
 	}
 }
 

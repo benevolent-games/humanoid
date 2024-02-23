@@ -13,7 +13,7 @@ export class Cycle<A extends any[]> {
 		return this.#index++
 	}
 
-	grab(): A[number] {
+	next(): A[number] {
 		const index = this.#increment_and_wrap_index()
 		return this.array[index]
 	}

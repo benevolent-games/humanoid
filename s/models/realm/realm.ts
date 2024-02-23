@@ -1,21 +1,15 @@
 
+import {Scene} from "@babylonjs/core/scene.js"
 import {Physics, Stage, debug_colors} from "@benev/toolbox"
-import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
-import {Assets, Quality} from "../assets/assets.js"
+import {Assets} from "../assets/assets.js"
+import {Quality} from "../../tools/quality.js"
 import {assetLinks} from "../../asset_links.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
-import {CharacterContainer} from "../character/container.js"
-
-export type HumanoidGlbs = {
-	gym: () => Promise<AssetContainer>
-	mt_pimsley: () => Promise<AssetContainer>
-	teleporter: () => Promise<AssetContainer>
-	wrynth_dungeon: () => Promise<AssetContainer>
-	character: () => Promise<CharacterContainer>
-}
+import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type HumanoidRealm = {
+	scene: Scene
 	quality: Quality
 	local_dev_mode: boolean
 	tickrate_hz: number
@@ -38,13 +32,10 @@ export async function makeRealm(params: {
 		background: Stage.backgrounds.sky(),
 		tickrate_hz,
 	})
-
+	optimize_scene(stage.scene)
 	const assets = new Assets(stage.scene, quality, assetLinks(local_dev_mode))
-
 	const impulse = new HumanoidImpulse()
-
 	const colors = debug_colors(stage.scene)
-
 	const physics = new Physics({
 		hz: 60,
 		colors,
@@ -53,9 +44,8 @@ export async function makeRealm(params: {
 	})
 
 	return {
-		quality,
-		local_dev_mode,
-		tickrate_hz,
+		...params,
+		scene: stage.scene,
 		stage,
 		assets,
 		impulse,
