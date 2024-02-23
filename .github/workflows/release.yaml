@@ -58,7 +58,7 @@ jobs:
 
     - name: 🗑️ delete temp symlink
       run: |
-        rm -rf x/temp
+        rm -rf x/assets
 
     - name: 📝 configure pages
       uses: actions/configure-pages@v3
