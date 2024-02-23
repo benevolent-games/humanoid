@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 fusermount -u mount/benev-storage \
 	&& echo "safely unmounted 'mount/benev-storage'"
