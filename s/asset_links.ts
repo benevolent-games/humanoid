@@ -8,7 +8,7 @@ export const assetLinks = (local_dev_mode: boolean) => Assets.links({
 
 	root: local_dev_mode ?
 		"/assets" :
-		"https://benev-storage.sfo2.cdn.digitaloceanspaces.com/assets",
+		"https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
 
 	glbs: {
 		levels: {
