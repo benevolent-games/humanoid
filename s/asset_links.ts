@@ -1,8 +1,9 @@
 
 import {Assets} from "./models/assets/assets.js"
 
-export type HumanoidAssetLinks = ReturnType<typeof assetLinks>
-export type HumanoidAssets = Assets<HumanoidAssetLinks>
+export type HuAssets = Assets<HuAssetLinks>
+export type HuAssetLinks = ReturnType<typeof assetLinks>
+export type HuLevelName = keyof HuAssetLinks["glbs"]["levels"]
 
 export const assetLinks = (local_dev_mode: boolean) => Assets.links({
 

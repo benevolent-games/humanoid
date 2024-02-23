@@ -32,10 +32,19 @@ export async function makeRealm(params: {
 		background: Stage.backgrounds.sky(),
 		tickrate_hz,
 	})
+
 	optimize_scene(stage.scene)
-	const assets = new Assets(stage.scene, quality, assetLinks(local_dev_mode))
+
+	const assets = new Assets({
+		quality,
+		scene: stage.scene,
+		spec: assetLinks(local_dev_mode),
+	})
+
 	const impulse = new HumanoidImpulse()
+
 	const colors = debug_colors(stage.scene)
+
 	const physics = new Physics({
 		hz: 60,
 		colors,

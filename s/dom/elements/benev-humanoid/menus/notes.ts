@@ -3,8 +3,8 @@ import {menu} from "@benev/toolbox"
 import {css, html} from "@benev/slate"
 import {nexus} from "../../../../nexus.js"
 import {Zone} from "../../../../models/zone/zone.js"
+import {HuLevelName} from "../../../../asset_links.js"
 import {HumanoidRealm} from "../../../../models/realm/realm.js"
-import { LevelName } from "../../../../ecs/schema/hybrids/level.js"
 
 export const notesMenu = (realm: HumanoidRealm, zone: Zone) => (
 	menu("notes", () => NotesMenu([realm, zone]))
@@ -33,7 +33,7 @@ export const NotesMenu = nexus.shadow_view(use => (
 	`)
 
 	const switchLevel = () => zone.levelSwitcher.next()
-	const level = (name: LevelName) => name === zone.levelSwitcher.current.value
+	const level = (name: HuLevelName) => name === zone.levelSwitcher.current.value
 		? html`<span class=current-level>${name}</span>`
 		: html`<span>${name}</span>`
 

@@ -2,20 +2,17 @@
 import {explode_promise} from "@benev/slate"
 import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
+import {Matrix} from "@babylonjs/core/Maths/math.js"
 import {Light} from "@babylonjs/core/Lights/light.js"
 import {HybridComponent, Meshoid, Prop} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
-import {HumanoidAssets} from "../../../asset_links.js"
+import {HuLevelName} from "../../../asset_links.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
-import { Scene } from "@babylonjs/core/scene.js"
-import { Matrix } from "@babylonjs/core/Maths/math.js"
 
-export type LevelName = keyof HumanoidAssets["glbs"]["levels"]
-
-export class Level extends HybridComponent<HumanoidRealm, {name: LevelName}> {
+export class Level extends HybridComponent<HumanoidRealm, {name: HuLevelName}> {
 	#dispose: (() => void) | null = null
 	#promise = explode_promise<void>()
 
@@ -33,6 +30,7 @@ export class Level extends HybridComponent<HumanoidRealm, {name: LevelName}> {
 	#spawn_level(promise: Promise<AssetContainer>, physics: boolean) {
 		return promise
 			.then(instance_level)
+			.then(setup_thin_instances)
 			.then(setup_level_accoutrements(this.realm, physics))
 			.then(this.#make_level_disposer)
 			.then(() => this.#promise.resolve())
@@ -119,30 +117,35 @@ function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
 	mesh.thinInstanceRefreshBoundingInfo()
 }
 
+function setup_thin_instances(params: LevelInstance) {
+	const {level} = params
+
+	const ghosts = level.meshes.filter(mesh =>
+		mesh.name.includes("::ghost") ||
+		mesh.material?.name.includes("::ghost")
+	)
+
+	const ghostDaddies = ghosts.filter(mesh =>
+		mesh instanceof Mesh &&
+		mesh.instances.length > 0
+	) as Mesh[]
+
+	for (const daddy of ghostDaddies) {
+		convert_to_thin_instances(daddy, daddy.instances)
+	}
+
+	return params
+}
+
+function setup_shaders(params: LevelInstance) {
+	const {level, asset} = params
+
+	return params
+}
+
 function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
-
-		const ghosts = level.meshes.filter(mesh =>
-			mesh.name.includes("::ghost") ||
-			mesh.material?.name.includes("::ghost")
-		)
-
-		const ghostDaddies = ghosts.filter(mesh =>
-			mesh instanceof Mesh &&
-			mesh.instances.length > 0
-		) as Mesh[]
-
-		console.log({ghostDaddies})
-
-		let removed = 0
-
-		for (const daddy of ghostDaddies) {
-			removed += daddy.instances.length
-			convert_to_thin_instances(daddy, daddy.instances)
-		}
-
-		console.log(`thinned out ${removed} instances`)
 
 		// const static_meshes = level
 		// 	.meshes

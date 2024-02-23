@@ -5,10 +5,11 @@ import {Scene} from "@babylonjs/core/scene.js"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 
 import {once} from "../../tools/once.js"
-import {AssetLinks} from "./parts/types.js"
 import {Quality} from "../../tools/quality.js"
 import {make_envmap} from "../../tools/make_envmap.js"
+import {AssetLinks} from "./parts/types.js"
 import {SkyboxParams, make_skybox, skybox_image_links} from "../../tools/make_skybox.js"
+import { GlbPostProcess } from "../glb_post_processing/parts/types.js"
 
 export class Assets<L extends AssetLinks> {
 	static links<A extends AssetLinks>(links: A) {
@@ -24,30 +25,40 @@ export class Assets<L extends AssetLinks> {
 		return `${slashed.join("/")}/${name}.${quality}.${extension}`
 	}
 
-	#scene: Scene
 	#spec: L
-	#load_glb = async(url: string) => load_glb(this.#scene, url)
+	#scene: Scene
 	#url = (path: string) => `${this.#spec.root}/${path}`
+	#load_glb = async(url: string) => this.glb_post_process(
+		await load_glb(this.#scene, url),
+		this.#scene,
+	)
+
+	/** defaults to doing nothing -- set this if you want to process all loaded glbs */
+	glb_post_process: GlbPostProcess = async asset => asset
 
 	readonly glbs: {[K in keyof L["glbs"]]: Pojo<() => Promise<AssetContainer>>}
 	readonly envmaps: {[K in keyof L["envmaps"]]: () => ReturnType<typeof make_envmap>}
 	readonly skyboxes: {[K in keyof L["skyboxes"]]: ({}: SkyboxParams) => ReturnType<typeof make_skybox>}
 
-	constructor(scene: Scene, quality: Quality, spec: L) {
-		this.#scene = scene
+	constructor({scene, quality, spec}: {
+			spec: L
+			scene: Scene
+			quality: Quality
+		}) {
 		this.#spec = spec
+		this.#scene = scene
 
-		this.glbs = ob(this.#spec.glbs).map(
+		this.glbs = ob(spec.glbs).map(
 			group => ob(group).map(
 				link => once(async() => this.#load_glb(this.#url(Assets.glb_quality(link, quality))))
 			)
 		) as any
 
-		this.envmaps = ob(this.#spec.envmaps).map(
+		this.envmaps = ob(spec.envmaps).map(
 			link => () => make_envmap(scene, this.#url(link))
 		) as any
 
-		this.skyboxes = ob(this.#spec.skyboxes).map(
+		this.skyboxes = ob(spec.skyboxes).map(
 			({directory, extension}) => (p: SkyboxParams) => make_skybox({
 				...p,
 				scene,
