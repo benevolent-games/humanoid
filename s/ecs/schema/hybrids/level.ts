@@ -1,5 +1,5 @@
 
-import {explode_promise} from "@benev/slate"
+import {explode_promise, maptool} from "@benev/slate"
 import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Matrix} from "@babylonjs/core/Maths/math.js"
@@ -58,7 +58,7 @@ async function instance_level(asset: AssetContainer) {
 	const get_top_level = true
 	const get_children_recursively = false
 
-	const filter_for_instancables = (node: Node) => (
+	const filter_for_props = (node: Node) => (
 		node instanceof Mesh ||
 		node instanceof InstancedMesh ||
 		node instanceof TransformNode
@@ -74,7 +74,7 @@ async function instance_level(asset: AssetContainer) {
 	)
 
 	const top_level_nodes = (
-		root.getChildren(filter_for_instancables, get_top_level)
+		root.getChildren(filter_for_props, get_top_level)
 	) as Prop[]
 
 	const meshes = (
@@ -99,6 +99,17 @@ async function instance_level(asset: AssetContainer) {
 
 type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
 
+function trace_paternity(meshes: Meshoid[]) {
+	const paternity = new Map<Mesh, InstancedMesh[]>()
+	for (const mesh of meshes) {
+		if (mesh instanceof InstancedMesh) {
+			const instances = maptool(paternity).guarantee(mesh.sourceMesh, () => [])
+			instances.push(mesh)
+		}
+	}
+	return paternity
+}
+
 function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
 	const matrices = new Float32Array(16 + (16 * instances.length))
 	const inverseParentMatrix = mesh.computeWorldMatrix(true).invert()
@@ -116,14 +127,75 @@ function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
 	mesh.thinInstanceRefreshBoundingInfo()
 }
 
-function setup_thin_instances(params: LevelInstance) {
-	const {level} = params
-	const instances = level.meshes.filter(m => m instanceof InstancedMesh)
+function thinnify(daddy: Mesh, babies: InstancedMesh[]) {
+	const inverse_parent_matrix = daddy.computeWorldMatrix(true).invert()
+	const matrices = new Float32Array(16 * (1 + babies.length))
 
-	for (const instance of instances)
+	// manually insert a thin-instance that represents the daddy mesh
+	Matrix.IdentityReadOnly.copyToArray(matrices, 0)
+
+	babies.forEach((instance, i) => {
+		const world = instance.computeWorldMatrix(true)
+		const relative = world.multiply(inverse_parent_matrix)
+		relative.copyToArray(matrices, 16 * (1 + i))
 		instance.dispose()
+	})
 
-	console.log("deleted instances:", instances.length)
+	daddy.thinInstanceSetBuffer("matrix", matrices, 16)
+	daddy.thinInstanceRefreshBoundingInfo()
+}
+
+function setup_thin_instances(params: LevelInstance) {
+	const {level, asset} = params
+
+	const instances: InstancedMesh[] = []
+	for (const mesh of asset.scene.meshes) {
+		if (mesh instanceof Mesh) {
+			for (const instance of mesh.instances)
+				instances.push(instance)
+		}
+	}
+
+	const instances2: InstancedMesh[] = []
+	for (const mesh of level.meshes) {
+		if (mesh instanceof Mesh) {
+			for (const instance of mesh.instances)
+				instances2.push(instance)
+		}
+	}
+
+	const paternity = trace_paternity(level.meshes)
+	const instances3 = [...paternity.values()].flat()
+
+	console.log("TOTAL SCENE INSTANCES", instances.length)
+	console.log("TOTAL LEVEL INSTANCES", instances2.length)
+	console.log("TOTAL PATERNITY INSTANCES", instances3.length)
+
+	for (const [daddy, babies] of paternity)
+		thinnify(daddy, babies)
+
+	// const disabled = [...paternity.keys()].filter(mesh => !asset.scene.meshes.includes(mesh))
+	// console.log("DISABLED", disabled.length)
+
+	// for (const [mesh, instances] of paternity) {
+	// 	mesh.
+	// }
+
+	// const instances = level.meshes
+	// 	.filter(m => m instanceof InstancedMesh) as InstancedMesh[]
+
+	window.addEventListener("keydown", (event: KeyboardEvent) => {
+		if (event.code === "KeyG") {
+
+			for (const instance of instances3) {
+				instance.dispose()
+			}
+
+			console.log("deleted instances:", instances2.length)
+
+		}
+	})
+
 	return params
 }
 

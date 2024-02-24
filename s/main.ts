@@ -1,6 +1,10 @@
 
 console.log("🤖 humanoid starting up")
 
+import {scalar} from "@benev/toolbox"
+import {register_to_dom} from "@benev/slate"
+
+import {CompatibilityOptions} from "@babylonjs/core/Compat/compatibilityOptions.js"
 import "@babylonjs/core/Culling/ray.js"
 import "@babylonjs/loaders/glTF/index.js"
 import "@babylonjs/core/Engines/index.js"
@@ -11,9 +15,6 @@ import "@babylonjs/core/Rendering/depthRendererSceneComponent.js"
 import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
 import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js"
 import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
-
-import {scalar} from "@benev/toolbox"
-import {register_to_dom} from "@benev/slate"
 
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
@@ -65,6 +66,9 @@ register_to_dom({BenevHumanoid})
 //  - we are using an op for the async operation so the ui can show a loading spinner
 //
 
+// we roll with opengl standards
+CompatibilityOptions.UseOpenGLOrientationForUV = true
+
 const realm = (window as any).realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
 		tickrate_hz: 60,
@@ -72,6 +76,9 @@ const realm = (window as any).realm = await nexus.context.realmOp.load(
 		local_dev_mode: determine_local_dev_mode(location.href),
 	})
 )
+
+// we roll with gltf standards
+realm.scene.useRightHandedSystem = true
 
 // our standard glb postpro will apply shaders and stuff like that,
 // before it's copied to the scene.
@@ -97,7 +104,7 @@ world.createEntity(...Archetypes.spectator({position: [0, 5, 0]}))
 // which will be present for all levels
 world.createEntity({Envmap}, {envmap: {}})
 world.createEntity({Skybox}, {
-	skybox: {size: 1_000, rotate_degrees: 180},
+	skybox: {size: 1_000, rotate_degrees: 270},
 })
 
 // establish a level switcher that allows us to cycle through levels

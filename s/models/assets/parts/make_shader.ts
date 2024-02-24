@@ -31,7 +31,8 @@ export async function make_shader(
 			}
 			const {href} = new URL(texblock.name, new URL(url, location.href))
 			console.log(" - texture:", texblock.name, href)
-			const texture = new Texture(href, scene, {invertY: false})
+			// const texture = new Texture(href, scene, {invertY: false})
+			const texture = new Texture(href, scene)
 			texblock.texture = texture
 		}
 	}
