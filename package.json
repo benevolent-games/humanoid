@@ -20,7 +20,8 @@
 		"assets-down": "s/bin/assets-down",
 		"assets-up": "s/bin/assets-up",
 		"assets-cycle": "run-s assets-down assets-up",
-		"test": "cynic node x/tests.test.js"
+		"test": "cynic node x/tests.test.js",
+		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\""
 	},
 	"dependencies": {
 		"@benev/slate": "^0.1.0-x.13",
