@@ -118,27 +118,17 @@ function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
 
 function setup_thin_instances(params: LevelInstance) {
 	const {level} = params
+	const instances = level.meshes.filter(m => m instanceof InstancedMesh)
 
-	const ghosts = level.meshes.filter(mesh =>
-		mesh.name.includes("::ghost") ||
-		mesh.material?.name.includes("::ghost")
-	)
+	for (const instance of instances)
+		instance.dispose()
 
-	const ghostDaddies = ghosts.filter(mesh =>
-		mesh instanceof Mesh &&
-		mesh.instances.length > 0
-	) as Mesh[]
-
-	for (const daddy of ghostDaddies) {
-		convert_to_thin_instances(daddy, daddy.instances)
-	}
-
+	console.log("deleted instances:", instances.length)
 	return params
 }
 
 function setup_shaders(params: LevelInstance) {
 	const {level, asset} = params
-
 	return params
 }
 

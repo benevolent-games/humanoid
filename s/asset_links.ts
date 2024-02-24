@@ -14,7 +14,8 @@ export const assetLinks = (local_dev_mode: boolean) => Assets.links({
 	glbs: {
 		levels: {
 			gym: "glbs/levels/gym15.glb",
-			mt_pimsley: "glbs/levels/mt_pimsley47.glb",
+			// mt_pimsley: "glbs/levels/mt_pimsley47.glb",
+			mt_pimsley: "glbs/levels/mt_pimsley47test.glb",
 			teleporter: "glbs/levels/teleporter47.glb",
 			wrynth_dungeon: "glbs/levels/wrynth_dungeon47.glb",
 		},
@@ -37,7 +38,13 @@ export const assetLinks = (local_dev_mode: boolean) => Assets.links({
 	shaders: {
 		terrain: {
 			path: "shaders/terrain/shader.json",
-			inputs: {},
+			inputs: {
+				// dirtuvscale: 50,
+				// grassuvscale: 50,
+				// cliffuvscale: 20,
+				// strength: .1,
+				// metallic: 0,
+			},
 		},
 	},
 })

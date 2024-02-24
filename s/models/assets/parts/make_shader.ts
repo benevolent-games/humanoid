@@ -4,8 +4,8 @@ import "@babylonjs/core/Materials/Node/Blocks/index.js"
 import {label} from "@benev/toolbox"
 import {Scene} from "@babylonjs/core/scene.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
-import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
+import {InputBlock, ReflectionBlock, TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
 
 export async function make_shader(
 		scene: Scene,
@@ -20,10 +20,20 @@ export async function make_shader(
 	console.log("shader", url)
 
 	for (const texblock of material.getTextureBlocks()) {
-		const {href} = new URL(texblock.name, new URL(url, location.href))
-		console.log(" - texture:", texblock.name, href)
-		const texture = new Texture(href, scene)
-		texblock.texture = texture
+		if (texblock instanceof ReflectionBlock) {
+			texblock.texture = scene.environmentTexture
+		}
+		else {
+			if (texblock instanceof TextureBlock) {
+				// TODO what even is this?
+				// https://forum.babylonjs.com/t/nme-make-texture-level-work-for-normal-maps-as-it-does-in-other-materials/19443
+				texblock.level
+			}
+			const {href} = new URL(texblock.name, new URL(url, location.href))
+			console.log(" - texture:", texblock.name, href)
+			const texture = new Texture(href, scene, {invertY: false})
+			texblock.texture = texture
+		}
 	}
 
 	for (const [key, value] of Object.entries(inputs)) {
