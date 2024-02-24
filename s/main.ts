@@ -102,8 +102,8 @@ world.createEntity({Skybox}, {
 
 // establish a level switcher that allows us to cycle through levels
 const levelSwitcher = new LevelSwitcher(world, [
-	"gym",
 	"mt_pimsley",
+	"gym",
 	"teleporter",
 	"wrynth_dungeon",
 ])

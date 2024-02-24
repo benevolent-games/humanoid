@@ -7,11 +7,14 @@ export type AssetLinks = {
 		levels: Pojo<string>
 		characters: Pojo<string>
 	}
-	shaders: Pojo<string>
 	envmaps: Pojo<string>
 	skyboxes: Pojo<{
 		directory: string
 		extension: string
+	}>
+	shaders: Pojo<{
+		path: string
+		inputs: Pojo<any>
 	}>
 }
 

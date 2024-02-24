@@ -100,7 +100,6 @@ async function instance_level(asset: AssetContainer) {
 type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
 
 function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
-	console.log(`${mesh.name} ==> ${instances.length}`)
 	const matrices = new Float32Array(16 + (16 * instances.length))
 	const inverseParentMatrix = mesh.computeWorldMatrix(true).invert()
 	const matrix_for_original = Matrix.IdentityReadOnly

@@ -1,6 +1,6 @@
 
+import {Nametag} from "./nametag.js"
 import {deep} from "@benev/slate/x/pure.js"
-import {Nametag, parse_nametag} from "./parse_nametag.js"
 import {CynicBrokenExpectation, Suite, expect} from "cynic"
 
 export default {
@@ -12,7 +12,7 @@ export default {
 		check("reno.001", {name: "reno.001", plain: "reno", rubbish: "001"}),
 
 	"tag": async() =>
-		check("reno::yuma", {name: "reno", tags: [["yuma"]]}),
+		check("reno::yuma", {name: "reno", tags: [["yuma", true]]}),
 
 	"tag with data": async() =>
 		check("reno::lima=hilo", {name: "reno", tags: [["lima", "hilo"]]}),
@@ -21,7 +21,7 @@ export default {
 		check("reno::lima=hilo=cali", {name: "reno", tags: [["lima", "hilo=cali"]]}),
 
 	"multiple tags": async() =>
-		check("reno::yuma::oslo", {name: "reno", tags: [["yuma"], ["oslo"]]}),
+		check("reno::yuma::oslo", {name: "reno", tags: [["yuma", true], ["oslo", true]]}),
 
 	"lod": async() =>
 		check("reno#2", {name: "reno", lod: 2}),
@@ -30,7 +30,7 @@ export default {
 		check("reno::lima=hilo::oslo#0.001", {
 			name: "reno.001",
 			plain: "reno",
-			tags: [["lima", "hilo"], ["oslo"]],
+			tags: [["lima", "hilo"], ["oslo", true]],
 			lod: 2,
 			rubbish: "001",
 		}),
@@ -39,14 +39,14 @@ export default {
 		check("reno.001::lima=hilo#0::oslo", {
 			name: "reno.001",
 			plain: "reno",
-			tags: [["lima", "hilo"], ["oslo"]],
+			tags: [["lima", "hilo"], ["oslo", true]],
 			lod: 2,
 			rubbish: "001",
 		}),
 
 	"throws errors": async() => {
-		expect(() => parse_nametag("")).throws()
-		expect(() => parse_nametag("::lima=hilo::oslo#0.001")).throws()
+		expect(() => Nametag.parse("")).throws()
+		expect(() => Nametag.parse("::lima=hilo::oslo#0.001")).throws()
 	},
 
 } satisfies Suite
@@ -54,7 +54,7 @@ export default {
 //////////////////////////////////////////
 
 function check(nametag: string, expectation: Partial<Nametag>) {
-	const x = parse_nametag(nametag) as any
+	const x = Nametag.parse(nametag) as any
 	for (const [key, value] of Object.entries(expectation)) {
 		if (typeof value === "string" && x[key] !== value)
 			throw new CynicBrokenExpectation(`failed on "${key}", expected "${value}", but got "${x[key]}"`)

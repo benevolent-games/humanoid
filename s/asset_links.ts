@@ -34,6 +34,11 @@ export const assetLinks = (local_dev_mode: boolean) => Assets.links({
 		},
 	},
 
-	shaders: {},
+	shaders: {
+		terrain: {
+			path: "shaders/terrain/shader.json",
+			inputs: {},
+		},
+	},
 })
 
