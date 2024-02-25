@@ -15,6 +15,14 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 			path: "shaders/terrain/shader.json",
 			inputs: {},
 		},
+		skylight: {
+			path: "shaders/skylight/shader.json",
+			inputs: {},
+		},
+		mercury: {
+			path: "shaders/mercury/shader.json",
+			inputs: {},
+		},
 	},
 
 	characters: {
