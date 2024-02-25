@@ -23,6 +23,10 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 			path: "shaders/mercury/shader.json",
 			inputs: {},
 		},
+		water: {
+			path: "shaders/water/shader.json",
+			inputs: {},
+		},
 	},
 
 	characters: {
