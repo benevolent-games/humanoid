@@ -13,6 +13,7 @@ import {HuLevel} from "../../../gameplan.js"
 import {make_skybox} from "../../../tools/make_skybox.js"
 import {make_envmap} from "../../../tools/make_envmap.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
+import { Nametag } from "../../../tools/nametag.js"
 
 export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 	#dispose: (() => void) | null = null
@@ -150,13 +151,22 @@ function thinnify(daddy: Mesh, babies: InstancedMesh[]) {
 	})
 	daddy.thinInstanceSetBuffer("matrix", matrices, 16)
 	daddy.thinInstanceRefreshBoundingInfo()
+	console.log(`thinned ${babies.length} instances`)
+}
+
+function is_marked_thin(meshoid: Meshoid) {
+	return !!(
+		Nametag.parse(meshoid.name).tag("thin") ||
+		(meshoid.material && Nametag.parse(meshoid.material.name).tag("thin"))
+	)
 }
 
 function setup_thin_instances(params: LevelInstance) {
 	const {level} = params
 	const paternity = trace_paternity(level.meshes)
 	for (const [daddy, babies] of paternity)
-		thinnify(daddy, babies)
+		if (is_marked_thin(daddy))
+			thinnify(daddy, babies.filter(is_marked_thin))
 	return params
 }
 
