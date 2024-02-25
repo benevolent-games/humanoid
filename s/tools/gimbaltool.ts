@@ -11,24 +11,15 @@ export const gimbaltool = (gimbal: Vec2) => ({
 
 	rotate2d(vec: Vec2): Vec2 {
 		const [gimbalX] = gimbal
-		return vec2.rotate(vec, -scalar.map(gimbalX, circle))
+		return vec2.rotate(vec, scalar.map(gimbalX, circle))
 	},
 
 	unrotate2d(vec: Vec2): Vec2 {
 		const [gimbalX] = gimbal
-		return vec2.rotate(vec, scalar.map(gimbalX, circle))
+		return vec2.rotate(vec, -scalar.map(gimbalX, circle))
 	},
 
 	rotate([moveX, moveY, moveZ]: Vec3): Vec3 {
-		const [gimbalX] = gimbal
-		const [x, z] = vec2.rotate(
-			[moveX, moveZ],
-			-scalar.map(gimbalX, circle),
-		)
-		return [x, moveY, z]
-	},
-
-	unrotate([moveX, moveY, moveZ]: Vec3): Vec3 {
 		const [gimbalX] = gimbal
 		const [x, z] = vec2.rotate(
 			[moveX, moveZ],
@@ -37,9 +28,18 @@ export const gimbaltool = (gimbal: Vec2) => ({
 		return [x, moveY, z]
 	},
 
+	unrotate([moveX, moveY, moveZ]: Vec3): Vec3 {
+		const [gimbalX] = gimbal
+		const [x, z] = vec2.rotate(
+			[moveX, moveZ],
+			-scalar.map(gimbalX, circle),
+		)
+		return [x, moveY, z]
+	},
+
 	quaternions() {
 		const [x, y] = gimbal
-		const yaw = scalar.radians.from.circle(x)
+		const yaw = -scalar.radians.from.circle(x)
 		const pitch = scalar.map(y, [
 			scalar.radians.from.degrees(90),
 			scalar.radians.from.degrees(-90),

@@ -1,5 +1,5 @@
 
-import {spline, vec2, vec3} from "@benev/toolbox"
+import {babylonian, spline, vec2, vec3} from "@benev/toolbox"
 import {unflatten} from "../../../tools/flatten.js"
 import {Camera} from "../../schema/hybrids/camera.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
@@ -8,14 +8,15 @@ import {molasses, molasses3d} from "../../../tools/molasses.js"
 import {HumanoidCapsule} from "../../schema/hybrids/humanoid_capsule.js"
 import {HumanoidCameraRig} from "../../schema/hybrids/humanoid_camera_rig.js"
 import {apply_spline_to_gimbal_y} from "./simulation/apply_spline_to_gimbal_y.js"
-import {AirborneTrajectory, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Smoothing, Speeds, Stance} from "../../schema/schema.js"
+import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Rotation, Smoothing, Speeds, Stance} from "../../schema/schema.js"
 
 export const humanoid = system("humanoid", [
 	system("camera rig", [
-		responder("parent camera to rig")
+		responder("establish camera parented to rig")
 			.select({HumanoidCameraRig, Camera})
 			.respond(() => ({
 				added(c) {
+					c.camera.node.position.z = -(c.humanoidCameraRig.state.third_person_distance)
 					c.camera.node.parent = c.humanoidCameraRig.parts.headbox
 				},
 				removed(c) {
@@ -24,13 +25,52 @@ export const humanoid = system("humanoid", [
 				},
 			})),
 
+		responder("establish capsule position")
+			.select({HumanoidCameraRig, Position})
+			.respond(() => ({
+				added(c) { c.humanoidCameraRig.position = c.position },
+				removed() {},
+			})),
+
+		responder("activate/deactivate the camera")
+			.select({HumanoidCameraRig, Camera})
+			.respond(({realm}) => ({
+				added(c) {
+					realm.stage.rendering.setCamera(c.camera.node)
+				},
+				removed() {
+					realm.stage.rendering.setCamera(null)
+				},
+			})),
+
 		behavior("apply gimbal to rig")
-			.select({Gimbal, HumanoidCameraRig})
+			.select({HumanoidCameraRig, Gimbal})
 			.act(() => c => {
 				const moddedGimbal = apply_spline_to_gimbal_y(c.gimbal, [.1, .5, .7])
 				c.humanoidCameraRig.applyGimbal(moddedGimbal)
 			}),
 	]),
+
+	responder("capsule debug")
+		.select({HumanoidCapsule, Debug})
+		.respond(() => ({
+			added(c) { c.humanoidCapsule.setDebug(c.debug) },
+			removed() {},
+		})),
+
+	responder("camera rig debug")
+		.select({HumanoidCameraRig, Debug})
+		.respond(() => ({
+			added(c) { c.humanoidCameraRig.setDebug(c.debug) },
+			removed() {},
+		})),
+
+	responder("establish capsule position")
+		.select({HumanoidCapsule, Position})
+		.respond(() => ({
+			added(c) { c.humanoidCapsule.position = c.position },
+			removed() {},
+		})),
 
 	behavior("reset impetus")
 		.select({HumanoidCapsule, Impetus})
@@ -218,6 +258,14 @@ export const humanoid = system("humanoid", [
 			const [x, y, z] = c.humanoidCapsule.position
 			const smoothY = molasses(3, previousY, y)
 			c.position = [x, smoothY, z]
+		}),
+
+	behavior("update rotation")
+		.select({HumanoidCameraRig, Rotation})
+		.act(() => c => {
+			c.rotation = babylonian.ascertain.quat(
+				c.humanoidCameraRig.parts.transform
+			)
 		}),
 
 	behavior("smoothly move rig towards position")

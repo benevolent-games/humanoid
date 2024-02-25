@@ -5,21 +5,21 @@ import {behavior} from "../../hub.js"
 import {flatten} from "../../../tools/flatten.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {molasses, molasses2d} from "../../../tools/molasses.js"
-import {Ambulatory, Gimbal, Grounding, Speeds, Stance, Velocity} from "../../schema/schema.js"
+import {Ambulation, Gimbal, Grounding, Speeds, Stance, Velocity} from "../../schema/schema.js"
 
 const smoothing = 5
 
 export const ambulation = behavior("calculate ambulatory data")
-	.select({Ambulatory, Velocity, Speeds, Gimbal, Stance, Grounding})
+	.select({Ambulation, Velocity, Speeds, Gimbal, Stance, Grounding})
 	.act(({tick}) => c => {
-		const {smooth} = c.ambulatory
+		const {smooth} = c.ambulation
 
 		const globalvel = vec2.multiplyBy(
 			flatten(c.velocity),
 			tick.hz,
 		)
 
-		c.ambulatory.smooth.globalvel = molasses2d(
+		c.ambulation.smooth.globalvel = molasses2d(
 			smoothing,
 			smooth.globalvel,
 			globalvel,
@@ -49,7 +49,7 @@ export const ambulation = behavior("calculate ambulatory data")
 
 		const magnitude = vec2.magnitude(smooth.globalvel)
 
-		c.ambulatory = {
+		c.ambulation = {
 			smooth,
 			magnitude,
 			standing: smooth.standing,
@@ -65,8 +65,8 @@ function cardinalize([x, y]: Vec2) {
 	return {
 		north: scalar.clamp(y),
 		south: scalar.clamp(-y),
-		west: scalar.clamp(-x),
-		east: scalar.clamp(x),
+		west: scalar.clamp(x),
+		east: scalar.clamp(-x),
 	}
 }
 

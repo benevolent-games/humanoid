@@ -7,10 +7,10 @@ import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/too
 
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
-import {apply_spline_to_gimbal_y} from "../../logic/playable/simulation/apply_spline_to_gimbal_y.js"
 
 export class HumanoidCameraRig extends HybridComponent<HumanoidRealm, {
 		height: number
+		third_person_distance: number
 	}> {
 
 	#disposables = new Set<() => void>()
@@ -82,6 +82,8 @@ export class HumanoidCameraRig extends HybridComponent<HumanoidRealm, {
 
 	created() {}
 	updated() {}
-	deleted() {}
+	deleted() {
+		this.#disposables.forEach(d => d())
+	}
 }
 

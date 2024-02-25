@@ -2,8 +2,8 @@
 import {Id} from "@benev/toolbox/x/ecs6/core/types.js"
 import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
-import {Ambulatory as Ambulatory2} from "./types.js"
-import {Choreography as Choreography2} from "../../models/choreographer/types.js"
+import {Ambulatory} from "./types.js"
+import {Choreo} from "../../models/choreographer/types.js"
 
 export class Debug extends Component<boolean> {}
 export class Children extends Component<Id[]> {}
@@ -65,8 +65,8 @@ export class Grounding extends Component<{
 }> {}
 
 export class Smoothing extends Component<number> {}
-export class Choreography extends Component<Choreography2> {}
-export class Ambulatory extends Component<Ambulatory2 & {
+export class Choreography extends Component<Choreo> {}
+export class Ambulation extends Component<Ambulatory & {
 	smooth: {
 		globalvel: Vec2
 		normal: Vec2

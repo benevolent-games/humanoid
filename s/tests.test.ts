@@ -1,9 +1,8 @@
 
-import {Suite, expect} from "cynic"
+import {Suite} from "cynic"
+import nametag from "./tools/nametag.test.js"
 
 export default <Suite>{
-	"empty test suite": async() => {
-		expect(true).ok()
-	},
+	nametag,
 }
 
