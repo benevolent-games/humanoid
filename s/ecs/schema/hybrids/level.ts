@@ -10,10 +10,10 @@ import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
 import {HuLevel} from "../../../gameplan.js"
+import {Nametag} from "../../../tools/nametag.js"
 import {make_skybox} from "../../../tools/make_skybox.js"
 import {make_envmap} from "../../../tools/make_envmap.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
-import { Nametag } from "../../../tools/nametag.js"
 
 export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 	#dispose: (() => void) | null = null
@@ -29,6 +29,10 @@ export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 
 	#make_level_disposer = (stuff: LevelStuff) => {
 		this.#dispose = () => {
+
+			// TODO this deletes the glb
+			stuff.asset.dispose()
+
 			stuff.accoutrement.dispose()
 			stuff.level.dispose()
 		}
@@ -77,6 +81,10 @@ export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 			this.#dispose()
 	}
 }
+
+////////////////////////////////////////////
+////////////////////////////////////////////
+////////////////////////////////////////////
 
 type LevelInstance = Awaited<ReturnType<typeof instance_level>>
 
@@ -172,6 +180,10 @@ function setup_thin_instances(params: LevelInstance) {
 function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
+
+		console.log(
+			level.meshes.filter(m => m.name.toLowerCase().includes("landscape"))
+		)
 
 		// const static_meshes = level
 		// 	.meshes

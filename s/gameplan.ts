@@ -45,8 +45,8 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 	}).cycle(
 		"mt_pimsley",
 		"gym",
-		"teleporter",
-		"wrynth_dungeon",
+		// "teleporter",
+		// "wrynth_dungeon",
 	),
 })
 
