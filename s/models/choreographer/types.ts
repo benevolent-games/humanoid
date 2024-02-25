@@ -1,5 +1,5 @@
 
-export type Choreography = {
+export type Choreo = {
 	swivel: number
 	settings: ChoreographySettings
 	adjustment: null | ChoreoSwivelAdjustment

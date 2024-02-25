@@ -1,8 +1,8 @@
 
-import {Vec3, vec2, vec3} from "@benev/toolbox"
 import {Selectors} from "./selectors.js"
 import {arch, params} from "./helpers.js"
 import {Sensitivity} from "../schema/schema.js"
+import {Vec3, quat, vec2, vec3} from "@benev/toolbox"
 
 export namespace Archetypes {
 	export const sensitivity = arch({Sensitivity}, () => ({
@@ -46,8 +46,12 @@ export namespace Archetypes {
 		speeds: {base: 5, fast: 40, slow: 1},
 	}))
 
-	export const humanoid = arch(Selectors.humanoid, ({position}: {position: Vec3}) => ({
+	export const humanoid = arch(Selectors.humanoid, ({debug, position}: {
+			debug: boolean,
+			position: Vec3,
+		}) => ({
 		...params(spectator({position})),
+		debug,
 		speeds: {base: 3, fast: 5, slow: 1.5},
 		humanoidCapsule: {
 			height: 1.75,
@@ -66,6 +70,35 @@ export namespace Archetypes {
 		jump: false,
 		previousPosition: position,
 		velocity: vec3.zero(),
+		character: {height: 1.75},
+		choreography: {
+			swivel: 0.5,
+			settings: {
+				swivel_duration: 20,
+				swivel_readjustment_margin: .1,
+			},
+			adjustment: null,
+		},
+		ambulation: {
+			magnitude: 0,
+			groundage: 0,
+			standing: 1,
+			north: 0,
+			south: 0,
+			west: 0,
+			east: 0,
+			smooth: {
+				standing: 1,
+				groundage: 0,
+				normal: vec2.zero(),
+				globalvel: vec2.zero(),
+			},
+		},
+		rotation: quat.identity(),
+		attackage: {
+			seconds: 0,
+			attack: 0,
+		},
 	}))
 }
 

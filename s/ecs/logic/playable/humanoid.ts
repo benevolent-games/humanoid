@@ -1,5 +1,5 @@
 
-import {human, log100, spline, vec2, vec3} from "@benev/toolbox"
+import {babylonian, spline, vec2, vec3} from "@benev/toolbox"
 import {unflatten} from "../../../tools/flatten.js"
 import {Camera} from "../../schema/hybrids/camera.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
@@ -8,7 +8,7 @@ import {molasses, molasses3d} from "../../../tools/molasses.js"
 import {HumanoidCapsule} from "../../schema/hybrids/humanoid_capsule.js"
 import {HumanoidCameraRig} from "../../schema/hybrids/humanoid_camera_rig.js"
 import {apply_spline_to_gimbal_y} from "./simulation/apply_spline_to_gimbal_y.js"
-import {AirborneTrajectory, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Smoothing, Speeds, Stance} from "../../schema/schema.js"
+import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Rotation, Smoothing, Speeds, Stance} from "../../schema/schema.js"
 
 export const humanoid = system("humanoid", [
 	system("camera rig", [
@@ -35,13 +35,25 @@ export const humanoid = system("humanoid", [
 			}),
 	]),
 
+	responder("capsule debug")
+		.select({HumanoidCapsule, Debug})
+		.respond(() => ({
+			added(c) { c.humanoidCapsule.setDebug(c.debug) },
+			removed() {},
+		})),
+
+	responder("camera rig debug")
+		.select({HumanoidCameraRig, Debug})
+		.respond(() => ({
+			added(c) { c.humanoidCameraRig.setDebug(c.debug) },
+			removed() {},
+		})),
+
 	responder("establish capsule position")
 		.select({HumanoidCapsule, Position})
 		.respond(() => ({
+			added(c) { c.humanoidCapsule.position = c.position },
 			removed() {},
-			added(c) {
-				c.humanoidCapsule.position = c.position
-			},
 		})),
 
 	behavior("reset impetus")
@@ -230,6 +242,14 @@ export const humanoid = system("humanoid", [
 			const [x, y, z] = c.humanoidCapsule.position
 			const smoothY = molasses(3, previousY, y)
 			c.position = [x, smoothY, z]
+		}),
+
+	behavior("update rotation")
+		.select({HumanoidCameraRig, Rotation})
+		.act(() => c => {
+			c.rotation = babylonian.ascertain.quat(
+				c.humanoidCameraRig.parts.transform
+			)
 		}),
 
 	behavior("smoothly move rig towards position")

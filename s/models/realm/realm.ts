@@ -7,6 +7,7 @@ import {Quality} from "../../tools/quality.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 import {optimize_scene} from "../../tools/optimize_scene.js"
+import {CharacterContainer} from "../character/container.js"
 
 export type RealmParams = {
 	quality: Quality
@@ -21,6 +22,7 @@ export type HumanoidRealm = {
 	impulse: HumanoidImpulse
 	physics: Physics
 	loadingDock: LoadingDock
+	character: CharacterContainer
 } & RealmParams
 
 export async function makeRealm(params: RealmParams): Promise<HumanoidRealm> {
@@ -51,6 +53,12 @@ export async function makeRealm(params: RealmParams): Promise<HumanoidRealm> {
 		gravity: [0, -9.81, 0],
 	})
 
+	const character = new CharacterContainer(
+		await loadingDock.loadGlb(
+			gameplan.characters.knight.glb
+		)
+	)
+
 	return {
 		...params,
 		scene,
@@ -59,6 +67,7 @@ export async function makeRealm(params: RealmParams): Promise<HumanoidRealm> {
 		impulse,
 		colors,
 		physics,
+		character,
 	}
 }
 

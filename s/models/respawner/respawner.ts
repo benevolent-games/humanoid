@@ -5,10 +5,20 @@ import {Archetypes} from "../../ecs/archetypes/archetypes.js"
 
 export class Respawner {
 	constructor(public readonly world: World<any>) {}
-
 	#dispose = () => {}
 
 	#cycle = new Cycle<() => () => void>([
+
+		// humanoid
+		() => {
+			const {id} = this.world.createEntity(
+				...Archetypes.humanoid({
+					debug: false,
+					position: [0, 10, 0],
+				})
+			)
+			return () => this.world.deleteEntity(id)
+		},
 
 		// spectator
 		() => {
@@ -20,15 +30,6 @@ export class Respawner {
 			return () => this.world.deleteEntity(id)
 		},
 
-		// entity
-		() => {
-			const {id} = this.world.createEntity(
-				...Archetypes.humanoid({
-					position: [0, 10, 0],
-				})
-			)
-			return () => this.world.deleteEntity(id)
-		},
 	])
 
 	respawn() {
