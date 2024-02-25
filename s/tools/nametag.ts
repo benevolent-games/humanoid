@@ -1,7 +1,16 @@
 
+import {Meshoid} from "@benev/toolbox"
+
 export class Nametag {
 	static parse(nametag: string) {
 		return new this(nametag)
+	}
+
+	static query(mesh: Meshoid, tag: string) {
+		return !!(
+			this.parse(mesh.name).tag(tag) ||
+			(mesh.material && this.parse(mesh.material.name).tag(tag))
+		)
 	}
 
 	name!: string

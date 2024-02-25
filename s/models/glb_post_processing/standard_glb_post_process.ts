@@ -33,7 +33,6 @@ export function standard_glb_post_process({gameplan, loadingDock}: HumanoidRealm
 				const shader = replacements.get(mesh.material)
 				if (shader) {
 					mesh.material = shader.material
-					console.log("shader replacement", mesh.name, shader.material.name)
 				}
 			}
 		}

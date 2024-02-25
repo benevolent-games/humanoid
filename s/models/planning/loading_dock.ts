@@ -41,7 +41,6 @@ export class LoadingDock {
 	}
 
 	async loadShader<Inputs extends object>(plan: Plan.Shader<Inputs>) {
-		console.log("LOAD SHADER", plan)
 		const {scene} = this.#params
 		const url = this.resolve(plan.path)
 		const shader = await make_shader(scene, url)

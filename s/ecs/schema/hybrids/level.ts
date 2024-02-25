@@ -1,13 +1,13 @@
 
-import {explode_promise, maptool, ob} from "@benev/slate"
 import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Matrix} from "@babylonjs/core/Maths/math.js"
 import {Light} from "@babylonjs/core/Lights/light.js"
-import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
+import {explode_promise, maptool, ob} from "@benev/slate"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
+import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
 
 import {HuLevel} from "../../../gameplan.js"
 import {Nametag} from "../../../tools/nametag.js"
@@ -187,7 +187,7 @@ function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 				mesh.name.includes("feature") ||
 				mesh.name.includes("toy")
 			))
-			.filter(mesh => !Nametag.parse(mesh.name).tag("::ghost"))
+			.filter(mesh => !Nametag.query(mesh, "ghost"))
 
 		const dynamic_nodes = level
 			.top_level_nodes
@@ -225,8 +225,10 @@ function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 				linearDamping: .3,
 				angularDamping: .3,
 				material: undefined,
+				// material: realm.colors.red,
 			})
 			disposables.push(() => box.dispose())
+			instance.setParent(box.mesh)
 
 			const joint = realm.physics.joint_spherical({
 				bodies: [fixture.rigid, box.rigid],
@@ -248,7 +250,7 @@ function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 
 			bags.forEach(p => create_hanging_physical_toy(p, {
 				position_offset: [0, -1, 0],
-				scale: [.5, 1.5, 1.5],
+				scale: [.5, 1.5, .5],
 				density: 1000,
 			}))
 		}
@@ -258,7 +260,7 @@ function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 			level,
 			accoutrement: {
 				dispose: () => {
-					for (const disposer of disposables)
+					for (const disposer of disposables.toReversed())
 						disposer()
 				},
 			},
