@@ -40,9 +40,11 @@ export function standard_glb_post_process({gameplan, loadingDock, quality}: Huma
 			}
 		}
 
-		const maxLights = quality === Quality.Potato
-			? 2
-			: 16
+		const maxLights = (
+			quality === Quality.Fancy ? 16 :
+			quality === Quality.Mid ? 8 :
+			2
+		)
 
 		console.log("maxLights", maxLights)
 
