@@ -41,7 +41,7 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 		},
 		mt_pimsley: {
 			glb: glb("glbs/levels/mt_pimsley.glb", "physics"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
+			sky: sky("skyboxes/sky_01", ".webp", kilometers(10), degrees(270)),
 			env: env("envmaps/sunset_cloudy.env", degrees(180)),
 		},
 		teleporter: {
