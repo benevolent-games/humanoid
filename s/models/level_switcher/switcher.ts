@@ -15,7 +15,7 @@ type LevelLoader = {
 export class LevelSwitcher {
 	#loading = new Loading()
 	#dispose: (() => void) | null = null
-	#cycle: Cycle<LevelLoader[]>
+	#cycle: Cycle<LevelLoader>
 
 	current = signals.signal("n/a")
 

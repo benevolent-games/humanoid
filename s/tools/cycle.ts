@@ -1,8 +1,8 @@
 
-export class Cycle<A extends any[]> {
+export class Cycle<X> {
 	#index = 0
 
-	constructor(public readonly array: A) {
+	constructor(public readonly array: X[]) {
 		if (array.length < 1)
 			throw new Error("cycle array must not be zero")
 	}
@@ -13,7 +13,7 @@ export class Cycle<A extends any[]> {
 		return this.#index++
 	}
 
-	next(): A[number] {
+	next(): X {
 		const index = this.#increment_and_wrap_index()
 		return this.array[index]
 	}

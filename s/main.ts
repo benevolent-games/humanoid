@@ -22,6 +22,7 @@ import {Quality} from "./tools/quality.js"
 import {make_gameplan} from "./gameplan.js"
 import {HumanoidTick, hub} from "./ecs/hub.js"
 import {makeRealm} from "./models/realm/realm.js"
+import {Respawner} from "./models/respawner/respawner.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {LevelSwitcher} from "./models/level_switcher/switcher.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
@@ -102,21 +103,24 @@ realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
 const world = hub.world(realm)
 const executive = hub.executive(realm, world, root)
 
-// start with a spectator cam that the player can control
-world.createEntity(...Archetypes.spectator({position: [0, 5, 0]}))
-
-// establish a level switcher for cylcing levels
+// establish a level switcher for cycling levels
 const levelSwitcher = new LevelSwitcher(world, gameplan)
 levelSwitcher.next()
 
 // establish the zone available to the ui
 nexus.context.zoneOp.setReady({levelSwitcher})
 
-
-// switch the level when we
+// switch level when we press the key
 realm.impulse.on.universal.buttons.level_swap(button => {
 	if (button.down && !button.repeat)
 		levelSwitcher.next()
+})
+
+const respawner = new Respawner(world)
+respawner.respawn()
+realm.impulse.on.universal.buttons.respawn(button => {
+	if (button.down && !button.repeat)
+		respawner.respawn()
 })
 
 //
