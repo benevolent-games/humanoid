@@ -15,9 +15,15 @@ export function standard_glb_post_process({gameplan, loadingDock}: HumanoidRealm
 		for (const material of container.materials) {
 			const nametag = Nametag.parse(material.name)
 			if (nametag.tag("shader")) {
-				const plan = gameplan.shaders[nametag.name as keyof typeof gameplan.shaders]
-				const shader = await loadingDock.loadShader(plan)
-				replacements.set(material, shader)
+				const name = nametag.name as keyof typeof gameplan.shaders
+				if (name in gameplan.shaders) {
+					const plan = gameplan.shaders[name]
+					const shader = await loadingDock.loadShader(plan)
+					replacements.set(material, shader)
+				}
+				else {
+					console.warn(`shader not found "${name}"`)
+				}
 			}
 		}
 

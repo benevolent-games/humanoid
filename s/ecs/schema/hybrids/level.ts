@@ -151,7 +151,6 @@ function thinnify(daddy: Mesh, babies: InstancedMesh[]) {
 	})
 	daddy.thinInstanceSetBuffer("matrix", matrices, 16)
 	daddy.thinInstanceRefreshBoundingInfo()
-	console.log(`thinned ${babies.length} instances`)
 }
 
 function is_marked_thin(meshoid: Meshoid) {
