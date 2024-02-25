@@ -37,6 +37,8 @@ import {standard_glb_post_process} from "./models/glb_post_processing/standard_g
 function defaultPreventer(event: KeyboardEvent) {
 	if (event.altKey || event.code === "AltLeft")
 		event.preventDefault()
+	if (event.code === "Tab")
+		event.preventDefault()
 }
 window.addEventListener("keydown", defaultPreventer)
 window.addEventListener("keyup", defaultPreventer)
