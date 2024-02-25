@@ -4,17 +4,16 @@ console.log("🤖 humanoid starting up")
 import {scalar} from "@benev/toolbox"
 import {register_to_dom} from "@benev/slate"
 
-import {CompatibilityOptions} from "@babylonjs/core/Compat/compatibilityOptions.js"
-import "@babylonjs/core/Culling/ray.js"
-import "@babylonjs/loaders/glTF/index.js"
-import "@babylonjs/core/Engines/index.js"
-import "@babylonjs/core/Animations/index.js"
-import "@babylonjs/core/Rendering/edgesRenderer.js"
-import "@babylonjs/core/Physics/physicsEngineComponent.js"
-import "@babylonjs/core/Rendering/depthRendererSceneComponent.js"
-import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
-import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js"
-import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
+// import "@babylonjs/core/Culling/ray.js"
+// import "@babylonjs/loaders/glTF/index.js"
+// import "@babylonjs/core/Engines/index.js"
+// import "@babylonjs/core/Animations/index.js"
+// import "@babylonjs/core/Rendering/edgesRenderer.js"
+// import "@babylonjs/core/Physics/physicsEngineComponent.js"
+// import "@babylonjs/core/Rendering/depthRendererSceneComponent.js"
+// import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
+// import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js"
+// import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
@@ -23,7 +22,6 @@ import {make_gameplan} from "./gameplan.js"
 import {HumanoidTick, hub} from "./ecs/hub.js"
 import {makeRealm} from "./models/realm/realm.js"
 import {Respawner} from "./models/respawner/respawner.js"
-import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {LevelSwitcher} from "./models/level_switcher/switcher.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
 import {determine_quality_mode} from "./tools/determine_quality_mode.js"
@@ -79,12 +77,6 @@ const realm = (window as any).realm = await nexus.context.realmOp.load(
 		quality: determine_quality_mode(location.href, Quality.Mid),
 	})
 )
-
-// we roll with opengl standards
-CompatibilityOptions.UseOpenGLOrientationForUV = true
-
-// we roll with gltf standards
-realm.scene.useRightHandedSystem = true
 
 // we lower the resolution for potato-computers
 realm.stage.porthole.resolution = realm.quality === Quality.Potato

@@ -11,19 +11,19 @@ export const gimbaltool = (gimbal: Vec2) => ({
 
 	rotate2d(vec: Vec2): Vec2 {
 		const [gimbalX] = gimbal
-		return vec2.rotate(vec, -scalar.map(gimbalX, circle))
+		return vec2.rotate(vec, scalar.map(gimbalX, circle))
 	},
 
 	unrotate2d(vec: Vec2): Vec2 {
 		const [gimbalX] = gimbal
-		return vec2.rotate(vec, scalar.map(gimbalX, circle))
+		return vec2.rotate(vec, -scalar.map(gimbalX, circle))
 	},
 
 	rotate([moveX, moveY, moveZ]: Vec3): Vec3 {
 		const [gimbalX] = gimbal
 		const [x, z] = vec2.rotate(
 			[moveX, moveZ],
-			-scalar.map(gimbalX, circle),
+			scalar.map(gimbalX, circle),
 		)
 		return [x, moveY, z]
 	},
@@ -32,7 +32,7 @@ export const gimbaltool = (gimbal: Vec2) => ({
 		const [gimbalX] = gimbal
 		const [x, z] = vec2.rotate(
 			[moveX, moveZ],
-			scalar.map(gimbalX, circle),
+			-scalar.map(gimbalX, circle),
 		)
 		return [x, moveY, z]
 	},

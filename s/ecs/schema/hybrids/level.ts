@@ -4,7 +4,7 @@ import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Matrix} from "@babylonjs/core/Maths/math.js"
 import {Light} from "@babylonjs/core/Lights/light.js"
-import {HybridComponent, Meshoid, Prop} from "@benev/toolbox"
+import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
@@ -181,80 +181,77 @@ function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
 
-		console.log(
-			level.meshes.filter(m => m.name.toLowerCase().includes("landscape"))
-		)
+		const static_meshes = level
+			.meshes
+			.filter(mesh => !(
+				mesh.name.includes("feature") ||
+				mesh.name.includes("toy")
+			))
+			.filter(mesh => !Nametag.parse(mesh.name).tag("::ghost"))
 
-		// const static_meshes = level
-		// 	.meshes
-		// 	.filter(mesh => !(
-		// 		mesh.name.includes("feature") ||
-		// 		mesh.name.includes("toy")
-		// 	))
+		const dynamic_nodes = level
+			.top_level_nodes
+			.filter(node => (
+				node.name.includes("feature") ||
+				node.name.includes("toy")
+			))
 
-		// const dynamic_nodes = level
-		// 	.top_level_nodes
-		// 	.filter(node => (
-		// 		node.name.includes("feature") ||
-		// 		node.name.includes("toy")
-		// 	))
+		const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))!
+		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))!
 
-		// const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))!
-		// const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))!
+		const apply_static_physics = (meshoid: Meshoid) => {
+			const actor = realm.physics.trimesh(meshoid)
+			disposables.push(() => actor.dispose())
+		}
 
-		// const apply_static_physics = (meshoid: Meshoid) => {
-		// 	const actor = realm.physics.trimesh(meshoid)
-		// 	disposables.push(() => actor.dispose())
-		// }
+		const create_hanging_physical_toy = (prop: Prop, params: {
+				position_offset: Vec3
+				scale: Vec3
+				density: number
+			}) => {
 
-		// const create_hanging_physical_toy = (prop: Prop, params: {
-		// 		position_offset: Vec3
-		// 		scale: Vec3
-		// 		density: number
-		// 	}) => {
+			const instance = prop.instantiateHierarchy()!
+			const position = babylonian.to.vec3(instance.absolutePosition)
+			disposables.push(() => instance.dispose())
 
-		// 	const instance = prop.instantiateHierarchy()!
-		// 	const position = babylonian.to.vec3(instance.absolutePosition)
-		// 	disposables.push(() => instance.dispose())
+			const fixture = realm.physics.fixture({position})
+			disposables.push(() => fixture.dispose())
 
-		// 	const fixture = realm.physics.fixture({position})
-		// 	disposables.push(() => fixture.dispose())
+			const box = realm.physics.box({
+				position: vec3.add(position, params.position_offset),
+				scale: params.scale,
+				density: params.density,
+				rotation: quat.identity(),
+				linearDamping: .3,
+				angularDamping: .3,
+				material: undefined,
+			})
+			disposables.push(() => box.dispose())
 
-		// 	const box = realm.physics.box({
-		// 		position: vec3.add(position, params.position_offset),
-		// 		scale: params.scale,
-		// 		density: params.density,
-		// 		rotation: quat.identity(),
-		// 		linearDamping: .3,
-		// 		angularDamping: .3,
-		// 		material: undefined,
-		// 	})
-		// 	disposables.push(() => box.dispose())
+			const joint = realm.physics.joint_spherical({
+				bodies: [fixture.rigid, box.rigid],
+				anchors: [[0, 0, 0], [0, 1, 0]],
+			})
+			disposables.push(() => joint.dispose())
+		}
 
-		// 	const joint = realm.physics.joint_spherical({
-		// 		bodies: [fixture.rigid, box.rigid],
-		// 		anchors: [[0, 0, 0], [0, 1, 0]],
-		// 	})
-		// 	disposables.push(() => joint.dispose())
-		// }
+		dynamic_nodes.forEach(p => p.setEnabled(false))
 
-		// dynamic_nodes.forEach(p => p.setEnabled(false))
+		if (physics) {
+			static_meshes.forEach(apply_static_physics)
 
-		// if (physics) {
-		// 	static_meshes.forEach(apply_static_physics)
+			balls.forEach(p => create_hanging_physical_toy(p, {
+				position_offset: [0, -1, 0],
+				scale: [.75, .75, .75],
+				density: 1000,
+			}))
 
-		// 	balls.forEach(p => create_hanging_physical_toy(p, {
-		// 		position_offset: [0, -1, 0],
-		// 		scale: [.75, .75, .75],
-		// 		density: 1000,
-		// 	}))
-
-		// 	bags.forEach(p => create_hanging_physical_toy(p, {
-		// 		position_offset: [0, -1, 0],
-		// 		scale: [.5, 1.5, 1.5],
-		// 		density: 1000,
-		// 	}))
-		// }
+			bags.forEach(p => create_hanging_physical_toy(p, {
+				position_offset: [0, -1, 0],
+				scale: [.5, 1.5, 1.5],
+				density: 1000,
+			}))
+		}
 
 		return {
 			asset,

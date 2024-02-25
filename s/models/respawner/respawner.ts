@@ -20,9 +20,14 @@ export class Respawner {
 			return () => this.world.deleteEntity(id)
 		},
 
-		// nada
+		// entity
 		() => {
-			return () => {}
+			const {id} = this.world.createEntity(
+				...Archetypes.humanoid({
+					position: [0, 10, 0],
+				})
+			)
+			return () => this.world.deleteEntity(id)
 		},
 	])
 

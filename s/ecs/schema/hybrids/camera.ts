@@ -21,6 +21,7 @@ export class Camera extends HybridComponent<HumanoidRealm, {
 		node.maxZ = state.maxZ
 		node.ignoreParentScaling = true
 	}
+
 	updated() {}
 	deleted() {
 		this.node.dispose()

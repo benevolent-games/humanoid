@@ -1,5 +1,5 @@
 
-import {spline, vec2, vec3} from "@benev/toolbox"
+import {human, log100, spline, vec2, vec3} from "@benev/toolbox"
 import {unflatten} from "../../../tools/flatten.js"
 import {Camera} from "../../schema/hybrids/camera.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
@@ -12,15 +12,18 @@ import {AirborneTrajectory, Force, Gimbal, Grounding, Impetus, Intent, Jump, Pos
 
 export const humanoid = system("humanoid", [
 	system("camera rig", [
-		responder("parent camera to rig")
+		responder("establish camera parented to rig")
 			.select({HumanoidCameraRig, Camera})
-			.respond(() => ({
+			.respond(({realm}) => ({
 				added(c) {
+					c.camera.node.position.z = -(c.humanoidCameraRig.state.third_person_distance)
 					c.camera.node.parent = c.humanoidCameraRig.parts.headbox
+					realm.stage.rendering.setCamera(c.camera.node)
 				},
 				removed(c) {
 					if (c.camera.node.parent === c.humanoidCameraRig.parts.headbox)
 						c.camera.node.parent = null
+					realm.stage.rendering.setCamera(null)
 				},
 			})),
 
@@ -31,6 +34,15 @@ export const humanoid = system("humanoid", [
 				c.humanoidCameraRig.applyGimbal(moddedGimbal)
 			}),
 	]),
+
+	responder("establish capsule position")
+		.select({HumanoidCapsule, Position})
+		.respond(() => ({
+			removed() {},
+			added(c) {
+				c.humanoidCapsule.position = c.position
+			},
+		})),
 
 	behavior("reset impetus")
 		.select({HumanoidCapsule, Impetus})

@@ -45,5 +45,27 @@ export namespace Archetypes {
 		smoothing: 5,
 		speeds: {base: 5, fast: 40, slow: 1},
 	}))
+
+	export const humanoid = arch(Selectors.humanoid, ({position}: {position: Vec3}) => ({
+		...params(spectator({position})),
+		speeds: {base: 3, fast: 5, slow: 1.5},
+		humanoidCapsule: {
+			height: 1.75,
+			radius: .2,
+		},
+		humanoidCameraRig: {
+			height: 1.75,
+			third_person_distance: 1,
+		},
+		stance: "stand",
+		grounding: {
+			grounded: true,
+			seconds: 0,
+		},
+		airborneTrajectory: vec3.zero(),
+		jump: false,
+		previousPosition: position,
+		velocity: vec3.zero(),
+	}))
 }
 
