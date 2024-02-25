@@ -15,6 +15,18 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 			path: "shaders/terrain/shader.json",
 			inputs: {},
 		},
+		skylight: {
+			path: "shaders/skylight/shader.json",
+			inputs: {},
+		},
+		mercury: {
+			path: "shaders/mercury/shader.json",
+			inputs: {},
+		},
+		water: {
+			path: "shaders/water/shader.json",
+			inputs: {},
+		},
 	},
 
 	characters: {
@@ -29,7 +41,7 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 		},
 		mt_pimsley: {
 			glb: glb("glbs/levels/mt_pimsley.glb", "physics"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
+			sky: sky("skyboxes/sky_01", ".webp", kilometers(10), degrees(270)),
 			env: env("envmaps/sunset_cloudy.env", degrees(180)),
 		},
 		teleporter: {

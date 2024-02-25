@@ -5,7 +5,7 @@ import {label} from "@benev/toolbox"
 import {Scene} from "@babylonjs/core/scene.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
-import {ReflectionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
+import {ReflectionBlock, RefractionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
 
 export class Shader<Inputs extends object = object> {
 	constructor(public readonly material: NodeMaterial) {}
@@ -26,9 +26,8 @@ export async function make_shader(
 	material.name = label("shader")
 
 	for (const texblock of material.getTextureBlocks()) {
-		if (texblock instanceof ReflectionBlock) {
+		if (texblock instanceof ReflectionBlock || texblock instanceof RefractionBlock)
 			texblock.texture = scene.environmentTexture
-		}
 		else {
 			const {href} = new URL(texblock.name, new URL(url, location.href))
 			const texture = new Texture(href, scene)

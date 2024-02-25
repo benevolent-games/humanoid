@@ -6,8 +6,11 @@ import {Nametag} from "../../tools/nametag.js"
 import {HumanoidRealm} from "../realm/realm.js"
 import {GlbPostProcess} from "./parts/types.js"
 import {Shader} from "../assets/parts/make_shader.js"
+import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
+import { Quality } from "../../tools/quality.js"
+import { NodeMaterial } from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
-export function standard_glb_post_process({gameplan, loadingDock}: HumanoidRealm): GlbPostProcess {
+export function standard_glb_post_process({gameplan, loadingDock, quality}: HumanoidRealm): GlbPostProcess {
 	return async container => {
 		const replacements = new Map<Material, Shader>()
 
@@ -35,6 +38,20 @@ export function standard_glb_post_process({gameplan, loadingDock}: HumanoidRealm
 					mesh.material = shader.material
 				}
 			}
+		}
+
+		const maxLights = (
+			quality === Quality.Fancy ? 16 :
+			quality === Quality.Mid ? 8 :
+			2
+		)
+
+		console.log("maxLights", maxLights)
+
+		// set max light limit
+		for (const material of container.materials) {
+			if (material instanceof PBRMaterial || material instanceof NodeMaterial)
+				material.maxSimultaneousLights = maxLights
 		}
 
 		return container
