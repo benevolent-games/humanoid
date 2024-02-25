@@ -14,21 +14,37 @@ export const humanoid = system("humanoid", [
 	system("camera rig", [
 		responder("establish camera parented to rig")
 			.select({HumanoidCameraRig, Camera})
-			.respond(({realm}) => ({
+			.respond(() => ({
 				added(c) {
 					c.camera.node.position.z = -(c.humanoidCameraRig.state.third_person_distance)
 					c.camera.node.parent = c.humanoidCameraRig.parts.headbox
-					realm.stage.rendering.setCamera(c.camera.node)
 				},
 				removed(c) {
 					if (c.camera.node.parent === c.humanoidCameraRig.parts.headbox)
 						c.camera.node.parent = null
+				},
+			})),
+
+		responder("establish capsule position")
+			.select({HumanoidCameraRig, Position})
+			.respond(() => ({
+				added(c) { c.humanoidCameraRig.position = c.position },
+				removed() {},
+			})),
+
+		responder("activate/deactivate the camera")
+			.select({HumanoidCameraRig, Camera})
+			.respond(({realm}) => ({
+				added(c) {
+					realm.stage.rendering.setCamera(c.camera.node)
+				},
+				removed() {
 					realm.stage.rendering.setCamera(null)
 				},
 			})),
 
 		behavior("apply gimbal to rig")
-			.select({Gimbal, HumanoidCameraRig})
+			.select({HumanoidCameraRig, Gimbal})
 			.act(() => c => {
 				const moddedGimbal = apply_spline_to_gimbal_y(c.gimbal, [.1, .5, .7])
 				c.humanoidCameraRig.applyGimbal(moddedGimbal)
