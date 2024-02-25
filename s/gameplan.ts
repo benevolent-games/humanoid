@@ -43,10 +43,10 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 			env: env("envmaps/wrynth_interior.env", degrees(90)),
 		},
 	}).cycle(
-		"mt_pimsley",
 		"gym",
-		// "teleporter",
-		// "wrynth_dungeon",
+		"mt_pimsley",
+		"teleporter",
+		"wrynth_dungeon",
 	),
 })
 
