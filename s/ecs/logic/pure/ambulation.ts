@@ -65,8 +65,8 @@ function cardinalize([x, y]: Vec2) {
 	return {
 		north: scalar.clamp(y),
 		south: scalar.clamp(-y),
-		west: scalar.clamp(-x),
-		east: scalar.clamp(x),
+		west: scalar.clamp(x),
+		east: scalar.clamp(-x),
 	}
 }
 
