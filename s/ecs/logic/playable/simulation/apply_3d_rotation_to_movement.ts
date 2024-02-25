@@ -10,7 +10,7 @@ export function apply_3d_rotation_to_movement(
 	) {
 
 	const [x, z] = move
-	const translation = new Vector3(x, 0, z)
+	const translation = new Vector3(-x, 0, z)
 
 	const translation_considering_rotation = translation
 		.applyRotationQuaternion(transformB.absoluteRotationQuaternion)

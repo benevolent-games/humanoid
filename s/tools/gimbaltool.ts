@@ -39,7 +39,7 @@ export const gimbaltool = (gimbal: Vec2) => ({
 
 	quaternions() {
 		const [x, y] = gimbal
-		const yaw = scalar.radians.from.circle(x)
+		const yaw = -scalar.radians.from.circle(x)
 		const pitch = scalar.map(y, [
 			scalar.radians.from.degrees(90),
 			scalar.radians.from.degrees(-90),
