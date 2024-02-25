@@ -49,11 +49,12 @@ export const NotesMenu = nexus.shadow_view(use => (
 				<span>make humanoid great again</span>
 				<small>2024-02-25</small>
 			</h1>
-			<p>🎉 we brought back the knight character! now all the maps have physics. we rewrote the ecs architecture, stuff like that is why features disappear sometimes.</p>
+			<p>🎉 we brought back the knight character.</p>
+			<p>now all the maps have physics.</p>
 			<p>🆕 press R to alternate between knight and spectator mode</p>
 			<p>🆒 press Tab to switch levels.</p>
-			<p>implemented thin instancing, which improves mt_pimsley's framerate a great deal.</p>
-			<p>we made mt_pimsley shiny, it sports a fresh coat of custom shader terrain, new env lighting, etc.. it was horrible bingus to get working</p>
+			<p>implemented thin instancing, which improves mt_pimsley's framerate.</p>
+			<p>we made mt_pimsley shiny. it sports a fresh coat of custom shader terrain, new env lighting, etc.. it was horrible bingus to get working.</p>
 			<p>fix ssr and ssao by reverting some optimizations.</p>
 		</section>
 		<section>
