@@ -2,11 +2,16 @@
 import {Pojo} from "@benev/slate"
 
 export namespace Plan {
-	export type Assets = {
+	export type Game = {
 		root: string
+		characters: Pojo<Character>
 		levels: Pojo<Level>
 		levelCycle: string[]
 		shaders: Pojo<Shader<any>>
+	}
+
+	export type Character = {
+		glb: Glb
 	}
 
 	export type Level = {
@@ -17,6 +22,7 @@ export namespace Plan {
 
 	export type Glb = {
 		path: string
+		physics: boolean
 	}
 
 	export type Env = {

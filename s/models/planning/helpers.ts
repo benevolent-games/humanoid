@@ -2,11 +2,12 @@
 import {Plan} from "./types.js"
 import {scalar} from "@benev/toolbox"
 
-export function kilometers(m: number) { return m * 1000 }
-export const degrees = scalar.radians.from.degrees
+export function game<G extends Plan.Game>(gameplan: G) {
+	return gameplan
+}
 
-export function glb(path: string): Plan.Glb {
-	return {path}
+export function glb(path: string, physics?: "physics" | undefined): Plan.Glb {
+	return {path, physics: !!physics}
 }
 
 export function env(path: string, rotation: number): Plan.Env {
@@ -32,6 +33,10 @@ export function shader<Inputs extends object>(path: string, inputs: Inputs): Pla
 	return {path, inputs}
 }
 
+export function character(path: string): Plan.Character {
+	return {glb: glb(path)}
+}
+
 export function levels<LevelName extends string>(levels: Record<LevelName, Plan.Level>) {
 	return {
 		cycle: (...levelCycle: LevelName[]) => ({
@@ -40,4 +45,7 @@ export function levels<LevelName extends string>(levels: Record<LevelName, Plan.
 		})
 	}
 }
+
+export function kilometers(m: number) { return m * 1000 }
+export const degrees = scalar.radians.from.degrees
 

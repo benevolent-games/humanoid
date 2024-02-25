@@ -1,13 +1,14 @@
 
 import {World} from "@benev/toolbox"
 import {signals} from "@benev/slate"
+import {Plan} from "../planning/types.js"
+import {HuLevel} from "../../gameplan.js"
 import {Cycle} from "../../tools/cycle.js"
 import {Loading} from "../../tools/loading.js"
-import {HuLevelName} from "../../asset_links.js"
 import {Level} from "../../ecs/schema/hybrids/level.js"
 
 type LevelLoader = {
-	name: HuLevelName
+	name: HuLevel
 	load: () => Promise<void>
 }
 
@@ -20,9 +21,9 @@ export class LevelSwitcher {
 
 	constructor(
 			public readonly world: World<any>,
-			public readonly levels: HuLevelName[],
+			public readonly gameplan: Plan.Game,
 		) {
-		this.#cycle = new Cycle(levels.map(n => this.#level(n)))
+		this.#cycle = new Cycle(this.gameplan.levelCycle.map(n => this.#level(n as HuLevel)))
 	}
 
 	next() {
@@ -39,12 +40,12 @@ export class LevelSwitcher {
 		load()
 	}
 
-	#level(name: HuLevelName) {
+	#level(name: HuLevel) {
 		return {
 			name,
 			load: this.#loading.fn(async() => {
 				const {world} = this
-				const level = world.createEntity({Level}, {level: {name}})
+				const level = world.createEntity({Level}, {level: {level: name}})
 				this.#dispose = () => world.deleteEntity(level.id)
 				await level.data.level.doneLoading
 			})

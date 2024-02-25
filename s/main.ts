@@ -19,10 +19,9 @@ import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
 import {Quality} from "./tools/quality.js"
+import {make_gameplan} from "./gameplan.js"
 import {HumanoidTick, hub} from "./ecs/hub.js"
 import {makeRealm} from "./models/realm/realm.js"
-import {Skybox} from "./ecs/schema/hybrids/skybox.js"
-import {Envmap} from "./ecs/schema/hybrids/envmap.js"
 import {Archetypes} from "./ecs/archetypes/archetypes.js"
 import {LevelSwitcher} from "./models/level_switcher/switcher.js"
 import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
@@ -66,28 +65,32 @@ register_to_dom({BenevHumanoid})
 //  - we are using an op for the async operation so the ui can show a loading spinner
 //
 
-// we roll with opengl standards
-CompatibilityOptions.UseOpenGLOrientationForUV = true
+const gameplan = make_gameplan(
+	determine_local_dev_mode(location.href)
+)
 
 const realm = (window as any).realm = await nexus.context.realmOp.load(
 	async() => makeRealm({
+		gameplan,
 		tickrate_hz: 60,
 		quality: determine_quality_mode(location.href, Quality.Mid),
-		local_dev_mode: determine_local_dev_mode(location.href),
 	})
 )
 
+// we roll with opengl standards
+CompatibilityOptions.UseOpenGLOrientationForUV = true
+
 // we roll with gltf standards
 realm.scene.useRightHandedSystem = true
-
-// our standard glb postpro will apply shaders and stuff like that,
-// before it's copied to the scene.
-realm.assets.glb_post_process = standard_glb_post_process(realm)
 
 // we lower the resolution for potato-computers
 realm.stage.porthole.resolution = realm.quality === Quality.Potato
 	? 0.5
 	: 1
+
+// our standard glb postpro will apply shaders and stuff like that,
+// before it's copied to the scene.
+realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
 
 //
 // ecs startup
@@ -100,22 +103,8 @@ const executive = hub.executive(realm, world, root)
 // start with a spectator cam that the player can control
 world.createEntity(...Archetypes.spectator({position: [0, 5, 0]}))
 
-// let's start with a global envrionment map and skybox,
-// which will be present for all levels
-world.createEntity({Envmap}, {envmap: {}})
-world.createEntity({Skybox}, {
-	skybox: {size: 1_000, rotate_degrees: 270},
-})
-
-// establish a level switcher that allows us to cycle through levels
-const levelSwitcher = new LevelSwitcher(world, [
-	"mt_pimsley",
-	"gym",
-	"teleporter",
-	"wrynth_dungeon",
-])
-
-// initiate the first level switch, so we start on the first level
+// establish a level switcher for cylcing levels
+const levelSwitcher = new LevelSwitcher(world, gameplan)
 levelSwitcher.next()
 
 // establish the zone available to the ui

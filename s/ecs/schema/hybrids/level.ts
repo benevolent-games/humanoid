@@ -1,5 +1,5 @@
 
-import {explode_promise, maptool} from "@benev/slate"
+import {explode_promise, maptool, ob} from "@benev/slate"
 import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Matrix} from "@babylonjs/core/Maths/math.js"
@@ -9,12 +9,18 @@ import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
-import {HuLevelName} from "../../../asset_links.js"
+import {HuLevel} from "../../../gameplan.js"
+import {make_skybox} from "../../../tools/make_skybox.js"
+import {make_envmap} from "../../../tools/make_envmap.js"
 import {HumanoidRealm} from "../../../models/realm/realm.js"
 
-export class Level extends HybridComponent<HumanoidRealm, {name: HuLevelName}> {
+export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 	#dispose: (() => void) | null = null
 	#promise = explode_promise<void>()
+
+	get #levelplan() {
+		return this.realm.gameplan.levels[this.state.level]
+	}
 
 	get doneLoading() {
 		return this.#promise.promise
@@ -36,14 +42,32 @@ export class Level extends HybridComponent<HumanoidRealm, {name: HuLevelName}> {
 			.then(() => this.#promise.resolve())
 	}
 
+	skybox = (() => {
+		const {sky} = this.#levelplan
+		return make_skybox({
+			scene: this.realm.scene,
+			links: ob(sky.images).map(this.realm.loadingDock.resolve),
+			yaw: sky.rotation,
+			size: sky.size,
+		})
+	})()
+
+	envmap = (() => {
+		const {env} = this.#levelplan
+		return make_envmap(this.realm.scene, this.realm.loadingDock.resolve(env.path))
+	})()
+
 	created() {
-		const {state: {name}} = this
-		this.#spawn_level(this.realm.assets.glbs.levels[name](), false)
+		const {state: {level}} = this
+		const {glb} = this.realm.gameplan.levels[level]
+		this.#spawn_level(this.realm.loadingDock.loadGlb(glb), glb.physics)
 	}
 
 	updated() {}
 
 	deleted() {
+		this.skybox.dispose()
+		this.envmap.dispose()
 		if (this.#dispose)
 			this.#dispose()
 	}
@@ -110,97 +134,25 @@ function trace_paternity(meshes: Meshoid[]) {
 	return paternity
 }
 
-function convert_to_thin_instances(mesh: Mesh, instances: InstancedMesh[]) {
-	const matrices = new Float32Array(16 + (16 * instances.length))
-	const inverseParentMatrix = mesh.computeWorldMatrix(true).invert()
-	const matrix_for_original = Matrix.IdentityReadOnly
-	matrix_for_original.copyToArray(matrices, 0)
-
-	instances.forEach((instance, i) => {
-		const world = instance.getWorldMatrix()
-		const relative = world.multiply(inverseParentMatrix)
-		relative.copyToArray(matrices, 16 + (i * 16))
-		instance.dispose()
-	})
-
-	mesh.thinInstanceSetBuffer("matrix", matrices, 16)
-	mesh.thinInstanceRefreshBoundingInfo()
-}
-
 function thinnify(daddy: Mesh, babies: InstancedMesh[]) {
 	const inverse_parent_matrix = daddy.computeWorldMatrix(true).invert()
 	const matrices = new Float32Array(16 * (1 + babies.length))
-
-	// manually insert a thin-instance that represents the daddy mesh
 	Matrix.IdentityReadOnly.copyToArray(matrices, 0)
-
 	babies.forEach((instance, i) => {
 		const world = instance.computeWorldMatrix(true)
 		const relative = world.multiply(inverse_parent_matrix)
 		relative.copyToArray(matrices, 16 * (1 + i))
 		instance.dispose()
 	})
-
 	daddy.thinInstanceSetBuffer("matrix", matrices, 16)
 	daddy.thinInstanceRefreshBoundingInfo()
 }
 
 function setup_thin_instances(params: LevelInstance) {
-	const {level, asset} = params
-
-	const instances: InstancedMesh[] = []
-	for (const mesh of asset.scene.meshes) {
-		if (mesh instanceof Mesh) {
-			for (const instance of mesh.instances)
-				instances.push(instance)
-		}
-	}
-
-	const instances2: InstancedMesh[] = []
-	for (const mesh of level.meshes) {
-		if (mesh instanceof Mesh) {
-			for (const instance of mesh.instances)
-				instances2.push(instance)
-		}
-	}
-
+	const {level} = params
 	const paternity = trace_paternity(level.meshes)
-	const instances3 = [...paternity.values()].flat()
-
-	console.log("TOTAL SCENE INSTANCES", instances.length)
-	console.log("TOTAL LEVEL INSTANCES", instances2.length)
-	console.log("TOTAL PATERNITY INSTANCES", instances3.length)
-
 	for (const [daddy, babies] of paternity)
 		thinnify(daddy, babies)
-
-	// const disabled = [...paternity.keys()].filter(mesh => !asset.scene.meshes.includes(mesh))
-	// console.log("DISABLED", disabled.length)
-
-	// for (const [mesh, instances] of paternity) {
-	// 	mesh.
-	// }
-
-	// const instances = level.meshes
-	// 	.filter(m => m instanceof InstancedMesh) as InstancedMesh[]
-
-	window.addEventListener("keydown", (event: KeyboardEvent) => {
-		if (event.code === "KeyG") {
-
-			for (const instance of instances3) {
-				instance.dispose()
-			}
-
-			console.log("deleted instances:", instances2.length)
-
-		}
-	})
-
-	return params
-}
-
-function setup_shaders(params: LevelInstance) {
-	const {level, asset} = params
 	return params
 }
 
