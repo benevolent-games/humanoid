@@ -24,23 +24,23 @@ export const make_gameplan = (local_dev_mode: boolean) => game({
 	...levels({
 		gym: {
 			glb: glb("glbs/levels/gym.glb", "physics"),
-			sky: sky("glbs/skyboxes/sky_01", ".webp", kilometers(1), degrees(180)),
-			env: env("envmaps/wrynth_interior.env", degrees(270)),
+			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
+			env: env("envmaps/wrynth_interior.env", degrees(90)),
 		},
 		mt_pimsley: {
 			glb: glb("glbs/levels/mt_pimsley.glb"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(1), degrees(180)),
-			env: env("envmaps/wrynth_interior.env", degrees(270)),
+			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
+			env: env("envmaps/sunset_cloudy.env", degrees(180)),
 		},
 		teleporter: {
 			glb: glb("glbs/levels/teleporter.glb"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(1), degrees(180)),
-			env: env("envmaps/wrynth_interior.env", degrees(270)),
+			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
+			env: env("envmaps/wrynth_interior.env", degrees(90)),
 		},
 		wrynth_dungeon: {
 			glb: glb("glbs/levels/wrynth_dungeon.glb"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(1), degrees(180)),
-			env: env("envmaps/wrynth_interior.env", degrees(270)),
+			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
+			env: env("envmaps/wrynth_interior.env", degrees(90)),
 		},
 	}).cycle(
 		"mt_pimsley",

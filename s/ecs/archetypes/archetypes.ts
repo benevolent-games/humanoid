@@ -21,7 +21,7 @@ export namespace Archetypes {
 		camera: {
 			fov: 90,
 			minZ: 0.1,
-			maxZ: 1_000,
+			maxZ: 2_500,
 		},
 		controllable: {},
 		intent: {

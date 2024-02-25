@@ -54,7 +54,11 @@ export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 
 	envmap = (() => {
 		const {env} = this.#levelplan
-		return make_envmap(this.realm.scene, this.realm.loadingDock.resolve(env.path))
+		return make_envmap(
+			this.realm.scene,
+			this.realm.loadingDock.resolve(env.path),
+			env.rotation,
+		)
 	})()
 
 	created() {
