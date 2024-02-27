@@ -1,7 +1,6 @@
 
 import {behavior, system} from "../../hub.js"
-import {invert_y_axis} from "../../../tools/invert_y_axis.js"
-import {get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
+import {Vec2, get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 import {MouseAccumulator} from "../../schema/hybrids/mouse_accumulator.js"
 import {Controllable, Intent, Sensitivity, Stance} from "../../schema/schema.js"
 
@@ -29,11 +28,11 @@ export const intentions = system("intentions", [
 	behavior("add mouse movements to glance")
 		.select({Controllable, Intent, MouseAccumulator, Sensitivity})
 		.act(({realm}) => c => {
-			const mouselook = c.mouseAccumulator.movement.steal()
+			const [x, y] = c.mouseAccumulator.movement.steal()
 			c.intent.glance = vec2.add(
 				c.intent.glance,
 				realm.stage.pointerLocker.locked
-					? vec2.multiplyBy(invert_y_axis(mouselook), c.sensitivity.mouse)
+					? vec2.multiplyBy([x, -y], c.sensitivity.mouse)
 					: vec2.zero(),
 			)
 		}),
@@ -42,7 +41,7 @@ export const intentions = system("intentions", [
 		.select({Controllable, Intent, Sensitivity})
 		.act(({realm}) => c => {
 			const {buttons} = realm.impulse.report.humanoid
-			const keylook = get_trajectory_from_cardinals({
+			const [x, y] = get_trajectory_from_cardinals({
 				north: buttons.up.down,
 				south: buttons.down.down,
 				west: buttons.left.down,
@@ -50,7 +49,7 @@ export const intentions = system("intentions", [
 			})
 			c.intent.glance = vec2.add(
 				c.intent.glance,
-				vec2.multiplyBy(keylook, c.sensitivity.keys),
+				vec2.multiplyBy([-x, -y], c.sensitivity.keys),
 			)
 		}),
 
