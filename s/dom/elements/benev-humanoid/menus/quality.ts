@@ -1,11 +1,8 @@
 
-import {menu} from "@benev/toolbox"
 import {css, html} from "@benev/slate"
 import {nexus} from "../../../../nexus.js"
 import {HumanoidRealm} from "../../../../models/realm/realm.js"
 import {QualityString, quality_from_string} from "../../../../tools/quality.js"
-
-export const qualityMenu = (realm: HumanoidRealm) => menu("quality", () => QualityMenu([realm]))
 
 export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	use.name("quality-menu")

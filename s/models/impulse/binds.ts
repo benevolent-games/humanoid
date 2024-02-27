@@ -10,11 +10,11 @@ export const humanoid_binds = () => binds(({
 	universal: mode({
 		vectors: {},
 		buttons: {
-			menu_toggle: buttons(modless("KeyQ")),
+			menu_toggle: buttons(b("Tab")),
 			respawn: buttons(b("KeyR"), modless("RMB")),
 			bot_spawn: buttons(b("KeyB")),
 			bot_delete: buttons(b("KeyB", shift)),
-			level_swap: buttons(b("Tab")),
+			level_swap: buttons(b("KeyY")),
 		},
 	}),
 
