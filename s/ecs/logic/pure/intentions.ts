@@ -1,6 +1,6 @@
 
 import {behavior, system} from "../../hub.js"
-import {Vec2, get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
+import {get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
 import {MouseAccumulator} from "../../schema/hybrids/mouse_accumulator.js"
 import {Controllable, Intent, Sensitivity, Stance} from "../../schema/schema.js"
 
@@ -49,7 +49,7 @@ export const intentions = system("intentions", [
 			})
 			c.intent.glance = vec2.add(
 				c.intent.glance,
-				vec2.multiplyBy([-x, -y], c.sensitivity.keys),
+				vec2.multiplyBy([-x, y], c.sensitivity.keys),
 			)
 		}),
 
