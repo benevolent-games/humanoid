@@ -18,10 +18,7 @@ export const BenevHumanoid = nexus.shadow_component(use => {
 					menus,
 					stage: realm.stage,
 					leadButton: "tab",
-					onLeadToggled: open => {
-						if (!open)
-							realm.stage.pointerLocker.lock()
-					},
+					onLeadToggled: () => realm.stage.pointerLocker.toggle(),
 				}])
 			])
 		)}
