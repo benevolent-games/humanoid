@@ -55,20 +55,21 @@ register_to_dom({BenevHumanoid})
 //  - we are using an op for the async operation so the ui can show a loading spinner
 //
 
-const gameplan = make_gameplan(
-	determine_local_dev_mode(location.href)
-)
+const tickrate_hz = 60
+
+const gameplan = make_gameplan({
+	quality: determine_quality_mode(location.href, Quality.Mid),
+	root_url: determine_local_dev_mode(location.href)
+		? "/assets"
+		: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
+})
 
 const realm = (window as any).realm = await nexus.context.realmOp.load(
-	async() => makeRealm({
-		gameplan,
-		tickrate_hz: 60,
-		quality: determine_quality_mode(location.href, Quality.Mid),
-	})
+	async() => makeRealm({gameplan, tickrate_hz})
 )
 
 // we lower the resolution for potato-computers
-realm.stage.porthole.resolution = realm.quality === Quality.Potato
+realm.stage.porthole.resolution = gameplan.quality === Quality.Potato
 	? 0.5
 	: 1
 

@@ -36,6 +36,7 @@
 		"@babylonjs/loaders": "^6.42.0"
 	},
 	"devDependencies": {
+		"@benev/batchimage": "^0.0.1",
 		"@benev/turtle": "^0.5.2",
 		"@rollup/plugin-node-resolve": "^15.2.3",
 		"@rollup/plugin-wasm": "^6.2.2",

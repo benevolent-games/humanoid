@@ -58,7 +58,7 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 
 	function button(emoji: string, label: QualityString, urlquality: string = label) {
 		const href = `?quality=${urlquality}`
-		const active = realm.quality === quality_from_string(label)
+		const active = realm.gameplan.quality === quality_from_string(label)
 		const click = () => window.location.assign(href)
 		return html`
 			<button

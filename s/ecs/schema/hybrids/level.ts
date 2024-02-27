@@ -3,7 +3,7 @@ import {Node} from "@babylonjs/core/node.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Matrix} from "@babylonjs/core/Maths/math.js"
 import {Light} from "@babylonjs/core/Lights/light.js"
-import {explode_promise, maptool, ob} from "@benev/slate"
+import {explode_promise, maptool} from "@benev/slate"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
@@ -51,7 +51,7 @@ export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 		const {sky} = this.#levelplan
 		return make_skybox({
 			scene: this.realm.scene,
-			links: ob(sky.images).map(this.realm.loadingDock.resolve),
+			links: sky.images,
 			yaw: sky.rotation,
 			size: sky.size,
 		})
@@ -61,7 +61,7 @@ export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
 		const {env} = this.#levelplan
 		return make_envmap(
 			this.realm.scene,
-			this.realm.loadingDock.resolve(env.path),
+			env.url,
 			env.rotation,
 		)
 	})()

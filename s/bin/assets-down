@@ -6,11 +6,20 @@ rm -rf assets && mkdir assets
 echo "download and process glbs"
 npx glbx mount/benev-storage/assets assets
 
-echo "download all other kinds of files"
+echo "download other kinds of files"
 rsync -vham \
 	--progress \
 	--include="*/" \
+	--include="*.json" \
 	--exclude="*.glb" \
 	mount/benev-storage/assets \
 	.
+
+echo "download and compress all images"
+npx @benev/batchimage \
+	--in "mount/benev-storage/assets" \
+	--out "assets" \
+	--format "webp" \
+	--quality "90" \
+	--size "512"
 

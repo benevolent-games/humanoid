@@ -1,9 +1,11 @@
 
 import {Pojo} from "@benev/slate"
+import {PlanningHelpers} from "./helpers.js"
+import {Quality} from "../../tools/quality.js"
 
 export namespace Plan {
 	export type Game = {
-		root: string
+		root_url: string
 		characters: Pojo<Character>
 		levels: Pojo<Level>
 		levelCycle: string[]
@@ -21,12 +23,12 @@ export namespace Plan {
 	}
 
 	export type Glb = {
-		path: string
+		url: string
 		physics: boolean
 	}
 
 	export type Env = {
-		path: string
+		url: string
 		rotation: number
 	}
 
@@ -44,8 +46,19 @@ export namespace Plan {
 	}
 
 	export type Shader<Inputs extends object> = {
-		path: string
+		url: string
 		inputs: Inputs
+		forced_extension_for_textures: string
 	}
+
+	export type Situation = {
+		root_url: string
+		quality: Quality
+	}
+
+	export const gameplan = (
+		<G extends Game>(fn: ({}: Plan.Situation & PlanningHelpers) => G) =>
+			(s: Plan.Situation) => fn({...s, ...new PlanningHelpers(s)})
+	)
 }
 
