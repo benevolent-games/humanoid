@@ -4,17 +4,6 @@ console.log("🤖 humanoid starting up")
 import {scalar} from "@benev/toolbox"
 import {register_to_dom} from "@benev/slate"
 
-// import "@babylonjs/core/Culling/ray.js"
-// import "@babylonjs/loaders/glTF/index.js"
-// import "@babylonjs/core/Engines/index.js"
-// import "@babylonjs/core/Animations/index.js"
-// import "@babylonjs/core/Rendering/edgesRenderer.js"
-// import "@babylonjs/core/Physics/physicsEngineComponent.js"
-// import "@babylonjs/core/Rendering/depthRendererSceneComponent.js"
-// import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
-// import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js"
-// import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
-
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
 import {Quality} from "./tools/quality.js"
@@ -31,16 +20,6 @@ import {standard_glb_post_process} from "./models/glb_post_processing/standard_g
 //
 // initial window-dressings
 //
-
-// prevent problematic key behaviors that interfere with our gameplay keybinds
-function defaultPreventer(event: KeyboardEvent) {
-	if (event.altKey || event.code === "AltLeft")
-		event.preventDefault()
-	if (event.code === "Tab")
-		event.preventDefault()
-}
-window.addEventListener("keydown", defaultPreventer)
-window.addEventListener("keyup", defaultPreventer)
 
 // warn users before they kill the browser tab,
 // people hit ctrl+w a lot while walking around and accidentally kill the game,
@@ -66,26 +45,43 @@ register_to_dom({BenevHumanoid})
 //  - we are using an op for the async operation so the ui can show a loading spinner
 //
 
-const gameplan = make_gameplan(
-	determine_local_dev_mode(location.href)
-)
+const tickrate_hz = 60
+
+const gameplan = make_gameplan({
+	quality: determine_quality_mode(location.href, Quality.Mid),
+	root_url: determine_local_dev_mode(location.href)
+		? "/assets"
+		: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
+})
 
 const realm = (window as any).realm = await nexus.context.realmOp.load(
-	async() => makeRealm({
-		gameplan,
-		tickrate_hz: 60,
-		quality: determine_quality_mode(location.href, Quality.Mid),
-	})
+	async() => makeRealm({gameplan, tickrate_hz})
 )
 
 // we lower the resolution for potato-computers
-realm.stage.porthole.resolution = realm.quality === Quality.Potato
+realm.stage.porthole.resolution = gameplan.quality === Quality.Potato
 	? 0.5
 	: 1
 
 // our standard glb postpro will apply shaders and stuff like that,
 // before it's copied to the scene.
 realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
+
+realm.impulse.on.universal.buttons.menu_toggle(input => {
+	if (input.down && !input.repeat)
+		realm.stage.pointerLocker.toggle()
+})
+
+// prevent problematic key behaviors that interfere with our gameplay keybinds
+function defaultPreventer(event: KeyboardEvent) {
+	if (realm.stage.pointerLocker.locked)
+		event.preventDefault()
+	else if (event.code === "Tab")
+		event.preventDefault()
+}
+window.addEventListener("keydown", defaultPreventer)
+window.addEventListener("keyup", defaultPreventer)
+
 
 //
 // ecs startup

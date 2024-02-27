@@ -1,24 +1,48 @@
 
 import "@babylonjs/core/Materials/Node/Blocks/index.js"
 
+import {is} from "@benev/slate"
 import {label} from "@benev/toolbox"
+import {Plan} from "../../planning/plan.js"
 import {Scene} from "@babylonjs/core/scene.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
-import {ReflectionBlock, RefractionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
+import {url_replace_extension} from "../../../tools/url_replace_extension.js"
+import {InputBlock, ReflectionBlock, RefractionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
 
 export class Shader<Inputs extends object = object> {
-	constructor(public readonly material: NodeMaterial) {}
+	#inputBlocks = new Map<string, InputBlock>()
 
-	// TODO
-	readonly inputs: Inputs = {} as any
+	constructor(public readonly material: NodeMaterial, inputs: Inputs) {
+		for (const block of material.getInputBlocks())
+			this.#inputBlocks.set(block.name, block)
+		for (const [key, value] of Object.entries(inputs))
+			this.inputs[key as keyof Inputs] = value
+	}
 
-	dispose() { this.material.dispose() }
+	#getInputBlock(key: string) {
+		const block = this.#inputBlocks.get(key)
+		if (is.void(block))
+			throw new Error(`missing block "${key}" on nodematerial "${this.material.name}"`)
+		return block
+	}
+
+	readonly inputs: Inputs = new Proxy({}, {
+		get: (_, key: string) => this.#getInputBlock(key).value,
+		set: (_, key: string, value: any) => {
+			this.#getInputBlock(key).value = value
+			return true
+		},
+	}) as Inputs
+
+	dispose() {
+		this.material.dispose()
+	}
 }
 
-export async function make_shader(
+export async function make_shader<I extends object>(
 		scene: Scene,
-		url: string,
+		{url, inputs, forced_extension_for_textures}: Plan.Shader<I>,
 	) {
 
 	NodeMaterial.IgnoreTexturesAtLoadTime = true
@@ -29,25 +53,13 @@ export async function make_shader(
 		if (texblock instanceof ReflectionBlock || texblock instanceof RefractionBlock)
 			texblock.texture = scene.environmentTexture
 		else {
-			const {href} = new URL(texblock.name, new URL(url, location.href))
-			const texture = new Texture(href, scene)
+			const rebased_url = new URL(texblock.name, new URL(url, location.href)).href
+			const new_url = url_replace_extension(rebased_url, forced_extension_for_textures)
+			const texture = new Texture(new_url, scene)
 			texblock.texture = texture
 		}
 	}
 
-	// // TODO implement into shader instance
-	// for (const [key, value] of Object.entries(inputs)) {
-	// 	const block = material.getBlockByName(key)
-	// 	if (block) {
-	// 		if (block instanceof InputBlock)
-	// 			block.value = value
-	// 		else
-	// 			console.warn(`the shader input called "${key}" matches the wrong kind of block, which is actually a ${block.getClassName()}`)
-	// 	}
-	// 	else
-	// 		console.warn(`the shader input called "${key}" is not found`)
-	// }
-
-	return new Shader(material)
+	return new Shader(material, inputs)
 }
 

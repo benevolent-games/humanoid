@@ -1,11 +1,8 @@
 
-import {menu} from "@benev/toolbox"
 import {css, html} from "@benev/slate"
 import {nexus} from "../../../../nexus.js"
 import {HumanoidRealm} from "../../../../models/realm/realm.js"
 import {QualityString, quality_from_string} from "../../../../tools/quality.js"
-
-export const qualityMenu = (realm: HumanoidRealm) => menu("quality", () => QualityMenu([realm]))
 
 export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 	use.name("quality-menu")
@@ -58,7 +55,7 @@ export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
 
 	function button(emoji: string, label: QualityString, urlquality: string = label) {
 		const href = `?quality=${urlquality}`
-		const active = realm.quality === quality_from_string(label)
+		const active = realm.gameplan.quality === quality_from_string(label)
 		const click = () => window.location.assign(href)
 		return html`
 			<button

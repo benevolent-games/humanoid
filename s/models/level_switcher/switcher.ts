@@ -1,7 +1,7 @@
 
 import {World} from "@benev/toolbox"
 import {signals} from "@benev/slate"
-import {Plan} from "../planning/types.js"
+import {Plan} from "../planning/plan.js"
 import {HuLevel} from "../../gameplan.js"
 import {Cycle} from "../../tools/cycle.js"
 import {Loading} from "../../tools/loading.js"

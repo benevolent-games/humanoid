@@ -1,64 +1,62 @@
 
-import {game, degrees, env, glb, kilometers, levels, sky, character} from "./models/planning/helpers.js"
+import {scalar} from "@benev/toolbox"
+import {Plan} from "./models/planning/plan.js"
 
 export type HuGameplan = ReturnType<typeof make_gameplan>
 export type HuLevel = keyof HuGameplan["levels"]
 export type HuCharacter = keyof HuGameplan["characters"]
+const kilometers = (m: number) => m * 1000
+const degrees = scalar.radians.from.degrees
 
-export const make_gameplan = (local_dev_mode: boolean) => game({
-	root: local_dev_mode ?
-		"/assets" :
-		"https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
+export const make_gameplan = Plan.gameplan(({
+		quality,
+		root_url,
+		character, levels, glb, sky, env, shader,
+	}) => ({
+
+	quality,
+	root_url,
 
 	shaders: {
-		terrain: {
-			path: "shaders/terrain/shader.json",
-			inputs: {},
-		},
-		skylight: {
-			path: "shaders/skylight/shader.json",
-			inputs: {},
-		},
-		mercury: {
-			path: "shaders/mercury/shader.json",
-			inputs: {},
-		},
-		water: {
-			path: "shaders/water/shader.json",
-			inputs: {},
-		},
+		terrain: shader("shaders/terrain/shader.json", {}),
+		skylight: shader("shaders/skylight/shader.json", {}),
+		mercury: shader("shaders/mercury/shader.json", {}),
+		water: shader("shaders/water/shader.json", {}),
 	},
 
 	characters: {
 		knight: character("glbs/characters/knight.glb"),
 	},
 
-	...levels({
-		gym: {
-			glb: glb("glbs/levels/gym.glb", "physics"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
-			env: env("envmaps/wrynth_interior.env", degrees(90)),
-		},
-		mt_pimsley: {
-			glb: glb("glbs/levels/mt_pimsley.glb", "physics"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(10), degrees(270)),
-			env: env("envmaps/sunset_cloudy.env", degrees(180)),
-		},
-		teleporter: {
-			glb: glb("glbs/levels/teleporter.glb", "physics"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
-			env: env("envmaps/wrynth_interior.env", degrees(90)),
-		},
-		wrynth_dungeon: {
-			glb: glb("glbs/levels/wrynth_dungeon.glb", "physics"),
-			sky: sky("skyboxes/sky_01", ".webp", kilometers(2), degrees(270)),
-			env: env("envmaps/wrynth_interior.env", degrees(90)),
-		},
-	}).cycle(
-		"gym",
-		"mt_pimsley",
-		"teleporter",
-		"wrynth_dungeon",
+	...(levels()
+		.specification({
+			gym: {
+				glb: glb("glbs/levels/gym.glb", "physics"),
+				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
+				env: env("envmaps/wrynth_interior.env", degrees(90)),
+			},
+			mt_pimsley: {
+				glb: glb("glbs/levels/mt_pimsley.glb", "physics"),
+				sky: sky("skyboxes/sky_01", kilometers(10), degrees(270)),
+				env: env("envmaps/sunset_cloudy.env", degrees(180)),
+			},
+			teleporter: {
+				glb: glb("glbs/levels/teleporter.glb", "physics"),
+				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
+				env: env("envmaps/wrynth_interior.env", degrees(90)),
+			},
+			wrynth_dungeon: {
+				glb: glb("glbs/levels/wrynth_dungeon.glb", "physics"),
+				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
+				env: env("envmaps/wrynth_interior.env", degrees(90)),
+			},
+		})
+		.cycle(
+			"gym",
+			"mt_pimsley",
+			"teleporter",
+			"wrynth_dungeon",
+		)
 	),
-})
+}))
 
