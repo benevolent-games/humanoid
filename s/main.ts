@@ -21,16 +21,6 @@ import {standard_glb_post_process} from "./models/glb_post_processing/standard_g
 // initial window-dressings
 //
 
-// prevent problematic key behaviors that interfere with our gameplay keybinds
-function defaultPreventer(event: KeyboardEvent) {
-	if (event.altKey || event.code === "AltLeft")
-		event.preventDefault()
-	if (event.code === "Tab")
-		event.preventDefault()
-}
-window.addEventListener("keydown", defaultPreventer)
-window.addEventListener("keyup", defaultPreventer)
-
 // warn users before they kill the browser tab,
 // people hit ctrl+w a lot while walking around and accidentally kill the game,
 // this helps prevent that
@@ -76,6 +66,22 @@ realm.stage.porthole.resolution = gameplan.quality === Quality.Potato
 // our standard glb postpro will apply shaders and stuff like that,
 // before it's copied to the scene.
 realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
+
+realm.impulse.on.universal.buttons.menu_toggle(input => {
+	if (input.down && !input.repeat)
+		realm.stage.pointerLocker.toggle()
+})
+
+// prevent problematic key behaviors that interfere with our gameplay keybinds
+function defaultPreventer(event: KeyboardEvent) {
+	if (realm.stage.pointerLocker.locked)
+		event.preventDefault()
+	else if (event.code === "Tab")
+		event.preventDefault()
+}
+window.addEventListener("keydown", defaultPreventer)
+window.addEventListener("keyup", defaultPreventer)
+
 
 //
 // ecs startup
