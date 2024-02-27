@@ -4,17 +4,6 @@ console.log("🤖 humanoid starting up")
 import {scalar} from "@benev/toolbox"
 import {register_to_dom} from "@benev/slate"
 
-// import "@babylonjs/core/Culling/ray.js"
-// import "@babylonjs/loaders/glTF/index.js"
-// import "@babylonjs/core/Engines/index.js"
-// import "@babylonjs/core/Animations/index.js"
-// import "@babylonjs/core/Rendering/edgesRenderer.js"
-// import "@babylonjs/core/Physics/physicsEngineComponent.js"
-// import "@babylonjs/core/Rendering/depthRendererSceneComponent.js"
-// import "@babylonjs/core/Rendering/prePassRendererSceneComponent.js"
-// import "@babylonjs/core/Materials/Textures/Loaders/envTextureLoader.js"
-// import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent.js"
-
 import {nexus} from "./nexus.js"
 import {root} from "./ecs/logic/root.js"
 import {Quality} from "./tools/quality.js"
