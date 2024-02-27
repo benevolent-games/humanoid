@@ -5,14 +5,16 @@ import {Executive} from "@benev/toolbox/x/ecs6/exe/executive.js"
 import {HumanoidTick} from "../ecs/hub.js"
 import {HumanoidRealm} from "../models/realm/realm.js"
 
-export default (realm: HumanoidRealm, executive: Executive<HumanoidRealm, HumanoidTick>) => {
-
-	//
-	// start the game
-	//  - render loop
-	//  - physics loop
-	//  - game tick loop
-	//
+/**
+ * start the game
+ *  - render loop
+ *  - physics loop
+ *  - game tick loop
+ */
+export default (
+		realm: HumanoidRealm,
+		executive: Executive<HumanoidRealm, HumanoidTick>,
+	) => {
 
 	let count = 0
 	let gametime = 0

@@ -1,5 +1,4 @@
 
-import {nexus} from "../nexus.js"
 import {Quality} from "../tools/quality.js"
 import {make_gameplan} from "../gameplan.js"
 import {makeRealm} from "../models/realm/realm.js"
@@ -23,8 +22,6 @@ export default async() => {
 				: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
 		}),
 	})
-
-	nexus.context.realmOp.setReady(realm)
 
 	// lower resolution for potatoes
 	realm.stage.porthole.resolution = (

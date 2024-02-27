@@ -1,7 +1,6 @@
 
 import {World} from "@benev/toolbox"
 
-import {nexus} from "../nexus.js"
 import {HumanoidRealm} from "../models/realm/realm.js"
 import {Respawner} from "../models/respawner/respawner.js"
 import {LevelSwitcher} from "../models/level_switcher/switcher.js"
@@ -32,9 +31,6 @@ export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
 	const levelSwitcher = new LevelSwitcher(world, realm.gameplan)
 	levelSwitcher.next()
 
-	// establish the zone available to the ui
-	nexus.context.zoneOp.setReady({levelSwitcher})
-
 	// switch level when we press the key
 	realm.impulse.on.universal.buttons.level_swap(button => {
 		if (button.down && !button.repeat)
@@ -48,5 +44,7 @@ export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
 		if (button.down && !button.repeat)
 			respawner.respawn()
 	})
+
+	return {levelSwitcher, respawner}
 }
 

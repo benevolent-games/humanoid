@@ -1,17 +1,11 @@
 
 import {css, html} from "@benev/slate"
+import {Game} from "../../../../types.js"
 import {nexus} from "../../../../nexus.js"
 import {HuLevel} from "../../../../gameplan.js"
-import {Zone} from "../../../../models/zone/zone.js"
-import {HumanoidRealm} from "../../../../models/realm/realm.js"
 
-export const NotesMenu = nexus.shadow_view(use => (
-		_realm: HumanoidRealm,
-		zone: Zone,
-	) => {
-
+export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 	use.name("notes-menu")
-
 	use.styles(css`
 		:host > * + * { margin-top: 1em; }
 		section { padding: 1em; }
@@ -27,9 +21,9 @@ export const NotesMenu = nexus.shadow_view(use => (
 		}
 	`)
 
-	const switchLevel = () => zone.levelSwitcher.next()
+	const switchLevel = () => game.levelSwitcher.next()
 
-	const level = (name: HuLevel) => name === zone.levelSwitcher.current.value
+	const level = (name: HuLevel) => name === game.levelSwitcher.current.value
 		? html`<span class=current-level>${name}</span>`
 		: html`<span>${name}</span>`
 
