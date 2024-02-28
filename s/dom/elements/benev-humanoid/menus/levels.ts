@@ -61,8 +61,8 @@ export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 		<section>
 			<div>
 				${button("gym")}
-				${button("mt_pimsley")}
-				${button("teleporter")}
+				${button("mountainside")}
+				${button("pillar_room")}
 				${button("wrynth_dungeon")}
 			</div>
 			<div class=loading>

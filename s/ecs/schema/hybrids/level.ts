@@ -13,9 +13,9 @@ import {HuLevel} from "../../../gameplan.js"
 import {Nametag} from "../../../tools/nametag.js"
 import {make_skybox} from "../../../tools/make_skybox.js"
 import {make_envmap} from "../../../tools/make_envmap.js"
-import {HumanoidRealm} from "../../../models/realm/realm.js"
+import {HuRealm} from "../../../models/realm/realm.js"
 
-export class Level extends HybridComponent<HumanoidRealm, {level: HuLevel}> {
+export class Level extends HybridComponent<HuRealm, {level: HuLevel}> {
 	#dispose: (() => void) | null = null
 	#promise = explode_promise<void>()
 
@@ -177,7 +177,7 @@ function setup_thin_instances(params: LevelInstance) {
 	return params
 }
 
-function setup_level_accoutrements(realm: HumanoidRealm, physics: boolean) {
+function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
 

@@ -1,10 +1,10 @@
 
 import {HybridComponent} from "@benev/toolbox"
-import {HumanoidRealm} from "../../../../models/realm/realm.js"
+import {HuRealm} from "../../../../models/realm/realm.js"
 import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
 import { establish_anim_coordination } from "./choreography/establish_anim_coordination.js"
 
-export class Character extends HybridComponent<HumanoidRealm, {
+export class Character extends HybridComponent<HuRealm, {
 		height: number
 	}> {
 

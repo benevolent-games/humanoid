@@ -3,13 +3,13 @@ import {scalar} from "@benev/toolbox"
 
 import {make_dummy_anim_group} from "./dummy_anim_group.js"
 import {setup_character_anims} from "./setup_character_anims.js"
-import {HumanoidRealm} from "../../../../../models/realm/realm.js"
+import {HuRealm} from "../../../../../models/realm/realm.js"
 import {AdjustmentAnims} from "../../../../../models/choreographer/types.js"
 import {CharacterInstance} from "../../../../../models/character/instance.js"
 import {adjustment_anim_for_direction} from "./adjustment_anim_for_direction.js"
 import {calculate_adjustment_weight} from "../../../../../models/choreographer/utils/calculate_adjustment_weight.js"
 
-export function establish_anim_coordination(realm: HumanoidRealm, character: CharacterInstance, onMissingAnim: (name: string) => void) {
+export function establish_anim_coordination(realm: HuRealm, character: CharacterInstance, onMissingAnim: (name: string) => void) {
 	console.log("character", character)
 
 	const anims = setup_character_anims(character, onMissingAnim)

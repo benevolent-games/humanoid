@@ -1,14 +1,14 @@
 
 import {Hub} from "@benev/toolbox"
-import {HumanoidRealm} from "../models/realm/realm.js"
+import {HuRealm} from "../models/realm/realm.js"
 
-export type HumanoidTick = {
+export type HuTick = {
 	hz: number
 	count: number
 	seconds: number
 	gametime: number
 }
 
-export const hub = new Hub<HumanoidRealm, HumanoidTick>()
+export const hub = new Hub<HuRealm, HuTick>()
 export const {system, behavior, responder} = hub
 

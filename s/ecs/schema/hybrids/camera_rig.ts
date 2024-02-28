@@ -6,9 +6,9 @@ import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
 
 import {gimbaltool} from "../../../tools/gimbaltool.js"
-import {HumanoidRealm} from "../../../models/realm/realm.js"
+import {HuRealm} from "../../../models/realm/realm.js"
 
-export class HumanoidCameraRig extends HybridComponent<HumanoidRealm, {
+export class CameraRig extends HybridComponent<HuRealm, {
 		height: number
 		third_person_distance: number
 	}> {

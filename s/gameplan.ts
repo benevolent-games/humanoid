@@ -35,13 +35,13 @@ export const make_gameplan = Plan.gameplan(({
 				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
 				env: env("envmaps/wrynth_interior.env", degrees(90)),
 			},
-			mt_pimsley: {
-				glb: glb("glbs/levels/mt_pimsley.glb", "physics"),
+			mountainside: {
+				glb: glb("glbs/levels/mountainside.glb", "physics"),
 				sky: sky("skyboxes/sky_01", kilometers(10), degrees(270)),
 				env: env("envmaps/sunset_cloudy.env", degrees(180)),
 			},
-			teleporter: {
-				glb: glb("glbs/levels/teleporter.glb", "physics"),
+			pillar_room: {
+				glb: glb("glbs/levels/pillar_room.glb", "physics"),
 				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
 				env: env("envmaps/wrynth_interior.env", degrees(90)),
 			},
@@ -53,8 +53,8 @@ export const make_gameplan = Plan.gameplan(({
 		})
 		.cycle(
 			"gym",
-			"mt_pimsley",
-			"teleporter",
+			"mountainside",
+			"pillar_room",
 			"wrynth_dungeon",
 		)
 	),

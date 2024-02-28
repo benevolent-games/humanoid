@@ -3,9 +3,9 @@ import {HybridComponent, Vec2, label} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
 import {gimbaltool} from "../../../tools/gimbaltool.js"
-import {HumanoidRealm} from "../../../models/realm/realm.js"
+import {HuRealm} from "../../../models/realm/realm.js"
 
-export class GimbalRig extends HybridComponent<HumanoidRealm, {}> {
+export class GimbalRig extends HybridComponent<HuRealm, {}> {
 	transformA = new TransformNode(
 		label("transform-a"),
 		this.realm.stage.scene,

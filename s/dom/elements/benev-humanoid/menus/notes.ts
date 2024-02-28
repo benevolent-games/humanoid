@@ -43,7 +43,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			</h1>
 			<p>🆕 press 'tab' to toggle the new tab menu system.</p>
 			<p>fixed a super-annoying chrome bug which caused occasional janky mouselook-snapping.</p>
-			<p>optimized all the shader images, which should improve mt_pimsley's download time very much.</p>
+			<p>optimized all the shader images, which should improve mountainside's download time very much.</p>
 		</section>
 
 		<section>
@@ -65,8 +65,8 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			<p>now all the maps have physics.</p>
 			<p>🆕 press R to alternate between knight and spectator mode</p>
 			<p>🆒 press Y to switch levels.</p>
-			<p>implemented thin instancing, which improves mt_pimsley's framerate.</p>
-			<p>we made mt_pimsley shiny. it sports a fresh coat of custom shader terrain, new env lighting, etc.. it was horrible bingus to get working.</p>
+			<p>implemented thin instancing, which improves mountainside's framerate.</p>
+			<p>we made mountainside shiny. it sports a fresh coat of custom shader terrain, new env lighting, etc.. it was horrible bingus to get working.</p>
 			<p>fix ssr and ssao by reverting some optimizations.</p>
 		</section>
 
@@ -77,7 +77,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			</h1>
 			<p>added four levels.</p>
 			<p>added the new "quality" menu.</p>
-			<p><strong>thin instances!</strong> we've thinnified the foliage on mt_pimsley, for some reason some of the trees turn naked, more research is needed..</p>
+			<p><strong>thin instances!</strong> we've thinnified the foliage on mountainside, for some reason some of the trees turn naked, more research is needed..</p>
 		</section>
 
 		<section>

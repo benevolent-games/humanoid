@@ -2,8 +2,8 @@
 import {scalar} from "@benev/toolbox"
 import {Executive} from "@benev/toolbox/x/ecs6/exe/executive.js"
 
-import {HumanoidTick} from "../ecs/hub.js"
-import {HumanoidRealm} from "../models/realm/realm.js"
+import {HuTick} from "../ecs/hub.js"
+import {HuRealm} from "../models/realm/realm.js"
 
 /**
  * start the game
@@ -12,8 +12,8 @@ import {HumanoidRealm} from "../models/realm/realm.js"
  *  - game tick loop
  */
 export default (
-		realm: HumanoidRealm,
-		executive: Executive<HumanoidRealm, HumanoidTick>,
+		realm: HuRealm,
+		executive: Executive<HuRealm, HuTick>,
 	) => {
 
 	let count = 0
@@ -32,7 +32,7 @@ export default (
 
 		gametime += seconds
 
-		const tick: HumanoidTick = {
+		const tick: HuTick = {
 			seconds,
 			gametime,
 			count: count++,

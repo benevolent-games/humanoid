@@ -53,11 +53,11 @@ export namespace Archetypes {
 		...params(spectator({position})),
 		debug,
 		speeds: {base: 3, fast: 5, slow: 1.5},
-		humanoidCapsule: {
+		capsule: {
 			height: 1.75,
 			radius: .2,
 		},
-		humanoidCameraRig: {
+		cameraRig: {
 			height: 1.75,
 			third_person_distance: 1,
 		},

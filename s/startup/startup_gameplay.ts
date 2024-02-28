@@ -1,12 +1,12 @@
 
 import {World} from "@benev/toolbox"
 
-import {HumanoidRealm} from "../models/realm/realm.js"
+import {HuRealm} from "../models/realm/realm.js"
 import {Respawner} from "../models/respawner/respawner.js"
 import {LevelSwitcher} from "../models/level_switcher/switcher.js"
 import warn_users_before_window_unload from "../tools/warn_users_before_window_unload.js"
 
-export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
+export default (realm: HuRealm, world: World<HuRealm>) => {
 
 	// menu button toggles pointerlock
 	realm.impulse.on.universal.buttons.menu_toggle(input => {

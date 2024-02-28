@@ -6,11 +6,11 @@ import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
 import {Nametag} from "../../tools/nametag.js"
 import {Quality} from "../../tools/quality.js"
-import {HumanoidRealm} from "../realm/realm.js"
+import {HuRealm} from "../realm/realm.js"
 import {GlbPostProcess} from "./parts/types.js"
 import {Shader} from "../assets/parts/make_shader.js"
 
-export function standard_glb_post_process({gameplan, loadingDock}: HumanoidRealm): GlbPostProcess {
+export function standard_glb_post_process({gameplan, loadingDock}: HuRealm): GlbPostProcess {
 	const {quality} = gameplan
 
 	return async container => {

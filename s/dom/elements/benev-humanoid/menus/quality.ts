@@ -1,10 +1,10 @@
 
 import {css, html} from "@benev/slate"
 import {nexus} from "../../../../nexus.js"
-import {HumanoidRealm} from "../../../../models/realm/realm.js"
+import {HuRealm} from "../../../../models/realm/realm.js"
 import {QualityString, quality_from_string} from "../../../../tools/quality.js"
 
-export const QualityMenu = nexus.shadow_view(use => (realm: HumanoidRealm) => {
+export const QualityMenu = nexus.shadow_view(use => (realm: HuRealm) => {
 	use.name("quality-menu")
 	use.styles(css`
 		:host > * + * { margin-top: 1em; }
