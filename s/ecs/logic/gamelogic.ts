@@ -9,7 +9,7 @@ import {freelook} from "./pure/freelook.js"
 import {intentions} from "./pure/intentions.js"
 import {velocity} from "./pure/velocity.js"
 
-export const root = system("root", [
+export const gamelogic = system("root", [
 	system("pure", [
 		intentions,
 		freelook,

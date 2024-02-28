@@ -1,5 +1,5 @@
 
-import {Op, html} from "@benev/slate"
+import {html} from "@benev/slate"
 import {Theater, op_effect} from "@benev/toolbox"
 
 import {styles} from "./styles.js"
@@ -8,20 +8,16 @@ import {nexus} from "../../../nexus.js"
 
 export const BenevHumanoid = nexus.shadow_component(use => {
 	use.styles(styles)
-	const zoneOp = use.context.zoneOp.value
-	const realmOp = use.context.realmOp.value
+	const gameOp = use.context.gameOp.value
 
 	return html`
-		${op_effect.braille(Op.all(realmOp, zoneOp), ([realm, zone]) =>
-			MenuSystem([{realm, zone}, menus =>
+		${op_effect.braille(gameOp, game =>
+			MenuSystem([game, menus =>
 				Theater([{
 					menus,
-					stage: realm.stage,
+					stage: game.stage,
 					leadButton: "tab",
-					onLeadToggled: open => {
-						if (!open)
-							realm.stage.pointerLocker.lock()
-					},
+					onLeadToggled: () => game.stage.pointerLocker.toggle(),
 				}])
 			])
 		)}

@@ -1,150 +1,19 @@
 
-console.log("🤖 humanoid starting up")
-
-import {scalar} from "@benev/toolbox"
-import {register_to_dom} from "@benev/slate"
+console.log("🏃 humanoid starting up")
 
 import {nexus} from "./nexus.js"
-import {root} from "./ecs/logic/root.js"
-import {Quality} from "./tools/quality.js"
-import {make_gameplan} from "./gameplan.js"
-import {HumanoidTick, hub} from "./ecs/hub.js"
-import {makeRealm} from "./models/realm/realm.js"
-import {Respawner} from "./models/respawner/respawner.js"
-import {LevelSwitcher} from "./models/level_switcher/switcher.js"
-import {BenevHumanoid} from "./dom/elements/benev-humanoid/element.js"
-import {determine_quality_mode} from "./tools/determine_quality_mode.js"
-import {determine_local_dev_mode} from "./tools/determine_local_dev_mode.js"
-import {standard_glb_post_process} from "./models/glb_post_processing/standard_glb_post_process.js"
+import startup_web_components from "./startup/startup_web_components.js"
+import startup_realm from "./startup/startup_realm.js"
+import startup_ecs from "./startup/startup_ecs.js"
+import startup_gameplay from "./startup/startup_gameplay.js"
+import startup_gameloop from "./startup/startup_gameloop.js"
 
-//
-// initial window-dressings
-//
-
-// warn users before they kill the browser tab,
-// people hit ctrl+w a lot while walking around and accidentally kill the game,
-// this helps prevent that
-window.onbeforeunload = (event: Event) => {
-	event.preventDefault()
-	return "woah, are you sure you want to close the game?"
-}
-
-//
-// dom registration
-//  - we register our web components to the dom
-//  - this places the canvas and all of our ui
-//
-
-register_to_dom({BenevHumanoid})
-;(window as any).nexus = nexus
-
-//
-// realm initialization
-//  - the realm is kind of the container of the 3d world
-//  - this bootstraps our babylonjs engine and scene
-//  - we are using an op for the async operation so the ui can show a loading spinner
-//
-
-const tickrate_hz = 60
-
-const gameplan = make_gameplan({
-	quality: determine_quality_mode(location.href, Quality.Mid),
-	root_url: determine_local_dev_mode(location.href)
-		? "/assets"
-		: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
-})
-
-const realm = (window as any).realm = await nexus.context.realmOp.load(
-	async() => makeRealm({gameplan, tickrate_hz})
-)
-
-// we lower the resolution for potato-computers
-realm.stage.porthole.resolution = gameplan.quality === Quality.Potato
-	? 0.5
-	: 1
-
-// our standard glb postpro will apply shaders and stuff like that,
-// before it's copied to the scene.
-realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
-
-realm.impulse.on.universal.buttons.menu_toggle(input => {
-	if (input.down && !input.repeat)
-		realm.stage.pointerLocker.toggle()
-})
-
-// prevent problematic key behaviors that interfere with our gameplay keybinds
-function defaultPreventer(event: KeyboardEvent) {
-	if (realm.stage.pointerLocker.locked)
-		event.preventDefault()
-	else if (event.code === "Tab")
-		event.preventDefault()
-}
-window.addEventListener("keydown", defaultPreventer)
-window.addEventListener("keyup", defaultPreventer)
-
-
-//
-// ecs startup
-//  - all our game logic uses entity component system architecture
-//
-
-const world = hub.world(realm)
-const executive = hub.executive(realm, world, root)
-
-// establish a level switcher for cycling levels
-const levelSwitcher = new LevelSwitcher(world, gameplan)
-levelSwitcher.next()
-
-// establish the zone available to the ui
-nexus.context.zoneOp.setReady({levelSwitcher})
-
-// switch level when we press the key
-realm.impulse.on.universal.buttons.level_swap(button => {
-	if (button.down && !button.repeat)
-		levelSwitcher.next()
-})
-
-const respawner = new Respawner(world)
-respawner.respawn()
-realm.impulse.on.universal.buttons.respawn(button => {
-	if (button.down && !button.repeat)
-		respawner.respawn()
-})
-
-//
-// start the game
-//  - render loop
-//  - physics loop
-//  - game tick loop
-//
-
-let count = 0
-let gametime = 0
-let last_time = performance.now()
-
-realm.stage.gameloop.onTick(() => {
-	const last = last_time
-	realm.physics.step()
-
-	const seconds = scalar.clamp(
-		((last_time = performance.now()) - last),
-		0,
-		1000 / 30, // clamp delta to avoid large over-corrections
-	) / 1000
-
-	gametime += seconds
-
-	const tick: HumanoidTick = {
-		seconds,
-		gametime,
-		count: count++,
-		hz: 1 / seconds,
-	}
-
-	executive.execute(tick)
-})
-
-realm.stage.gameloop.start()
+startup_web_components()
+const realm = await startup_realm()
+const ecs = startup_ecs(realm)
+const gameplay = startup_gameplay(realm, ecs.world)
+startup_gameloop(realm, ecs.executive)
+nexus.context.gameOp.setReady({...realm, ...gameplay})
 
 console.log("🏃 humanoid up and running")
 

@@ -18,6 +18,14 @@ export const humanoid_binds = () => binds(({
 		},
 	}),
 
+	menus: mode({
+		vectors: {},
+		buttons: {
+			next: buttons(b("KeyE")),
+			previous: buttons(b("KeyQ")),
+		},
+	}),
+
 	humanoid: mode({
 		vectors: {
 			mouselook: ["mouse"],
