@@ -5,6 +5,7 @@ import {Input, Menus, SettingsMenu, menu} from "@benev/toolbox"
 import {Game} from "../../../types.js"
 import {nexus} from "../../../nexus.js"
 import {NotesMenu} from "./menus/notes.js"
+import {LevelsMenu} from "./menus/levels.js"
 import {QualityMenu} from "./menus/quality.js"
 
 export const MenuSystem = nexus.shadow_view(use => (
@@ -14,8 +15,9 @@ export const MenuSystem = nexus.shadow_view(use => (
 
 	const menus = use.once(() => new Menus([
 		menu("notes", () => NotesMenu([game])),
+		menu("levels", () => LevelsMenu([game])),
 		menu("quality", () => QualityMenu([game])),
-		menu("graphics", () => SettingsMenu([game.stage])),
+		menu("effects", () => SettingsMenu([game.stage])),
 	]))
 
 	use.mount(() => reactor.reaction(() => {

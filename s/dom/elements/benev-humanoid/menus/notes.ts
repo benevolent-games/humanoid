@@ -2,14 +2,12 @@
 import {css, html} from "@benev/slate"
 import {Game} from "../../../../types.js"
 import {nexus} from "../../../../nexus.js"
-import {HuLevel} from "../../../../gameplan.js"
 
 export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 	use.name("notes-menu")
 	use.styles(css`
 		:host > * + * { margin-top: 1em; }
 		section { padding: 1em; }
-		.current-level { color: #e6b078; }
 		h1 {
 			vertical-align: middle;
 			> small {
@@ -20,12 +18,6 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			}
 		}
 	`)
-
-	const switchLevel = () => game.levelSwitcher.next()
-
-	const level = (name: HuLevel) => name === game.levelSwitcher.current.value
-		? html`<span class=current-level>${name}</span>`
-		: html`<span>${name}</span>`
 
 	return html`
 		<section>
@@ -73,8 +65,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<span>new levels.</span>
 				<small>2024-02-23</small>
 			</h1>
-			<p>press 'y' or <button @click="${switchLevel}">click here</button> to switch levels.</p>
-			<p>we now have the ${level("gym")}, ${level("mt_pimsley")}, ${level("teleporter")}, and ${level("wrynth_dungeon")}.</p>
+			<p>added four levels.</p>
 			<p>added the new "quality" menu.</p>
 			<p><strong>thin instances!</strong> we've thinnified the foliage on mt_pimsley, for some reason some of the trees turn naked, more research is needed..</p>
 		</section>

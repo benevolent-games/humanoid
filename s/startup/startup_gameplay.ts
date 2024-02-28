@@ -29,7 +29,6 @@ export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
 
 	// establish a level switcher for cycling levels
 	const levelSwitcher = new LevelSwitcher(world, realm.gameplan)
-	levelSwitcher.next()
 
 	// switch level when we press the key
 	realm.impulse.on.universal.buttons.level_swap(button => {
