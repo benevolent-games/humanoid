@@ -21,10 +21,15 @@ export const MenuSystem = nexus.shadow_view(use => (
 	]))
 
 	use.mount(() => reactor.reaction(() => {
-		if (menus.open.value)
-			game.impulse.modes.enable("menus")
-		else
-			game.impulse.modes.disable("menus")
+		const {modes} = game.impulse
+		if (menus.open.value) {
+			modes.enable("menus")
+			modes.disable("humanoid")
+		}
+		else {
+			modes.disable("menus")
+			modes.enable("humanoid")
+		}
 	}))
 
 	use.mount(() => game.stage.pointerLocker.onLockChange(

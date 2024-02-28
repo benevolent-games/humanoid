@@ -11,10 +11,6 @@ export const humanoid_binds = () => binds(({
 		vectors: {},
 		buttons: {
 			menu_toggle: buttons(b("Tab")),
-			respawn: buttons(b("KeyR"), modless("RMB")),
-			bot_spawn: buttons(b("KeyB")),
-			bot_delete: buttons(b("KeyB", shift)),
-			level_swap: buttons(b("KeyY")),
 		},
 	}),
 
@@ -33,6 +29,11 @@ export const humanoid_binds = () => binds(({
 			move: ["leftstick"],
 		},
 		buttons: {
+			respawn: buttons(b("KeyR"), modless("RMB")),
+			bot_spawn: buttons(b("KeyB")),
+			bot_delete: buttons(b("KeyB", shift)),
+			level_swap: buttons(b("KeyY")),
+
 			forward: buttons(modless("KeyW")),
 			backward: buttons(modless("KeyS")),
 			leftward: buttons(modless("KeyA")),
