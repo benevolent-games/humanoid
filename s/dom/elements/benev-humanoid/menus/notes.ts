@@ -28,6 +28,16 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
+				<span>levels menu.</span>
+				<small>2024-02-28</small>
+			</h1>
+			<p>now we have a level switcher menu.</p>
+			<p>you'll still fall through the map if you aren't in spectator mode though, so watch out.</p>
+			<p>the menu system has little back and forward buttons, which you can also activate by pressing q or e. so you hit tab, then q/e to cycle through different menus, i think that's nifty.</p>
+		</section>
+
+		<section>
+			<h1>
 				<span>some refinements.</span>
 				<small>2024-02-27</small>
 			</h1>
