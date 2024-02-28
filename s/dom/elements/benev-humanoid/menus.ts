@@ -5,6 +5,7 @@ import {Input, Menus, SettingsMenu, menu} from "@benev/toolbox"
 import {Game} from "../../../types.js"
 import {nexus} from "../../../nexus.js"
 import {NotesMenu} from "./menus/notes.js"
+import {LevelsMenu} from "./menus/levels.js"
 import {QualityMenu} from "./menus/quality.js"
 
 export const MenuSystem = nexus.shadow_view(use => (
@@ -14,15 +15,21 @@ export const MenuSystem = nexus.shadow_view(use => (
 
 	const menus = use.once(() => new Menus([
 		menu("notes", () => NotesMenu([game])),
+		menu("levels", () => LevelsMenu([game])),
 		menu("quality", () => QualityMenu([game])),
-		menu("graphics", () => SettingsMenu([game.stage])),
+		menu("effects", () => SettingsMenu([game.stage])),
 	]))
 
 	use.mount(() => reactor.reaction(() => {
-		if (menus.open.value)
-			game.impulse.modes.enable("menus")
-		else
-			game.impulse.modes.disable("menus")
+		const {modes} = game.impulse
+		if (menus.open.value) {
+			modes.enable("menus")
+			modes.disable("humanoid")
+		}
+		else {
+			modes.disable("menus")
+			modes.enable("humanoid")
+		}
 	}))
 
 	use.mount(() => game.stage.pointerLocker.onLockChange(

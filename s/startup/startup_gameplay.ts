@@ -29,10 +29,9 @@ export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
 
 	// establish a level switcher for cycling levels
 	const levelSwitcher = new LevelSwitcher(world, realm.gameplan)
-	levelSwitcher.next()
 
 	// switch level when we press the key
-	realm.impulse.on.universal.buttons.level_swap(button => {
+	realm.impulse.on.humanoid.buttons.level_swap(button => {
 		if (button.down && !button.repeat)
 			levelSwitcher.next()
 	})
@@ -40,7 +39,7 @@ export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
 	// controls spawning of humanoids and spectator cams
 	const respawner = new Respawner(world)
 	respawner.respawn()
-	realm.impulse.on.universal.buttons.respawn(button => {
+	realm.impulse.on.humanoid.buttons.respawn(button => {
 		if (button.down && !button.repeat)
 			respawner.respawn()
 	})
