@@ -26,6 +26,7 @@ export const make_gameplan = Plan.gameplan(({
 
 	characters: {
 		knight: character("glbs/characters/knight.glb"),
+		pimsley: character("glbs/characters/mr_pimsley.glb"),
 	},
 
 	...(levels()

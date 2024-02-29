@@ -44,7 +44,8 @@ export async function makeRealm(params: RealmParams): Promise<HuRealm> {
 	})
 	const character = new CharacterContainer(
 		await loadingDock.loadGlb(
-			gameplan.characters.knight.glb
+			// gameplan.characters.knight.glb
+			gameplan.characters.pimsley.glb
 		)
 	)
 
