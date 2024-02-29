@@ -51,7 +51,7 @@ export function sync_character_anims({
 
 	anims.head_scale.forceProgress(
 		(perspective === "first_person")
-			? 0
+			? 0.05
 			: 0.5
 	)
 
