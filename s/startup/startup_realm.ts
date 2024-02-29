@@ -14,7 +14,7 @@ import {standard_glb_post_process} from "../models/glb_post_processing/standard_
  */
 export default async() => {
 	const realm = await makeRealm({
-		tickrate_hz: 60,
+		tickrate_hz: 120,
 		gameplan: make_gameplan({
 			quality: determine_quality_mode(location.href, Quality.Mid),
 			root_url: determine_local_dev_mode(location.href)

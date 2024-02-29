@@ -1,5 +1,6 @@
 
 import {system} from "../hub.js"
+import {camera_rigging} from "./playable/camera_rigging.js"
 import {choreography} from "./playable/choreography.js"
 import {humanoid} from "./playable/humanoid.js"
 import {spectator} from "./playable/spectator.js"
@@ -18,6 +19,7 @@ export const gamelogic = system("root", [
 		ambulation,
 	]),
 	system("character", [
+		camera_rigging,
 		spectator,
 		humanoid,
 		choreography,

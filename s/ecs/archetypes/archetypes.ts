@@ -61,6 +61,12 @@ export namespace Archetypes {
 			height: 1.75,
 			third_person_distance: 1,
 		},
+		perspective: "third_person",
+		camera: {
+			fov: 100,
+			minZ: 0.2,
+			maxZ: 15_000,
+		},
 		stance: "stand",
 		grounding: {
 			grounded: true,

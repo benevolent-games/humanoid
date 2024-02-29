@@ -1,8 +1,8 @@
 
 import {HybridComponent} from "@benev/toolbox"
 import {HuRealm} from "../../../../models/realm/realm.js"
+import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
-import { establish_anim_coordination } from "./choreography/establish_anim_coordination.js"
 
 export class Character extends HybridComponent<HuRealm, {
 		height: number
@@ -27,3 +27,4 @@ export class Character extends HybridComponent<HuRealm, {
 		this.coordination.dispose()
 	}
 }
+

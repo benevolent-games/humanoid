@@ -1,12 +1,11 @@
 
-
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
 
-import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {HuRealm} from "../../../models/realm/realm.js"
+import {gimbaltool} from "../../../tools/gimbaltool.js"
 
 export class CameraRig extends HybridComponent<HuRealm, {
 		height: number

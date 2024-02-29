@@ -1,56 +1,15 @@
 
 import {babylonian, spline, vec2, vec3} from "@benev/toolbox"
+
 import {unflatten} from "../../../tools/flatten.js"
-import {Camera} from "../../schema/hybrids/camera.js"
 import {Capsule} from "../../schema/hybrids/capsule.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {behavior, responder, system} from "../../hub.js"
 import {CameraRig} from "../../schema/hybrids/camera_rig.js"
 import {molasses, molasses3d} from "../../../tools/molasses.js"
-import {apply_spline_to_gimbal_y} from "./simulation/apply_spline_to_gimbal_y.js"
-import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Rotation, Smoothing, Speeds, Stance} from "../../schema/schema.js"
+import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, PreviousPosition, Rotation, Smoothing, Speeds, Stance} from "../../schema/schema.js"
 
 export const humanoid = system("humanoid", [
-	system("camera rig", [
-		responder("establish camera parented to rig")
-			.select({CameraRig, Camera})
-			.respond(() => ({
-				added(c) {
-					c.camera.node.position.z = -(c.cameraRig.state.third_person_distance)
-					c.camera.node.parent = c.cameraRig.parts.headbox
-				},
-				removed(c) {
-					if (c.camera.node.parent === c.cameraRig.parts.headbox)
-						c.camera.node.parent = null
-				},
-			})),
-
-		responder("establish capsule position")
-			.select({CameraRig, Position})
-			.respond(() => ({
-				added(c) { c.cameraRig.position = c.position },
-				removed() {},
-			})),
-
-		responder("activate/deactivate the camera")
-			.select({CameraRig, Camera})
-			.respond(({realm}) => ({
-				added(c) {
-					realm.stage.rendering.setCamera(c.camera.node)
-				},
-				removed() {
-					realm.stage.rendering.setCamera(null)
-				},
-			})),
-
-		behavior("apply gimbal to rig")
-			.select({CameraRig, Gimbal})
-			.act(() => c => {
-				const moddedGimbal = apply_spline_to_gimbal_y(c.gimbal, [.1, .5, .7])
-				c.cameraRig.applyGimbal(moddedGimbal)
-			}),
-	]),
-
 	responder("capsule debug")
 		.select({Capsule, Debug})
 		.respond(() => ({
@@ -88,7 +47,7 @@ export const humanoid = system("humanoid", [
 				let target = vec3.zero()
 
 				if (stance === "stand") {
-					if (z > 0.01 && intent.fast) {
+					if (z > 0.001 && intent.fast) {
 						target = vec3.multiplyBy(
 							vec3.normalize([(x / 2), 0, z]),
 							speeds.fast * tick.seconds,
@@ -268,11 +227,12 @@ export const humanoid = system("humanoid", [
 			)
 		}),
 
-	behavior("smoothly move rig towards position")
-		.select({CameraRig, Position, Smoothing})
-		.act(() => c => {
-			const rig = c.cameraRig
-			rig.position = molasses3d(c.smoothing, rig.position, c.position)
+	behavior("sync camera rig to position")
+		.select({CameraRig, Perspective, Position, Smoothing})
+		.act(() => ({cameraRig, perspective, position, smoothing}) => {
+			cameraRig.position = (perspective === "first_person")
+				? position
+				: molasses3d(smoothing, cameraRig.position, position)
 		}),
 ])
 

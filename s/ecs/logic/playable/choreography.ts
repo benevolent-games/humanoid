@@ -1,10 +1,10 @@
 
 import {behavior, system} from "../../hub.js"
-import { molasses } from "../../../tools/molasses.js"
+import {molasses} from "../../../tools/molasses.js"
 import {Character} from "../../schema/hybrids/character/character.js"
-import { swivel_effected_by_glance } from "../../schema/hybrids/character/choreography/calculations.js"
-import { sync_character_anims } from "../../schema/hybrids/character/choreography/sync_character_anims.js"
-import {Ambulation, Attackage, Choreography, Gimbal, Intent, Position, Rotation, Speeds} from "../../schema/schema.js"
+import {swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
+import {sync_character_anims} from "../../schema/hybrids/character/choreography/sync_character_anims.js"
+import {Ambulation, Attackage, Choreography, Gimbal, Intent, Perspective, Position, Rotation, Speeds} from "../../schema/schema.js"
 
 export const choreography = system("humanoid", [
 	behavior("sync bablon parts")
@@ -21,6 +21,15 @@ export const choreography = system("humanoid", [
 				c.choreography.swivel,
 				c.intent.glance,
 			)
+		}),
+
+	behavior("set head scale")
+		.select({Character, Perspective})
+		.act(() => ({character, perspective}) => {
+			const scale = (perspective === "first_person")
+				? 0
+				: 0.5
+			character.coordination.anims.head_scale.forceProgress(scale)
 		}),
 
 	behavior("animate the armature")

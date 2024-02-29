@@ -75,6 +75,8 @@ export class Ambulation extends Component<Ambulatory & {
 	}
 }> {}
 
+export class Perspective extends Component<"third_person" | "first_person"> {}
+
 export class Speeds extends Component<Speeds2>{}
 export class Stance extends Component<"stand" | "crouch"> {}
 export class Sensitivity extends Component<{

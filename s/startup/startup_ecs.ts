@@ -1,7 +1,7 @@
 
 import {hub} from "../ecs/hub.js"
-import {gamelogic} from "../ecs/logic/gamelogic.js"
 import {HuRealm} from "../models/realm/realm.js"
+import {gamelogic} from "../ecs/logic/gamelogic.js"
 
 /**
  * entity component system

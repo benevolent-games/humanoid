@@ -2,8 +2,8 @@
 import {scalar} from "@benev/toolbox"
 
 import {make_dummy_anim_group} from "./dummy_anim_group.js"
-import {setup_character_anims} from "./setup_character_anims.js"
 import {HuRealm} from "../../../../../models/realm/realm.js"
+import {setup_character_anims} from "./setup_character_anims.js"
 import {AdjustmentAnims} from "../../../../../models/choreographer/types.js"
 import {CharacterInstance} from "../../../../../models/character/instance.js"
 import {adjustment_anim_for_direction} from "./adjustment_anim_for_direction.js"
