@@ -20,6 +20,6 @@ export const freelook = behavior("apply freelook, onto glance and gimbal based o
 		//  - thus, to compensate, we double our influence on gimbalY.
 		const y = gimbalY + (glanceY * 2)
 
-		c.gimbal = [scalar.wrap(x), scalar.clamp(y)]
+		c.gimbal = [x, scalar.clamp(y)]
 	})
 

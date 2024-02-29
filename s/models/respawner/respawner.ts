@@ -16,11 +16,13 @@ export class Respawner {
 			const [selector, data] = Archetypes.humanoid({
 				debug: false,
 				position: this.#last_position,
+				gimbal: [0, 0.5],
 			})
-			const entity = this.world.createEntity(
-				selector,
-				{...data, gimbal: this.#last_gimbal},
-			)
+			const entity = this.world.createEntity(selector, {
+				...data,
+				gimbal: this.#last_gimbal,
+				slowGimbal: this.#last_gimbal,
+			})
 			return () => {
 				this.#last_gimbal = entity.data.gimbal
 				this.#last_position = entity.data.position
@@ -32,11 +34,12 @@ export class Respawner {
 		() => {
 			const [selector, data] = Archetypes.spectator({
 				position: vec3.add(this.#last_position, [0, 1, 0]),
+				gimbal: [0, 0.5],
 			})
-			const entity = this.world.createEntity(
-				selector,
-				{...data, gimbal: this.#last_gimbal},
-			)
+			const entity = this.world.createEntity( selector, {
+				...data,
+				gimbal: this.#last_gimbal,
+			})
 			return () => {
 				this.#last_gimbal = entity.data.gimbal
 				this.#last_position = entity.data.position

@@ -2,7 +2,7 @@
 import {Selectors} from "./selectors.js"
 import {arch, params} from "./helpers.js"
 import {Sensitivity} from "../schema/schema.js"
-import {Vec3, quat, vec2, vec3} from "@benev/toolbox"
+import {Vec2, Vec3, quat, vec2, vec3} from "@benev/toolbox"
 
 export namespace Archetypes {
 	export const sensitivity = arch({Sensitivity}, () => ({
@@ -13,7 +13,7 @@ export namespace Archetypes {
 		},
 	}))
 
-	export const freecam = arch(Selectors.freecam, ({position}: {position: Vec3}) => ({
+	export const freecam = arch(Selectors.freecam, ({position, gimbal}: {position: Vec3, gimbal: Vec2}) => ({
 		...params(sensitivity()),
 		position,
 		transform: {},
@@ -32,12 +32,12 @@ export namespace Archetypes {
 			jump: false,
 			attack: false,
 		},
-		gimbal: [0, 0.5],
+		gimbal,
 		gimbalRig: {},
 	}))
 
-	export const spectator = arch(Selectors.spectator, ({position}: {position: Vec3}) => ({
-		...params(freecam({position})),
+	export const spectator = arch(Selectors.spectator, ({position, gimbal}: {position: Vec3, gimbal: Vec2}) => ({
+		...params(freecam({position, gimbal})),
 		force: vec2.zero(),
 		impetus: vec3.zero(),
 		position,
@@ -46,11 +46,12 @@ export namespace Archetypes {
 		speeds: {base: 5, fast: 40, slow: 1},
 	}))
 
-	export const humanoid = arch(Selectors.humanoid, ({debug, position}: {
+	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal}: {
 			debug: boolean,
 			position: Vec3,
+			gimbal: Vec2,
 		}) => ({
-		...params(spectator({position})),
+		...params(spectator({position, gimbal})),
 		debug,
 		speeds: {base: 3, fast: 5, slow: 1.5},
 		capsule: {
@@ -75,6 +76,7 @@ export namespace Archetypes {
 		airborneTrajectory: vec3.zero(),
 		jump: false,
 		previousPosition: position,
+		slowGimbal: gimbal,
 		velocity: vec3.zero(),
 		character: {height: 1.75},
 		choreography: {

@@ -210,21 +210,5 @@ export const humanoid = system("humanoid", [
 			const smoothY = molasses(3, previousY, y)
 			c.position = [x, smoothY, z]
 		}),
-
-	// behavior("update rotation")
-	// 	.select({CameraRig, Rotation})
-	// 	.act(() => c => {
-	// 		c.rotation = babylonian.ascertain.quat(
-	// 			c.cameraRig.parts.transform
-	// 		)
-	// 	}),
-
-	// behavior("sync camera rig to position")
-	// 	.select({CameraRig, Perspective, Position, Smoothing})
-	// 	.act(() => ({cameraRig, perspective, position, smoothing}) => {
-	// 		cameraRig.position = (perspective === "first_person")
-	// 			? position
-	// 			: molasses3d(smoothing, cameraRig.position, position)
-	// 	}),
 ])
 

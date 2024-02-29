@@ -13,6 +13,7 @@ export class Position extends Component<Vec3> {}
 export class Rotation extends Component<Quat> {}
 export class Velocity extends Component<Vec3> {}
 export class Gimbal extends Component<Vec2> {}
+export class SlowGimbal extends Component<Vec2> {}
 
 export class PreviousPosition extends Component<Vec3> {}
 

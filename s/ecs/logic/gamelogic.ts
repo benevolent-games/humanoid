@@ -7,11 +7,13 @@ import {spectator} from "./playable/spectator.js"
 import {ambulation} from "./pure/ambulation.js"
 import {force} from "./pure/force.js"
 import {freelook} from "./pure/freelook.js"
+import {gimballing} from "./pure/gimballing.js"
 import {intentions} from "./pure/intentions.js"
 import {velocity} from "./pure/velocity.js"
 
 export const gamelogic = system("root", [
 	system("pure", [
+		gimballing,
 		intentions,
 		freelook,
 		force,
