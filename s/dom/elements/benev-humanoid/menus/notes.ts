@@ -24,8 +24,8 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 		}
 		code { color: #fc6; }
 		hr {
-			margin-left: 10%;
-			margin-right: 10%;
+			display: block;
+			margin: 2em 10% !important;
 			border: none;
 			height: 2px;
 			background: #fff3;
