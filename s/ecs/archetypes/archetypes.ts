@@ -65,7 +65,7 @@ export namespace Archetypes {
 		perspective: "third_person",
 		camera: {
 			fov: 100,
-			minZ: 0.2,
+			minZ: 0.1,
 			maxZ: 15_000,
 		},
 		stance: "stand",

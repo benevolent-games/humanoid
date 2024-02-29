@@ -32,7 +32,7 @@ export const humanoid_binds = () => binds(({
 			respawn: buttons(b("KeyR"), modless("RMB")),
 			bot_spawn: buttons(b("KeyB")),
 			bot_delete: buttons(b("KeyB", shift)),
-			level_swap: buttons(b("KeyL")),
+			level_swap: buttons(b("RightBracket")),
 
 			perspective: buttons(modless("KeyT")),
 

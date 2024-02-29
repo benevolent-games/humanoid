@@ -1,14 +1,16 @@
 
 import {scalar} from "@benev/toolbox"
 import {behavior} from "../../hub.js"
-import {Gimbal, Intent} from "../../schema/schema.js"
+import {molasses2d} from "../../../tools/molasses.js"
 import {GimbalRig} from "../../schema/hybrids/gimbal_rig.js"
+import {Gimbal, Intent, SlowGimbal} from "../../schema/schema.js"
 
 export const freelook = behavior("apply freelook, onto glance and gimbal based on intent")
-	.select({Intent, Gimbal, GimbalRig})
+	.select({Intent, Gimbal, GimbalRig, SlowGimbal})
 	.act(() => c => {
-		const [gimbalX, gimbalY] = c.gimbal
-		const [glanceX, glanceY] = c.intent.glance
+		const {gimbal, slowGimbal, intent} = c
+		const [gimbalX, gimbalY] = gimbal
+		const [glanceX, glanceY] = intent.glance
 
 		const x = gimbalX + glanceX
 
@@ -21,5 +23,6 @@ export const freelook = behavior("apply freelook, onto glance and gimbal based o
 		const y = gimbalY + (glanceY * 2)
 
 		c.gimbal = [x, scalar.clamp(y)]
+		c.slowGimbal = molasses2d(2, slowGimbal, gimbal)
 	})
 
