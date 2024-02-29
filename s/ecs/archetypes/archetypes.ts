@@ -83,7 +83,7 @@ export namespace Archetypes {
 			swivel: 0.5,
 			settings: {
 				swivel_duration: 20,
-				swivel_readjustment_margin: .1,
+				swivel_readjustment_margin: .2,
 			},
 			adjustment: null,
 		},

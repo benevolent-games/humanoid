@@ -39,9 +39,9 @@ export function apply_adjustments(
 		}
 		else if (adjustment_is_needed(choreo.swivel, settings.swivel_readjustment_margin)) {
 			choreo.adjustment = {
-				duration: settings.swivel_duration,
 				progress: 0,
 				initial_swivel: choreo.swivel,
+				duration: settings.swivel_duration,
 				direction: choreo.swivel < swivel_midpoint
 					? "left"
 					: "right",

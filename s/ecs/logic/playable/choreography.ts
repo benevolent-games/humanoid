@@ -3,16 +3,17 @@ import {babylonian} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {Character} from "../../schema/hybrids/character/character.js"
-import {apply_adjustments, swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
 import {sync_character_anims} from "../../schema/hybrids/character/choreography/sync_character_anims.js"
+import {apply_adjustments, swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
 import {Ambulation, Attackage, Choreography, Gimbal, Intent, Perspective, Position, SlowGimbal, Speeds} from "../../schema/schema.js"
 
 export const choreography = system("humanoid", [
 	behavior("sync babylon parts")
-		.select({Character, Position, SlowGimbal, Gimbal})
+		.select({Character, Position, SlowGimbal, Gimbal, Perspective})
 		.act(() => c => {
 			const q = babylonian.to.quat(
-				gimbaltool(c.gimbal).quaternions().horizontal
+				gimbaltool(c.perspective === "first_person" ? c.gimbal : c.slowGimbal)
+					.quaternions().horizontal
 			)
 			c.character.parts.position.set(...c.position)
 			c.character.parts.rotation.set(...q)
@@ -36,18 +37,8 @@ export const choreography = system("humanoid", [
 				adjustment_anims,
 				c.ambulation,
 				c.choreography,
-				10,
+				3,
 			)
-
-			// c.choreography.swivel = molasses(
-			// 	c.ambulation.magnitude > 0.1
-			// 		? 2
-			// 		: 3,
-			// 	c.choreography.swivel,
-			// 	0.5,
-			// )
-
-			// c.choreography.swivel = 0.5
 
 			anims.grip_left.forceProgress(1)
 			anims.grip_right.forceProgress(1)
@@ -55,7 +46,9 @@ export const choreography = system("humanoid", [
 			sync_character_anims({
 				anims,
 				boss_anim,
-				gimbal: c.gimbal,
+				gimbal: c.perspective === "first_person"
+					? c.gimbal
+					: c.slowGimbal,
 				choreo: c.choreography,
 				attackage: c.attackage,
 				ambulatory: c.ambulation,
