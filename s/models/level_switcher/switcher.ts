@@ -38,7 +38,7 @@ export class LevelSwitcher {
 			async() => { await this.#level(n as HuLevel) }
 		) as any
 
-		this.next()
+		this.next().then(() => respawner.gotoHumanoid())
 		this.#enforce_busy = true
 	}
 

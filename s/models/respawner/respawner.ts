@@ -12,6 +12,24 @@ export class Respawner {
 
 	#cycle = new Cycle<() => () => void>([
 
+		// spectator
+		() => {
+			this.#current = "spectator"
+			const [selector, data] = Archetypes.spectator({
+				position: vec3.add(this.#last_position, [0, 1, 0]),
+				gimbal: [0, 0.5],
+			})
+			const entity = this.world.createEntity( selector, {
+				...data,
+				gimbal: this.#last_gimbal,
+			})
+			return () => {
+				this.#last_gimbal = entity.data.gimbal
+				this.#last_position = entity.data.position
+				this.world.deleteEntity(entity.id)
+			}
+		},
+
 		// humanoid
 		() => {
 			this.#current = "humanoid"
@@ -31,25 +49,6 @@ export class Respawner {
 				this.world.deleteEntity(entity.id)
 			}
 		},
-
-		// spectator
-		() => {
-			this.#current = "spectator"
-			const [selector, data] = Archetypes.spectator({
-				position: vec3.add(this.#last_position, [0, 1, 0]),
-				gimbal: [0, 0.5],
-			})
-			const entity = this.world.createEntity( selector, {
-				...data,
-				gimbal: this.#last_gimbal,
-			})
-			return () => {
-				this.#last_gimbal = entity.data.gimbal
-				this.#last_position = entity.data.position
-				this.world.deleteEntity(entity.id)
-			}
-		},
-
 	])
 
 	get current() {
@@ -64,6 +63,11 @@ export class Respawner {
 
 	gotoSpectator() {
 		if (this.current === "humanoid")
+			this.respawn()
+	}
+
+	gotoHumanoid() {
+		if (this.current === "spectator")
 			this.respawn()
 	}
 }
