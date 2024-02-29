@@ -44,17 +44,29 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 		<section class=controls>
 			<h1>controls.</h1>
 			<p>
-				<code>tab</code> for menu.
+				<code>tab</code> to toggle menu.
 				<code>wasd</code> to walk around.
 				<code>shift</code> for sprint.
 				<code>alt</code> for slow.
 				<code>c</code> to crouch.
 				<code>r</code> to switch camera angle.
-				<code>t</code> to toggle human/spectator.
+				<code>right-click</code> or <code>t</code> to toggle human/spectator.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>🏃 pimsley.</span>
+				<small>2024-02-29</small>
+			</h1>
+			<p>pimsley is our new base character. he is the perfect man and has zero flaws. men want to be him, and women want to sleep with him.</p>
+			<p>first person view. it's crude and janky, but it's awesome. press R while you're pimsley to try it out. you can see your feets.</p>
+			<p>new hip swivel and leg readjustment animations.</p>
+			<p>crouching while walking in third person causes a hilarious bug with your head, among other quirks..</p>
+			<p>level switching now puts you into spectator mode. on mountainside you'll still have to fly up until you're above the ground.</p>
+		</section>
 
 		<section>
 			<h1>
@@ -88,10 +100,10 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
-				<span>make humanoid great again</span>
+				<span>🎉 make humanoid great again</span>
 				<small>2024-02-25</small>
 			</h1>
-			<p>🎉 we brought back the knight character.</p>
+			<p>we brought back the knight character.</p>
 			<p>now all the maps have physics.</p>
 			<p>alternate between knight and spectator mode</p>
 			<p>level switching.</p>
