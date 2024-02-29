@@ -21,7 +21,7 @@ export function sync_character_anims({
 	}: {
 		gimbal: Vec2
 		speeds: Speeds & {creep: number}
-		attackage: CState<Attackage>,
+		attackage: CState<Attackage>
 		choreo: Choreo
 		ambulatory: Ambulatory
 		anims: CharacterAnims
@@ -45,13 +45,10 @@ export function sync_character_anims({
 	const crouching = inverse(standing)
 	const airborne = inverse(groundage)
 
-	// reset all anim weights
-	for (const anim of Object.values(anims))
-		anim.weight = 0
+	// // reset all anim weights
+	// for (const anim of Object.values(anims))
+	// 	anim.weight = 0
 
-	anims.grip_left.weight = 1
-	anims.grip_right.weight = 1
-	anims.head_scale.weight = 1
 	anims.head_scale.forceProgress(
 		(perspective === "first_person")
 			? 0

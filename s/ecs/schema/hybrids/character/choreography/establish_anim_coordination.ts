@@ -15,6 +15,10 @@ export function establish_anim_coordination(realm: HuRealm, character: Character
 	const anims = setup_character_anims(character, onMissingAnim)
 	console.log("anims", anims)
 
+	anims.head_scale.weight = 1
+	anims.grip_left.weight = 1
+	anims.grip_right.weight = 1
+
 	const ambulation_anims = [
 		anims.stand_forward,
 		anims.stand_backward,
@@ -81,6 +85,6 @@ export function establish_anim_coordination(realm: HuRealm, character: Character
 		boss_anim.dispose()
 	}
 
-	return {anims, boss_anim, adjustment_anims, dispose}
+	return {anims, boss_anim, adjustment_anims, dispose, ambulation_anims}
 }
 

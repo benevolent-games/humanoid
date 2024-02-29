@@ -3,7 +3,7 @@ import {babylonian} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {Character} from "../../schema/hybrids/character/character.js"
-import {swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
+import {apply_adjustments, swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
 import {sync_character_anims} from "../../schema/hybrids/character/choreography/sync_character_anims.js"
 import {Ambulation, Attackage, Choreography, Gimbal, Intent, Perspective, Position, SlowGimbal, Speeds} from "../../schema/schema.js"
 
@@ -32,12 +32,12 @@ export const choreography = system("humanoid", [
 		.act(() => c => {
 			const {adjustment_anims, anims, boss_anim} = c.character.coordination
 
-			// apply_adjustments(
-			// 	adjustment_anims,
-			// 	ambulatory,
-			// 	state.choreography,
-			// 	10,
-			// )
+			apply_adjustments(
+				adjustment_anims,
+				c.ambulation,
+				c.choreography,
+				10,
+			)
 
 			// c.choreography.swivel = molasses(
 			// 	c.ambulation.magnitude > 0.1
@@ -47,7 +47,7 @@ export const choreography = system("humanoid", [
 			// 	0.5,
 			// )
 
-			c.choreography.swivel = 0.5
+			// c.choreography.swivel = 0.5
 
 			anims.grip_left.forceProgress(1)
 			anims.grip_right.forceProgress(1)
