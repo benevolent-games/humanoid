@@ -47,7 +47,7 @@ export const choreography = system("humanoid", [
 			c.choreography.swivel = molasses(
 				c.ambulation.magnitude > 0.1
 					? 2
-					: 20,
+					: 3,
 				c.choreography.swivel,
 				0.5,
 			)
