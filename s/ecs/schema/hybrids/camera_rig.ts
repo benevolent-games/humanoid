@@ -1,14 +1,14 @@
 
-
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
 
+import {HuRealm} from "../../../models/realm/realm.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
-import {HumanoidRealm} from "../../../models/realm/realm.js"
+import {apply_spline_to_gimbal_y} from "../../logic/playable/simulation/apply_spline_to_gimbal_y.js"
 
-export class HumanoidCameraRig extends HybridComponent<HumanoidRealm, {
+export class CameraRig extends HybridComponent<HuRealm, {
 		height: number
 		third_person_distance: number
 	}> {
@@ -22,7 +22,11 @@ export class HumanoidCameraRig extends HybridComponent<HumanoidRealm, {
 
 		const transform = new TransformNode(label("transform"), scene)
 
-		const torusDiameter = state.height - 0.3
+		const torusLift = 0.15
+		const torusDiameter = state.height - 0.5
+
+		const torusRoot = new TransformNode(label("torusRoot"), scene)
+
 		const torus = MeshBuilder.CreateTorus(label("torus"), {
 			diameter: torusDiameter,
 			thickness: 0.1,
@@ -35,35 +39,45 @@ export class HumanoidCameraRig extends HybridComponent<HumanoidRealm, {
 			scalar.radians.from.degrees(90),
 		)
 
+		const headlocus = new TransformNode(label("headlocus"), scene)
+
 		const headbox = MeshBuilder.CreateBox(
 			label("box"),
 			{size: 0.2},
 			scene,
 		)
-		headbox.position.y = torusDiameter / 2
 		headbox.material = colors.green
 
-		const torusRoot = new TransformNode(label("torusRoot"), scene)
+		torusRoot.position.y = torusLift
+		torus.position.y = torusLift
+		headbox.position.y = torusLift + (torusDiameter / 2)
+		headlocus.position.y = torusLift + (torusDiameter / 2)
 
 		// parenting
-		headbox.setParent(torusRoot)
+		// headbox.setParent(headlocus)
+		headlocus.setParent(torusRoot)
 		torus.setParent(torusRoot)
 		torusRoot.setParent(transform)
 
 		this.#disposables
+			.add(() => headlocus.dispose())
 			.add(() => headbox.dispose())
 			.add(() => torus.dispose())
 			.add(() => torusRoot.dispose())
 			.add(() => transform.dispose())
 
-		return {transform, torusRoot, torus, headbox}
+		return {transform, torusRoot, torus, headlocus, headbox}
 	})()
 
 	applyGimbal(gimbal: Vec2) {
-		const {transform, torusRoot} = this.parts
-		const quaternions = gimbaltool(gimbal).quaternions()
+		const {transform, torusRoot, headlocus, headbox} = this.parts
+		const moddedGimbal = apply_spline_to_gimbal_y(gimbal, [0, .5, .9])
+		const quaternions = gimbaltool(moddedGimbal).quaternions()
 		transform.rotationQuaternion = quaternions.horizontal
 		torusRoot.rotationQuaternion = quaternions.vertical
+		torusRoot.computeWorldMatrix(true)
+		headbox.position = headlocus.absolutePosition.clone()
+		headbox.rotationQuaternion = gimbaltool(gimbal).quaternions().combined
 	}
 
 	setDebug(d: boolean) {

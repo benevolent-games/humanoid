@@ -13,6 +13,7 @@ export class Position extends Component<Vec3> {}
 export class Rotation extends Component<Quat> {}
 export class Velocity extends Component<Vec3> {}
 export class Gimbal extends Component<Vec2> {}
+export class SlowGimbal extends Component<Vec2> {}
 
 export class PreviousPosition extends Component<Vec3> {}
 
@@ -74,6 +75,8 @@ export class Ambulation extends Component<Ambulatory & {
 		groundage: number
 	}
 }> {}
+
+export class Perspective extends Component<"third_person" | "first_person"> {}
 
 export class Speeds extends Component<Speeds2>{}
 export class Stance extends Component<"stand" | "crouch"> {}

@@ -2,8 +2,8 @@
 import {CState, Speeds, Vec2, scalar, spline} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
-import {Attackage} from "../../../schema.js"
 import {Ambulatory} from "../../../types.js"
+import {Attackage, Perspective} from "../../../schema.js"
 import {attack_milestones} from "../attacking/attacks.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {setup_anim_modulators} from "./animworks/modulators.js"
@@ -16,14 +16,16 @@ export function sync_character_anims({
 		attackage,
 		boss_anim,
 		ambulatory,
+		perspective,
 		gimbal: [,vertical],
 	}: {
 		gimbal: Vec2
 		speeds: Speeds & {creep: number}
-		attackage: CState<Attackage>,
+		attackage: CState<Attackage>
 		choreo: Choreo
 		ambulatory: Ambulatory
 		anims: CharacterAnims
+		perspective: CState<Perspective>
 		boss_anim: AnimationGroup
 	}) {
 
@@ -43,9 +45,15 @@ export function sync_character_anims({
 	const crouching = inverse(standing)
 	const airborne = inverse(groundage)
 
-	// reset all anim weights
-	for (const anim of Object.values(anims))
-		anim.weight = 0
+	// // reset all anim weights
+	// for (const anim of Object.values(anims))
+	// 	anim.weight = 0
+
+	anims.head_scale.forceProgress(
+		(perspective === "first_person")
+			? 0
+			: 0.5
+	)
 
 	boss_anim.speedRatio = ambulation_speed
 

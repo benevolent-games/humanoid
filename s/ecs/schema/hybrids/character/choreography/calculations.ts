@@ -11,7 +11,6 @@ export function swivel_effected_by_glance(swivel: number, [x]: Vec2) {
 	return scalar.clamp(swivel + (x * 2))
 }
 
-
 export function apply_adjustments(
 		adjustment_anims: AdjustmentAnims,
 		ambulatory: Ambulatory,
@@ -27,6 +26,7 @@ export function apply_adjustments(
 		adjustment.progress += speed
 
 		choreo.swivel = calculate_adjustment_swivel(adjustment)
+		adjustment_anims.update(adjustment)
 
 		if (adjustment.progress >= 1) {
 			adjustment_anims.stop(adjustment)
@@ -39,9 +39,9 @@ export function apply_adjustments(
 		}
 		else if (adjustment_is_needed(choreo.swivel, settings.swivel_readjustment_margin)) {
 			choreo.adjustment = {
-				duration: settings.swivel_duration,
 				progress: 0,
 				initial_swivel: choreo.swivel,
+				duration: settings.swivel_duration,
 				direction: choreo.swivel < swivel_midpoint
 					? "left"
 					: "right",

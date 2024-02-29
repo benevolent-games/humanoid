@@ -1,85 +1,36 @@
 
-import {babylonian, spline, vec2, vec3} from "@benev/toolbox"
+import {spline, vec2, vec3} from "@benev/toolbox"
+
 import {unflatten} from "../../../tools/flatten.js"
-import {Camera} from "../../schema/hybrids/camera.js"
+import {Capsule} from "../../schema/hybrids/capsule.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {behavior, responder, system} from "../../hub.js"
 import {molasses, molasses3d} from "../../../tools/molasses.js"
-import {HumanoidCapsule} from "../../schema/hybrids/humanoid_capsule.js"
-import {HumanoidCameraRig} from "../../schema/hybrids/humanoid_camera_rig.js"
-import {apply_spline_to_gimbal_y} from "./simulation/apply_spline_to_gimbal_y.js"
-import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Rotation, Smoothing, Speeds, Stance} from "../../schema/schema.js"
+import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Speeds, Stance} from "../../schema/schema.js"
 
 export const humanoid = system("humanoid", [
-	system("camera rig", [
-		responder("establish camera parented to rig")
-			.select({HumanoidCameraRig, Camera})
-			.respond(() => ({
-				added(c) {
-					c.camera.node.position.z = -(c.humanoidCameraRig.state.third_person_distance)
-					c.camera.node.parent = c.humanoidCameraRig.parts.headbox
-				},
-				removed(c) {
-					if (c.camera.node.parent === c.humanoidCameraRig.parts.headbox)
-						c.camera.node.parent = null
-				},
-			})),
-
-		responder("establish capsule position")
-			.select({HumanoidCameraRig, Position})
-			.respond(() => ({
-				added(c) { c.humanoidCameraRig.position = c.position },
-				removed() {},
-			})),
-
-		responder("activate/deactivate the camera")
-			.select({HumanoidCameraRig, Camera})
-			.respond(({realm}) => ({
-				added(c) {
-					realm.stage.rendering.setCamera(c.camera.node)
-				},
-				removed() {
-					realm.stage.rendering.setCamera(null)
-				},
-			})),
-
-		behavior("apply gimbal to rig")
-			.select({HumanoidCameraRig, Gimbal})
-			.act(() => c => {
-				const moddedGimbal = apply_spline_to_gimbal_y(c.gimbal, [.1, .5, .7])
-				c.humanoidCameraRig.applyGimbal(moddedGimbal)
-			}),
-	]),
-
 	responder("capsule debug")
-		.select({HumanoidCapsule, Debug})
+		.select({Capsule, Debug})
 		.respond(() => ({
-			added(c) { c.humanoidCapsule.setDebug(c.debug) },
-			removed() {},
-		})),
-
-	responder("camera rig debug")
-		.select({HumanoidCameraRig, Debug})
-		.respond(() => ({
-			added(c) { c.humanoidCameraRig.setDebug(c.debug) },
+			added(c) { c.capsule.setDebug(c.debug) },
 			removed() {},
 		})),
 
 	responder("establish capsule position")
-		.select({HumanoidCapsule, Position})
+		.select({Capsule, Position})
 		.respond(() => ({
-			added(c) { c.humanoidCapsule.position = c.position },
+			added(c) { c.capsule.position = c.position },
 			removed() {},
 		})),
 
 	behavior("reset impetus")
-		.select({HumanoidCapsule, Impetus})
+		.select({Capsule, Impetus})
 		.act(() => c => {
 			c.impetus = vec3.zero()
 		}),
 
 	behavior("impetus for walking around")
-		.select({HumanoidCapsule, Impetus, Force, Stance, Intent, Speeds, Grounding, Gimbal})
+		.select({Capsule, Impetus, Force, Stance, Intent, Speeds, Grounding, Gimbal})
 		.act(({tick}) => c => {
 			const {stance, force, intent, speeds, grounding, gimbal, impetus} = c
 			const [x, z] = force
@@ -88,7 +39,7 @@ export const humanoid = system("humanoid", [
 				let target = vec3.zero()
 
 				if (stance === "stand") {
-					if (z > 0.01 && intent.fast) {
+					if (z > 0.001 && intent.fast) {
 						target = vec3.multiplyBy(
 							vec3.normalize([(x / 2), 0, z]),
 							speeds.fast * tick.seconds,
@@ -120,7 +71,7 @@ export const humanoid = system("humanoid", [
 		}),
 
 	behavior("airborne")
-		.select({HumanoidCapsule, AirborneTrajectory})
+		.select({Capsule, AirborneTrajectory})
 		.act(() => c => {
 			const {airborneTrajectory} = c
 			c.airborneTrajectory = molasses3d(
@@ -131,7 +82,7 @@ export const humanoid = system("humanoid", [
 		}),
 
 	behavior("apply reduced force onto airborneTrajectory")
-		.select({HumanoidCapsule, AirborneTrajectory, Force, Grounding, Gimbal})
+		.select({Capsule, AirborneTrajectory, Force, Grounding, Gimbal})
 		.act(({tick}) => c => {
 			const factor = 1 / 5
 			const maxSpeed = 5 * tick.seconds
@@ -154,7 +105,7 @@ export const humanoid = system("humanoid", [
 		}),
 
 	behavior("apply airborne trajectory to impetus")
-		.select({HumanoidCapsule, AirborneTrajectory, Grounding, Impetus})
+		.select({Capsule, AirborneTrajectory, Grounding, Impetus})
 		.act(() => c => {
 			const {grounding, impetus, airborneTrajectory} = c
 			if (!grounding.grounded)
@@ -162,7 +113,7 @@ export const humanoid = system("humanoid", [
 		}),
 
 	behavior("apply artificial gravity on impetus")
-		.select({HumanoidCapsule, Grounding, Impetus})
+		.select({Capsule, Grounding, Impetus})
 		.act(({tick}) => c => {
 			const {grounded, seconds} = c.grounding
 			const subtle_grounding_force = 5 * tick.seconds
@@ -190,7 +141,7 @@ export const humanoid = system("humanoid", [
 		}),
 
 	behavior("add jump power to impetus")
-		.select({HumanoidCapsule, Grounding, Intent, Jump, Impetus})
+		.select({Capsule, Grounding, Intent, Jump, Impetus})
 		.act(({tick}) => c => {
 			const {intent, jump, grounding} = c
 			const {grounded} = grounding
@@ -233,9 +184,9 @@ export const humanoid = system("humanoid", [
 		}),
 
 	behavior("apply capsule movement, set grounding and airborne_trajectory")
-		.select({HumanoidCapsule, Grounding, Impetus, AirborneTrajectory})
+		.select({Capsule, Grounding, Impetus, AirborneTrajectory})
 		.act(({tick}) => c => {
-			const {capsule} = c.humanoidCapsule
+			const {capsule} = c.capsule
 			const {grounded} = capsule.applyMovement(c.impetus)
 
 			const isChanged = grounded !== c.grounding.grounded
@@ -252,27 +203,12 @@ export const humanoid = system("humanoid", [
 		}),
 
 	behavior("update position with smoothing on y-axis")
-		.select({HumanoidCapsule, Position, PreviousPosition})
+		.select({Capsule, Position, PreviousPosition})
 		.act(() => c => {
 			const [,previousY] = c.previousPosition
-			const [x, y, z] = c.humanoidCapsule.position
+			const [x, y, z] = c.capsule.position
 			const smoothY = molasses(3, previousY, y)
 			c.position = [x, smoothY, z]
-		}),
-
-	behavior("update rotation")
-		.select({HumanoidCameraRig, Rotation})
-		.act(() => c => {
-			c.rotation = babylonian.ascertain.quat(
-				c.humanoidCameraRig.parts.transform
-			)
-		}),
-
-	behavior("smoothly move rig towards position")
-		.select({HumanoidCameraRig, Position, Smoothing})
-		.act(() => c => {
-			const rig = c.humanoidCameraRig
-			rig.position = molasses3d(c.smoothing, rig.position, c.position)
 		}),
 ])
 

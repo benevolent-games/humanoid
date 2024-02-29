@@ -4,8 +4,8 @@ import {Camera} from "../../schema/hybrids/camera.js"
 import {behavior, responder, system} from "../../hub.js"
 import {GimbalRig} from "../../schema/hybrids/gimbal_rig.js"
 import {flatten, unflatten} from "../../../tools/flatten.js"
-import {Force, Gimbal, Impetus, Intent, Position, Spectator, Speeds} from "../../schema/schema.js"
 import {apply_3d_rotation_to_movement} from "./simulation/apply_3d_rotation_to_movement.js"
+import {Force, Gimbal, Impetus, Intent, Position, Spectator, Speeds} from "../../schema/schema.js"
 
 export const spectator = system("spectator", [
 	responder("parenting the camera")

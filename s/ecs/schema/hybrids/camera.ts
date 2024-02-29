@@ -4,9 +4,9 @@ import {HybridComponent} from "@benev/toolbox"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 
-import {HumanoidRealm} from "../../../models/realm/realm.js"
+import {HuRealm} from "../../../models/realm/realm.js"
 
-export class Camera extends HybridComponent<HumanoidRealm, {
+export class Camera extends HybridComponent<HuRealm, {
 		fov: number
 		minZ: number
 		maxZ: number

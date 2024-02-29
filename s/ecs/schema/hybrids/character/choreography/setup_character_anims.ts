@@ -72,10 +72,10 @@ export const setup_character_anims = (
 	twohander_attack_7: g => new ManualAnim(g),
 	twohander_attack_8: g => new ManualAnim(g),
 
-	hips_swivel: g => new ManualAdditiveAnim(g, 50),
 	head_scale: g => new ManualAdditiveAnim(g, 50),
 	grip_left: g => new ManualAnim(g),
 	grip_right: g => new ManualAnim(g),
+	hips_swivel: g => new ManualAdditiveAnim(g, 50),
 	spine_lean: g => new ManualAdditiveAnim(g, 50),
 	spine_bend: g => new ManualAdditiveAnim(g, 50),
 

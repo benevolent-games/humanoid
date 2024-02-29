@@ -6,9 +6,14 @@ import {nexus} from "../../../../nexus.js"
 export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 	use.name("notes-menu")
 	use.styles(css`
-		:host > * + * { margin-top: 1em; }
-		section { padding: 1em; }
+		.base {
+			display: block;
+			padding: 1em;
+			> * + * { margin-top: 1em; }
+		}
 		h1 {
+			color: #fffc;
+			font-size: 1.1em;
 			vertical-align: middle;
 			> small {
 				opacity: 0.5;
@@ -17,13 +22,50 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				font-family: monospace;
 			}
 		}
+		code { color: #fc6; }
+		hr {
+			display: block;
+			margin: 2em 10% !important;
+			border: none;
+			height: 2px;
+			background: #fff3;
+		}
 	`)
 
-	return html`
-		<section>
+	const wrap = (h: any) => html`<div class=base>${h}</div>`
+
+	return wrap(html`
+		<section class=lead>
 			<h1>welcome to humanoid.</h1>
 			<p>the humanoid sandbox is an open source web game template.</p>
 			<p>we're building it so we can make a cool game. join our <a target=_blank href="https://discord.gg/BnZx2utdev">discord</a> community.</p>
+		</section>
+
+		<section class=controls>
+			<h1>controls.</h1>
+			<p>
+				<code>tab</code> to toggle menu.
+				<code>wasd</code> to walk around.
+				<code>shift</code> for sprint.
+				<code>alt</code> for slow.
+				<code>c</code> to crouch.
+				<code>r</code> to switch camera angle.
+				<code>right-click</code> or <code>t</code> to toggle human/spectator.
+			</p>
+		</section>
+
+		<hr/>
+
+		<section>
+			<h1>
+				<span>🏃 pimsley.</span>
+				<small>2024-02-29</small>
+			</h1>
+			<p>pimsley is our new base character. he is the perfect man and has zero flaws. men want to be him, and women want to sleep with him.</p>
+			<p>first person view. it's crude and janky, but it's awesome. press R while you're pimsley to try it out. you can see your feets.</p>
+			<p>new hip swivel and leg readjustment animations.</p>
+			<p>crouching while walking in third person causes a hilarious bug with your head, among other quirks..</p>
+			<p>level switching now puts you into spectator mode. on mountainside you'll still have to fly up until you're above the ground.</p>
 		</section>
 
 		<section>
@@ -33,7 +75,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			</h1>
 			<p>now we have a level switcher menu.</p>
 			<p>you'll still fall through the map if you aren't in spectator mode though, so watch out.</p>
-			<p>the menu system has little back and forward buttons, which you can also activate by pressing q or e. so you hit tab, then q/e to cycle through different menus, i think that's nifty.</p>
+			<p>the menu system has little back and forward buttons, with nifty hotkeys.</p>
 		</section>
 
 		<section>
@@ -41,9 +83,9 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<span>some refinements.</span>
 				<small>2024-02-27</small>
 			</h1>
-			<p>🆕 press 'tab' to toggle the new tab menu system.</p>
+			<p>new tab menu system.</p>
 			<p>fixed a super-annoying chrome bug which caused occasional janky mouselook-snapping.</p>
-			<p>optimized all the shader images, which should improve mt_pimsley's download time very much.</p>
+			<p>optimized all the shader images, which should improve mountainside's download time very much.</p>
 		</section>
 
 		<section>
@@ -58,15 +100,15 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
-				<span>make humanoid great again</span>
+				<span>🎉 make humanoid great again</span>
 				<small>2024-02-25</small>
 			</h1>
-			<p>🎉 we brought back the knight character.</p>
+			<p>we brought back the knight character.</p>
 			<p>now all the maps have physics.</p>
-			<p>🆕 press R to alternate between knight and spectator mode</p>
-			<p>🆒 press Y to switch levels.</p>
-			<p>implemented thin instancing, which improves mt_pimsley's framerate.</p>
-			<p>we made mt_pimsley shiny. it sports a fresh coat of custom shader terrain, new env lighting, etc.. it was horrible bingus to get working.</p>
+			<p>alternate between knight and spectator mode</p>
+			<p>level switching.</p>
+			<p>thin instancing, which improves mountainside's framerate.</p>
+			<p>we made mountainside shiny. it sports a fresh coat of custom shader terrain, new env lighting, etc.. it was horrible bingus to get working.</p>
 			<p>fix ssr and ssao by reverting some optimizations.</p>
 		</section>
 
@@ -77,7 +119,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			</h1>
 			<p>added four levels.</p>
 			<p>added the new "quality" menu.</p>
-			<p><strong>thin instances!</strong> we've thinnified the foliage on mt_pimsley, for some reason some of the trees turn naked, more research is needed..</p>
+			<p><strong>thin instances!</strong> we've thinnified the foliage on mountainside, for some reason some of the trees turn naked, more research is needed..</p>
 		</section>
 
 		<section>
@@ -87,6 +129,6 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			<p>fixed the rendering pipeline bugs.</p>
 			<p>increased precision granularity on sliders.</p>
 		</section>
-	`
+	`)
 })
 

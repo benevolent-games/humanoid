@@ -1,13 +1,13 @@
 
 import {select} from "./helpers.js"
 import {Camera} from "../schema/hybrids/camera.js"
+import {Capsule} from "../schema/hybrids/capsule.js"
 import {Transform} from "../schema/hybrids/transform.js"
 import {GimbalRig} from "../schema/hybrids/gimbal_rig.js"
+import {CameraRig} from "../schema/hybrids/camera_rig.js"
+import {Character} from "../schema/hybrids/character/character.js"
 import {MouseAccumulator} from "../schema/hybrids/mouse_accumulator.js"
-import {AirborneTrajectory, Ambulation, Attackage, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Rotation, Sensitivity, Smoothing, Spectator, Speeds, Stance, Velocity} from "../schema/schema.js"
-import {HumanoidCapsule} from "../schema/hybrids/humanoid_capsule.js"
-import {HumanoidCameraRig} from "../schema/hybrids/humanoid_camera_rig.js"
-import { Character } from "../schema/hybrids/character/character.js"
+import {AirborneTrajectory, Ambulation, Attackage, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, SlowGimbal, PreviousPosition, Rotation, Sensitivity, Smoothing, Spectator, Speeds, Stance, Velocity} from "../schema/schema.js"
 
 export namespace Selectors {
 	export const freecam = select({
@@ -41,14 +41,16 @@ export namespace Selectors {
 		Smoothing,
 		Speeds,
 
-		HumanoidCapsule,
-		HumanoidCameraRig,
+		Capsule,
+		CameraRig,
+		Perspective,
 		Stance,
 		Grounding,
 		AirborneTrajectory,
 		Jump,
-		PreviousPosition,
 
+		PreviousPosition,
+		SlowGimbal,
 		Velocity,
 
 		Character,

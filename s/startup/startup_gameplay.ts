@@ -1,12 +1,12 @@
 
 import {World} from "@benev/toolbox"
 
-import {HumanoidRealm} from "../models/realm/realm.js"
+import {HuRealm} from "../models/realm/realm.js"
 import {Respawner} from "../models/respawner/respawner.js"
 import {LevelSwitcher} from "../models/level_switcher/switcher.js"
 import warn_users_before_window_unload from "../tools/warn_users_before_window_unload.js"
 
-export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
+export default (realm: HuRealm, world: World<HuRealm>) => {
 
 	// menu button toggles pointerlock
 	realm.impulse.on.universal.buttons.menu_toggle(input => {
@@ -27,21 +27,21 @@ export default (realm: HumanoidRealm, world: World<HumanoidRealm>) => {
 	// prevent ctrl+w instaclose accidents
 	warn_users_before_window_unload()
 
-	// establish a level switcher for cycling levels
-	const levelSwitcher = new LevelSwitcher(world, realm.gameplan)
-
-	// switch level when we press the key
-	realm.impulse.on.humanoid.buttons.level_swap(button => {
-		if (button.down && !button.repeat)
-			levelSwitcher.next()
-	})
-
 	// controls spawning of humanoids and spectator cams
 	const respawner = new Respawner(world)
 	respawner.respawn()
 	realm.impulse.on.humanoid.buttons.respawn(button => {
 		if (button.down && !button.repeat)
 			respawner.respawn()
+	})
+
+	// establish a level switcher for cycling levels
+	const levelSwitcher = new LevelSwitcher(world, realm.gameplan, respawner)
+
+	// switch level when we press the key
+	realm.impulse.on.humanoid.buttons.level_swap(button => {
+		if (button.down && !button.repeat)
+			levelSwitcher.next()
 	})
 
 	return {levelSwitcher, respawner}
