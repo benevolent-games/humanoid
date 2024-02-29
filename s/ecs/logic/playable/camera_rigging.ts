@@ -2,9 +2,18 @@
 import {Camera} from "../../schema/hybrids/camera.js"
 import {behavior, responder, system} from "../../hub.js"
 import {CameraRig} from "../../schema/hybrids/camera_rig.js"
-import {Gimbal, Perspective, Position} from "../../schema/schema.js"
+import {Debug, Gimbal, Perspective, Position, Rotation, Smoothing} from "../../schema/schema.js"
+import { molasses3d } from "../../../tools/molasses.js"
+import { babylonian } from "@benev/toolbox"
 
 export const camera_rigging = system("camera rigging", [
+	responder("camera rig debug")
+		.select({CameraRig, Debug})
+		.respond(() => ({
+			added(c) { c.cameraRig.setDebug(c.debug) },
+			removed() {},
+		})),
+
 	responder("establish camera parented to rig")
 		.select({CameraRig, Camera})
 		.respond(() => ({
@@ -18,7 +27,7 @@ export const camera_rigging = system("camera rigging", [
 			},
 		})),
 
-	responder("establish capsule position")
+	responder("establish rig position")
 		.select({CameraRig, Position})
 		.respond(() => ({
 			added(c) { c.cameraRig.position = c.position },
@@ -56,18 +65,32 @@ export const camera_rigging = system("camera rigging", [
 			}
 		}),
 
-	behavior("apply gimbal to rig")
-		.select({CameraRig, Gimbal})
-		.act(() => c => {
-			c.cameraRig.applyGimbal(c.gimbal)
-		}),
-
 	behavior("update third person distance")
 		.select({CameraRig, Camera, Perspective})
 		.act(() => ({cameraRig, camera, perspective}) => {
 			camera.node.position.z = (perspective === "first_person")
 				? 0
 				: -(cameraRig.state.third_person_distance)
+		}),
+
+	behavior("sync camera rig position")
+		.select({CameraRig, Perspective, Position, Smoothing})
+		.act(() => ({cameraRig, perspective, position, smoothing}) => {
+			cameraRig.position = (perspective === "first_person")
+				? position
+				: molasses3d(smoothing, cameraRig.position, position)
+		}),
+
+	behavior("apply gimbal to rig")
+		.select({CameraRig, Gimbal})
+		.act(() => c => { c.cameraRig.applyGimbal(c.gimbal) }),
+
+	behavior("update rotation")
+		.select({CameraRig, Rotation})
+		.act(() => c => {
+			c.rotation = babylonian.ascertain.quat(
+				c.cameraRig.parts.transform
+			)
 		}),
 ])
 

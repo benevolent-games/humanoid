@@ -6,7 +6,7 @@ import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/too
 
 import {HuRealm} from "../../../models/realm/realm.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
-import { apply_spline_to_gimbal_y } from "../../logic/playable/simulation/apply_spline_to_gimbal_y.js"
+import {apply_spline_to_gimbal_y} from "../../logic/playable/simulation/apply_spline_to_gimbal_y.js"
 
 export class CameraRig extends HybridComponent<HuRealm, {
 		height: number
@@ -39,6 +39,8 @@ export class CameraRig extends HybridComponent<HuRealm, {
 			scalar.radians.from.degrees(90),
 		)
 
+		const headlocus = new TransformNode(label("headlocus"), scene)
+
 		const headbox = MeshBuilder.CreateBox(
 			label("box"),
 			{size: 0.2},
@@ -49,27 +51,32 @@ export class CameraRig extends HybridComponent<HuRealm, {
 		torusRoot.position.y = torusLift
 		torus.position.y = torusLift
 		headbox.position.y = torusLift + (torusDiameter / 2)
+		headlocus.position.y = torusLift + (torusDiameter / 2)
 
 		// parenting
-		headbox.setParent(torusRoot)
+		// headbox.setParent(headlocus)
+		headlocus.setParent(torusRoot)
 		torus.setParent(torusRoot)
 		torusRoot.setParent(transform)
 
 		this.#disposables
+			.add(() => headlocus.dispose())
 			.add(() => headbox.dispose())
 			.add(() => torus.dispose())
 			.add(() => torusRoot.dispose())
 			.add(() => transform.dispose())
 
-		return {transform, torusRoot, torus, headbox}
+		return {transform, torusRoot, torus, headlocus, headbox}
 	})()
 
 	applyGimbal(gimbal: Vec2) {
-		const {transform, torusRoot} = this.parts
-		const moddedGimbal = apply_spline_to_gimbal_y(gimbal, [.08, .5, .85])
+		const {transform, torusRoot, headlocus, headbox} = this.parts
+		const moddedGimbal = apply_spline_to_gimbal_y(gimbal, [0, .5, .9])
 		const quaternions = gimbaltool(moddedGimbal).quaternions()
 		transform.rotationQuaternion = quaternions.horizontal
 		torusRoot.rotationQuaternion = quaternions.vertical
+		headlocus.computeWorldMatrix(true)
+		headbox.position = headlocus.absolutePosition.clone()
 	}
 
 	setDebug(d: boolean) {

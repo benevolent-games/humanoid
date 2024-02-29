@@ -1,26 +1,18 @@
 
-import {babylonian, spline, vec2, vec3} from "@benev/toolbox"
+import {spline, vec2, vec3} from "@benev/toolbox"
 
 import {unflatten} from "../../../tools/flatten.js"
 import {Capsule} from "../../schema/hybrids/capsule.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {behavior, responder, system} from "../../hub.js"
-import {CameraRig} from "../../schema/hybrids/camera_rig.js"
 import {molasses, molasses3d} from "../../../tools/molasses.js"
-import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, PreviousPosition, Rotation, Smoothing, Speeds, Stance} from "../../schema/schema.js"
+import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Speeds, Stance} from "../../schema/schema.js"
 
 export const humanoid = system("humanoid", [
 	responder("capsule debug")
 		.select({Capsule, Debug})
 		.respond(() => ({
 			added(c) { c.capsule.setDebug(c.debug) },
-			removed() {},
-		})),
-
-	responder("camera rig debug")
-		.select({CameraRig, Debug})
-		.respond(() => ({
-			added(c) { c.cameraRig.setDebug(c.debug) },
 			removed() {},
 		})),
 
@@ -219,20 +211,20 @@ export const humanoid = system("humanoid", [
 			c.position = [x, smoothY, z]
 		}),
 
-	behavior("update rotation")
-		.select({CameraRig, Rotation})
-		.act(() => c => {
-			c.rotation = babylonian.ascertain.quat(
-				c.cameraRig.parts.transform
-			)
-		}),
+	// behavior("update rotation")
+	// 	.select({CameraRig, Rotation})
+	// 	.act(() => c => {
+	// 		c.rotation = babylonian.ascertain.quat(
+	// 			c.cameraRig.parts.transform
+	// 		)
+	// 	}),
 
-	behavior("sync camera rig to position")
-		.select({CameraRig, Perspective, Position, Smoothing})
-		.act(() => ({cameraRig, perspective, position, smoothing}) => {
-			cameraRig.position = (perspective === "first_person")
-				? position
-				: molasses3d(smoothing, cameraRig.position, position)
-		}),
+	// behavior("sync camera rig to position")
+	// 	.select({CameraRig, Perspective, Position, Smoothing})
+	// 	.act(() => ({cameraRig, perspective, position, smoothing}) => {
+	// 		cameraRig.position = (perspective === "first_person")
+	// 			? position
+	// 			: molasses3d(smoothing, cameraRig.position, position)
+	// 	}),
 ])
 
