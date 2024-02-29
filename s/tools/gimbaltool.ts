@@ -42,6 +42,7 @@ export const gimbaltool = (gimbal: Vec2) => ({
 		return {
 			horizontal: Quaternion.FromEulerAngles(0, yaw, 0),
 			vertical: Quaternion.FromEulerAngles(pitch, 0, 0),
+			combined: Quaternion.FromEulerAngles(pitch, yaw, 0),
 		}
 	},
 })

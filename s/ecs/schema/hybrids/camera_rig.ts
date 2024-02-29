@@ -77,6 +77,7 @@ export class CameraRig extends HybridComponent<HuRealm, {
 		torusRoot.rotationQuaternion = quaternions.vertical
 		headlocus.computeWorldMatrix(true)
 		headbox.position = headlocus.absolutePosition.clone()
+		headbox.rotationQuaternion = gimbaltool(gimbal).quaternions().combined
 	}
 
 	setDebug(d: boolean) {
