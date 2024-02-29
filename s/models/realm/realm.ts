@@ -37,7 +37,7 @@ export async function makeRealm(params: RealmParams): Promise<HuRealm> {
 	const impulse = new HumanoidImpulse()
 	const colors = debug_colors(stage.scene)
 	const physics = new Physics({
-		hz: 60,
+		hz: tickrate_hz,
 		colors,
 		scene: stage.scene,
 		gravity: [0, -9.81, 0],
