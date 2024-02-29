@@ -1,5 +1,4 @@
 
-
 import {Camera} from "../../schema/hybrids/camera.js"
 import {behavior, responder, system} from "../../hub.js"
 import {CameraRig} from "../../schema/hybrids/camera_rig.js"
@@ -60,7 +59,6 @@ export const camera_rigging = system("camera rigging", [
 	behavior("apply gimbal to rig")
 		.select({CameraRig, Gimbal})
 		.act(() => c => {
-			// const moddedGimbal = apply_spline_to_gimbal_y(c.gimbal, [.1, .5, .7])
 			c.cameraRig.applyGimbal(c.gimbal)
 		}),
 

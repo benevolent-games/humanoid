@@ -14,7 +14,7 @@ export class Respawner {
 		// humanoid
 		() => {
 			const [selector, data] = Archetypes.humanoid({
-				debug: false,
+				debug: true,
 				position: this.#last_position,
 			})
 			const entity = this.world.createEntity(

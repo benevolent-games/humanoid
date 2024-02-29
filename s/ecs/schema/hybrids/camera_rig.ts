@@ -6,6 +6,7 @@ import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/too
 
 import {HuRealm} from "../../../models/realm/realm.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
+import { apply_spline_to_gimbal_y } from "../../logic/playable/simulation/apply_spline_to_gimbal_y.js"
 
 export class CameraRig extends HybridComponent<HuRealm, {
 		height: number
@@ -21,7 +22,11 @@ export class CameraRig extends HybridComponent<HuRealm, {
 
 		const transform = new TransformNode(label("transform"), scene)
 
-		const torusDiameter = state.height - 0.3
+		const torusLift = 0.15
+		const torusDiameter = state.height - 0.5
+
+		const torusRoot = new TransformNode(label("torusRoot"), scene)
+
 		const torus = MeshBuilder.CreateTorus(label("torus"), {
 			diameter: torusDiameter,
 			thickness: 0.1,
@@ -39,10 +44,11 @@ export class CameraRig extends HybridComponent<HuRealm, {
 			{size: 0.2},
 			scene,
 		)
-		headbox.position.y = torusDiameter / 2
 		headbox.material = colors.green
 
-		const torusRoot = new TransformNode(label("torusRoot"), scene)
+		torusRoot.position.y = torusLift
+		torus.position.y = torusLift
+		headbox.position.y = torusLift + (torusDiameter / 2)
 
 		// parenting
 		headbox.setParent(torusRoot)
@@ -60,7 +66,8 @@ export class CameraRig extends HybridComponent<HuRealm, {
 
 	applyGimbal(gimbal: Vec2) {
 		const {transform, torusRoot} = this.parts
-		const quaternions = gimbaltool(gimbal).quaternions()
+		const moddedGimbal = apply_spline_to_gimbal_y(gimbal, [.08, .5, .85])
+		const quaternions = gimbaltool(moddedGimbal).quaternions()
 		transform.rotationQuaternion = quaternions.horizontal
 		torusRoot.rotationQuaternion = quaternions.vertical
 	}
