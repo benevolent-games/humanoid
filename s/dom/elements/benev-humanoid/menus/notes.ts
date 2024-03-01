@@ -49,12 +49,25 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<code>shift</code> for sprint.
 				<code>alt</code> for slow.
 				<code>c</code> to crouch.
-				<code>r</code> to switch camera angle.
+				hold <code>z</code> to orbit the camera.
+				<code>middle-click</code> or <code>r</code> to switch camera angle.
 				<code>right-click</code> or <code>t</code> to toggle human/spectator.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>pimsley improvements.</span>
+				<small>2024-02-29</small>
+			</h1>
+			<p>fixed the triangle bug when jumping.</p>
+			<p>added leading weapon sway effect.</p>
+			<p>added middle-click bind to switch cam.</p>
+			<p>added crude orbit cam feature via z key.</p>
+			<p>unfortunately there's some unseemly choppy flickery stuff going on right now, hopefully i can fix that next day.</p>
+		</section>
 
 		<section>
 			<h1>

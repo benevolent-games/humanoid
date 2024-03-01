@@ -4,7 +4,7 @@ import {Camera} from "../../schema/hybrids/camera.js"
 import {molasses3d} from "../../../tools/molasses.js"
 import {behavior, responder, system} from "../../hub.js"
 import {CameraRig} from "../../schema/hybrids/camera_rig.js"
-import {Debug, Gimbal, Perspective, Position, Rotation, SlowGimbal, Smoothing} from "../../schema/schema.js"
+import {Debug, Gimbal, Orbit, Perspective, Position, Rotation, Smoothing} from "../../schema/schema.js"
 
 export const camera_rigging = system("camera rigging", [
 	responder("camera rig debug")
@@ -82,9 +82,16 @@ export const camera_rigging = system("camera rigging", [
 		}),
 
 	behavior("apply gimbal to rig")
-		.select({CameraRig, Gimbal, SlowGimbal})
-		.act(() => c => {
-			c.cameraRig.applyGimbal(c.gimbal)
+		.select({CameraRig, Gimbal, Orbit})
+		.act(() => ({cameraRig, gimbal, orbit}) => {
+			if (orbit) {
+				const [x, y] = gimbal
+				const [ox] = orbit
+				const diff = x - ox
+				cameraRig.applyGimbal([x + diff, y])
+			}
+			else
+				cameraRig.applyGimbal(gimbal)
 		}),
 
 	behavior("update rotation")

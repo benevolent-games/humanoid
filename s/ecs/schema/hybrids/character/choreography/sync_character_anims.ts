@@ -45,13 +45,11 @@ export function sync_character_anims({
 	const crouching = inverse(standing)
 	const airborne = inverse(groundage)
 
-	// // reset all anim weights
-	// for (const anim of Object.values(anims))
-	// 	anim.weight = 0
-
+	anims.grip_left.forceProgress(1)
+	anims.grip_right.forceProgress(1)
 	anims.head_scale.forceProgress(
 		(perspective === "first_person")
-			? 0
+			? 0.05
 			: 0.5
 	)
 

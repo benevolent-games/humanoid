@@ -1,5 +1,6 @@
 
 import {Vec2, Vec3, World, vec3} from "@benev/toolbox"
+
 import {Cycle} from "../../tools/cycle.js"
 import {Archetypes} from "../../ecs/archetypes/archetypes.js"
 
@@ -33,15 +34,16 @@ export class Respawner {
 		// humanoid
 		() => {
 			this.#current = "humanoid"
+			const gimbal = this.#last_gimbal
 			const [selector, data] = Archetypes.humanoid({
+				gimbal,
 				debug: false,
 				position: this.#last_position,
-				gimbal: [0, 0.5],
 			})
 			const entity = this.world.createEntity(selector, {
 				...data,
-				gimbal: this.#last_gimbal,
-				slowGimbal: this.#last_gimbal,
+				gimbal,
+				coolGimbal: {gimbal, records: [gimbal]},
 			})
 			return () => {
 				this.#last_gimbal = entity.data.gimbal
