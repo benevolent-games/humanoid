@@ -1,5 +1,5 @@
 
-import {babylonian, scalar, vec2} from "@benev/toolbox"
+import {babylonian} from "@benev/toolbox"
 import {Camera} from "../../schema/hybrids/camera.js"
 import {molasses3d} from "../../../tools/molasses.js"
 import {behavior, responder, system} from "../../hub.js"

@@ -1,5 +1,6 @@
 
-import {Vec2, Vec3, World, vec2, vec3} from "@benev/toolbox"
+import {Vec2, Vec3, World, vec3} from "@benev/toolbox"
+
 import {Cycle} from "../../tools/cycle.js"
 import {Archetypes} from "../../ecs/archetypes/archetypes.js"
 

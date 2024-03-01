@@ -12,7 +12,7 @@ export const choreography = system("humanoid", [
 		.select({Character, Position, CoolGimbal, Gimbal, Perspective})
 		.act(() => c => {
 			const q = babylonian.to.quat(
-				gimbaltool(c.perspective === "first_person" ? c.coolGimbal.gimbal : c.coolGimbal.gimbal)
+				gimbaltool(c.coolGimbal.gimbal)
 					.quaternions().horizontal
 			)
 			c.character.parts.position.set(...c.position)
@@ -43,9 +43,7 @@ export const choreography = system("humanoid", [
 			sync_character_anims({
 				anims,
 				boss_anim,
-				gimbal: c.perspective === "first_person"
-					? c.coolGimbal.gimbal
-					: c.coolGimbal.gimbal,
+				gimbal: c.coolGimbal.gimbal,
 				choreo: c.choreography,
 				attackage: c.attackage,
 				ambulatory: c.ambulation,
