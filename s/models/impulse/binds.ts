@@ -51,6 +51,7 @@ export const humanoid_binds = () => binds(({
 			left: buttons(modless("KeyJ")),
 			right: buttons(modless("KeyL")),
 
+			orbit: buttons(modless("KeyZ")),
 			attack: buttons(modless("Semicolon"), modless("LMB")),
 
 			test_bracket_left: buttons(modless("BracketLeft")),

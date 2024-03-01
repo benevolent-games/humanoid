@@ -17,6 +17,7 @@ export class CoolGimbal extends Component<{
 	records: Vec2[]
 	gimbal: Vec2
 }> {}
+export class Orbit extends Component <null | Vec2> {}
 
 export class PreviousPosition extends Component<Vec3> {}
 

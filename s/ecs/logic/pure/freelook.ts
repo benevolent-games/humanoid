@@ -3,11 +3,11 @@ import {scalar, vec2} from "@benev/toolbox"
 import {avg} from "../../../tools/avg.js"
 import {behavior, system} from "../../hub.js"
 import {molasses2d} from "../../../tools/molasses.js"
-import {Gimbal, Intent, CoolGimbal} from "../../schema/schema.js"
+import {Gimbal, Intent, CoolGimbal, Orbit, Controllable} from "../../schema/schema.js"
 
 export const freelook = system("freelook", [
 	behavior("apply freelook, onto glance and gimbal based on intent")
-		.select({Intent, Gimbal})
+		.select({Controllable, Intent, Gimbal})
 		.act(() => c => {
 			const {
 				gimbal: [gimbalX, gimbalY],
@@ -27,6 +27,18 @@ export const freelook = system("freelook", [
 			c.gimbal = [x, scalar.clamp(y)]
 		}),
 
+	behavior("apply freelook onto orbit")
+		.select({Controllable, Orbit, Gimbal})
+		.act(({realm}) => c => {
+			const wasActive = !!c.orbit
+			const active = realm.impulse.report.humanoid.buttons.orbit.down
+			const hasChanged = active !== wasActive
+			if (hasChanged)
+				c.orbit = active
+					? c.gimbal
+					: null
+		}),
+
 	behavior("calculate cool gimbal")
 		.select({Gimbal, CoolGimbal})
 		.act(() => ({gimbal, coolGimbal: cool}) => {
@@ -34,7 +46,8 @@ export const freelook = system("freelook", [
 			const average = avg.vec2.average(cool.records)
 			const smoothed = molasses2d(4, cool.gimbal, average)
 			const jitter = vec2.subtract(gimbal, average)
-			cool.gimbal = vec2.add(smoothed, jitter)
+			const [x, y] = vec2.add(smoothed, jitter)
+			cool.gimbal = [x, scalar.clamp(y)]
 		}),
 ])
 

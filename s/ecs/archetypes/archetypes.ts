@@ -33,7 +33,6 @@ export namespace Archetypes {
 			attack: false,
 		},
 		gimbal,
-		gimbalRig: {},
 	}))
 
 	export const spectator = arch(Selectors.spectator, ({position, gimbal}: {position: Vec3, gimbal: Vec2}) => ({
@@ -44,6 +43,7 @@ export namespace Archetypes {
 		spectator: {},
 		smoothing: 5,
 		speeds: {base: 5, fast: 40, slow: 1},
+		gimbalRig: {},
 	}))
 
 	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal}: {
@@ -107,6 +107,7 @@ export namespace Archetypes {
 			seconds: 0,
 			attack: 0,
 		},
+		orbit: null,
 	}))
 }
 
