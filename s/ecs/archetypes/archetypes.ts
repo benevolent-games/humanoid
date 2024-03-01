@@ -76,7 +76,7 @@ export namespace Archetypes {
 		airborneTrajectory: vec3.zero(),
 		jump: false,
 		previousPosition: position,
-		slowGimbal: gimbal,
+		coolGimbal: {gimbal, records: [gimbal]},
 		velocity: vec3.zero(),
 		character: {height: 1.75},
 		choreography: {

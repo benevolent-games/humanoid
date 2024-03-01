@@ -5,14 +5,14 @@ import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {Character} from "../../schema/hybrids/character/character.js"
 import {sync_character_anims} from "../../schema/hybrids/character/choreography/sync_character_anims.js"
 import {apply_adjustments, swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
-import {Ambulation, Attackage, Choreography, Gimbal, Intent, Perspective, Position, SlowGimbal, Speeds} from "../../schema/schema.js"
+import {Ambulation, Attackage, Choreography, Gimbal, Intent, Perspective, Position, CoolGimbal, Speeds} from "../../schema/schema.js"
 
 export const choreography = system("humanoid", [
 	behavior("sync babylon parts")
-		.select({Character, Position, SlowGimbal, Gimbal, Perspective})
+		.select({Character, Position, CoolGimbal, Gimbal, Perspective})
 		.act(() => c => {
 			const q = babylonian.to.quat(
-				gimbaltool(c.perspective === "first_person" ? c.gimbal : c.slowGimbal)
+				gimbaltool(c.perspective === "first_person" ? c.coolGimbal.gimbal : c.coolGimbal.gimbal)
 					.quaternions().horizontal
 			)
 			c.character.parts.position.set(...c.position)
@@ -29,7 +29,7 @@ export const choreography = system("humanoid", [
 		}),
 
 	behavior("animate the armature")
-		.select({Character, Choreography, Ambulation, Intent, Gimbal, SlowGimbal, Speeds, Attackage, Perspective})
+		.select({Character, Choreography, Ambulation, Intent, Gimbal, CoolGimbal, Speeds, Attackage, Perspective})
 		.act(() => c => {
 			const {adjustment_anims, anims, boss_anim} = c.character.coordination
 
@@ -47,8 +47,8 @@ export const choreography = system("humanoid", [
 				anims,
 				boss_anim,
 				gimbal: c.perspective === "first_person"
-					? c.gimbal
-					: c.slowGimbal,
+					? c.coolGimbal.gimbal
+					: c.coolGimbal.gimbal,
 				choreo: c.choreography,
 				attackage: c.attackage,
 				ambulatory: c.ambulation,

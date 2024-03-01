@@ -1,8 +1,9 @@
 
-import {scalar} from "@benev/toolbox"
+import {scalar, vec2} from "@benev/toolbox"
+import {avg} from "../../../tools/avg.js"
 import {behavior, system} from "../../hub.js"
 import {molasses2d} from "../../../tools/molasses.js"
-import {Gimbal, Intent, SlowGimbal} from "../../schema/schema.js"
+import {Gimbal, Intent, CoolGimbal} from "../../schema/schema.js"
 
 export const freelook = system("freelook", [
 	behavior("apply freelook, onto glance and gimbal based on intent")
@@ -26,10 +27,14 @@ export const freelook = system("freelook", [
 			c.gimbal = [x, scalar.clamp(y)]
 		}),
 
-	behavior("calculate slow gimbal")
-		.select({Gimbal, SlowGimbal})
-		.act(() => c => {
-			c.slowGimbal = molasses2d(3, c.slowGimbal, c.gimbal)
+	behavior("calculate cool gimbal")
+		.select({Gimbal, CoolGimbal})
+		.act(() => ({gimbal, coolGimbal: cool}) => {
+			cool.records = avg.vec2.append(4, cool.records, gimbal)
+			const average = avg.vec2.average(cool.records)
+			const smoothed = molasses2d(4, cool.gimbal, average)
+			const jitter = vec2.subtract(gimbal, average)
+			cool.gimbal = vec2.add(smoothed, jitter)
 		}),
 ])
 
