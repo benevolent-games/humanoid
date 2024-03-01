@@ -29,7 +29,7 @@ export const humanoid_binds = () => binds(({
 			move: ["leftstick"],
 		},
 		buttons: {
-			perspective: buttons(modless("KeyR")),
+			perspective: buttons(modless("KeyR"), modless("MMB")),
 			respawn: buttons(modless("KeyT"), modless("RMB")),
 			bot_spawn: buttons(b("KeyB")),
 			bot_delete: buttons(b("KeyB", shift)),
