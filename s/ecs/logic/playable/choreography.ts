@@ -40,9 +40,6 @@ export const choreography = system("humanoid", [
 				3,
 			)
 
-			anims.grip_left.forceProgress(1)
-			anims.grip_right.forceProgress(1)
-
 			sync_character_anims({
 				anims,
 				boss_anim,
