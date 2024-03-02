@@ -72,15 +72,11 @@ export class CameraRig extends HybridComponent<HuRealm, {
 	applyGimbal(gimbal: Vec2) {
 		const {transform, torusRoot, headlocus, headbox} = this.parts
 		const [x, y] = gimbal
-		const ry = scalar.remap(y, halfcircle)
-		const [,my] = apply_spline_to_gimbal_y([x, ry], [0, .5, .9])
-		const my2 = scalar.map(my, halfcircle)
-		const moddedGimbal: Vec2 = [x, my2]
-		// const spline = [0, .5, .9].map(y => scalar.map(y, [
-		// 	scalar.radians.from.degrees(-90),
-		// 	scalar.radians.from.degrees(90),
-		// ]))
-		// const moddedGimbal = apply_spline_to_gimbal_y(gimbal, spline)
+
+		// convert to [0,1] range, then apply spline, then convert back to radians
+		const rY = scalar.remap(y, halfcircle)
+		const [,mY] = apply_spline_to_gimbal_y([x, rY], [0, .5, .9])
+		const moddedGimbal: Vec2 = [x, scalar.map(mY, halfcircle)]
 
 		const quaternions = gimbaltool(moddedGimbal).quaternions()
 		transform.rotationQuaternion = quaternions.horizontal
