@@ -45,9 +45,16 @@ export const freelook = system("freelook", [
 			cool.records = avg.vec2.append(4, cool.records, gimbal)
 			const average = avg.vec2.average(cool.records)
 			const smoothed = molasses2d(4, cool.gimbal, average)
-			const jitter = vec2.subtract(gimbal, average)
-			const [x, y] = vec2.add(smoothed, jitter)
-			cool.gimbal = [x, scalar.clamp(y)]
+
+			const diff = vec2.subtract(gimbal, average)
+			const [x, y] = vec2.add(smoothed, diff)
+
+			const [initX, initY] = gimbal
+			const bound = 0.05
+			const aX = scalar.nearby(initX, x, bound)
+			const aY = scalar.nearby(initY, y, bound)
+
+			cool.gimbal = [aX, scalar.clamp(aY)]
 		}),
 ])
 
