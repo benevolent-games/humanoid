@@ -14,12 +14,12 @@ export const camera_rigging = system("camera rigging", [
 			removed() {},
 		})),
 
-	responder("establish camera parented to rig")
+	responder("parent camera to rig headbox")
 		.select({CameraRig, Camera})
 		.respond(() => ({
 			added(c) {
-				c.camera.node.position.z = -(c.cameraRig.state.third_person_distance)
 				c.camera.node.parent = c.cameraRig.parts.headbox
+				c.camera.node.position.z = -(c.cameraRig.state.third_person_distance)
 			},
 			removed(c) {
 				if (c.camera.node.parent === c.cameraRig.parts.headbox)

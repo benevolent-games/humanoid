@@ -26,7 +26,6 @@ export class CameraRig extends HybridComponent<HuRealm, {
 		const torusDiameter = state.height - 0.5
 
 		const torusRoot = new TransformNode(label("torusRoot"), scene)
-
 		const torus = MeshBuilder.CreateTorus(label("torus"), {
 			diameter: torusDiameter,
 			thickness: 0.1,
@@ -76,6 +75,7 @@ export class CameraRig extends HybridComponent<HuRealm, {
 		transform.rotationQuaternion = quaternions.horizontal
 		torusRoot.rotationQuaternion = quaternions.vertical
 		torusRoot.computeWorldMatrix(true)
+		headlocus.computeWorldMatrix(true)
 		headbox.position = headlocus.absolutePosition.clone()
 		headbox.rotationQuaternion = gimbaltool(gimbal).quaternions().combined
 	}
