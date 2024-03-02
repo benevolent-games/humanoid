@@ -10,10 +10,7 @@ import {adjustment_anim_for_direction} from "./adjustment_anim_for_direction.js"
 import {calculate_adjustment_weight} from "../../../../../models/choreographer/utils/calculate_adjustment_weight.js"
 
 export function establish_anim_coordination(realm: HuRealm, character: CharacterInstance, onMissingAnim: (name: string) => void) {
-	console.log("character", character)
-
 	const anims = setup_character_anims(character, onMissingAnim)
-	console.log("anims", anims)
 
 	anims.head_scale.weight = 1
 	anims.grip_left.weight = 1
