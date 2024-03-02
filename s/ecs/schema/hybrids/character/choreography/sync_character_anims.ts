@@ -30,6 +30,7 @@ export function sync_character_anims({
 		boss_anim: AnimationGroup
 	}) {
 
+	const top_speed_anim_ratio = 1.5
 	const {inverse} = scalar
 	const {north, south, west, east} = ambulatory
 	const {
@@ -40,7 +41,7 @@ export function sync_character_anims({
 		running,
 		sprinting,
 		calc_stillness,
-	} = setup_anim_modulators({ambulatory, speeds})
+	} = setup_anim_modulators({ambulatory, speeds, top_speed_anim_ratio})
 
 	const crouching = inverse(standing)
 	const airborne = inverse(groundage)

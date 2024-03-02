@@ -1,8 +1,8 @@
 
 import {Selectors} from "./selectors.js"
 import {arch, params} from "./helpers.js"
-import {Sensitivity} from "../schema/schema.js"
-import {Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
+import {Perspective, Sensitivity} from "../schema/schema.js"
+import {CState, Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
 
 export namespace Archetypes {
 	export const sensitivity = arch({Sensitivity}, () => ({
@@ -46,14 +46,15 @@ export namespace Archetypes {
 		gimbalRig: {},
 	}))
 
-	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal}: {
+	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal, perspective}: {
 			debug: boolean,
 			position: Vec3,
 			gimbal: Vec2,
+			perspective: CState<Perspective>
 		}) => ({
 		...params(spectator({position, gimbal})),
 		debug,
-		speeds: {base: 3, fast: 5, slow: 1.5},
+		speeds: {base: 3, fast: 6, slow: 1.5},
 		capsule: {
 			height: 1.75,
 			radius: .2,
@@ -62,7 +63,7 @@ export namespace Archetypes {
 			height: 1.75,
 			third_person_distance: 1,
 		},
-		perspective: "third_person",
+		perspective,
 		camera: {
 			fov: 100,
 			minZ: 0.1,

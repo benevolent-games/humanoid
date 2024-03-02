@@ -3,10 +3,12 @@ import {Ambulatory} from "../../../../types.js"
 import {Speeds, scalar, spline} from "@benev/toolbox"
 
 export function setup_anim_modulators({
+		top_speed_anim_ratio,
 		speeds: {base, fast, slow, creep},
 		ambulatory: {magnitude, standing, groundage},
 	}: {
 		ambulatory: Ambulatory
+		top_speed_anim_ratio: number
 		speeds: Speeds & {creep: number}
 	}) {
 
@@ -33,7 +35,7 @@ export function setup_anim_modulators({
 	const runSpeed = scalar.clamp(
 		scalar.remap(magnitude, [0, fast], [0, 2]),
 		0,
-		2,
+		top_speed_anim_ratio,
 	)
 
 	// 0  bottom creep  slow  run  sprint
@@ -43,7 +45,7 @@ export function setup_anim_modulators({
 		[0, 0],
 		[creep, 0.3],
 		[slow, 0.7],
-		[base, 2],
+		[base, top_speed_anim_ratio],
 	])
 
 	const unstillness = scalar.clamp(magnitude)

@@ -39,6 +39,7 @@ export class Respawner {
 				gimbal,
 				debug: false,
 				position: this.#last_position,
+				perspective: "first_person",
 			})
 			const entity = this.world.createEntity(selector, {
 				...data,
