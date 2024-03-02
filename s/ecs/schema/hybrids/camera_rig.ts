@@ -5,6 +5,7 @@ import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
 
 import {HuRealm} from "../../../models/realm/realm.js"
+import {halfcircle} from "../../../tools/halfcircle.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {apply_spline_to_gimbal_y} from "../../logic/playable/simulation/apply_spline_to_gimbal_y.js"
 
@@ -26,7 +27,6 @@ export class CameraRig extends HybridComponent<HuRealm, {
 		const torusDiameter = state.height - 0.5
 
 		const torusRoot = new TransformNode(label("torusRoot"), scene)
-
 		const torus = MeshBuilder.CreateTorus(label("torus"), {
 			diameter: torusDiameter,
 			thickness: 0.1,
@@ -71,11 +71,18 @@ export class CameraRig extends HybridComponent<HuRealm, {
 
 	applyGimbal(gimbal: Vec2) {
 		const {transform, torusRoot, headlocus, headbox} = this.parts
-		const moddedGimbal = apply_spline_to_gimbal_y(gimbal, [0, .5, .9])
+		const [x, y] = gimbal
+
+		// convert to [0,1] range, then apply spline, then convert back to radians
+		const rY = scalar.remap(y, halfcircle)
+		const [,mY] = apply_spline_to_gimbal_y([x, rY], [0, .5, .9])
+		const moddedGimbal: Vec2 = [x, scalar.map(mY, halfcircle)]
+
 		const quaternions = gimbaltool(moddedGimbal).quaternions()
 		transform.rotationQuaternion = quaternions.horizontal
 		torusRoot.rotationQuaternion = quaternions.vertical
 		torusRoot.computeWorldMatrix(true)
+		headlocus.computeWorldMatrix(true)
 		headbox.position = headlocus.absolutePosition.clone()
 		headbox.rotationQuaternion = gimbaltool(gimbal).quaternions().combined
 	}

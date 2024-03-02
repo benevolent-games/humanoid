@@ -3,12 +3,13 @@ import {Vec2, scalar} from "@benev/toolbox"
 
 import {Ambulatory} from "../../../types.js"
 import {molasses} from "../../../../../tools/molasses.js"
+import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {AdjustmentAnims, ChoreoSwivelAdjustment, Choreo} from "../../../../../models/choreographer/types.js"
 
-export const swivel_midpoint = 0.5
+export const swivel_midpoint = 0
 
 export function swivel_effected_by_glance(swivel: number, [x]: Vec2) {
-	return scalar.clamp(swivel + (x * 2))
+	return scalar.clamp(swivel + (x * 1), ...halfcircle)
 }
 
 export function apply_adjustments(
@@ -50,14 +51,14 @@ export function apply_adjustments(
 		}
 	}
 
-	choreo.swivel = scalar.clamp(choreo.swivel)
+	choreo.swivel = scalar.clamp(choreo.swivel, ...halfcircle)
 }
 
 export function adjustment_is_needed(swivel: number, margin: number) {
 	return !scalar.within(
 		swivel,
-		margin,
-		1 - margin,
+		scalar.radians.from.degrees(-90) + margin,
+		scalar.radians.from.degrees(90) - margin,
 	)
 }
 

@@ -59,6 +59,18 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
+				<span>fixes and refinements.</span>
+				<small>2024-03-01</small>
+			</h1>
+			<p>increased sprinting speed, but slower sprinting animation.</p>
+			<p>capped the sway effect.</p>
+			<p>fixed the flickery lagspike issue.</p>
+			<p>fixed the crazy headcrouching bug.</p>
+			<p>refactored gimbal code to be radian-based, so mouse sensitivity has changed.</p>
+		</section>
+
+		<section>
+			<h1>
 				<span>pimsley improvements.</span>
 				<small>2024-02-29</small>
 			</h1>
