@@ -3,6 +3,7 @@ import {scalar, vec2} from "@benev/toolbox"
 import {avg} from "../../../tools/avg.js"
 import {behavior, system} from "../../hub.js"
 import {molasses2d} from "../../../tools/molasses.js"
+import {halfcircle} from "../../../tools/halfcircle.js"
 import {Gimbal, Intent, CoolGimbal, Orbit, Controllable} from "../../schema/schema.js"
 
 export const freelook = system("freelook", [
@@ -15,16 +16,13 @@ export const freelook = system("freelook", [
 			} = c
 
 			const x = gimbalX + glanceX
+			const y = scalar.clamp(
+				gimbalY + glanceY,
+				scalar.radians.from.degrees(-90),
+				scalar.radians.from.degrees(90),
+			)
 
-			// y axis must be doubled compared to x.
-			//  - gimbalX and gimbalY are both between 0 and 1.
-			//  - gimbalX represents 360 degrees of horizontal rotation.
-			//  - gimbalY represents only 180 degrees of vertical rotation.
-			//  - therefore, gimbalX packs "double the punch" of gimbalY.
-			//  - thus, to compensate, we double our influence on gimbalY.
-			const y = gimbalY + (glanceY * 2)
-
-			c.gimbal = [x, scalar.clamp(y)]
+			c.gimbal = [x, y]
 		}),
 
 	behavior("apply freelook onto orbit")
@@ -42,19 +40,19 @@ export const freelook = system("freelook", [
 	behavior("calculate cool gimbal")
 		.select({Gimbal, CoolGimbal})
 		.act(() => ({gimbal, coolGimbal: cool}) => {
-			cool.records = avg.vec2.append(4, cool.records, gimbal)
+			cool.records = avg.vec2.append(5, cool.records, gimbal)
 			const average = avg.vec2.average(cool.records)
-			const smoothed = molasses2d(4, cool.gimbal, average)
+			const smoothed = molasses2d(5, cool.gimbal, average)
 
 			const diff = vec2.subtract(gimbal, average)
 			const [x, y] = vec2.add(smoothed, diff)
 
 			const [initX, initY] = gimbal
-			const bound = 0.05
+			const bound = scalar.radians.from.degrees(20)
 			const aX = scalar.nearby(initX, x, bound)
 			const aY = scalar.nearby(initY, y, bound)
 
-			cool.gimbal = [aX, scalar.clamp(aY)]
+			cool.gimbal = [aX, scalar.clamp(aY, ...halfcircle)]
 		}),
 ])
 

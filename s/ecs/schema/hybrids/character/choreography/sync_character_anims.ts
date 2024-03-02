@@ -6,6 +6,7 @@ import {Ambulatory} from "../../../types.js"
 import {Attackage, Perspective} from "../../../schema.js"
 import {attack_milestones} from "../attacking/attacks.js"
 import {CharacterAnims} from "./setup_character_anims.js"
+import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {setup_anim_modulators} from "./animworks/modulators.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 
@@ -17,7 +18,7 @@ export function sync_character_anims({
 		boss_anim,
 		ambulatory,
 		perspective,
-		gimbal: [,vertical],
+		gimbal: [,gimbalY],
 	}: {
 		gimbal: Vec2
 		speeds: Speeds & {creep: number}
@@ -29,7 +30,6 @@ export function sync_character_anims({
 		boss_anim: AnimationGroup
 	}) {
 
-	const {swivel} = choreo
 	const {inverse} = scalar
 	const {north, south, west, east} = ambulatory
 	const {
@@ -133,6 +133,9 @@ export function sync_character_anims({
 	//
 	// specials
 	//
+
+	const vertical = scalar.remap(gimbalY, halfcircle)
+	const swivel = scalar.remap(choreo.swivel, halfcircle)
 
 	anims.spine_bend.weight = 1
 	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)

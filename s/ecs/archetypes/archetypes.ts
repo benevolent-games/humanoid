@@ -2,7 +2,7 @@
 import {Selectors} from "./selectors.js"
 import {arch, params} from "./helpers.js"
 import {Sensitivity} from "../schema/schema.js"
-import {Vec2, Vec3, quat, vec2, vec3} from "@benev/toolbox"
+import {Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
 
 export namespace Archetypes {
 	export const sensitivity = arch({Sensitivity}, () => ({
@@ -83,7 +83,7 @@ export namespace Archetypes {
 			swivel: 0.5,
 			settings: {
 				swivel_duration: 20,
-				swivel_readjustment_margin: .2,
+				swivel_readjustment_margin: scalar.radians.from.degrees(45),
 			},
 			adjustment: null,
 		},
