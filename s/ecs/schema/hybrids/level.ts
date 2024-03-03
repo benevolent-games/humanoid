@@ -11,9 +11,9 @@ import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@ben
 
 import {HuLevel} from "../../../gameplan.js"
 import {Nametag} from "../../../tools/nametag.js"
+import {HuRealm} from "../../../models/realm/realm.js"
 import {make_skybox} from "../../../tools/make_skybox.js"
 import {make_envmap} from "../../../tools/make_envmap.js"
-import {HuRealm} from "../../../models/realm/realm.js"
 
 export class Level extends HybridComponent<HuRealm, {level: HuLevel}> {
 	#dispose: (() => void) | null = null
@@ -200,7 +200,7 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))!
 
 		const apply_static_physics = (meshoid: Meshoid) => {
-			const actor = realm.physics.trimesh(meshoid)
+			const actor = realm.physics.trimesh({meshoid})
 			disposables.push(() => actor.dispose())
 		}
 

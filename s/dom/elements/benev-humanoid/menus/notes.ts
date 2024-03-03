@@ -50,12 +50,21 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<code>alt</code> for slow.
 				<code>c</code> to crouch.
 				hold <code>z</code> to orbit the camera.
+				<code>left-click</code> to attack.
 				<code>middle-click</code> or <code>r</code> to switch camera angle.
 				<code>right-click</code> or <code>t</code> to toggle human/spectator.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>sword attack.</span>
+				<small>2024-03-03</small>
+			</h1>
+			<p>added left-click to play sword attack animation. it just phases through stuff, doesn't interact with anything.. yet..</p>
+		</section>
 
 		<section>
 			<h1>
