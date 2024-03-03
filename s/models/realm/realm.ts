@@ -1,7 +1,8 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
-import {Physics, Stage, debug_colors} from "@benev/toolbox"
+import {Stage, debug_colors} from "@benev/toolbox"
 
+import {preparePhysics} from "./physics.js"
 import {HuGameplan} from "../../gameplan.js"
 import {HumanoidImpulse} from "../impulse/impulse.js"
 import {LoadingDock} from "../planning/loading_dock.js"
@@ -16,11 +17,11 @@ export type RealmParams = {
 export type HuRealm = {
 	scene: Scene
 	stage: Stage
-	colors: ReturnType<typeof debug_colors>
 	impulse: HumanoidImpulse
-	physics: Physics
 	loadingDock: LoadingDock
 	character: CharacterContainer
+	colors: ReturnType<typeof debug_colors>
+	physics: ReturnType<typeof preparePhysics>
 } & RealmParams
 
 export async function makeRealm(params: RealmParams): Promise<HuRealm> {
@@ -36,12 +37,8 @@ export async function makeRealm(params: RealmParams): Promise<HuRealm> {
 	const loadingDock = new LoadingDock(scene)
 	const impulse = new HumanoidImpulse()
 	const colors = debug_colors(stage.scene)
-	const physics = new Physics({
-		hz: tickrate_hz,
-		colors,
-		scene: stage.scene,
-		gravity: [0, -9.81, 0],
-	})
+	const physics = preparePhysics({scene, colors, hz: tickrate_hz})
+
 	const character = new CharacterContainer(
 		await loadingDock.loadGlb(
 			// gameplan.characters.knight.glb
