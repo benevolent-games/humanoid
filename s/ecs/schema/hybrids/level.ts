@@ -198,10 +198,37 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 
 		const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))!
 		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))!
+		const boxes = level.top_level_nodes.filter(m => m.name.includes("toy_cube"))
 
 		const apply_static_physics = (meshoid: Meshoid) => {
-			const actor = realm.physics.trimesh({meshoid})
+			const actor = realm.physics.prefabs.trimesh({
+				meshoid,
+				groups: realm.physics.groups.default,
+			})
 			disposables.push(() => actor.dispose())
+		}
+
+		const create_box_toy = (prop: Prop, params: {scale: Vec3, density: number}) => {
+			const instance = prop.instantiateHierarchy()!
+			const position = vec3.add(babylonian.to.vec3(instance.absolutePosition), [0, 1, 0])
+			disposables.push(() => instance.dispose())
+
+			const box = realm.physics.prefabs.box({
+				position,
+				rotation: quat.identity(),
+				ccd: false,
+				groups: realm.physics.groups.default,
+				contact_force_threshold: 0.02,
+				scale: params.scale,
+				density: params.density,
+				linearDamping: .3,
+				angularDamping: .3,
+				material: null,
+			})
+			disposables.push(box.dispose)
+
+			instance.position.set(...position)
+			instance.setParent(box.mesh)
 		}
 
 		const create_hanging_physical_toy = (prop: Prop, params: {
@@ -214,23 +241,25 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 			const position = babylonian.to.vec3(instance.absolutePosition)
 			disposables.push(() => instance.dispose())
 
-			const fixture = realm.physics.fixture({position})
+			const fixture = realm.physics.prefabs.fixture({position, material: null})
 			disposables.push(() => fixture.dispose())
 
-			const box = realm.physics.box({
+			const box = realm.physics.prefabs.box({
 				position: vec3.add(position, params.position_offset),
+				rotation: quat.identity(),
+				ccd: false,
+				groups: realm.physics.groups.default,
+				contact_force_threshold: 0.02,
 				scale: params.scale,
 				density: params.density,
-				rotation: quat.identity(),
 				linearDamping: .3,
 				angularDamping: .3,
-				material: undefined,
-				// material: realm.colors.red,
+				material: null,
 			})
 			disposables.push(() => box.dispose())
 			instance.setParent(box.mesh)
 
-			const joint = realm.physics.joint_spherical({
+			const joint = realm.physics.prefabs.joint_spherical({
 				bodies: [fixture.rigid, box.rigid],
 				anchors: [[0, 0, 0], [0, 1, 0]],
 			})
@@ -251,6 +280,11 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 			bags.forEach(p => create_hanging_physical_toy(p, {
 				position_offset: [0, -1, 0],
 				scale: [.5, 1.5, .5],
+				density: 1000,
+			}))
+
+			boxes.forEach(p => create_box_toy(p, {
+				scale: [.9, .9, .9],
 				density: 1000,
 			}))
 		}

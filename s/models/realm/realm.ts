@@ -37,7 +37,7 @@ export async function makeRealm(params: RealmParams): Promise<HuRealm> {
 	const loadingDock = new LoadingDock(scene)
 	const impulse = new HumanoidImpulse()
 	const colors = debug_colors(stage.scene)
-	const physics = preparePhysics({scene, colors, hz: tickrate_hz})
+	const physics = preparePhysics({scene, colors, hertz: tickrate_hz})
 
 	const character = new CharacterContainer(
 		await loadingDock.loadGlb(

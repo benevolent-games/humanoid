@@ -1,44 +1,46 @@
 
 import {HuRealm} from "../../../models/realm/realm.js"
-import {HybridComponent, Vec3, babylonian, scalar, vec3} from "@benev/toolbox"
+import {HybridComponent, Vec3, scalar} from "@benev/toolbox"
 
 export class Capsule extends HybridComponent<HuRealm, {
 		height: number
 		radius: number
 	}> {
 
-	readonly capsule = (() => {
-		const {state, realm} = this
-		const halfHeight = (state.height - (2 * state.radius)) / 2
-		return realm.physics.character({
-			mass: 70,
-			radius: state.radius,
-			halfHeight,
-			snapToGround: {
-				distance: halfHeight / 2,
-			},
-			autostep: {
-				maxHeight: halfHeight,
-				minWidth: state.radius,
-				includeDynamicBodies: false,
-			},
-			slopes: {
-				minSlideAngle: scalar.radians.from.degrees(75),
-				maxClimbAngle: scalar.radians.from.degrees(46),
-			},
-		})
-	})()
+	readonly halfHeight = (this.state.height - (2 * this.state.radius)) / 2
+
+	readonly capsule = this.realm.physics.prefabs.characterCapsule({
+		contact_force_threshold: 0.02,
+		groups: this.realm.physics.groups.default,
+		offset: 0.1,
+		material: this.realm.colors.cyan,
+		mass: 70,
+		radius: this.state.radius,
+		halfHeight: this.halfHeight,
+		snapToGround: {
+			distance: this.halfHeight / 2,
+		},
+		autostep: {
+			maxHeight: this.halfHeight,
+			minWidth: this.state.radius,
+			includeDynamicBodies: false,
+		},
+		slopes: {
+			minSlideAngle: scalar.radians.from.degrees(75),
+			maxClimbAngle: scalar.radians.from.degrees(46),
+		},
+	})
 
 	setDebug(d: boolean) {
 		this.capsule.mesh.setEnabled(d)
 	}
 
 	get position() {
-		return babylonian.to.vec3(this.capsule.position)
+		return this.capsule.bond.position
 	}
 
 	set position(p: Vec3) {
-		this.capsule.rigid.setTranslation(vec3.to.xyz(p), true)
+		this.capsule.bond.position = p
 	}
 
 	created() {}
