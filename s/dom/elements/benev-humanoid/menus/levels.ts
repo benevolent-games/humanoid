@@ -66,6 +66,7 @@ export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 				${button("mountainside")}
 				${button("pillar_room")}
 				${button("wrynth_dungeon")}
+				${button("mt_finny")}
 			</div>
 			<div class=loading>
 				${op_effect.binary(levelSwitcher.op, () => {})}

@@ -19,6 +19,7 @@ export const make_gameplan = Plan.gameplan(({
 
 	shaders: {
 		terrain: shader("shaders/terrain/shader.json", {}),
+		terrain2: shader("shaders/terrain2/shader.json", {}),
 		skylight: shader("shaders/skylight/shader.json", {}),
 		mercury: shader("shaders/mercury/shader.json", {}),
 		water: shader("shaders/water/shader.json", {}),
@@ -50,6 +51,11 @@ export const make_gameplan = Plan.gameplan(({
 				glb: glb("glbs/levels/wrynth_dungeon.glb", "physics"),
 				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
 				env: env("envmaps/wrynth_interior.env", degrees(90)),
+			},
+			mt_finny: {
+				glb: glb("glbs/levels/mt_finny.glb", "physics"),
+				sky: sky("skyboxes/sky_01", kilometers(2), degrees(180)),
+				env: env("envmaps/sunset_cloudy.env", degrees(0)),
 			},
 		})
 		.cycle(
