@@ -7,7 +7,7 @@ import {CState, Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
 export namespace Archetypes {
 	export const sensitivity = arch({Sensitivity}, () => ({
 		sensitivity: {
-			keys: 100 / 10_000,
+			keys: 500 / 10_000,
 			mouse: 20 / 10_000,
 			stick: 100 / 10_000,
 		},

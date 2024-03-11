@@ -1,16 +1,16 @@
 
-import {binds} from "@benev/toolbox"
+import {Tact} from "@benev/toolbox"
 
-export type HumanoidBinds = ReturnType<typeof humanoid_binds>
+export type HuBindings = ReturnType<typeof huBindings>
 
-export const humanoid_binds = () => binds(({
+export const huBindings = () => Tact.bindings(({
 		mode, buttons, b, modless, shift, // alt, ctrl,
 	}) => ({
 
 	universal: mode({
 		vectors: {},
 		buttons: {
-			menu_toggle: buttons(b("Tab")),
+			menu_toggle: buttons(modless("Tab")),
 		},
 	}),
 

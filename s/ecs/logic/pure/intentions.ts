@@ -21,8 +21,8 @@ export const intentions = system("intentions", [
 	behavior("set attack button status")
 		.select({Controllable, Intent})
 		.act(({realm}) => c => {
-			const {buttons} = realm.impulse.report.humanoid
-			c.intent.attack = buttons.attack.down && !buttons.attack.repeat
+			const {down, repeat} = realm.tact.inputs.humanoid.buttons.attack.input
+			c.intent.attack = down && !repeat
 		}),
 
 	behavior("add mouse movements to glance")
@@ -40,12 +40,12 @@ export const intentions = system("intentions", [
 	behavior("add keyboard looking to glance")
 		.select({Controllable, Intent, Sensitivity})
 		.act(({realm}) => c => {
-			const {buttons} = realm.impulse.report.humanoid
+			const {buttons} = realm.tact.inputs.humanoid
 			const [x, y] = get_trajectory_from_cardinals({
-				north: buttons.up.down,
-				south: buttons.down.down,
-				west: buttons.left.down,
-				east: buttons.right.down,
+				north: buttons.up.input.down,
+				south: buttons.down.input.down,
+				west: buttons.left.input.down,
+				east: buttons.right.input.down,
 			})
 			c.intent.glance = vec2.add(
 				c.intent.glance,
@@ -56,12 +56,12 @@ export const intentions = system("intentions", [
 	behavior("add move keys to amble")
 		.select({Controllable, Intent})
 		.act(({realm}) => c => {
-			const {buttons} = realm.impulse.report.humanoid
+			const {buttons} = realm.tact.inputs.humanoid
 			const vector = get_trajectory_from_cardinals({
-				north: buttons.forward.down,
-				south: buttons.backward.down,
-				west: buttons.leftward.down,
-				east: buttons.rightward.down,
+				north: buttons.forward.input.down,
+				south: buttons.backward.input.down,
+				west: buttons.leftward.input.down,
+				east: buttons.rightward.input.down,
 			})
 			c.intent.amble = vec2.add(
 				c.intent.amble,
@@ -72,18 +72,18 @@ export const intentions = system("intentions", [
 	behavior("apply fast and slow to intent")
 		.select({Controllable, Intent})
 		.act(({realm}) => c => {
-			const {fast, slow} = realm.impulse.report.humanoid.buttons
-			c.intent.fast = fast.down
-			c.intent.slow = slow.down
+			const {fast, slow} = realm.tact.inputs.humanoid.buttons
+			c.intent.fast = fast.input.down
+			c.intent.slow = slow.input.down
 		}),
 
 	behavior("change stance")
 		.select({Controllable, Intent, Stance})
 		.act(({realm}) => c => {
-			const {crouch} = realm.impulse.report.humanoid.buttons
+			const {crouch} = realm.tact.inputs.humanoid.buttons
 			c.stance = (
 				c.intent.fast ? "stand"
-				: crouch.down ? "crouch"
+				: crouch.input.down ? "crouch"
 				: "stand"
 			)
 		}),
@@ -91,8 +91,8 @@ export const intentions = system("intentions", [
 	behavior("set jump intent")
 		.select({Controllable, Intent})
 		.act(({realm}) => c => {
-			const {jump} = realm.impulse.report.humanoid.buttons
-			c.intent.jump = jump.down && !jump.repeat
+			const {down, repeat} = realm.tact.inputs.humanoid.buttons.jump.input
+			c.intent.jump = down && !repeat
 		}),
 ])
 
