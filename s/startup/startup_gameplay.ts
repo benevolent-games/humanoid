@@ -9,7 +9,7 @@ import warn_users_before_window_unload from "../tools/warn_users_before_window_u
 export default (realm: HuRealm, world: World<HuRealm>) => {
 
 	// menu button toggles pointerlock
-	realm.impulse.on.universal.buttons.menu_toggle(input => {
+	realm.tact.inputs.universal.buttons.menu_toggle.on(input => {
 		if (input.down && !input.repeat)
 			realm.stage.pointerLocker.toggle()
 	})
@@ -30,7 +30,7 @@ export default (realm: HuRealm, world: World<HuRealm>) => {
 	// controls spawning of humanoids and spectator cams
 	const respawner = new Respawner(world)
 	respawner.respawn()
-	realm.impulse.on.humanoid.buttons.respawn(button => {
+	realm.tact.inputs.humanoid.buttons.respawn.on(button => {
 		if (button.down && !button.repeat)
 			respawner.respawn()
 	})
@@ -39,7 +39,7 @@ export default (realm: HuRealm, world: World<HuRealm>) => {
 	const levelSwitcher = new LevelSwitcher(world, realm.gameplan, respawner)
 
 	// switch level when we press the key
-	realm.impulse.on.humanoid.buttons.level_swap(button => {
+	realm.tact.inputs.humanoid.buttons.level_swap.on(button => {
 		if (button.down && !button.repeat)
 			levelSwitcher.next()
 	})

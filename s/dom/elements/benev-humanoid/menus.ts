@@ -21,7 +21,7 @@ export const MenuSystem = nexus.shadow_view(use => (
 	]))
 
 	use.mount(() => reactor.reaction(() => {
-		const {modes} = game.impulse
+		const {modes} = game.tact
 		if (menus.open.value) {
 			modes.enable("menus")
 			modes.disable("humanoid")
@@ -42,8 +42,8 @@ export const MenuSystem = nexus.shadow_view(use => (
 				fn()
 		}
 		const disposers = [
-			game.impulse.on.menus.buttons.next(pressed(() => menus.next())),
-			game.impulse.on.menus.buttons.previous(pressed(() => menus.previous())),
+			game.tact.inputs.menus.buttons.next.on(pressed(() => menus.next())),
+			game.tact.inputs.menus.buttons.previous.on(pressed(() => menus.previous())),
 		]
 		return () => disposers.forEach(d => d())
 	})

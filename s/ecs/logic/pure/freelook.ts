@@ -29,7 +29,7 @@ export const freelook = system("freelook", [
 		.select({Controllable, Orbit, Gimbal})
 		.act(({realm}) => c => {
 			const wasActive = !!c.orbit
-			const active = realm.impulse.report.humanoid.buttons.orbit.down
+			const active = realm.tact.inputs.humanoid.buttons.orbit.input.down
 			const hasChanged = active !== wasActive
 			if (hasChanged)
 				c.orbit = active

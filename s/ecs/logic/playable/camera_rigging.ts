@@ -51,7 +51,7 @@ export const camera_rigging = system("camera rigging", [
 			let unbind = () => {}
 			return {
 				added(c) {
-					unbind = realm.impulse.on.humanoid.buttons.perspective(input => {
+					unbind = realm.tact.inputs.humanoid.buttons.perspective.on(input => {
 						if (input.down && !input.repeat) {
 							c.perspective = c.perspective === "first_person"
 								? "third_person"
