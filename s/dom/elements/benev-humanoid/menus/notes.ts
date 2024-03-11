@@ -3,7 +3,7 @@ import {css, html} from "@benev/slate"
 import {Game} from "../../../../types.js"
 import {nexus} from "../../../../nexus.js"
 
-export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
+export const NotesMenu = nexus.shadow_view(use => (_game: Game) => {
 	use.name("notes-menu")
 	use.styles(css`
 		.base {
@@ -57,6 +57,24 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>fixed stuck keys.</span>
+				<small>2024-03-10</small>
+			</h1>
+			<p>rewrote our user input systems, and fixed the stuck-keys issue (when opening a menu or clicking outside the game window).</p>
+			<p>fixed ijkl keylook sensitivity.</p>
+		</section>
+
+		<section>
+			<h1>
+				<span>added mt_finny level prototype.</span>
+				<small>2024-03-09</small>
+			</h1>
+			<p>it still has some issues.</p>
+			<p>totally rewrote the physics integration.. i spent too long finagling it.. at least i added a cube to the gym.</p>
+		</section>
 
 		<section>
 			<h1>
