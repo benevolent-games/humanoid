@@ -34,7 +34,6 @@ export class Character extends HybridComponent<HuRealm, {
 		).dump(t => t.dispose())
 		swordtip.parent = sword
 		swordtip.position.set(0, -3.3, 0)
-		sword.visibility = 0.5
 
 		const s = .36805
 		const scale: Vec3 = [.1, 4, .1]

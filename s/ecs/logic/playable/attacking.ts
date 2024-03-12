@@ -34,7 +34,7 @@ export const attacking = system("attacking", [
 
 	behavior("tracer")
 		.select({Attackage, Character})
-		.act(({realm: {physics}, world}) => ({attackage, character}) => {
+		.act(({realm: {physics}}) => ({character}) => {
 			const {box, swordproxy} = character.helpers
 			swordproxy.computeWorldMatrix(true)
 			box.bond.position = babylonian.to.vec3(swordproxy.absolutePosition)
