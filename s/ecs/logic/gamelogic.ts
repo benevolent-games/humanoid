@@ -20,11 +20,11 @@ export const gamelogic = system("root", [
 		ambulation,
 	]),
 	system("character", [
-		attacking,
 		spectator,
 		humanoid,
 		camera_rigging,
 		choreography,
+		attacking,
 	]),
 ])
 

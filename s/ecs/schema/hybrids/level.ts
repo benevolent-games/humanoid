@@ -7,7 +7,7 @@ import {explode_promise, maptool} from "@benev/slate"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {HybridComponent, Meshoid, Prop, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
+import {HybridComponent, Meshoid, Prop, Rapier, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
 
 import {HuLevel} from "../../../gameplan.js"
 import {Nametag} from "../../../tools/nametag.js"
@@ -180,6 +180,8 @@ function setup_thin_instances(params: LevelInstance) {
 function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
+		const {physics} = realm
+		const {groups} = physics
 
 		const static_meshes = level
 			.meshes
@@ -201,11 +203,19 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 		const boxes = level.top_level_nodes.filter(m => m.name.includes("toy_cube"))
 
 		const apply_static_physics = (meshoid: Meshoid) => {
-			const actor = realm.physics.prefabs.trimesh({
+			const actor = physics.prefabs.trimesh({
 				meshoid,
-				groups: realm.physics.groups.default,
+				groups: physics.grouper.specify({
+					filter: [groups.all],
+					membership: [groups.standard, groups.level],
+				}),
 			})
-			disposables.push(() => actor.dispose())
+			actor.collider.setActiveCollisionTypes(Rapier.ActiveCollisionTypes.ALL)
+			physics.level_trimesh_colliders.add(actor.collider)
+			disposables.push(() => {
+				actor.dispose()
+				physics.level_trimesh_colliders.delete(actor.collider)
+			})
 		}
 
 		const create_box_toy = (prop: Prop, params: {scale: Vec3, density: number}) => {
@@ -213,11 +223,14 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 			const position = vec3.add(babylonian.to.vec3(instance.absolutePosition), [0, 1, 0])
 			disposables.push(() => instance.dispose())
 
-			const box = realm.physics.prefabs.box({
+			const box = physics.prefabs.box({
 				position,
 				rotation: quat.identity(),
 				ccd: false,
-				groups: realm.physics.groups.default,
+				groups: physics.grouper.specify({
+					filter: [groups.all],
+					membership: [groups.standard, groups.dynamic],
+				}),
 				contact_force_threshold: 0.02,
 				scale: params.scale,
 				density: params.density,
@@ -241,21 +254,25 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 			const position = babylonian.to.vec3(instance.absolutePosition)
 			disposables.push(() => instance.dispose())
 
-			const fixture = realm.physics.prefabs.fixture({position, material: null})
+			const fixture = physics.prefabs.fixture({position, material: null})
 			disposables.push(() => fixture.dispose())
 
-			const box = realm.physics.prefabs.box({
+			const box = physics.prefabs.box({
 				position: vec3.add(position, params.position_offset),
 				rotation: quat.identity(),
 				ccd: false,
-				groups: realm.physics.groups.default,
 				contact_force_threshold: 0.02,
 				scale: params.scale,
 				density: params.density,
 				linearDamping: .3,
 				angularDamping: .3,
 				material: null,
+				groups: physics.grouper.specify({
+					filter: [groups.all],
+					membership: [groups.standard, groups.dynamic],
+				}),
 			})
+			box.collider.setActiveCollisionTypes(Rapier.ActiveCollisionTypes.ALL)
 			disposables.push(() => box.dispose())
 			instance.setParent(box.mesh)
 

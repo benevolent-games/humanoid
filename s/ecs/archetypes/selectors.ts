@@ -58,6 +58,7 @@ export namespace Selectors {
 		Choreography,
 		Ambulation,
 		Rotation,
+
 		Attackage,
 	})
 }
