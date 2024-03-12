@@ -60,6 +60,15 @@ export const NotesMenu = nexus.shadow_view(use => (_game: Game) => {
 
 		<section>
 			<h1>
+				<span>wip sword tracing.</span>
+				<small>2024-03-12</small>
+			</h1>
+			<p>wip sword tracing.</p>
+			<p>today you'll see a tracer on the sword. i'm starting to work on its collision detection.</p>
+		</section>
+
+		<section>
+			<h1>
 				<span>fixed stuck keys.</span>
 				<small>2024-03-10</small>
 			</h1>

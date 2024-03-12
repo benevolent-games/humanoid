@@ -1,10 +1,9 @@
 
+import {babylonian} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
 import {Attackage, Intent} from "../../schema/schema.js"
 import {Character} from "../../schema/hybrids/character/character.js"
 import {AttackPhase, attack_report} from "../../schema/hybrids/character/attacking/attacks.js"
-import { Ray } from "../../schema/hybrids/ray.js"
-import { babylonian } from "@benev/toolbox"
 
 export const attacking = system("attacking", [
 
@@ -34,29 +33,36 @@ export const attacking = system("attacking", [
 		}),
 
 	behavior("tracer")
-		.select({Attackage, Character, Ray})
-		.act(({world}) => ({attackage, character, ray}) => {
-			const {sword} = character.parts
-			ray.a = [0, 0, 0]
-			ray.b = babylonian.to.vec3(sword.absolutePosition)
-			// world.createEntity({Ray}, {
-			// 	ray: [
-			// 		[0, 0, 0],
-			// 		babylonian.to.vec3(sword.absolutePosition),
-			// 	],
-			// })
+		.select({Attackage, Character})
+		.act(({realm: {physics}}) => ({character}) => {
+			const {box, swordproxy} = character.helpers
+			swordproxy.computeWorldMatrix(true)
+			box.bond.position = babylonian.to.vec3(swordproxy.absolutePosition)
+			box.bond.rotation = babylonian.ascertain.absoluteQuat(swordproxy)
+
+			for (const event of physics.collision_events) {
+				const isMatch = event.started && (
+					box.collider.handle === event.a ||
+					box.collider.handle === event.b
+				)
+				if (isMatch)
+					console.log("collision", event)
+			}
+
+			physics.world.intersectionsWithShape(
+				box.collider.translation(),
+				box.collider.rotation(),
+				box.collider.shape,
+				hit => {
+					console.log("level intersection", hit)
+					return true
+				},
+				undefined,
+				physics.grouper.specify({
+					filter: [physics.groups.level],
+					membership: [physics.groups.sensor],
+				}),
+			)
 		}),
-
-	// behavior("cleanup tracers")
-	// 	.select({Ray})
-	// 	.act(({world}) => ({ray}) => {
-	// 		world.createEntity({Ray}, {
-	// 			ray: [
-	// 				[0, 0, 0],
-	// 				babylonian.to.vec3(sword.absolutePosition),
-	// 			],
-	// 		})
-	// 	}),
-
 ])
 

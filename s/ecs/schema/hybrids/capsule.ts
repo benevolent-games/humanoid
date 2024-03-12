@@ -11,7 +11,10 @@ export class Capsule extends HybridComponent<HuRealm, {
 
 	readonly capsule = this.realm.physics.prefabs.characterCapsule({
 		contact_force_threshold: 0.02,
-		groups: this.realm.physics.groups.default,
+		groups: this.realm.physics.grouper.specify({
+			filter: [this.realm.physics.groups.standard],
+			membership: [this.realm.physics.groups.capsule],
+		}),
 		offset: 0.1,
 		material: this.realm.colors.cyan,
 		mass: 70,
