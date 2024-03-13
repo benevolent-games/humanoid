@@ -24,56 +24,85 @@ export class Character extends HybridComponent<HuRealm, {
 	)
 
 	readonly helpers = (() => {
+		const {scene} = this.realm
 		const {sword} = this.parts
-		const {physics, scene} = this.realm
-
 		const trash = new Trashcan()
 
+		const swordlength = 1.2
+
 		const swordtip = trash.bag(
-			new TransformNode(label("sword-tip"))
+			new TransformNode(label("swordtip"), scene)
 		).dump(t => t.dispose())
 		swordtip.parent = sword
-		swordtip.position.set(0, -3.3, 0)
+		swordtip.position.set(0, 0, swordlength)
 
-		const s = .36805
-		const scale: Vec3 = [.1, 4, .1]
-		const [width, height, depth] = scale
+		// const swordtip_visualizer = trash.bag(
+		// 	MeshBuilder.CreateIcoSphere(
+		// 		label("swordtipvis"),
+		// 		{radius: 0.05, subdivisions: 1},
+		// 		scene,
+		// 	)
+		// ).dump(m => m.dispose())
+		// swordtip_visualizer.material = colors.magenta
+		// swordtip_visualizer.parent = swordtip
 
-		const swordproxy = trash.bag(
-			MeshBuilder.CreateBox(
-				label("swordproxy"),
-				{width, height, depth},
-				scene,
-			)
-		).dump(m => m.dispose())
-		swordproxy.material = physics.colors.red
-		swordproxy.position.y = -1.5
-		swordproxy.parent = sword
-		swordproxy.visibility = 0.5
+		const swordbase = trash.bag(
+			new TransformNode(label("swordbase"), scene)
+		).dump(t => t.dispose())
+		swordbase.parent = sword
+		swordbase.position.set(0, 0, 0)
 
-		const box = trash.bag(
-			physics.prefabs.box_collider({
-				density: 0,
-				sensor: true,
-				material: physics.colors.green,
-				scale: vec3.multiplyBy(scale, s),
-				position: babylonian.to.vec3(swordproxy.absolutePosition),
-				rotation: babylonian.ascertain.absoluteQuat(swordproxy),
-				contact_force_threshold: 0.02,
-				groups: physics.grouper.specify({
-					filter: [physics.grouper.all],
-					membership: [physics.groups.sensor],
-				}),
-			})
-		).dump(b => b.dispose())
-		box.collider.setActiveEvents(Rapier.ActiveEvents.COLLISION_EVENTS)
+		// const swordbase_visualizer = trash.bag(
+		// 	MeshBuilder.CreateIcoSphere(
+		// 		label("swordbasevis"),
+		// 		{radius: 0.05, subdivisions: 1},
+		// 		scene,
+		// 	)
+		// ).dump(m => m.dispose())
+		// swordbase_visualizer.material = colors.green
+		// swordbase_visualizer.parent = swordbase
 
-		return {
-			box,
-			swordtip,
-			swordproxy,
-			dispose: trash.dispose,
-		}
+		return {swordbase, swordtip, dispose: trash.dispose}
+
+		// const s = .36805
+		// const scale: Vec3 = [.1, 4, .1]
+		// const [width, height, depth] = scale
+
+		// const swordproxy = trash.bag(
+		// 	MeshBuilder.CreateBox(
+		// 		label("swordproxy"),
+		// 		{width, height, depth},
+		// 		scene,
+		// 	)
+		// ).dump(m => m.dispose())
+		// swordproxy.material = physics.colors.red
+		// swordproxy.position.y = -1.5
+		// swordproxy.parent = sword
+		// swordproxy.visibility = 0.5
+
+		// const box = trash.bag(
+		// 	physics.prefabs.box_collider({
+		// 		density: 0,
+		// 		sensor: true,
+		// 		material: physics.colors.green,
+		// 		scale: vec3.multiplyBy(scale, s),
+		// 		position: babylonian.to.vec3(swordproxy.absolutePosition),
+		// 		rotation: babylonian.ascertain.absoluteQuat(swordproxy),
+		// 		contact_force_threshold: 0.02,
+		// 		groups: physics.grouper.specify({
+		// 			filter: [physics.grouper.all],
+		// 			membership: [physics.groups.sensor],
+		// 		}),
+		// 	})
+		// ).dump(b => b.dispose())
+		// box.collider.setActiveEvents(Rapier.ActiveEvents.COLLISION_EVENTS)
+
+		// return {
+		// 	box,
+		// 	swordtip,
+		// 	swordproxy,
+		// 	dispose: trash.dispose,
+		// }
 	})()
 
 	created() {}

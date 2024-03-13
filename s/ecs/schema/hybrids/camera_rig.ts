@@ -43,7 +43,7 @@ export class CameraRig extends HybridComponent<HuRealm, {
 
 		const headbox = MeshBuilder.CreateBox(
 			label("box"),
-			{size: 0.2},
+			{size: 0.1},
 			scene,
 		)
 		headbox.material = colors.green

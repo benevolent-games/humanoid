@@ -1,5 +1,6 @@
 
 import {select} from "./helpers.js"
+import {Tracer} from "../schema/hybrids/tracer.js"
 import {Camera} from "../schema/hybrids/camera.js"
 import {Capsule} from "../schema/hybrids/capsule.js"
 import {Transform} from "../schema/hybrids/transform.js"
@@ -60,6 +61,7 @@ export namespace Selectors {
 		Rotation,
 
 		Attackage,
+		Tracer,
 	})
 }
 

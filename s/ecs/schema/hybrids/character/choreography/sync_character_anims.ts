@@ -93,6 +93,7 @@ export function sync_character_anims({
 	// upper-body
 	//
 
+	const attackAnim = anims.twohander_attack_2
 	const tinyfix = 1 / 1000
 	const {a, b, c, d} = attack_milestones
 	const {attack, seconds} = attackage
@@ -114,7 +115,7 @@ export function sync_character_anims({
 			[c, 65],
 			[d, 87],
 		])
-		anims.twohander_attack_2.forceFrame(
+		attackAnim.forceFrame(
 			attack === 0
 				? 0
 				: attackframe
@@ -122,14 +123,12 @@ export function sync_character_anims({
 	}
 
 	anims.twohander_airborne.weight = airborne
-
 	anims.twohander.weight = tinyfix + (notAttacking * groundage * stillness)
 	anims.twohander_forward.weight = north * notAttacking * groundage * unstillness
 	anims.twohander_backward.weight = south * notAttacking * groundage * unstillness
 	anims.twohander_leftward.weight = west * notAttacking * groundage * unstillness
 	anims.twohander_rightward.weight = east * notAttacking * groundage * unstillness
-
-	anims.twohander_attack_2.weight = attacking
+	attackAnim.weight = attacking
 
 	//
 	// specials
@@ -141,7 +140,7 @@ export function sync_character_anims({
 	anims.spine_bend.weight = 1
 	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)
 
-	anims.hips_swivel.weight = 1
-	anims.hips_swivel.forceFrame(swivel * anims.hips_swivel.to)
+	anims.legs_swivel.weight = 1
+	anims.legs_swivel.forceFrame(swivel * anims.legs_swivel.to)
 }
 
