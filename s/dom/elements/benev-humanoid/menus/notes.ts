@@ -50,13 +50,23 @@ export const NotesMenu = nexus.shadow_view(use => (_game: Game) => {
 				<code>alt</code> for slow.
 				<code>c</code> to crouch.
 				hold <code>z</code> to orbit the camera.
-				<code>left-click</code> to attack.
+				<code>left-click</code> to swing your sword.
 				<code>middle-click</code> or <code>r</code> to switch camera angle.
 				<code>right-click</code> or <code>t</code> to toggle human/spectator.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>improved sword tracing.</span>
+				<small>2024-03-13</small>
+			</h1>
+			<p>today when you swing your sword you'll see a pretty ribbon representing the path of your blade.</p>
+			<p>hitting a part of the environment will cancel the attack.</p>
+			<p>if you're nimble, you can strike the hanging heavy bags and watch them react.</p>
+		</section>
 
 		<section>
 			<h1>
