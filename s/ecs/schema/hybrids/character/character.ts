@@ -27,8 +27,6 @@ export class Character extends HybridComponent<HuRealm, {
 		const {sword} = this.parts
 		const trash = new Trashcan()
 
-		sword.visibility = 0.3
-
 		const swordtip = trash.bag(
 			new TransformNode(label("swordtip"))
 		).dump(t => t.dispose())
