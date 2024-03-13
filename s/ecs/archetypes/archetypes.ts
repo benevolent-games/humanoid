@@ -107,8 +107,10 @@ export namespace Archetypes {
 		attackage: {
 			seconds: 0,
 			attack: 0,
+			line_memory: [],
 		},
 		orbit: null,
+		tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
 	}))
 }
 

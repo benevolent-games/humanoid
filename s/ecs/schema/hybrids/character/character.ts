@@ -25,55 +25,63 @@ export class Character extends HybridComponent<HuRealm, {
 
 	readonly helpers = (() => {
 		const {sword} = this.parts
-		const {physics, scene} = this.realm
-
 		const trash = new Trashcan()
 
+		sword.visibility = 0.3
+
 		const swordtip = trash.bag(
-			new TransformNode(label("sword-tip"))
+			new TransformNode(label("swordtip"))
 		).dump(t => t.dispose())
 		swordtip.parent = sword
 		swordtip.position.set(0, -3.3, 0)
 
-		const s = .36805
-		const scale: Vec3 = [.1, 4, .1]
-		const [width, height, depth] = scale
+		const swordbase = trash.bag(
+			new TransformNode(label("swordbase"))
+		).dump(t => t.dispose())
+		swordbase.parent = sword
+		swordbase.position.set(0, 0, 0)
 
-		const swordproxy = trash.bag(
-			MeshBuilder.CreateBox(
-				label("swordproxy"),
-				{width, height, depth},
-				scene,
-			)
-		).dump(m => m.dispose())
-		swordproxy.material = physics.colors.red
-		swordproxy.position.y = -1.5
-		swordproxy.parent = sword
-		swordproxy.visibility = 0.5
+		return {swordbase, swordtip, dispose: trash.dispose}
 
-		const box = trash.bag(
-			physics.prefabs.box_collider({
-				density: 0,
-				sensor: true,
-				material: physics.colors.green,
-				scale: vec3.multiplyBy(scale, s),
-				position: babylonian.to.vec3(swordproxy.absolutePosition),
-				rotation: babylonian.ascertain.absoluteQuat(swordproxy),
-				contact_force_threshold: 0.02,
-				groups: physics.grouper.specify({
-					filter: [physics.grouper.all],
-					membership: [physics.groups.sensor],
-				}),
-			})
-		).dump(b => b.dispose())
-		box.collider.setActiveEvents(Rapier.ActiveEvents.COLLISION_EVENTS)
+		// const s = .36805
+		// const scale: Vec3 = [.1, 4, .1]
+		// const [width, height, depth] = scale
 
-		return {
-			box,
-			swordtip,
-			swordproxy,
-			dispose: trash.dispose,
-		}
+		// const swordproxy = trash.bag(
+		// 	MeshBuilder.CreateBox(
+		// 		label("swordproxy"),
+		// 		{width, height, depth},
+		// 		scene,
+		// 	)
+		// ).dump(m => m.dispose())
+		// swordproxy.material = physics.colors.red
+		// swordproxy.position.y = -1.5
+		// swordproxy.parent = sword
+		// swordproxy.visibility = 0.5
+
+		// const box = trash.bag(
+		// 	physics.prefabs.box_collider({
+		// 		density: 0,
+		// 		sensor: true,
+		// 		material: physics.colors.green,
+		// 		scale: vec3.multiplyBy(scale, s),
+		// 		position: babylonian.to.vec3(swordproxy.absolutePosition),
+		// 		rotation: babylonian.ascertain.absoluteQuat(swordproxy),
+		// 		contact_force_threshold: 0.02,
+		// 		groups: physics.grouper.specify({
+		// 			filter: [physics.grouper.all],
+		// 			membership: [physics.groups.sensor],
+		// 		}),
+		// 	})
+		// ).dump(b => b.dispose())
+		// box.collider.setActiveEvents(Rapier.ActiveEvents.COLLISION_EVENTS)
+
+		// return {
+		// 	box,
+		// 	swordtip,
+		// 	swordproxy,
+		// 	dispose: trash.dispose,
+		// }
 	})()
 
 	created() {}
