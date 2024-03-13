@@ -1,6 +1,6 @@
 
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
-import {HybridComponent, Vec3, label} from "@benev/toolbox"
+import {HybridComponent, Vec3, label, vec3} from "@benev/toolbox"
 import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData.js"
 
 import {HuRealm} from "../../../models/realm/realm.js"
@@ -12,6 +12,12 @@ export class Tracer extends HybridComponent<HuRealm, {lines: [Vec3, Vec3][]}> {
 	#bleeding_edge_mesh = new Mesh("bleeding_edge", this.realm.scene)
 
 	bleeding_edge: [TracerTriangle, TracerTriangle] | null = null
+	direction: Vec3 | null = null
+
+	reset() {
+		this.bleeding_edge = null
+		this.direction = null
+	}
 
 	#draw() {
 		const positions: number[] = []
@@ -31,7 +37,7 @@ export class Tracer extends HybridComponent<HuRealm, {lines: [Vec3, Vec3][]}> {
 		data.indices = indices
 		data.applyToMesh(this.#ribbon)
 
-		if(indices.length >= 6) {
+		if (indices.length >= 6) {
 			const lastIndices = indices.slice(-6)
 			this.bleeding_edge = [
 				[
@@ -55,6 +61,12 @@ export class Tracer extends HybridComponent<HuRealm, {lines: [Vec3, Vec3][]}> {
 			bleedingEdgeData.positions = positions
 			bleedingEdgeData.indices = indices
 			bleedingEdgeData.applyToMesh(this.#bleeding_edge_mesh)
+		}
+
+		if (this.state.lines.length >= 2) {
+			const [,a] = this.state.lines.at(-1)!
+			const [,b] = this.state.lines.at(-2)!
+			this.direction = vec3.subtract(a, b)
 		}
 	}
 

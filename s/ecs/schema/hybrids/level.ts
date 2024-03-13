@@ -177,7 +177,7 @@ function setup_thin_instances(params: LevelInstance) {
 	return params
 }
 
-function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
+function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 	return ({level, asset}: LevelInstance) => {
 		const disposables: (() => void)[] = []
 		const {physics} = realm
@@ -198,8 +198,8 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 				node.name.includes("toy")
 			))
 
-		const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))!
-		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))!
+		const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))
+		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))
 		const boxes = level.top_level_nodes.filter(m => m.name.includes("toy_cube"))
 
 		const apply_static_physics = (meshoid: Meshoid) => {
@@ -211,10 +211,10 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 				}),
 			})
 			actor.collider.setActiveCollisionTypes(Rapier.ActiveCollisionTypes.ALL)
-			physics.level_trimesh_colliders.add(actor.collider)
+			physics.trimesh_colliders.add(actor.collider)
 			disposables.push(() => {
 				actor.dispose()
-				physics.level_trimesh_colliders.delete(actor.collider)
+				physics.trimesh_colliders.delete(actor.collider)
 			})
 		}
 
@@ -239,6 +239,9 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 				material: null,
 			})
 			disposables.push(box.dispose)
+
+			physics.dynamics.set(box.collider, box)
+			disposables.push(() => physics.dynamics.delete(box.collider))
 
 			instance.position.set(...position)
 			instance.setParent(box.mesh)
@@ -276,6 +279,9 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 			disposables.push(() => box.dispose())
 			instance.setParent(box.mesh)
 
+			physics.dynamics.set(box.collider, box)
+			disposables.push(() => physics.dynamics.delete(box.collider))
+
 			const joint = realm.physics.prefabs.joint_spherical({
 				bodies: [fixture.rigid, box.rigid],
 				anchors: [[0, 0, 0], [0, 1, 0]],
@@ -285,7 +291,7 @@ function setup_level_accoutrements(realm: HuRealm, physics: boolean) {
 
 		dynamic_nodes.forEach(p => p.setEnabled(false))
 
-		if (physics) {
+		if (enable_physics) {
 			static_meshes.forEach(apply_static_physics)
 
 			balls.forEach(p => create_hanging_physical_toy(p, {

@@ -1,11 +1,11 @@
 
-import {Rapier, babylonian, human, quat, vec3} from "@benev/toolbox"
+import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
+
 import {behavior, system} from "../../hub.js"
 import {Tracer} from "../../schema/hybrids/tracer.js"
 import {Attackage, Intent} from "../../schema/schema.js"
 import {Character} from "../../schema/hybrids/character/character.js"
 import {AttackPhase, attack_report} from "../../schema/hybrids/character/attacking/attacks.js"
-import { Xyz } from "@benev/toolbox/x/math/vec3.js"
 
 export const attacking = system("attacking", [
 
@@ -50,58 +50,68 @@ export const attacking = system("attacking", [
 				attackage.line_memory.push([a, b])
 				while (attackage.line_memory.length > 100)
 					attackage.line_memory.shift()
-			}
 
-			tracer.state = {lines: attackage.line_memory}
-			const {bleeding_edge} = tracer
+				tracer.state = {lines: attackage.line_memory}
+				const {bleeding_edge} = tracer
 
-			if (bleeding_edge) {
-				const {xyz} = vec3.to
-				const {xyzw} = quat.to
-				const [t1, t2] = bleeding_edge
-				const noPosition = xyz(vec3.zero())
-				const noRotation = xyzw(quat.identity())
-				const hits: Rapier.Collider[] = []
-				const onCallback = (hit: Rapier.Collider): boolean => {
-					hits.push(hit)
-					return true
+				if (bleeding_edge) {
+					const {xyz} = vec3.to
+					const {xyzw} = quat.to
+					const [t1, t2] = bleeding_edge
+					const noPosition = xyz(vec3.zero())
+					const noRotation = xyzw(quat.identity())
+					const hits: Rapier.Collider[] = []
+					const onCallback = (hit: Rapier.Collider): boolean => {
+						hits.push(hit)
+						return true
+					}
+					const groups = physics.grouper.specify({
+						filter: [physics.groups.level, physics.groups.dynamic],
+						membership: [physics.groups.sensor],
+					})
+					const triangle1 = new Rapier.Triangle(
+						xyz(t1[0]),
+						xyz(t1[1]),
+						xyz(t1[2]),
+					)
+					const triangle2 = new Rapier.Triangle(
+						xyz(t2[0]),
+						xyz(t2[1]),
+						xyz(t2[2]),
+					)
+
+					physics.world.intersectionsWithShape(
+						noPosition,
+						noRotation,
+						triangle1,
+						onCallback,
+						undefined,
+						groups,
+					)
+
+					physics.world.intersectionsWithShape(
+						noPosition,
+						noRotation,
+						triangle2,
+						onCallback,
+						undefined,
+						groups,
+					)
+
+					const [hit] = hits
+					if (hit) {
+						const dynamic = physics.dynamics.get(hit)
+						if (dynamic && tracer.direction) {
+							dynamic.rigid.applyImpulseAtPoint(
+								vec3.to.xyz(vec3.multiplyBy(tracer.direction, 1_000)),
+								dynamic.rigid.translation(),
+								true,
+							)
+						}
+						attackage.attack = 0
+						tracer.reset()
+					}
 				}
-				const groups = physics.grouper.specify({
-					filter: [physics.groups.level, physics.groups.dynamic],
-					membership: [physics.groups.sensor],
-				})
-				const triangle1 = new Rapier.Triangle(
-					xyz(t1[0]),
-					xyz(t1[1]),
-					xyz(t1[2]),
-				)
-				const triangle2 = new Rapier.Triangle(
-					xyz(t2[0]),
-					xyz(t2[1]),
-					xyz(t2[2]),
-				)
-
-				physics.world.intersectionsWithShape(
-					noPosition,
-					noRotation,
-					triangle1,
-					onCallback,
-					undefined,
-					groups,
-				)
-
-				physics.world.intersectionsWithShape(
-					noPosition,
-					noRotation,
-					triangle2,
-					onCallback,
-					undefined,
-					groups,
-				)
-
-				// for (const hit of hits) {
-				// 	physics.world.contactPair()
-				// }
 			}
 
 			// swordproxy.computeWorldMatrix(true)

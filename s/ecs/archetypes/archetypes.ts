@@ -20,7 +20,7 @@ export namespace Archetypes {
 		mouseAccumulator: {},
 		camera: {
 			fov: 90,
-			minZ: 0.1,
+			minZ: 0.12,
 			maxZ: 15_000,
 		},
 		controllable: {},

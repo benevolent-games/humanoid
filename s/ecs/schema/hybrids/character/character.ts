@@ -24,20 +24,43 @@ export class Character extends HybridComponent<HuRealm, {
 	)
 
 	readonly helpers = (() => {
+		const {scene} = this.realm
 		const {sword} = this.parts
 		const trash = new Trashcan()
 
+		const swordlength = 1.2
+
 		const swordtip = trash.bag(
-			new TransformNode(label("swordtip"))
+			new TransformNode(label("swordtip"), scene)
 		).dump(t => t.dispose())
 		swordtip.parent = sword
-		swordtip.position.set(0, -3.3, 0)
+		swordtip.position.set(0, 0, swordlength)
+
+		// const swordtip_visualizer = trash.bag(
+		// 	MeshBuilder.CreateIcoSphere(
+		// 		label("swordtipvis"),
+		// 		{radius: 0.05, subdivisions: 1},
+		// 		scene,
+		// 	)
+		// ).dump(m => m.dispose())
+		// swordtip_visualizer.material = colors.magenta
+		// swordtip_visualizer.parent = swordtip
 
 		const swordbase = trash.bag(
-			new TransformNode(label("swordbase"))
+			new TransformNode(label("swordbase"), scene)
 		).dump(t => t.dispose())
 		swordbase.parent = sword
 		swordbase.position.set(0, 0, 0)
+
+		// const swordbase_visualizer = trash.bag(
+		// 	MeshBuilder.CreateIcoSphere(
+		// 		label("swordbasevis"),
+		// 		{radius: 0.05, subdivisions: 1},
+		// 		scene,
+		// 	)
+		// ).dump(m => m.dispose())
+		// swordbase_visualizer.material = colors.green
+		// swordbase_visualizer.parent = swordbase
 
 		return {swordbase, swordtip, dispose: trash.dispose}
 

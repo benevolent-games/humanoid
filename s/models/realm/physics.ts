@@ -17,6 +17,7 @@ export class HuPhysics extends Physics {
 		return {all, standard, level, dynamic, capsule, sensor}
 	})()
 
-	readonly level_trimesh_colliders = new Set<Rapier.Collider>()
+	readonly trimesh_colliders = new Set<Rapier.Collider>()
+	readonly dynamics = new Map<Rapier.Collider, {rigid: Rapier.RigidBody}>()
 }
 
