@@ -52,12 +52,12 @@ export const attacking = system("attacking", [
 					attackage.line_memory.shift()
 
 				tracer.state = {lines: attackage.line_memory}
-				const {bleeding_edge} = tracer
+				const {details: tracingDetails} = tracer
 
-				if (bleeding_edge) {
+				if (tracingDetails && tracingDetails.ribbonFarEdgeTriangles) {
 					const {xyz} = vec3.to
 					const {xyzw} = quat.to
-					const [t1, t2] = bleeding_edge
+					const [t1, t2] = tracingDetails.ribbonFarEdgeTriangles
 					const noPosition = xyz(vec3.zero())
 					const noRotation = xyzw(quat.identity())
 					const hits: Rapier.Collider[] = []
@@ -101,15 +101,15 @@ export const attacking = system("attacking", [
 					const [hit] = hits
 					if (hit) {
 						const dynamic = physics.dynamics.get(hit)
-						if (dynamic && tracer.direction) {
+						if (dynamic && tracingDetails.direction) {
 							dynamic.rigid.applyImpulseAtPoint(
-								vec3.to.xyz(vec3.multiplyBy(tracer.direction, 1_000)),
+								vec3.to.xyz(vec3.multiplyBy(tracingDetails.direction, 1_000)),
 								dynamic.rigid.translation(),
 								true,
 							)
 						}
 						attackage.attack = 0
-						tracer.reset()
+						tracer.state.lines = []
 					}
 				}
 			}
