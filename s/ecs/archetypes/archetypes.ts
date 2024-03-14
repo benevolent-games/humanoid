@@ -83,8 +83,8 @@ export namespace Archetypes {
 		choreography: {
 			swivel: 0.5,
 			settings: {
-				swivel_duration: 20,
-				swivel_readjustment_margin: scalar.radians.from.degrees(45),
+				swivel_duration: 40,
+				swivel_readjustment_margin: scalar.radians.from.degrees(10),
 			},
 			adjustment: null,
 		},
