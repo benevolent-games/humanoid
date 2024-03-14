@@ -17,7 +17,7 @@ export namespace Tracing {
 	export type Graphics = {
 		ribbons: {
 			far: Ribbon
-			// near: Ribbon
+			near: Ribbon
 		}
 		dispose: () => void
 	}

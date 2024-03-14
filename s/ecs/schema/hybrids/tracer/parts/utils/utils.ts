@@ -11,6 +11,23 @@ export function require_at_least_two_lines(lines: Tracing.Line[]) {
 		throw new Error("tracer requires at least two lines")
 }
 
+export function split_lines(lines: Tracing.Line[]) {
+	const nearsize = 1 / 2
+	const nearLines: Tracing.Line[] = []
+	const farLines: Tracing.Line[] = []
+
+	for (const [start, end] of lines) {
+		const vector = vec3.subtract(end, start)
+		const length = vec3.magnitude(vector)
+		const midvector = vec3.multiplyBy(vector, length * nearsize)
+		const midpoint = vec3.add(start, midvector)
+		nearLines.push([start, midpoint])
+		farLines.push([midpoint, end])
+	}
+
+	return {nearLines, farLines}
+}
+
 export function generate_tracer_triangles(lines: Tracing.Line[]) {
 	const positions: number[] = []
 	const indices: number[] = []
@@ -83,8 +100,6 @@ export function establish_ribbon(
 }
 
 export function generate_data_for_ribbon(lines: Tracing.Line[]) {
-	require_at_least_two_lines(lines)
-
 	const edgeLines = lines.slice(-2)
 	const sheetLines = lines.length >= 3
 		? lines.slice(0, -1)
@@ -101,5 +116,15 @@ export function generate_data_for_ribbon(lines: Tracing.Line[]) {
 		edgeTriangles,
 		sheetData: sheetLines && generate_tracer_triangles(sheetLines),
 	}
+}
+
+export function apply_update_to_ribbon(ribbon: Tracing.Ribbon, lines: Tracing.Line[]) {
+	const {sheetData, edgeData, edgeTriangles, edgeVector} = (
+		generate_data_for_ribbon(lines)
+	)
+	ribbon.edgeVector = edgeVector
+	ribbon.edgeTriangles = edgeTriangles
+	edgeData.vertexData.applyToMesh(ribbon.edgeMesh)
+	sheetData?.vertexData.applyToMesh(ribbon.sheetMesh)
 }
 

@@ -3,7 +3,7 @@ import {DebugColors} from "@benev/toolbox"
 import {Scene} from "@babylonjs/core/scene.js"
 
 import {Tracing} from "./types.js"
-import {establish_ribbon, generate_data_for_ribbon, require_at_least_two_lines} from "./utils/utils.js"
+import {apply_update_to_ribbon, establish_ribbon, require_at_least_two_lines, split_lines} from "./utils/utils.js"
 
 export function establish_tracer_graphics(
 		scene: Scene,
@@ -11,29 +11,24 @@ export function establish_tracer_graphics(
 		lines: Tracing.Line[],
 	): Tracing.Graphics {
 	require_at_least_two_lines(lines)
-	const far = establish_ribbon(
-		scene,
-		lines,
-		colors.blue,
-		colors.red,
-	)
+	const {nearLines, farLines} = split_lines(lines)
+	const near = establish_ribbon(scene, nearLines, colors.blue, colors.red)
+	const far = establish_ribbon(scene, farLines, colors.cyan, colors.magenta)
 	return {
-		ribbons: {far},
+		ribbons: {near, far},
 		dispose() {
+			near.edgeMesh.dispose()
+			near.sheetMesh.dispose()
 			far.edgeMesh.dispose()
 			far.sheetMesh.dispose()
 		},
 	}
 }
 
-export function apply_update_to_ribbon(ribbon: Tracing.Ribbon, lines: Tracing.Line[]) {
+export function apply_update_to_tracer_graphics(graphics: Tracing.Graphics, lines: Tracing.Line[]) {
 	require_at_least_two_lines(lines)
-	const {sheetData, edgeData, edgeTriangles, edgeVector} = (
-		generate_data_for_ribbon(lines)
-	)
-	ribbon.edgeVector = edgeVector
-	ribbon.edgeTriangles = edgeTriangles
-	edgeData.vertexData.applyToMesh(ribbon.edgeMesh)
-	sheetData?.vertexData.applyToMesh(ribbon.sheetMesh)
+	const {nearLines, farLines} = split_lines(lines)
+	apply_update_to_ribbon(graphics.ribbons.near, nearLines)
+	apply_update_to_ribbon(graphics.ribbons.far, farLines)
 }
 

@@ -111,9 +111,9 @@ export function sync_character_anims({
 	if (attacking > 0) {
 		const attackframe = spline.linear(seconds, [
 			[a, 0],
-			[b, 20],
-			[c, 65],
-			[d, 87],
+			[b, 40],
+			[c, 80],
+			[d, 120],
 		])
 		attackAnim.forceFrame(
 			attack === 0
