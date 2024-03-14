@@ -6,121 +6,164 @@ import {DebugColors, HybridComponent, Vec3, label, vec3} from "@benev/toolbox"
 import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData.js"
 
 import {HuRealm} from "../../../models/realm/realm.js"
+import {Material} from "@babylonjs/core/Materials/material.js"
 
 export type TracerLine = [Vec3, Vec3]
 export type TracerTriangle = [Vec3, Vec3, Vec3]
+export type TracerEdgeTriangles = [TracerTriangle, TracerTriangle]
 
 type Ribbon = {
-	sheet: Mesh
-	edge: Mesh
-	triangles: TracerTriangle[]
+	sheetMesh: Mesh
+	edgeMesh: Mesh
+	edgeVector: Vec3
+	edgeTriangles: TracerEdgeTriangles
 }
 
-type Graphics = {
-	ribbonNear: Ribbon
-	ribbonFar: Ribbon
-	direction: Vec3
+type TracerGraphics = {
+	ribbons: {
+		far: Ribbon
+		// near: Ribbon
+	}
 	dispose: () => void
 }
 
-export class Tracer extends HybridComponent<HuRealm, {lines: TracerLine[]}> {
+function require_at_least_two_lines(lines: TracerLine[]) {
+	if (lines.length < 2)
+		throw new Error("tracer requires at least two lines")
+}
 
-	static makeGraphics(scene: Scene, colors: DebugColors): Graphics {
-		const direction = vec3.zero()
-		const ribbonNear: Ribbon = {
-			sheet: new Mesh(label("ribbon-near-sheet"), scene),
-			edge: new Mesh(label("ribbon-near-edge"), scene),
-			triangles: [],
-		}
-		const ribbonFar: Ribbon = {
-			sheet: new Mesh(label("ribbon-far-sheet"), scene),
-			edge: new Mesh(label("ribbon-far-edge"), scene),
-			triangles: [],
-		}
-		ribbonNear.sheet.material = colors.red
-		ribbonFar.sheet.material = colors.yellow
-		ribbonNear.edge.material = colors.magenta
-		ribbonFar.edge.material = colors.magenta
-		return {
-			ribbonNear,
-			ribbonFar,
-			direction,
-			dispose() {
-				ribbonNear.sheet.dispose()
-				ribbonNear.edge.dispose()
-				ribbonFar.sheet.dispose()
-				ribbonFar.edge.dispose()
-			},
-		}
+export function generate_data_for_ribbon(lines: TracerLine[]) {
+	require_at_least_two_lines(lines)
+
+	const edgeLines = lines.slice(-2)
+	const sheetLines = lines.length >= 3
+		? lines.slice(0, -1)
+		: null
+
+	const edgeData = generate_tracer_triangles(edgeLines)
+	const [[,first], [,second]] = edgeLines
+	const edgeVector = vec3.subtract(second, first)
+	const edgeTriangles = edgeData.triangles.slice(-2) as TracerEdgeTriangles
+
+	return {
+		edgeData,
+		edgeVector,
+		edgeTriangles,
+		sheetData: sheetLines && generate_tracer_triangles(sheetLines),
 	}
+}
 
-	static generateRibbonSheetData(lines: TracerLine[]) {
-		const positions: number[] = []
-		const indices: number[] = []
-		const triangles: TracerTriangle[] = []
+function generate_tracer_triangles(lines: TracerLine[]) {
+	const positions: number[] = []
+	const indices: number[] = []
+	const triangles: TracerTriangle[] = []
+
+	lines.forEach((lineY, index) => {
+		positions.push(...lineY.flat())
+
+		if (index === 0)
+			return
 
 		/*
-
+		  -->
 		 b---d
 		 |1 /|
 		X| / |Y
 		 |/ 2|
 		 a---c
-
 		*/
 
-		lines.forEach((lineY, index) => {
-			positions.push(...lineY.flat())
-			if (index > 0) {
+		const lineX = lines[index - 1]
+		const [a, b] = lineX
+		const [c, d] = lineY
 
-				const lineX = lines[index - 1]
-				const [a, b] = lineX
-				const [c, d] = lineY
+		const firstIndex = (index - 1) * 2
+		const aI = firstIndex
+		const bI = firstIndex + 1
+		const cI = firstIndex + 2
+		const dI = firstIndex + 3
 
-				const firstIndex = (index - 1) * 2
-				const aI = firstIndex
-				const bI = firstIndex + 1
-				const cI = firstIndex + 2
-				const dI = firstIndex + 3
+		indices.push(aI, bI, dI)
+		indices.push(dI, cI, aI)
 
-				indices.push(aI, bI, dI)
-				indices.push(dI, cI, aI)
+		triangles.push([a, b, d])
+		triangles.push([d, c, a])
+	})
 
-				triangles.push([a, b, d])
-				triangles.push([d, c, a])
-			}
-		})
+	const vertexData = new VertexData()
+	vertexData.positions = positions
+	vertexData.indices = indices
 
-		const data = new VertexData()
-		data.positions = positions
-		data.indices = indices
-		return {data, triangles}
+	return {vertexData, triangles}
+}
+
+export function establish_tracer_graphics(
+		scene: Scene,
+		colors: DebugColors,
+		lines: TracerLine[],
+	): TracerGraphics {
+	require_at_least_two_lines(lines)
+	const far = establish_ribbon(
+		scene,
+		lines,
+		colors.blue,
+		colors.red,
+	)
+	return {
+		ribbons: {far},
+		dispose() {
+			far.edgeMesh.dispose()
+			far.sheetMesh.dispose()
+		},
 	}
+}
 
-	static generateRibbonEdgeData(triangles: TracerTriangle[]) {
-		if (triangles.length < 2)
-			return null
+function establish_ribbon(
+		scene: Scene,
+		lines: TracerLine[],
+		sheetMaterial: Material,
+		edgeMaterial: Material,
+	): Ribbon {
 
-		const data = new VertexData()
-		data.positions = triangles.flat(2)
-		data.indices = [0, 1, 2, 3, 4, 5]
+	const {sheetData, edgeData, edgeTriangles, edgeVector} = (
+		generate_data_for_ribbon(lines)
+	)
 
-		const [[,b,d]] = triangles
-		const direction = vec3.subtract(d, b)
+	const sheetMesh = new Mesh(label("ribbon-sheet"), scene)
+	sheetData?.vertexData.applyToMesh(sheetMesh)
+	sheetMesh.material = sheetMaterial
 
-		return {data, direction}
+	const edgeMesh = new Mesh(label("ribbon-edge"), scene)
+	edgeData.vertexData.applyToMesh(edgeMesh)
+	edgeMesh.material = edgeMaterial
+
+	return {
+		sheetMesh,
+		edgeMesh,
+		edgeTriangles,
+		edgeVector,
 	}
+}
 
-	#graphics: null | Graphics = null
-	#lastLines: [Vec3, Vec3][] = []
+export function apply_update_to_ribbon(ribbon: Ribbon, lines: TracerLine[]) {
+	const {sheetData, edgeData, edgeTriangles, edgeVector} = (
+		generate_data_for_ribbon(lines)
+	)
+	ribbon.edgeVector = edgeVector
+	ribbon.edgeTriangles = edgeTriangles
+	edgeData.vertexData.applyToMesh(ribbon.edgeMesh)
+	sheetData?.vertexData.applyToMesh(ribbon.sheetMesh)
+}
+
+export class Tracer extends HybridComponent<HuRealm, {lines: TracerLine[]}> {
+	#graphics: null | TracerGraphics = null
+	#lastLineCount = 0
 
 	get details() {
 		return this.#graphics
 			? {
-				direction: this.#graphics.direction,
-				ribbonFarEdgeTriangles: this.#graphics.ribbonFar.triangles.length >= 2
-					? this.#graphics.ribbonFar.triangles.slice(-2)
-					: null,
+				direction: this.#graphics.ribbons.far.edgeVector,
+				ribbonFarEdgeTriangles: this.#graphics.ribbons.far.edgeTriangles
 			}
 			: null
 	}
@@ -134,27 +177,20 @@ export class Tracer extends HybridComponent<HuRealm, {lines: TracerLine[]}> {
 
 	created() {}
 	updated() {
+		const {scene, colors} = this.realm
 		const {lines} = this.state
-		const lines_have_changed = !deep.equal(lines, this.#lastLines)
+		const lines_have_changed = lines.length !== this.#lastLineCount
 
 		if (lines_have_changed) {
-			if (lines.length === 0) {
+			if (lines.length < 2) {
 				this.#deleteGraphics()
 			}
 			else {
-				if (!this.#graphics)
-					this.#graphics = Tracer.makeGraphics(this.realm.scene, this.realm.colors)
-
-				const graphics = this.#graphics
-
-				const sheet = Tracer.generateRibbonSheetData(lines)
-				sheet.data.applyToMesh(graphics.ribbonFar.sheet)
-				graphics.ribbonFar.triangles = sheet.triangles
-
-				const edge = Tracer.generateRibbonEdgeData(sheet.triangles.slice(-2))
-				if (edge) {
-					edge.data.applyToMesh(graphics.ribbonFar.edge)
-					graphics.direction = edge.direction
+				if (this.#graphics) {
+					apply_update_to_ribbon(this.#graphics.ribbons.far, lines)
+				}
+				else {
+					this.#graphics = establish_tracer_graphics(scene, colors, lines)
 				}
 			}
 		}
@@ -163,80 +199,4 @@ export class Tracer extends HybridComponent<HuRealm, {lines: TracerLine[]}> {
 		this.#deleteGraphics()
 	}
 }
-
-// export class Tracer extends HybridComponent<HuRealm, {lines: [Vec3, Vec3][]}> {
-// 	#ribbon: Mesh = new Mesh(label("tracer"), this.realm.scene)
-// 	#bleeding_edge_mesh = new Mesh("bleeding_edge", this.realm.scene)
-
-// 	bleeding_edge: [TracerTriangle, TracerTriangle] | null = null
-// 	direction: Vec3 | null = null
-
-// 	reset() {
-// 		this.bleeding_edge = null
-// 		this.direction = null
-// 	}
-
-// 	#draw() {
-// 		const positions: number[] = []
-// 		const indices: number[] = []
-
-// 		this.state.lines.forEach((line, index) => {
-// 			line.forEach(p => positions.push(...p))
-// 			if (index > 0) {
-// 				const startIndex = index * 2
-// 				indices.push(startIndex - 2, startIndex - 1, startIndex)
-// 				indices.push(startIndex - 1, startIndex + 1, startIndex)
-// 			}
-// 		})
-
-// 		const data = new VertexData()
-// 		data.positions = positions
-// 		data.indices = indices
-// 		data.applyToMesh(this.#ribbon)
-
-// 		if (indices.length >= 6) {
-// 			const lastIndices = indices.slice(-6)
-// 			this.bleeding_edge = [
-// 				[
-// 					positions.slice(lastIndices[0] * 3, lastIndices[0] * 3 + 3) as Vec3,
-// 					positions.slice(lastIndices[1] * 3, lastIndices[1] * 3 + 3) as Vec3,
-// 					positions.slice(lastIndices[2] * 3, lastIndices[2] * 3 + 3) as Vec3,
-// 				],
-// 				[
-// 					positions.slice(lastIndices[3] * 3, lastIndices[3] * 3 + 3) as Vec3,
-// 					positions.slice(lastIndices[4] * 3, lastIndices[4] * 3 + 3) as Vec3,
-// 					positions.slice(lastIndices[5] * 3, lastIndices[5] * 3 + 3) as Vec3,
-// 				],
-// 			]
-// 		}
-
-// 		if (this.bleeding_edge) {
-// 			const positions: number[] = []
-// 			const indices = [0, 1, 2, 3, 4, 5]
-// 			this.bleeding_edge.flat().forEach(p => positions.push(...p))
-// 			const bleedingEdgeData = new VertexData()
-// 			bleedingEdgeData.positions = positions
-// 			bleedingEdgeData.indices = indices
-// 			bleedingEdgeData.applyToMesh(this.#bleeding_edge_mesh)
-// 		}
-
-// 		if (this.state.lines.length >= 2) {
-// 			const [,a] = this.state.lines.at(-1)!
-// 			const [,b] = this.state.lines.at(-2)!
-// 			this.direction = vec3.subtract(a, b)
-// 		}
-// 	}
-
-// 	created() {
-// 		const red = this.realm.colors.red.clone(label("red"))
-// 		const blue = this.realm.colors.blue.clone(label("blue"))
-// 		red.alpha = 1
-// 		red.zOffset = 0.1
-// 		blue.alpha = 0.3
-// 		this.#ribbon.material = blue
-// 		this.#bleeding_edge_mesh.material = red
-// 	}
-// 	updated() { this.#draw() }
-// 	deleted() {}
-// }
 
