@@ -4,11 +4,12 @@ import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../../types.js"
 import {Attackage, Perspective} from "../../../schema.js"
-import {attack_milestones} from "../attacking/attacks.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {setup_anim_modulators} from "./animworks/modulators.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
+import {attackReport} from "../../../../../models/attacking/report.js"
+import {defaultWeapon} from "../../../../../models/attacking/weapons.js"
 
 export function sync_character_anims({
 		anims,
@@ -95,31 +96,38 @@ export function sync_character_anims({
 
 	const attackAnim = anims.twohander_attack_2
 	const tinyfix = 1 / 1000
-	const {a, b, c, d} = attack_milestones
-	const {attack, seconds} = attackage
-	const blendtime = 0.1
-	const attacking = attack === 0
-		? 0
-		: spline.linear(seconds, [
+	const attack = attackage.technique === null
+		? null
+		: attackReport({
+			weapon: defaultWeapon,
+			seconds: attackage.seconds,
+			technique: attackage.technique,
+		})
+
+	let attacking = 0
+
+	if (attack) {
+		const blendtime = 0.1
+		const [a, _b, c, d] = attack.milestones
+		attacking = spline.linear(attackage.seconds, [
 			[a, 0],
 			[a + blendtime, 1],
 			[c + blendtime, 1],
 			[d + blendtime, 0],
 		])
+	}
+
 	const notAttacking = inverse(attacking)
 
-	if (attacking > 0) {
-		const attackframe = spline.linear(seconds, [
+	if (attack) {
+		const [a, b, c, d] = attack.milestones
+		const attackframe = spline.linear(attackage.seconds, [
 			[a, 0],
 			[b, 40],
 			[c, 80],
 			[d, 120],
 		])
-		attackAnim.forceFrame(
-			attack === 0
-				? 0
-				: attackframe
-		)
+		attackAnim.forceFrame(attackframe)
 	}
 
 	anims.twohander_airborne.weight = airborne

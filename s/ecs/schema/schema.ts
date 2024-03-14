@@ -4,6 +4,7 @@ import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ambulatory} from "./types.js"
 import {Choreo} from "../../models/choreographer/types.js"
+import { Attacking } from "../../models/attacking/types.js"
 
 export class Debug extends Component<boolean> {}
 export class Children extends Component<Id[]> {}
@@ -55,9 +56,8 @@ export class Intent extends Component<{
 }> {}
 
 export class Attackage extends Component<{
-	attack: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+	technique: null | Attacking.Technique
 	seconds: number
-	line_memory: [Vec3, Vec3][]
 }> {}
 
 export class Force extends Component<Vec2> {}

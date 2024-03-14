@@ -4,35 +4,41 @@ import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
 import {Attackage, Intent} from "../../schema/schema.js"
 import {Tracer} from "../../schema/hybrids/tracer/tracer.js"
+import {Attacking} from "../../../models/attacking/types.js"
+import {attackReport} from "../../../models/attacking/report.js"
 import {Tracing} from "../../schema/hybrids/tracer/parts/types.js"
+import {defaultWeapon} from "../../../models/attacking/weapons.js"
 import {Character} from "../../schema/hybrids/character/character.js"
-import {AttackPhase, attack_report} from "../../schema/hybrids/character/attacking/attacks.js"
 
 export const attacking = system("attacking", [
 
 	behavior("initiate attack")
-		.select({Attackage, Intent})
-		.act(() => state => {
-			if (state.intent.attack && state.attackage.attack === 0) {
-				state.attackage.attack = 3
-				state.attackage.seconds = 0
-				state.attackage.line_memory = []
+		.select({Attackage, Intent, Tracer})
+		.act(() => ({intent, attackage, tracer}) => {
+			if (intent.attack && attackage.technique === null) {
+				attackage.technique = 2
+				attackage.seconds = 0
+				tracer.state.lines = []
 			}
 		}),
 
 	behavior("sustain attack")
 		.select({Attackage})
-		.act(({tick}) => state => {
-			state.attackage.seconds += tick.seconds
+		.act(({tick}) => ({attackage}) => {
+			attackage.seconds += tick.seconds
 		}),
 
 	behavior("end attack")
 		.select({Attackage})
-		.act(() => state => {
-			if (state.attackage.attack !== 0) {
-				const report = attack_report(state.attackage.seconds)
-				if (report.phase === AttackPhase.None)
-					state.attackage.attack = 0
+		.act(() => ({attackage}) => {
+			if (attackage.technique !== null) {
+				const report = attackReport({
+					weapon: defaultWeapon,
+					seconds: attackage.seconds,
+					technique: attackage.technique,
+				})
+				if (report.phase === Attacking.Phase.None)
+					attackage.technique = null
 			}
 		}),
 
@@ -41,21 +47,27 @@ export const attacking = system("attacking", [
 		.act(({realm: {physics}}) => ({attackage, character, tracer}) => {
 			const {swordbase, swordtip} = character.helpers
 			const attack_is_in_progress = (
-				attackage.attack > 0 &&
-				attack_report(attackage.seconds).phase === AttackPhase.Release
+				(attackage.technique !== null) &&
+				(attackReport({
+					weapon: defaultWeapon,
+					technique: attackage.technique,
+					seconds: attackage.seconds,
+				}).phase === Attacking.Phase.Release)
 			)
+
+			const {lines} = tracer.state
 
 			if (attack_is_in_progress) {
 				swordbase.computeWorldMatrix(true)
 				swordtip.computeWorldMatrix(true)
 				const a = babylonian.to.vec3(swordbase.absolutePosition)
 				const b = babylonian.to.vec3(swordtip.absolutePosition)
-				attackage.line_memory.push([a, b])
-				while (attackage.line_memory.length > 100)
-					attackage.line_memory.shift()
+				lines.push([a, b])
+				while (lines.length > 100)
+					lines.shift()
 			}
 
-			tracer.state = {lines: attackage.line_memory}
+			tracer.state = {lines}
 
 			if (attack_is_in_progress) {
 				const {details: tracingDetails} = tracer
@@ -126,7 +138,7 @@ export const attacking = system("attacking", [
 								true,
 							)
 						}
-						attackage.attack = 0
+						attackage.technique = null
 					}
 				}
 			}
