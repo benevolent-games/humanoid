@@ -2,8 +2,8 @@
 import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
-import {Tracer} from "../../schema/hybrids/tracer.js"
 import {Attackage, Intent} from "../../schema/schema.js"
+import {Tracer} from "../../schema/hybrids/tracer/tracer.js"
 import {Character} from "../../schema/hybrids/character/character.js"
 import {AttackPhase, attack_report} from "../../schema/hybrids/character/attacking/attacks.js"
 
