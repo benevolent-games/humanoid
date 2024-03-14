@@ -2,36 +2,43 @@
 import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
-import {Tracer} from "../../schema/hybrids/tracer.js"
 import {Attackage, Intent} from "../../schema/schema.js"
+import {Tracer} from "../../schema/hybrids/tracer/tracer.js"
+import {Attacking} from "../../../models/attacking/types.js"
+import {attackReport} from "../../../models/attacking/report.js"
+import {Tracing} from "../../schema/hybrids/tracer/parts/types.js"
+import {defaultWeapon} from "../../../models/attacking/weapons.js"
 import {Character} from "../../schema/hybrids/character/character.js"
-import {AttackPhase, attack_report} from "../../schema/hybrids/character/attacking/attacks.js"
 
 export const attacking = system("attacking", [
 
 	behavior("initiate attack")
-		.select({Attackage, Intent})
-		.act(() => state => {
-			if (state.intent.attack && state.attackage.attack === 0) {
-				state.attackage.attack = 3
-				state.attackage.seconds = 0
-				state.attackage.line_memory = []
+		.select({Attackage, Intent, Tracer})
+		.act(() => ({intent, attackage, tracer}) => {
+			if (intent.attack && attackage.technique === null) {
+				attackage.technique = 2
+				attackage.seconds = 0
+				tracer.state.lines = []
 			}
 		}),
 
 	behavior("sustain attack")
 		.select({Attackage})
-		.act(({tick}) => state => {
-			state.attackage.seconds += tick.seconds
+		.act(({tick}) => ({attackage}) => {
+			attackage.seconds += tick.seconds
 		}),
 
 	behavior("end attack")
 		.select({Attackage})
-		.act(() => state => {
-			if (state.attackage.attack !== 0) {
-				const report = attack_report(state.attackage.seconds)
-				if (report.phase === AttackPhase.None)
-					state.attackage.attack = 0
+		.act(() => ({attackage}) => {
+			if (attackage.technique !== null) {
+				const report = attackReport({
+					weapon: defaultWeapon,
+					seconds: attackage.seconds,
+					technique: attackage.technique,
+				})
+				if (report.phase === Attacking.Phase.None)
+					attackage.technique = null
 			}
 		}),
 
@@ -39,108 +46,102 @@ export const attacking = system("attacking", [
 		.select({Attackage, Character, Tracer})
 		.act(({realm: {physics}}) => ({attackage, character, tracer}) => {
 			const {swordbase, swordtip} = character.helpers
+			const attack_is_in_progress = (
+				(attackage.technique !== null) &&
+				(attackReport({
+					weapon: defaultWeapon,
+					technique: attackage.technique,
+					seconds: attackage.seconds,
+				}).phase === Attacking.Phase.Release)
+			)
 
-			swordbase.computeWorldMatrix(true)
-			swordtip.computeWorldMatrix(true)
+			const {lines} = tracer.state
 
-			const a = babylonian.to.vec3(swordbase.absolutePosition)
-			const b = babylonian.to.vec3(swordtip.absolutePosition)
+			if (attack_is_in_progress) {
+				swordbase.computeWorldMatrix(true)
+				swordtip.computeWorldMatrix(true)
+				const a = babylonian.to.vec3(swordbase.absolutePosition)
+				const b = babylonian.to.vec3(swordtip.absolutePosition)
+				lines.push([a, b])
+				while (lines.length > 100)
+					lines.shift()
+			}
 
-			if (attackage.attack > 0) {
-				attackage.line_memory.push([a, b])
-				while (attackage.line_memory.length > 100)
-					attackage.line_memory.shift()
+			tracer.state = {lines}
 
-				tracer.state = {lines: attackage.line_memory}
-				const {bleeding_edge} = tracer
+			if (attack_is_in_progress) {
+				const {details: tracingDetails} = tracer
 
-				if (bleeding_edge) {
+				if (tracingDetails) {
 					const {xyz} = vec3.to
 					const {xyzw} = quat.to
-					const [t1, t2] = bleeding_edge
 					const noPosition = xyz(vec3.zero())
 					const noRotation = xyzw(quat.identity())
-					const hits: Rapier.Collider[] = []
-					const onCallback = (hit: Rapier.Collider): boolean => {
-						hits.push(hit)
+					const hits = {
+						near: [] as Rapier.Collider[],
+						far: [] as Rapier.Collider[],
+					}
+					const nearHitCallback = (hit: Rapier.Collider): boolean => {
+						hits.near.push(hit)
 						return true
 					}
-					const groups = physics.grouper.specify({
-						filter: [physics.groups.level, physics.groups.dynamic],
-						membership: [physics.groups.sensor],
-					})
-					const triangle1 = new Rapier.Triangle(
-						xyz(t1[0]),
-						xyz(t1[1]),
-						xyz(t1[2]),
-					)
-					const triangle2 = new Rapier.Triangle(
-						xyz(t2[0]),
-						xyz(t2[1]),
-						xyz(t2[2]),
-					)
+					const farHitCallback = (hit: Rapier.Collider): boolean => {
+						hits.far.push(hit)
+						return true
+					}
+					function triangulate(...triangles: Tracing.Triangle[]) {
+						return triangles.map(t => new Rapier.Triangle(
+							xyz(t[0]),
+							xyz(t[1]),
+							xyz(t[2])),
+						)
+					}
+					const nearTriangles = triangulate(...tracingDetails.ribbonNearEdgeTriangles)
+					const farTriangles = triangulate(...tracingDetails.ribbonFarEdgeTriangles)
 
-					physics.world.intersectionsWithShape(
-						noPosition,
-						noRotation,
-						triangle1,
-						onCallback,
-						undefined,
-						groups,
-					)
+					for (const tri of nearTriangles) {
+						physics.world.intersectionsWithShape(
+							noPosition,
+							noRotation,
+							tri,
+							nearHitCallback,
+							undefined,
+							physics.grouper.specify({
+								filter: [physics.groups.level, physics.groups.dynamic],
+								membership: [physics.groups.sensor],
+							}),
+						)
+					}
 
-					physics.world.intersectionsWithShape(
-						noPosition,
-						noRotation,
-						triangle2,
-						onCallback,
-						undefined,
-						groups,
-					)
+					for (const tri of farTriangles) {
+						physics.world.intersectionsWithShape(
+							noPosition,
+							noRotation,
+							tri,
+							farHitCallback,
+							undefined,
+							physics.grouper.specify({
+								filter: [physics.groups.dynamic],
+								membership: [physics.groups.sensor],
+							}),
+						)
+					}
 
-					const [hit] = hits
+					const [hit] = [...hits.near, ...hits.far]
+
 					if (hit) {
 						const dynamic = physics.dynamics.get(hit)
-						if (dynamic && tracer.direction) {
+						if (dynamic && tracingDetails.direction) {
 							dynamic.rigid.applyImpulseAtPoint(
-								vec3.to.xyz(vec3.multiplyBy(tracer.direction, 1_000)),
+								vec3.to.xyz(vec3.multiplyBy(tracingDetails.direction, 1_000)),
 								dynamic.rigid.translation(),
 								true,
 							)
 						}
-						attackage.attack = 0
-						tracer.reset()
+						attackage.technique = null
 					}
 				}
 			}
-
-			// swordproxy.computeWorldMatrix(true)
-			// box.bond.position = babylonian.to.vec3(swordproxy.absolutePosition)
-			// box.bond.rotation = babylonian.ascertain.absoluteQuat(swordproxy)
-
-			// for (const event of physics.collision_events) {
-			// 	const isMatch = event.started && (
-			// 		box.collider.handle === event.a ||
-			// 		box.collider.handle === event.b
-			// 	)
-			// 	if (isMatch)
-			// 		console.log("collision", event)
-			// }
-
-			// physics.world.intersectionsWithShape(
-			// 	box.collider.translation(),
-			// 	box.collider.rotation(),
-			// 	box.collider.shape,
-			// 	hit => {
-			// 		console.log("level intersection", hit)
-			// 		return true
-			// 	},
-			// 	undefined,
-			// 	physics.grouper.specify({
-			// 		filter: [physics.groups.level],
-			// 		membership: [physics.groups.sensor],
-			// 	}),
-			// )
 		}),
 ])
 

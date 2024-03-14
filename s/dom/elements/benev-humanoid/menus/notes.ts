@@ -60,6 +60,16 @@ export const NotesMenu = nexus.shadow_view(use => (_game: Game) => {
 
 		<section>
 			<h1>
+				<span>we fixed pimsley's butt.</span>
+				<small>2024-03-14</small>
+			</h1>
+			<p>pimsley's leg/hip swiveling mechanics have been improved.</p>
+			<p>we're in the middle of reworking pimsley's animations, so some stuff is a bit janky.</p>
+			<p>implemented dual-ribbon sword tracing. the outer-part of the ribbon is a grace-zone that is allowed to clip through the environment, but can still deal damage.</p>
+		</section>
+
+		<section>
+			<h1>
 				<span>improved sword tracing.</span>
 				<small>2024-03-13</small>
 			</h1>

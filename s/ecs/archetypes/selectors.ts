@@ -1,9 +1,9 @@
 
 import {select} from "./helpers.js"
-import {Tracer} from "../schema/hybrids/tracer.js"
 import {Camera} from "../schema/hybrids/camera.js"
 import {Capsule} from "../schema/hybrids/capsule.js"
 import {Transform} from "../schema/hybrids/transform.js"
+import {Tracer} from "../schema/hybrids/tracer/tracer.js"
 import {GimbalRig} from "../schema/hybrids/gimbal_rig.js"
 import {CameraRig} from "../schema/hybrids/camera_rig.js"
 import {Character} from "../schema/hybrids/character/character.js"
