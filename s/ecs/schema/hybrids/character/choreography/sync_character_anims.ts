@@ -94,8 +94,8 @@ export function sync_character_anims({
 	// upper-body
 	//
 
-	const attackAnim = anims.twohander_attack_2
-	const tinyfix = 1 / 1000
+	const attackAnim2 = anims.twohander_attack_2
+	const attackAnim3 = anims.twohander_attack_3
 	const attack = attackage.technique === null
 		? null
 		: attackReport({
@@ -127,16 +127,19 @@ export function sync_character_anims({
 			[c, 80],
 			[d, 120],
 		])
-		attackAnim.forceFrame(attackframe)
+		attackAnim2.forceFrame(attackframe)
+		attackAnim3.forceFrame(attackframe)
 	}
 
-	anims.twohander_airborne.weight = airborne
+	const tinyfix = 1 / 1000
+	anims.twohander_airborne.weight = airborne * notAttacking
 	anims.twohander.weight = tinyfix + (notAttacking * groundage * stillness)
 	anims.twohander_forward.weight = north * notAttacking * groundage * unstillness
 	anims.twohander_backward.weight = south * notAttacking * groundage * unstillness
 	anims.twohander_leftward.weight = west * notAttacking * groundage * unstillness
 	anims.twohander_rightward.weight = east * notAttacking * groundage * unstillness
-	attackAnim.weight = attacking
+	attackAnim2.weight = attacking / 2
+	attackAnim3.weight = attacking
 
 	//
 	// specials

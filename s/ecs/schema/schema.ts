@@ -55,9 +55,25 @@ export class Intent extends Component<{
 	attack: boolean
 }> {}
 
-export class Attackage extends Component<{
-	technique: null | Attacking.Technique
+export class Attack extends Component<{
+	angle: number
 	seconds: number
+	phase: Attacking.Phase
+}> {}
+
+export class AttackWeights extends Component<{
+	attacking: number
+	notAttacking: number
+	techniques: {
+		a1: number
+		a2: number
+		a3: number
+		a4: number
+		a5: number
+		a6: number
+		a7: number
+		a8: number
+	}
 }> {}
 
 export class Force extends Component<Vec2> {}
