@@ -52,7 +52,10 @@ export const huBindings = () => Tact.bindings(({
 			right: buttons(modless("KeyL")),
 
 			orbit: buttons(modless("KeyZ")),
-			attack: buttons(modless("Semicolon"), modless("LMB")),
+
+			parry: buttons(modless("RMB"), modless("Slash")),
+			swing: buttons(modless("LMB"), modless("Semicolon")),
+			stab: buttons(modless("MMB"), modless("KeyP")),
 
 			test_bracket_left: buttons(modless("BracketLeft")),
 			test_bracket_right: buttons(modless("BracketRight")),

@@ -14,15 +14,7 @@ export const intentions = system("intentions", [
 				fast: false,
 				slow: false,
 				jump: false,
-				attack: false,
 			}
-		}),
-
-	behavior("set attack button status")
-		.select({Controllable, Intent})
-		.act(({realm}) => c => {
-			const {down, repeat} = realm.tact.inputs.humanoid.buttons.attack.input
-			c.intent.attack = down && !repeat
 		}),
 
 	behavior("add mouse movements to glance")

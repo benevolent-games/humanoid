@@ -8,7 +8,7 @@ import {GimbalRig} from "../schema/hybrids/gimbal_rig.js"
 import {CameraRig} from "../schema/hybrids/camera_rig.js"
 import {Character} from "../schema/hybrids/character/character.js"
 import {MouseAccumulator} from "../schema/hybrids/mouse_accumulator.js"
-import {AirborneTrajectory, Ambulation, Attackage, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, CoolGimbal, PreviousPosition, Rotation, Sensitivity, Smoothing, Spectator, Speeds, Stance, Velocity, Orbit} from "../schema/schema.js"
+import {AirborneTrajectory, Ambulation, CombatIntent, AttackWeights, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, CoolGimbal, PreviousPosition, Rotation, Sensitivity, Smoothing, Spectator, Speeds, Stance, Velocity, Orbit} from "../schema/schema.js"
 
 export namespace Selectors {
 	export const freecam = select({
@@ -60,7 +60,8 @@ export namespace Selectors {
 		Ambulation,
 		Rotation,
 
-		Attackage,
+		CombatIntent,
+		AttackWeights,
 		Tracer,
 	})
 }

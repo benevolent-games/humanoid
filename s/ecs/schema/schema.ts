@@ -3,8 +3,8 @@ import {Id} from "@benev/toolbox/x/ecs6/core/types.js"
 import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ambulatory} from "./types.js"
+import {Attacking} from "../../models/attacking/types.js"
 import {Choreo} from "../../models/choreographer/types.js"
-import { Attacking } from "../../models/attacking/types.js"
 
 export class Debug extends Component<boolean> {}
 export class Children extends Component<Id[]> {}
@@ -46,7 +46,6 @@ export class Seed extends Component<number> {}
 export class DesiredDirection extends Component<Vec2> {}
 
 export class Controllable extends Component<{}> {}
-export class LastAimVector extends Component<Vec2> {}
 export class Intent extends Component<{
 	amble: Vec2
 	glance: Vec2
@@ -56,8 +55,10 @@ export class Intent extends Component<{
 }> {}
 
 export class CombatIntent extends Component<{
+	smoothedGlanceNormal: Vec2
 	parry: boolean
-	attack: null | "swing" | "stab"
+	swing: boolean
+	stab: boolean
 }> {}
 
 export class Attack extends Component<{
