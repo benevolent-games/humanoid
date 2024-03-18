@@ -46,13 +46,18 @@ export class Seed extends Component<number> {}
 export class DesiredDirection extends Component<Vec2> {}
 
 export class Controllable extends Component<{}> {}
+export class LastAimVector extends Component<Vec2> {}
 export class Intent extends Component<{
 	amble: Vec2
 	glance: Vec2
 	fast: boolean
 	slow: boolean
 	jump: boolean
-	attack: boolean
+}> {}
+
+export class CombatIntent extends Component<{
+	parry: boolean
+	attack: null | "swing" | "stab"
 }> {}
 
 export class Attack extends Component<{

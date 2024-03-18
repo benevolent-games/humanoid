@@ -2,19 +2,22 @@
 import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
-import {Attackage, Intent} from "../../schema/schema.js"
 import {Tracer} from "../../schema/hybrids/tracer/tracer.js"
 import {Attacking} from "../../../models/attacking/types.js"
 import {attackReport} from "../../../models/attacking/report.js"
 import {Tracing} from "../../schema/hybrids/tracer/parts/types.js"
 import {defaultWeapon} from "../../../models/attacking/weapons.js"
 import {Character} from "../../schema/hybrids/character/character.js"
+import {Attack, AttackWeights, CombatIntent} from "../../schema/schema.js"
 
 export const attacking = system("attacking", [
 
 	behavior("initiate attack")
-		.select({Attackage, Intent, Tracer})
-		.act(() => ({intent, attackage, tracer}) => {
+		.select({CombatIntent})
+		.act(() => ({combatIntent}, entity) => {
+			if (combatIntent.attack && entity.has({Attack})) {
+				entity.components.attack
+			}
 			if (intent.attack && attackage.technique === null) {
 				attackage.technique = 2
 				attackage.seconds = 0
