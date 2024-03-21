@@ -104,27 +104,20 @@ export namespace Archetypes {
 			},
 		},
 		rotation: quat.identity(),
-		combatIntent: {
-			parry: false,
-			stab: false,
-			swing: false,
-			smoothedGlanceNormal: [1, 0],
-		},
-		attackWeights: {
-			attacking: 0,
-			notAttacking: 1,
-			techniques: {
-				a1: 0,
-				a2: 0,
-				a3: 0,
-				a4: 0,
-				a5: 0,
-				a6: 0,
-				a7: 0,
-				a8: 0,
-			},
-		},
 		orbit: null,
+		melee: {
+			aim: {
+				smoothedGlanceNormal: [1, 0],
+				lastGlanceNormal: [1, 0],
+				angle: scalar.radians.from.degrees(90),
+			},
+			intent: {
+				parry: false,
+				stab: false,
+				swing: false,
+			},
+			action: null,
+		},
 		tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
 	}))
 }

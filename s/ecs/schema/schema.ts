@@ -46,6 +46,7 @@ export class Seed extends Component<number> {}
 export class DesiredDirection extends Component<Vec2> {}
 
 export class Controllable extends Component<{}> {}
+
 export class Intent extends Component<{
 	amble: Vec2
 	glance: Vec2
@@ -54,33 +55,52 @@ export class Intent extends Component<{
 	jump: boolean
 }> {}
 
-export class CombatIntent extends Component<{
-	smoothedGlanceNormal: Vec2
-	parry: boolean
-	swing: boolean
-	stab: boolean
-}> {}
-
-export class Attack extends Component<{
-	angle: number
-	seconds: number
-	phase: Attacking.Phase
-}> {}
-
-export class AttackWeights extends Component<{
-	attacking: number
-	notAttacking: number
-	techniques: {
-		a1: number
-		a2: number
-		a3: number
-		a4: number
-		a5: number
-		a6: number
-		a7: number
-		a8: number
+export class Melee extends Component<{
+	aim: {
+		lastGlanceNormal: Vec2
+		smoothedGlanceNormal: Vec2
+		angle: number
 	}
+	intent: {
+		parry: boolean
+		swing: boolean
+		stab: boolean
+	}
+	action: null | Attacking.MeleeAction
 }> {}
+
+// export class MeleeAim extends Component<{
+// 	lastGlanceNormal: Vec2
+// 	smoothedGlanceNormal: Vec2
+// 	angle: number
+// }> {}
+
+// export class CombatIntent extends Component<{
+// 	parry: boolean
+// 	swing: boolean
+// 	stab: boolean
+// }> {}
+
+// export class Attack extends Component<{
+// 	angle: number
+// 	seconds: number
+// 	phase: Attacking.Phase
+// }> {}
+
+// export class AttackWeights extends Component<{
+// 	attacking: number
+// 	notAttacking: number
+// 	techniques: {
+// 		a1: number
+// 		a2: number
+// 		a3: number
+// 		a4: number
+// 		a5: number
+// 		a6: number
+// 		a7: number
+// 		a8: number
+// 	}
+// }> {}
 
 export class Force extends Component<Vec2> {}
 export class AirborneTrajectory extends Component<Vec3> {}

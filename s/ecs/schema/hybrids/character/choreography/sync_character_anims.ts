@@ -1,21 +1,21 @@
 
-import {CState, Speeds, Vec2, scalar, spline} from "@benev/toolbox"
+import {CState, Speeds, Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../../types.js"
-import {Perspective} from "../../../schema.js"
+import {Melee, Perspective} from "../../../schema.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {setup_anim_modulators} from "./animworks/modulators.js"
+import {Attacking} from "../../../../../models/attacking/types.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
-import {attackReport} from "../../../../../models/attacking/report.js"
-import {defaultWeapon} from "../../../../../models/attacking/weapons.js"
+import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
 
 export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
-		// attackage,
+		melee,
 		boss_anim,
 		ambulatory,
 		perspective,
@@ -23,7 +23,7 @@ export function sync_character_anims({
 	}: {
 		gimbal: Vec2
 		speeds: Speeds & {creep: number}
-		// attackage: CState<Attackage>
+		melee: CState<Melee>
 		choreo: Choreo
 		ambulatory: Ambulatory
 		anims: CharacterAnims
@@ -131,17 +131,51 @@ export function sync_character_anims({
 	// 	attackAnim3.forceFrame(attackframe)
 	// }
 
-	const notAttacking = 1
+	const meleeActive = melee.action?.weights?.active ?? 0
+	const meleeInactive = scalar.inverse(meleeActive)
+
+	const attackAnim = anims.twohander_attack_2
+	const parryAnim = anims.twohander_parry1
+
+	parryAnim.weight = 0
+	attackAnim.weight = 0
+
+	if (melee.action?.weights) {
+		const w = melee.action.weights
+		let progress = 0
+
+		if (melee.action.kind === Attacking.Kind.Stab || melee.action.kind === Attacking.Kind.Swing) {
+			if (melee.action.report)
+				progress = melee.action.report.progress
+		}
+
+		function animate(anim: ManualAnim, weight: number) {
+			if (weight) {
+				anim.weight = weight
+				anim.forceProgress(progress)
+			}
+		}
+
+		if (w.parry) {
+			parryAnim.weight = w.parry
+			parryAnim.forceProgress(0)
+		}
+
+		animate(anims.twohander_attack_1, w.a1)
+		animate(anims.twohander_attack_2, w.a2)
+		animate(anims.twohander_attack_3, w.a3)
+		animate(anims.twohander_attack_4, w.a4)
+		animate(anims.twohander_attack_5, w.a5)
+		animate(anims.twohander_attack_6, w.a6)
+	}
 
 	const tinyfix = 1 / 1000
-	anims.twohander_airborne.weight = airborne * notAttacking
-	anims.twohander.weight = tinyfix + (notAttacking * groundage * stillness)
-	anims.twohander_forward.weight = north * notAttacking * groundage * unstillness
-	anims.twohander_backward.weight = south * notAttacking * groundage * unstillness
-	anims.twohander_leftward.weight = west * notAttacking * groundage * unstillness
-	anims.twohander_rightward.weight = east * notAttacking * groundage * unstillness
-	// attackAnim2.weight = attacking / 2
-	// attackAnim3.weight = attacking
+	anims.twohander_airborne.weight = airborne * meleeInactive
+	anims.twohander.weight = tinyfix + (meleeInactive * groundage * stillness)
+	anims.twohander_forward.weight = north * meleeInactive * groundage * unstillness
+	anims.twohander_backward.weight = south * meleeInactive * groundage * unstillness
+	anims.twohander_leftward.weight = west * meleeInactive * groundage * unstillness
+	anims.twohander_rightward.weight = east * meleeInactive * groundage * unstillness
 
 	//
 	// specials
