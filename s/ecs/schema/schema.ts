@@ -3,7 +3,7 @@ import {Id} from "@benev/toolbox/x/ecs6/core/types.js"
 import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ambulatory} from "./types.js"
-import {Attacking} from "../../models/attacking/types.js"
+import {Melee} from "../../models/attacking/melee.js"
 import {Choreo} from "../../models/choreographer/types.js"
 
 export class Debug extends Component<boolean> {}
@@ -55,19 +55,19 @@ export class Intent extends Component<{
 	jump: boolean
 }> {}
 
-export class Melee extends Component<{
-	aim: {
-		lastGlanceNormal: Vec2
-		smoothedGlanceNormal: Vec2
-		angle: number
-	}
-	intent: {
-		parry: boolean
-		swing: boolean
-		stab: boolean
-	}
-	action: null | Attacking.MeleeAction
+export class MeleeAim extends Component<{
+	lastGlanceNormal: Vec2
+	smoothedGlanceNormal: Vec2
+	angle: number
 }> {}
+
+export class MeleeIntent extends Component<{
+	parry: boolean
+	swing: boolean
+	stab: boolean
+}> {}
+
+export class MeleeAction extends Component<null | Melee.Action.Any> {}
 
 // export class MeleeAim extends Component<{
 // 	lastGlanceNormal: Vec2

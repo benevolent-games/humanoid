@@ -1,16 +1,15 @@
 
-import {Attacking} from "./types.js"
 import {scalar} from "@benev/toolbox"
+import {Melee} from "./melee.js"
+import {Weapon} from "./weapon.js"
 
-export type AttackReport = ReturnType<typeof attackReport>
+export function attackReport(
+		kind: Melee.Kind,
+		weapon: Weapon.Config,
+		seconds: number,
+	): Melee.AttackReport {
 
-export function attackReport({seconds, kind, weapon}: {
-		seconds: number
-		kind: Attacking.Kind
-		weapon: Attacking.Weapon
-	}) {
-
-	const {windup, release, recovery} = kind === Attacking.Kind.Swing
+	const {windup, release, recovery} = kind === Melee.Kind.Swing
 		? weapon.swing
 		: weapon.stab
 
@@ -23,17 +22,17 @@ export function attackReport({seconds, kind, weapon}: {
 	const c = windup + release
 	const d = windup + release + recovery
 
-	const phase: Attacking.Phase = (
-		scalar.within(seconds, a, b) ? Attacking.Phase.Windup
-		: scalar.within(seconds, b, c) ? Attacking.Phase.Release
-		: scalar.within(seconds, c, d) ? Attacking.Phase.Recovery
-		: Attacking.Phase.None
+	const phase: Melee.Phase = (
+		scalar.within(seconds, a, b) ? Melee.Phase.Windup
+		: scalar.within(seconds, b, c) ? Melee.Phase.Release
+		: scalar.within(seconds, c, d) ? Melee.Phase.Recovery
+		: Melee.Phase.None
 	)
 
-	const times: Attacking.Times = {
-		windup: phase === Attacking.Phase.Windup ? seconds - a : null,
-		release: phase === Attacking.Phase.Release ? seconds - b : null,
-		recovery: phase === Attacking.Phase.Recovery ? seconds - c : null,
+	const times: Melee.Times = {
+		windup: phase === Melee.Phase.Windup ? seconds - a : null,
+		release: phase === Melee.Phase.Release ? seconds - b : null,
+		recovery: phase === Melee.Phase.Recovery ? seconds - c : null,
 	}
 
 	const progress = scalar.remap(seconds, [a, d])
