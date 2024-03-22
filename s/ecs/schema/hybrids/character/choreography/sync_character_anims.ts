@@ -3,32 +3,32 @@ import {CState, Speeds, Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../../types.js"
-import {Melee, Perspective} from "../../../schema.js"
+import {Perspective} from "../../../schema.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {setup_anim_modulators} from "./animworks/modulators.js"
-import {Attacking} from "../../../../../models/attacking/types.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
+import { Melee } from "../../../../../models/attacking/melee.js"
 
 export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
-		melee,
 		boss_anim,
 		ambulatory,
 		perspective,
+		meleeWeights,
 		gimbal: [,gimbalY],
 	}: {
 		gimbal: Vec2
-		speeds: Speeds & {creep: number}
-		melee: CState<Melee>
 		choreo: Choreo
-		ambulatory: Ambulatory
 		anims: CharacterAnims
-		perspective: CState<Perspective>
+		ambulatory: Ambulatory
 		boss_anim: AnimationGroup
+		meleeWeights: null | Melee.Weights
+		perspective: CState<Perspective>
+		speeds: Speeds & {creep: number}
 	}) {
 
 	const top_speed_anim_ratio = 1.5
@@ -131,7 +131,7 @@ export function sync_character_anims({
 	// 	attackAnim3.forceFrame(attackframe)
 	// }
 
-	const meleeActive = melee.action?.weights?.active ?? 0
+	const meleeActive = meleeWeights?.active ?? 0
 	const meleeInactive = scalar.inverse(meleeActive)
 
 	const attackAnim = anims.twohander_attack_2
@@ -140,19 +140,13 @@ export function sync_character_anims({
 	parryAnim.weight = 0
 	attackAnim.weight = 0
 
-	if (melee.action?.weights) {
-		const w = melee.action.weights
-		let progress = 0
-
-		if (melee.action.kind === Attacking.Kind.Stab || melee.action.kind === Attacking.Kind.Swing) {
-			if (melee.action.report)
-				progress = melee.action.report.progress
-		}
+	if (meleeWeights) {
+		const w = meleeWeights
 
 		function animate(anim: ManualAnim, weight: number) {
 			if (weight) {
 				anim.weight = weight
-				anim.forceProgress(progress)
+				anim.forceProgress(w.progress)
 			}
 		}
 

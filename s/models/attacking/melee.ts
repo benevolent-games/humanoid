@@ -1,6 +1,7 @@
 
 import {ob} from "@benev/slate"
 import {Vec2, scalar} from "@benev/toolbox"
+import { Weapon } from "./weapon"
 
 const {degrees} = scalar.radians.from
 
@@ -47,12 +48,12 @@ export namespace Melee {
 		a6: number
 		a7: number
 		a8: number
+		progress: number
 	}
 
 	export type AttackReport = {
 		phase: Phase
 		times: Times
-		progress: number
 		milestones: [number, number, number, number]
 	}
 
@@ -61,6 +62,7 @@ export namespace Melee {
 			kind: Kind
 			seconds: number
 			weights: Weights
+			weapon: Weapon.Config
 		}
 		export type Offensive = {
 			angle: number

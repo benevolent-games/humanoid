@@ -5,6 +5,7 @@ import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 import {Ambulatory} from "./types.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {Choreo} from "../../models/choreographer/types.js"
+import { Weapon } from "../../models/attacking/weapon.js"
 
 export class Debug extends Component<boolean> {}
 export class Children extends Component<Id[]> {}
@@ -66,6 +67,8 @@ export class MeleeIntent extends Component<{
 	swing: boolean
 	stab: boolean
 }> {}
+
+export class MeleeWeapon extends Component<Weapon.Name> {}
 
 export class MeleeAction extends Component<null | Melee.Action.Any> {}
 

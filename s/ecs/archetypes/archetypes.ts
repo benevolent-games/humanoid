@@ -105,19 +105,18 @@ export namespace Archetypes {
 		},
 		rotation: quat.identity(),
 		orbit: null,
-		melee: {
-			aim: {
-				smoothedGlanceNormal: [1, 0],
-				lastGlanceNormal: [1, 0],
-				angle: scalar.radians.from.degrees(90),
-			},
-			intent: {
-				parry: false,
-				stab: false,
-				swing: false,
-			},
-			action: null,
+		meleeAim: {
+			smoothedGlanceNormal: [1, 0],
+			lastGlanceNormal: [1, 0],
+			angle: scalar.radians.from.degrees(90),
 		},
+		meleeIntent: {
+			parry: false,
+			stab: false,
+			swing: false,
+		},
+		meleeWeapon: "longsword",
+		meleeAction: null,
 		tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
 	}))
 }

@@ -5,7 +5,9 @@ import {Vec2, scalar, spline, vec2} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
 import {molasses2d} from "../../../tools/molasses.js"
 import {Melee} from "../../../models/attacking/melee.js"
-import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent} from "../../schema/schema.js"
+import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../../schema/schema.js"
+import { considerAttack, considerParry } from "../../../models/attacking/weights.js"
+import { Weapon } from "../../../models/attacking/weapon.js"
 
 // const {degrees} = scalar.radians.from
 
@@ -74,27 +76,49 @@ export const combat = system("combat", [
 		}),
 
 	behavior("initiate melee action")
-		.select({Controllable, MeleeAim, MeleeIntent, MeleeAction})
+		.select({Controllable, MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
 		.act(() => components => {
 			if (components.meleeAction)
 				return
-			if (components.meleeIntent.parry)
+
+			const seconds = 0
+			const weapon = Weapon.get(components.meleeWeapon)
+
+			if (components.meleeIntent.parry) {
+				const kind = Melee.Kind.Parry
 				components.meleeAction = {
-					kind: Melee.Kind.Parry,
-					seconds: 0,
+					kind,
+					weapon,
+					seconds,
+					...considerParry(weapon, 0),
 				}
-			else if (components.meleeIntent.stab)
+			}
+			else if (components.meleeIntent.stab) {
+				const kind = Melee.Kind.Stab
+				const angle = components.meleeAim.angle
+				const {report, weights} = considerAttack(weapon, kind, seconds, angle)
 				components.meleeAction = {
-					kind: Melee.Kind.Stab,
-					seconds: 0,
-					angle: components.meleeAim.angle,
+					kind,
+					weapon,
+					seconds,
+					angle,
+					report,
+					weights,
 				}
-			else if (components.meleeIntent.swing)
+			}
+			else if (components.meleeIntent.swing) {
+				const kind = Melee.Kind.Swing
+				const angle = components.meleeAim.angle
+				const {report, weights} = considerAttack(weapon, kind, seconds, angle)
 				components.meleeAction = {
-					kind: Melee.Kind.Swing,
-					seconds: 0,
-					angle: components.meleeAim.angle,
+					kind,
+					weapon,
+					seconds,
+					angle,
+					report,
+					weights,
 				}
+			}
 		}),
 
 	behavior("sustain melee action")
@@ -104,98 +128,37 @@ export const combat = system("combat", [
 				meleeAction.seconds += tick.seconds
 		}),
 
-	// behavior("generate attack report")
-	// 	.select({Controllable, MeleeAction})
-	// 	.act(() => ({melee}) => {
-	// 		if (!melee.action)
-	// 			return
-
-	// 		const {kind} = melee.action
-	// 		if (kind === Attacking.Kind.Stab || kind === Attacking.Kind.Swing) {
-	// 			melee.action.report = attackReport({
-	// 				weapon: defaultWeapon,
-	// 				kind: melee.action.kind,
-	// 				seconds: melee.action.seconds,
-	// 			})
-	// 		}
-	// 	}),
-
-	// behavior("generate animation weights")
-	// 	.select({Controllable, Melee})
-	// 	.act(() => ({melee}) => {
-	// 		if (!melee.action)
-	// 			return
-
-	// 		const {action} = melee
-	// 		const blendtime = 0.1
-	// 		const weights: Attacking.MeleeWeights = {
-	// 			active: 0,
-	// 			parry: 0,
-	// 			a1: 0,
-	// 			a2: 0,
-	// 			a3: 0,
-	// 			a4: 0,
-	// 			a5: 0,
-	// 			a6: 0,
-	// 			a7: 0,
-	// 			a8: 0,
-	// 		}
-
-	// 		if (action.kind === Attacking.Kind.Parry) {
-	// 			weights.active = spline.linear(action.seconds, [
-	// 				[0, 0],
-	// 				[blendtime, 1],
-	// 				[defaultParryDuration - blendtime, 1],
-	// 				[defaultParryDuration, 0],
-	// 			])
-	// 			weights.parry = weights.active
-	// 		}
-	// 		else if (action.report && (action.kind === Attacking.Kind.Stab || action.kind === Attacking.Kind.Swing)) {
-	// 			const {report} = action
-	// 			const [a, _b, c, d] = report.milestones
-
-	// 			weights.active = spline.linear(action.seconds, [
-	// 				[a, 0],
-	// 				[a + blendtime, 1],
-	// 				[c + blendtime, 1],
-	// 				[d + blendtime, 0],
-	// 			])
-
-	// 			/*
-	// 			##    -45  0  45
-	// 			##      \     /
-	// 			## -90 ————|———— 90
-	// 			##      /     \
-	// 			##   -135     135
-	// 			*/
-	// 			const {angle} = action
-	// 			weights.a1 = spline.linear(angle, splines.a1) * weights.active
-	// 			weights.a2 = spline.linear(angle, splines.a2) * weights.active
-	// 			weights.a3 = spline.linear(angle, splines.a3) * weights.active
-	// 			weights.a4 = spline.linear(angle, splines.a4) * weights.active
-	// 			weights.a5 = spline.linear(angle, splines.a5) * weights.active
-	// 			weights.a6 = spline.linear(angle, splines.a6) * weights.active
-	// 		}
-
-	// 		action.weights = weights
-	// 	}),
-
-	behavior("end melee action")
+	behavior("update melee action considerations")
 		.select({Controllable, MeleeAction})
-		.act(() => ({meleeAction}) => {
+		.act(({tick}) => ({meleeAction}) => {
 			if (!meleeAction)
 				return
 
-			const {kind} = meleeAction
+			if (Melee.Action.isParry(meleeAction)) {
+				const {weights} = considerParry(meleeAction.weapon, meleeAction.seconds)
+				meleeAction.weights = weights
+			}
+			else if (Melee.Action.isAttack(meleeAction)) {
+				const {report, weights} = considerAttack(
+					meleeAction.weapon,
+					meleeAction.kind,
+					meleeAction.seconds,
+					meleeAction.angle,
+				)
+				meleeAction.report = report
+				meleeAction.weights = weights
+			}
+		}),
 
-			if (kind === Melee.Kind.Parry) {
-				if (meleeAction.seconds > defaultParryDuration)
-					meleeAction = null
-			}
-			else if (kind === Attacking.Kind.Stab || kind === Attacking.Kind.Swing) {
-				if (melee.action.report?.phase === Attacking.Phase.None)
-					melee.action = null
-			}
+	behavior("end melee action")
+		.select({Controllable, MeleeAction})
+		.act(() => components => {
+			const {meleeAction} = components
+			if (!meleeAction)
+				return
+
+			if (meleeAction.weights.progress > 1)
+				components.meleeAction = null
 		}),
 ])
 

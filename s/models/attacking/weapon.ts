@@ -32,5 +32,11 @@ export namespace Weapon {
 
 	export const fallback = library.longsword
 	export type Name = keyof typeof library
+
+	export function get(name: Name) {
+		if (!(name in library))
+			throw new Error(`weapon not found "${name}"`)
+		return library[name]
+	}
 }
 
