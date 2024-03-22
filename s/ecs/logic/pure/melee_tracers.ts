@@ -4,8 +4,8 @@ import {behavior, system} from "../../hub.js"
 import {MeleeAction} from "../../schema/schema.js"
 import {Melee} from "../../../models/attacking/melee.js"
 import {Tracer} from "../../schema/hybrids/tracer/tracer.js"
+import {Tracing} from "../../schema/hybrids/tracer/parts/types.js"
 import {Character} from "../../schema/hybrids/character/character.js"
-import { Tracing } from "../../schema/hybrids/tracer/parts/types.js"
 
 export const melee_tracers = system("melee tracers", [
 

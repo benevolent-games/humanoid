@@ -23,22 +23,12 @@ export class Orbit extends Component <null | Vec2> {}
 
 export class PreviousPosition extends Component<Vec3> {}
 
-// prop_ref
-// child_prop_refs
-// physics_rigid_ref
-
 export class Density extends Component<number> {}
 export class Mass extends Component<number> {}
 export class DampingLinear extends Component<number> {}
 export class DampingAngular extends Component<number> {}
 export class Direction extends Component<Vec3> {}
 export class Intensity extends Component<number> {}
-
-// physical_dynamic
-// physical_fixture
-// joint
-//   parts
-//   anchors
 
 export class Shape extends Component<"box"> {}
 

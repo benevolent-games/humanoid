@@ -96,9 +96,9 @@ export const combat = system("combat", [
 				meleeAction.seconds += tick.seconds
 		}),
 
-	behavior("update melee action considerations")
+	behavior("update melee actions")
 		.select({Controllable, MeleeAction})
-		.act(({tick}) => ({meleeAction}) => {
+		.act(() => ({meleeAction}) => {
 			if (!meleeAction)
 				return
 

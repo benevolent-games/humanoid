@@ -1,7 +1,7 @@
 
 import {ob} from "@benev/slate"
+import {Weapon} from "./weapon.js"
 import {Vec2, scalar} from "@benev/toolbox"
-import { Weapon } from "./weapon"
 
 const {degrees} = scalar.radians.from
 
