@@ -1,24 +1,7 @@
 
-import {scalar, spline} from "@benev/toolbox"
 import {Melee} from "./melee.js"
 import {Weapon} from "./weapon.js"
-
-function zeroWeights(): Melee.Weights {
-	return {
-		active: 0,
-		inactive: 0,
-		parry: 0,
-		progress: 0,
-		a1: 0,
-		a2: 0,
-		a3: 0,
-		a4: 0,
-		a5: 0,
-		a6: 0,
-		a7: 0,
-		a8: 0,
-	}
-}
+import {scalar, spline} from "@benev/toolbox"
 
 const blendtime = 0.1
 
@@ -35,7 +18,7 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 		[d, 0],
 	])
 	const weights: Melee.Weights = {
-		...zeroWeights(),
+		...Melee.zeroWeights(),
 		active,
 		parry: active,
 		inactive: scalar.inverse(active),
@@ -45,7 +28,7 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 }
 
 export function considerAttack(weapon: Weapon.Config, kind: Melee.Kind, seconds: number, angle: number) {
-	const weights = zeroWeights()
+	const weights = Melee.zeroWeights()
 
 	const {windup, release, recovery} = kind === Melee.Kind.Swing
 		? weapon.swing
@@ -53,29 +36,31 @@ export function considerAttack(weapon: Weapon.Config, kind: Melee.Kind, seconds:
 
 	const a = 0
 	const b = blendtime
-	const c = windup + release
-	const d = windup + release + recovery
+	const c = windup
+	const d = windup + release
+	const e = windup + release + recovery
 
 	const phase: Melee.Phase = (
-		scalar.within(seconds, a, b) ? Melee.Phase.Windup
-		: scalar.within(seconds, b, c) ? Melee.Phase.Release
-		: scalar.within(seconds, c, d) ? Melee.Phase.Recovery
+		scalar.within(seconds, a, c) ? Melee.Phase.Windup
+		: scalar.within(seconds, c, d) ? Melee.Phase.Release
+		: scalar.within(seconds, d, e) ? Melee.Phase.Recovery
 		: Melee.Phase.None
 	)
 
 	const times: Melee.Times = {
 		windup: phase === Melee.Phase.Windup ? seconds - a : null,
-		release: phase === Melee.Phase.Release ? seconds - b : null,
-		recovery: phase === Melee.Phase.Recovery ? seconds - c : null,
+		release: phase === Melee.Phase.Release ? seconds - c : null,
+		recovery: phase === Melee.Phase.Recovery ? seconds - d : null,
 	}
 
-	weights.progress = seconds / d
+	weights.progress = seconds / e
 
 	weights.active = spline.linear(seconds, [
 		[a, 0],
 		[b, 1],
 		[c, 1],
-		[d, 0],
+		[d, 1],
+		[e, 0],
 	])
 
 	if (kind === Melee.Kind.Stab) {
@@ -101,7 +86,7 @@ export function considerAttack(weapon: Weapon.Config, kind: Melee.Kind, seconds:
 		report: {
 			phase,
 			times,
-			milestones: [a, b, c, d],
+			milestones: [a, b, c, d, e],
 		} as Melee.AttackReport,
 	}
 }

@@ -2,6 +2,7 @@
 import {babylonian} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
+import {Melee} from "../../../models/attacking/melee.js"
 import {Character} from "../../schema/hybrids/character/character.js"
 import {sync_character_anims} from "../../schema/hybrids/character/choreography/sync_character_anims.js"
 import {apply_adjustments, swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
@@ -45,7 +46,7 @@ export const choreography = system("humanoid", [
 				boss_anim,
 				gimbal: c.coolGimbal.gimbal,
 				choreo: c.choreography,
-				meleeWeights: c.meleeAction?.weights ?? null,
+				meleeWeights: c.meleeAction?.weights ?? Melee.zeroWeights(),
 				ambulatory: c.ambulation,
 				perspective: c.perspective,
 				speeds: {...c.speeds, creep: 1.5},

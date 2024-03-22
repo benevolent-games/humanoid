@@ -51,10 +51,27 @@ export namespace Melee {
 		progress: number
 	}
 
+	export function zeroWeights(): Melee.Weights {
+		return {
+			active: 0,
+			inactive: 1,
+			parry: 0,
+			progress: 0,
+			a1: 0,
+			a2: 0,
+			a3: 0,
+			a4: 0,
+			a5: 0,
+			a6: 0,
+			a7: 0,
+			a8: 0,
+		}
+	}
+
 	export type AttackReport = {
 		phase: Phase
 		times: Times
-		milestones: [number, number, number, number]
+		milestones: [number, number, number, number, number]
 	}
 
 	export namespace Action {

@@ -61,49 +61,13 @@ export class MeleeAim extends Component<{
 	smoothedGlanceNormal: Vec2
 	angle: number
 }> {}
-
 export class MeleeIntent extends Component<{
 	parry: boolean
 	swing: boolean
 	stab: boolean
 }> {}
-
 export class MeleeWeapon extends Component<Weapon.Name> {}
-
 export class MeleeAction extends Component<null | Melee.Action.Any> {}
-
-// export class MeleeAim extends Component<{
-// 	lastGlanceNormal: Vec2
-// 	smoothedGlanceNormal: Vec2
-// 	angle: number
-// }> {}
-
-// export class CombatIntent extends Component<{
-// 	parry: boolean
-// 	swing: boolean
-// 	stab: boolean
-// }> {}
-
-// export class Attack extends Component<{
-// 	angle: number
-// 	seconds: number
-// 	phase: Attacking.Phase
-// }> {}
-
-// export class AttackWeights extends Component<{
-// 	attacking: number
-// 	notAttacking: number
-// 	techniques: {
-// 		a1: number
-// 		a2: number
-// 		a3: number
-// 		a4: number
-// 		a5: number
-// 		a6: number
-// 		a7: number
-// 		a8: number
-// 	}
-// }> {}
 
 export class Force extends Component<Vec2> {}
 export class AirborneTrajectory extends Component<Vec3> {}

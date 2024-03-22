@@ -1,44 +1,12 @@
 
-import {ob} from "@benev/slate"
-import {Vec2, scalar, spline, vec2} from "@benev/toolbox"
+import {scalar, vec2} from "@benev/toolbox"
 
 import {behavior, system} from "../../hub.js"
 import {molasses2d} from "../../../tools/molasses.js"
 import {Melee} from "../../../models/attacking/melee.js"
+import {Weapon} from "../../../models/attacking/weapon.js"
+import {considerAttack, considerParry} from "../../../models/attacking/consider.js"
 import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../../schema/schema.js"
-import { considerAttack, considerParry } from "../../../models/attacking/weights.js"
-import { Weapon } from "../../../models/attacking/weapon.js"
-
-// const {degrees} = scalar.radians.from
-
-// const allowed = degrees(270)
-// const forbidden = degrees(360) - allowed
-// const halfForbidden = forbidden / 2
-
-// const splines = ob({
-// 	a2: [0, 45, 90],
-// 	a3: [45, 90, 135],
-// 	a4: [90, 135, 180],
-// 	a1: [0, -45, -90],
-// 	a6: [-45, -90, -135],
-// 	a5: [-90, -135, -180],
-// }).map(
-// 	values => values
-// 		.sort((a, b) => a - b)
-// 		.map(scalar.radians.from.degrees)
-// 		.map((v, index) => [v, index === 1 ? 1 : 0] as Vec2)
-// )
-
-// const zones = {
-// 	left: [
-// 		degrees(0) - halfForbidden,
-// 		degrees(-180) + halfForbidden,
-// 	] as Vec2,
-// 	right: [
-// 		degrees(0) + halfForbidden,
-// 		degrees(180) - halfForbidden,
-// 	] as Vec2,
-// }
 
 export const combat = system("combat", [
 
@@ -154,6 +122,7 @@ export const combat = system("combat", [
 		.select({Controllable, MeleeAction})
 		.act(() => components => {
 			const {meleeAction} = components
+
 			if (!meleeAction)
 				return
 

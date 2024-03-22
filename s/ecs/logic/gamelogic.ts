@@ -9,6 +9,7 @@ import {combat} from "./pure/combat.js"
 import {force} from "./pure/force.js"
 import {freelook} from "./pure/freelook.js"
 import {intentions} from "./pure/intentions.js"
+import {melee_tracers} from "./pure/melee_tracers.js"
 import {velocity} from "./pure/velocity.js"
 
 export const gamelogic = system("root", [
@@ -25,6 +26,7 @@ export const gamelogic = system("root", [
 		humanoid,
 		camera_rigging,
 		choreography,
+		melee_tracers,
 	]),
 ])
 
