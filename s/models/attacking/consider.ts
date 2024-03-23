@@ -93,8 +93,6 @@ export function considerAttack(
 			[e, 0],
 		])
 
-	console.log("progress", progress.toFixed(2), "phase", phase)
-
 	weights.inactive = scalar.inverse(weights.active)
 
 	if (kind === Melee.Kind.Stab) {
