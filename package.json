@@ -24,16 +24,16 @@
 		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\""
 	},
 	"dependencies": {
-		"@benev/slate": "^0.1.0-x.13",
-		"@benev/toolbox": "^0.5.0-x.35",
+		"@benev/slate": "^0.1.0-x.14",
+		"@benev/toolbox": "^0.5.0-x.36",
 		"@dimforge/rapier3d": "^0.12.0",
 		"@dimforge/rapier3d-compat": "^0.12.0",
 		"es-module-shims": "^1.8.2",
 		"simplex-noise": "^4.0.1"
 	},
 	"peerDependencies": {
-		"@babylonjs/core": "^6.47.0",
-		"@babylonjs/loaders": "^6.47.0"
+		"@babylonjs/core": "^6.48.1",
+		"@babylonjs/loaders": "^6.48.1"
 	},
 	"devDependencies": {
 		"@benev/batchimage": "^0.0.1",
