@@ -29,8 +29,8 @@ export const huBindings = () => Tact.bindings(({
 			move: ["leftstick"],
 		},
 		buttons: {
-			perspective: buttons(modless("KeyR"), modless("MMB")),
-			respawn: buttons(modless("KeyT"), modless("RMB")),
+			perspective: buttons(modless("KeyR")),
+			respawn: buttons(modless("KeyT")),
 			bot_spawn: buttons(b("KeyB")),
 			bot_delete: buttons(b("KeyB", shift)),
 			level_swap: buttons(b("RightBracket")),
