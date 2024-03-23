@@ -37,9 +37,9 @@ export const combat = system("combat", [
 			const swing = realm.tact.inputs.humanoid.buttons.swing.input
 			const stab = realm.tact.inputs.humanoid.buttons.stab.input
 			components.meleeIntent = {
-				parry: parry.down && !parry.repeat,
-				swing: swing.down && !swing.repeat,
-				stab: stab.down && !stab.repeat,
+				parry: parry.down,
+				swing: swing.down,
+				stab: stab.down,
 			}
 		}),
 
