@@ -2,19 +2,21 @@
 import {Pojo} from "@benev/slate"
 
 export namespace Weapon {
-	export type Durations = {
+	export type ParryDurations = {
+		block: number
+		recovery: number
+	}
+
+	export type AttackDurations = {
 		windup: number
 		release: number
 		recovery: number
 	}
 
 	export type Config = {
-		parry: {
-			block: number
-			recovery: number
-		}
-		swing: Durations
-		stab: Durations
+		parry: ParryDurations
+		swing: AttackDurations
+		stab: AttackDurations
 	}
 
 	export const library = {

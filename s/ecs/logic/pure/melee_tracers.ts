@@ -109,7 +109,7 @@ export const melee_tracers = system("melee tracers", [
 								true,
 							)
 						}
-						components.meleeAction = null
+						meleeAction.earlyRecovery = meleeAction.seconds
 					}
 				}
 			}

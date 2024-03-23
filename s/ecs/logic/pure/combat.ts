@@ -54,17 +54,20 @@ export const combat = system("combat", [
 
 			if (components.meleeIntent.parry) {
 				const kind = Melee.Kind.Parry
+				const {weights} = considerParry(weapon, seconds)
 				components.meleeAction = {
 					kind,
 					weapon,
 					seconds,
-					...considerParry(weapon, 0),
+					weights,
 				}
 			}
 			else if (components.meleeIntent.stab) {
 				const kind = Melee.Kind.Stab
 				const angle = components.meleeAim.angle
-				const {report, weights} = considerAttack(weapon, kind, seconds, angle)
+				const earlyRecovery = null
+				const attackDurations = weapon.stab
+				const {report, weights} = considerAttack(attackDurations, kind, seconds, earlyRecovery, angle)
 				components.meleeAction = {
 					kind,
 					weapon,
@@ -72,12 +75,16 @@ export const combat = system("combat", [
 					angle,
 					report,
 					weights,
+					earlyRecovery,
+					attackDurations,
 				}
 			}
 			else if (components.meleeIntent.swing) {
 				const kind = Melee.Kind.Swing
 				const angle = components.meleeAim.angle
-				const {report, weights} = considerAttack(weapon, kind, seconds, angle)
+				const earlyRecovery = null
+				const attackDurations = weapon.swing
+				const {report, weights} = considerAttack(attackDurations, kind, seconds, earlyRecovery, angle)
 				components.meleeAction = {
 					kind,
 					weapon,
@@ -85,6 +92,8 @@ export const combat = system("combat", [
 					angle,
 					report,
 					weights,
+					earlyRecovery,
+					attackDurations,
 				}
 			}
 		}),
@@ -108,9 +117,12 @@ export const combat = system("combat", [
 			}
 			else if (Melee.Action.isAttack(meleeAction)) {
 				const {report, weights} = considerAttack(
-					meleeAction.weapon,
+					meleeAction.kind === Melee.Kind.Stab
+						? meleeAction.weapon.stab
+						: meleeAction.weapon.swing,
 					meleeAction.kind,
 					meleeAction.seconds,
+					meleeAction.earlyRecovery,
 					meleeAction.angle,
 				)
 				meleeAction.report = report
@@ -126,8 +138,16 @@ export const combat = system("combat", [
 			if (!meleeAction)
 				return
 
-			if (meleeAction.weights.progress > 1)
-				components.meleeAction = null
+			if (Melee.Action.isParry(meleeAction)) {
+				if (meleeAction.weights.progress > 1) {
+					components.meleeAction = null
+				}
+			}
+			else if (Melee.Action.isAttack(meleeAction)) {
+				if (meleeAction.report.phase === Melee.Phase.None) {
+					components.meleeAction = null
+				}
+			}
 		}),
 ])
 

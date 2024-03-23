@@ -84,6 +84,8 @@ export namespace Melee {
 		export type Offensive = {
 			angle: number
 			report: AttackReport
+			attackDurations: Weapon.AttackDurations
+			earlyRecovery: null | number
 		} & Base
 
 		export type Parry = { kind: Kind.Parry } & Base

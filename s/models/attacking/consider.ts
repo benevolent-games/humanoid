@@ -1,7 +1,9 @@
 
+import {is} from "@benev/slate"
+import {scalar, spline} from "@benev/toolbox"
+
 import {Melee} from "./melee.js"
 import {Weapon} from "./weapon.js"
-import {scalar, spline} from "@benev/toolbox"
 
 const blendtime = 0.1
 
@@ -27,12 +29,23 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 	return {weights}
 }
 
-export function considerAttack(weapon: Weapon.Config, kind: Melee.Kind, seconds: number, angle: number) {
-	const weights = Melee.zeroWeights()
+/*
+##    windup    release    recovery
+## [----------|----------|----------]
+##                x[----------]
+##                earlyRecovery
+*/
 
-	const {windup, release, recovery} = kind === Melee.Kind.Swing
-		? weapon.swing
-		: weapon.stab
+export function considerAttack(
+		attackDurations: Weapon.AttackDurations,
+		kind: Melee.Kind,
+		seconds: number,
+		earlyRecovery: null | number,
+		angle: number,
+	) {
+
+	const weights = Melee.zeroWeights()
+	const {windup, release, recovery} = attackDurations
 
 	const a = 0
 	const b = blendtime
@@ -40,28 +53,49 @@ export function considerAttack(weapon: Weapon.Config, kind: Melee.Kind, seconds:
 	const d = windup + release
 	const e = windup + release + recovery
 
-	const phase: Melee.Phase = (
-		scalar.within(seconds, a, c) ? Melee.Phase.Windup
-		: scalar.within(seconds, c, d) ? Melee.Phase.Release
-		: scalar.within(seconds, d, e) ? Melee.Phase.Recovery
-		: Melee.Phase.None
-	)
+	const phase = is.defined(earlyRecovery)
+		? scalar.within(seconds - earlyRecovery, 0, recovery)
+			? Melee.Phase.Recovery
+			: Melee.Phase.None
+		: (
+			scalar.within(seconds, a, c) ? Melee.Phase.Windup :
+			scalar.within(seconds, c, d) ? Melee.Phase.Release :
+			scalar.within(seconds, d, e) ? Melee.Phase.Recovery :
+				Melee.Phase.None
+		)
 
-	const times: Melee.Times = {
-		windup: phase === Melee.Phase.Windup ? seconds - a : null,
-		release: phase === Melee.Phase.Release ? seconds - c : null,
-		recovery: phase === Melee.Phase.Recovery ? seconds - d : null,
-	}
+	const times = is.defined(earlyRecovery)
+		? {
+			windup: null,
+			release: null,
+			recovery: earlyRecovery - c,
+		}
+		: {
+			windup: phase === Melee.Phase.Windup ? seconds - a : null,
+			release: phase === Melee.Phase.Release ? seconds - c : null,
+			recovery: phase === Melee.Phase.Recovery ? seconds - d : null,
+		}
 
-	weights.progress = seconds / e
+	const progress = (earlyRecovery ?? seconds) / e
 
-	weights.active = spline.linear(seconds, [
-		[a, 0],
-		[b, 1],
-		[c, 1],
-		[d, 1],
-		[e, 0],
-	])
+	weights.progress = progress
+
+	weights.active = is.defined(earlyRecovery)
+		? spline.linear(seconds - earlyRecovery, [
+			[0, 1],
+			[recovery, 0],
+		])
+		: spline.linear(seconds, [
+			[a, 0],
+			[b, 1],
+			[c, 1],
+			[d, 1],
+			[e, 0],
+		])
+
+	console.log("progress", progress.toFixed(2), "phase", phase)
+
+	weights.inactive = scalar.inverse(weights.active)
 
 	if (kind === Melee.Kind.Stab) {
 		if (angle < 0)
@@ -78,8 +112,6 @@ export function considerAttack(weapon: Weapon.Config, kind: Melee.Kind, seconds:
 		weights.a5 = spline.linear(angle, splines.a5) * weights.active
 		weights.a6 = spline.linear(angle, splines.a6) * weights.active
 	}
-
-	weights.inactive = scalar.inverse(weights.active)
 
 	return {
 		weights,
