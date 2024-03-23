@@ -109,6 +109,8 @@ export function sync_character_anims({
 	animateAttack(anims.twohander_attack_4, w.a4)
 	animateAttack(anims.twohander_attack_5, w.a5)
 	animateAttack(anims.twohander_attack_6, w.a6)
+	animateAttack(anims.twohander_attack_7, w.a7 + w.a8)
+	// animateAttack(anims.twohander_attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
 	anims.twohander_parry1.weight = meleeWeights.parry
