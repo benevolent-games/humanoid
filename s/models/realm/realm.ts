@@ -5,6 +5,7 @@ import {Stage, debug_colors} from "@benev/toolbox"
 import {HuTact} from "../tact/tact.js"
 import {HuPhysics} from "./physics.js"
 import {HuGameplan} from "../../gameplan.js"
+import {Sensitivity, makeSensitivity} from "./sensitivity.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 import {optimize_scene} from "../../tools/optimize_scene.js"
 import {CharacterContainer} from "../character/container.js"
@@ -20,6 +21,7 @@ export type HuRealm = {
 	tact: HuTact
 	physics: HuPhysics
 	loadingDock: LoadingDock
+	sensitivity: Sensitivity
 	character: CharacterContainer
 	colors: ReturnType<typeof debug_colors>
 } & RealmParams
@@ -54,6 +56,7 @@ export async function makeRealm(params: RealmParams): Promise<HuRealm> {
 		physics,
 		character,
 		loadingDock,
+		sensitivity: makeSensitivity(),
 	}
 }
 

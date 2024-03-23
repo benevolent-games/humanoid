@@ -4,8 +4,8 @@ import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Ambulatory} from "./types.js"
 import {Melee} from "../../models/attacking/melee.js"
+import {Weapon} from "../../models/attacking/weapon.js"
 import {Choreo} from "../../models/choreographer/types.js"
-import { Weapon } from "../../models/attacking/weapon.js"
 
 export class Debug extends Component<boolean> {}
 export class Children extends Component<Id[]> {}
@@ -84,11 +84,11 @@ export class Perspective extends Component<"third_person" | "first_person"> {}
 
 export class Speeds extends Component<Speeds2>{}
 export class Stance extends Component<"stand" | "crouch"> {}
-export class Sensitivity extends Component<{
-	keys: number
-	mouse: number
-	stick: number
-}> {}
+// export class Sensitivity extends Component<{
+// 	keys: number
+// 	mouse: number
+// 	stick: number
+// }> {}
 
 export class Spectator extends Component<{}> {}
 export class Humanoid extends Component<{}> {}
