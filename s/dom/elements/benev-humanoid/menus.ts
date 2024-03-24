@@ -8,10 +8,12 @@ import {NotesMenu} from "./menus/notes.js"
 import {ConfigMenu} from "./menus/config.js"
 import {LevelsMenu} from "./menus/levels.js"
 
-export const MenuSystem = nexus.shadow_view(use => (
+export const MenuSystem = nexus.light_view(use => (
 		game: Game,
 		render: (menus: Menus) => any,
 	) => {
+
+	use.name("menu-system")
 
 	const menus = use.once(() => new Menus([
 		menu("notes", () => NotesMenu([game])),

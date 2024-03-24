@@ -9,6 +9,7 @@ import {Sensitivity, makeSensitivity} from "./sensitivity.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 import {optimize_scene} from "../../tools/optimize_scene.js"
 import {CharacterContainer} from "../character/container.js"
+import { ReticuleData } from "./reticule_data.js"
 
 export type RealmParams = {
 	tickrate_hz: number
@@ -22,6 +23,7 @@ export type HuRealm = {
 	physics: HuPhysics
 	loadingDock: LoadingDock
 	sensitivity: Sensitivity
+	reticuleData: ReticuleData
 	character: CharacterContainer
 	colors: ReturnType<typeof debug_colors>
 } & RealmParams
@@ -57,6 +59,7 @@ export async function makeRealm(params: RealmParams): Promise<HuRealm> {
 		character,
 		loadingDock,
 		sensitivity: makeSensitivity(),
+		reticuleData: new ReticuleData(),
 	}
 }
 
