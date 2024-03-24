@@ -2,7 +2,6 @@
 import {select} from "./helpers.js"
 import {Camera} from "../schema/hybrids/camera.js"
 import {Capsule} from "../schema/hybrids/capsule.js"
-import {Transform} from "../schema/hybrids/transform.js"
 import {Tracer} from "../schema/hybrids/tracer/tracer.js"
 import {GimbalRig} from "../schema/hybrids/gimbal_rig.js"
 import {CameraRig} from "../schema/hybrids/camera_rig.js"
@@ -12,7 +11,6 @@ import {AirborneTrajectory, Ambulation, Choreography, Controllable, Debug, Force
 
 export namespace Selectors {
 	export const freecam = select({
-		Transform,
 		Camera,
 		Controllable,
 		MouseAccumulator,
@@ -31,9 +29,13 @@ export namespace Selectors {
 		GimbalRig,
 	})
 
-	export const humanoid = select({
-		...freecam,
+	export const biped = select({
 		Debug,
+
+		Camera,
+		MouseAccumulator,
+		Intent,
+		Gimbal,
 
 		Force,
 		Impetus,
@@ -42,8 +44,6 @@ export namespace Selectors {
 		Speeds,
 
 		Capsule,
-		CameraRig,
-		Perspective,
 		Stance,
 		Grounding,
 		AirborneTrajectory,
@@ -52,7 +52,6 @@ export namespace Selectors {
 		PreviousPosition,
 		Velocity,
 		CoolGimbal,
-		Orbit,
 
 		Character,
 		Choreography,
@@ -64,6 +63,14 @@ export namespace Selectors {
 		MeleeWeapon,
 		MeleeAction,
 		Tracer,
+	})
+
+	export const humanoid = select({
+		...biped,
+		Controllable,
+		CameraRig,
+		Perspective,
+		Orbit,
 	})
 }
 

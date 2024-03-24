@@ -37,28 +37,39 @@ export namespace Archetypes {
 		gimbalRig: {},
 	}))
 
-	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal, perspective}: {
-			debug: boolean,
-			position: Vec3,
-			gimbal: Vec2,
-			perspective: CState<Perspective>
+	export const biped = arch(Selectors.biped, ({
+			debug,
+			position,
+			gimbal,
 		}) => ({
-		...params(spectator({position, gimbal})),
 		debug,
+
+		position,
+		gimbal,
+
+		mouseAccumulator: {},
+		camera: {
+			fov: 90,
+			minZ: 0.12,
+			maxZ: 15_000,
+		},
+		intent: {
+			amble: vec2.zero(),
+			glance: vec2.zero(),
+			fast: false,
+			slow: false,
+			jump: false,
+			attack: false,
+		},
+
+		force: vec2.zero(),
+		impetus: vec3.zero(),
+		smoothing: 5,
+
 		speeds: {base: 3, fast: 6, slow: 1.5},
 		capsule: {
 			height: 1.75,
 			radius: .2,
-		},
-		cameraRig: {
-			height: 1.75,
-			third_person_distance: 1,
-		},
-		perspective,
-		camera: {
-			fov: 100,
-			minZ: 0.1,
-			maxZ: 15_000,
 		},
 		stance: "stand",
 		grounding: {
@@ -95,7 +106,6 @@ export namespace Archetypes {
 			},
 		},
 		rotation: quat.identity(),
-		orbit: null,
 		meleeAim: {
 			smoothedGlanceNormal: [1, 0],
 			lastGlanceNormal: [1, 0],
@@ -109,6 +119,22 @@ export namespace Archetypes {
 		meleeWeapon: "longsword",
 		meleeAction: null,
 		tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
+	}))
+
+	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal, perspective}: {
+			debug: boolean,
+			position: Vec3,
+			gimbal: Vec2,
+			perspective: CState<Perspective>
+		}) => ({
+		...params(biped({debug, position, gimbal})),
+		controllable: {},
+		cameraRig: {
+			height: 1.75,
+			third_person_distance: 1,
+		},
+		perspective,
+		orbit: null,
 	}))
 }
 

@@ -2,6 +2,7 @@
 import {ob} from "@benev/slate"
 import {Weapon} from "./weapon.js"
 import {Vec2, scalar} from "@benev/toolbox"
+import {considerAttack, considerParry} from "./consider.js"
 
 const {degrees} = scalar.radians.from
 
@@ -94,14 +95,40 @@ export namespace Melee {
 
 		export type Any = Parry | Stab | Swing
 		export type Attack = Stab | Swing
+	}
 
-		export function isParry(action: null | Any) {
-			return isParryKind(action?.kind)
-		}
+	export const is = {
+		parry: (action: null | Action.Any): action is Action.Parry => action?.kind === Kind.Parry,
+		attack: (action: null | Action.Any): action is Action.Attack => isAttackKind(action?.kind),
+		stab: (action: null | Action.Any): action is Action.Stab => action?.kind === Kind.Stab,
+		swing: (action: null | Action.Any): action is Action.Swing => action?.kind === Kind.Swing,
+	}
 
-		export function isAttack(action: null | Any): action is Attack {
-			return isAttackKind(action?.kind)
-		}
+	export const make = {
+		parry: (weapon: Weapon.Config): Action.Parry => ({
+			kind: Kind.Parry,
+			weapon,
+			seconds: 0,
+			...considerParry(weapon, 0),
+		}),
+		stab: (weapon: Weapon.Config, angle: number): Action.Stab => ({
+			kind: Kind.Stab,
+			weapon,
+			angle,
+			seconds: 0,
+			earlyRecovery: null,
+			attackDurations: weapon.stab,
+			...considerAttack(weapon.stab, Kind.Stab, 0, null, angle),
+		}),
+		swing: (weapon: Weapon.Config, angle: number): Action.Swing => ({
+			kind: Kind.Swing,
+			weapon,
+			angle,
+			seconds: 0,
+			earlyRecovery: null,
+			attackDurations: weapon.stab,
+			...considerAttack(weapon.swing, Kind.Swing, 0, null, angle),
+		}),
 	}
 
 	export namespace Angles {

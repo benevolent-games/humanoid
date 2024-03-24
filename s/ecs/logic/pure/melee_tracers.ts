@@ -15,11 +15,11 @@ export const melee_tracers = system("melee tracers", [
 			const {character, meleeAction, tracer} = components
 			const {swordbase, swordtip} = character.helpers
 			const attack_is_in_windup_phase = (
-				Melee.Action.isAttack(meleeAction) &&
+				Melee.is.attack(meleeAction) &&
 				meleeAction.report.phase === Melee.Phase.Windup
 			)
 			const attack_is_in_release_phase = (
-				Melee.Action.isAttack(meleeAction) &&
+				Melee.is.attack(meleeAction) &&
 				meleeAction.report.phase === Melee.Phase.Release
 			)
 

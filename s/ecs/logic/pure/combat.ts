@@ -10,93 +10,60 @@ import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} f
 
 export const combat = system("combat", [
 
-	behavior("melee aiming")
-		.select({Controllable, Intent, MeleeAim})
-		.act(() => ({intent, meleeAim}) => {
-			if (vec2.magnitude(intent.glance) > 0)
-				meleeAim.lastGlanceNormal = vec2.normalize(intent.glance)
-
-			const smoothed = meleeAim.smoothedGlanceNormal = molasses2d(
-				3,
-				meleeAim.smoothedGlanceNormal,
-				meleeAim.lastGlanceNormal,
-			)
-
-			const glanceAngle = Math.atan2(...smoothed)
-			const zone = glanceAngle < 0
-				? Melee.Angles.zones.left
-				: Melee.Angles.zones.right
-
-			meleeAim.angle = scalar.clamp(glanceAngle, ...zone)
-		}),
-
-	behavior("set melee intent")
-		.select({Controllable, MeleeIntent})
-		.act(({realm}) => components => {
-			const parry = realm.tact.inputs.humanoid.buttons.parry.input
-			const swing = realm.tact.inputs.humanoid.buttons.swing.input
-			const stab = realm.tact.inputs.humanoid.buttons.stab.input
-			components.meleeIntent = {
-				parry: parry.down,
-				swing: swing.down,
-				stab: stab.down,
-			}
-		}),
-
-	behavior("initiate melee action")
-		.select({Controllable, MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
-		.act(() => components => {
-			if (components.meleeAction)
-				return
-
-			const seconds = 0
-			const weapon = Weapon.get(components.meleeWeapon)
-
-			if (components.meleeIntent.parry) {
-				const kind = Melee.Kind.Parry
-				const {weights} = considerParry(weapon, seconds)
-				components.meleeAction = {
-					kind,
-					weapon,
-					seconds,
-					weights,
+	system("intentions", [
+		behavior("set melee intent")
+			.select({Controllable, MeleeIntent})
+			.act(({realm}) => components => {
+				const parry = realm.tact.inputs.humanoid.buttons.parry.input
+				const swing = realm.tact.inputs.humanoid.buttons.swing.input
+				const stab = realm.tact.inputs.humanoid.buttons.stab.input
+				components.meleeIntent = {
+					parry: parry.down,
+					swing: swing.down,
+					stab: stab.down,
 				}
-			}
-			else if (components.meleeIntent.stab) {
-				const kind = Melee.Kind.Stab
-				const angle = components.meleeAim.angle
-				const earlyRecovery = null
-				const attackDurations = weapon.stab
-				const {report, weights} = considerAttack(attackDurations, kind, seconds, earlyRecovery, angle)
-				components.meleeAction = {
-					kind,
-					weapon,
-					seconds,
-					angle,
-					report,
-					weights,
-					earlyRecovery,
-					attackDurations,
-				}
-			}
-			else if (components.meleeIntent.swing) {
-				const kind = Melee.Kind.Swing
-				const angle = components.meleeAim.angle
-				const earlyRecovery = null
-				const attackDurations = weapon.swing
-				const {report, weights} = considerAttack(attackDurations, kind, seconds, earlyRecovery, angle)
-				components.meleeAction = {
-					kind,
-					weapon,
-					seconds,
-					angle,
-					report,
-					weights,
-					earlyRecovery,
-					attackDurations,
-				}
-			}
-		}),
+			}),
+
+		behavior("melee aiming")
+			.select({Intent, MeleeAim})
+			.act(() => ({intent, meleeAim}) => {
+				if (vec2.magnitude(intent.glance) > 0)
+					meleeAim.lastGlanceNormal = vec2.normalize(intent.glance)
+
+				const smoothed = meleeAim.smoothedGlanceNormal = molasses2d(
+					3,
+					meleeAim.smoothedGlanceNormal,
+					meleeAim.lastGlanceNormal,
+				)
+
+				const glanceAngle = Math.atan2(...smoothed)
+				const zone = glanceAngle < 0
+					? Melee.Angles.zones.left
+					: Melee.Angles.zones.right
+
+				meleeAim.angle = scalar.clamp(glanceAngle, ...zone)
+			}),
+
+		behavior("initiate melee action")
+			.select({Controllable, MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
+			.act(() => components => {
+				if (components.meleeAction)
+					return
+
+				const {angle} = components.meleeAim
+				const weapon = Weapon.get(components.meleeWeapon)
+				const {parry, stab, swing} = components.meleeIntent
+
+				if (parry)
+					components.meleeAction = Melee.make.parry(weapon)
+
+				else if (stab)
+					components.meleeAction = Melee.make.stab(weapon, angle)
+
+				else if (swing)
+					components.meleeAction = Melee.make.swing(weapon, angle)
+			}),
+	]),
 
 	behavior("sustain melee action")
 		.select({Controllable, MeleeAction})
@@ -111,11 +78,11 @@ export const combat = system("combat", [
 			if (!meleeAction)
 				return
 
-			if (Melee.Action.isParry(meleeAction)) {
+			if (Melee.is.parry(meleeAction)) {
 				const {weights} = considerParry(meleeAction.weapon, meleeAction.seconds)
 				meleeAction.weights = weights
 			}
-			else if (Melee.Action.isAttack(meleeAction)) {
+			else if (Melee.is.attack(meleeAction)) {
 				const {report, weights} = considerAttack(
 					meleeAction.kind === Melee.Kind.Stab
 						? meleeAction.weapon.stab
@@ -138,12 +105,12 @@ export const combat = system("combat", [
 			if (!meleeAction)
 				return
 
-			if (Melee.Action.isParry(meleeAction)) {
+			if (Melee.is.parry(meleeAction)) {
 				if (meleeAction.weights.progress > 1) {
 					components.meleeAction = null
 				}
 			}
-			else if (Melee.Action.isAttack(meleeAction)) {
+			else if (Melee.is.attack(meleeAction)) {
 				if (meleeAction.report.phase === Melee.Phase.None) {
 					components.meleeAction = null
 				}
@@ -157,13 +124,14 @@ export const combat = system("combat", [
 			if (meleeAction === null)
 				realm.reticuleState.aim = {busy: false, angle: meleeAim.angle}
 
-			else if (Melee.Action.isParry(meleeAction))
+			else if (Melee.is.parry(meleeAction))
 				realm.reticuleState.aim = {busy: false, angle: null}
 
-			else if (Melee.Action.isAttack(meleeAction)) {
-				if (meleeAction.kind === Melee.Kind.Stab)
+			else if (Melee.is.attack(meleeAction)) {
+				if (Melee.is.stab(meleeAction))
 					realm.reticuleState.aim = {busy: true, angle: null}
-				else if (meleeAction.kind === Melee.Kind.Swing)
+
+				else if (Melee.is.swing(meleeAction))
 					realm.reticuleState.aim = {busy: true, angle: meleeAction.angle}
 			}
 		}),

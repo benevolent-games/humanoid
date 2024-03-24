@@ -64,6 +64,16 @@ export class Respawner {
 		this.#dispose = fn()
 	}
 
+	spawnExtraBiped() {
+		const [selector, data] = Archetypes.biped({
+			gimbal: [0, 0.5],
+			debug: true,
+			position: this.#last_position,
+		})
+		const entity = this.world.createEntity(selector, data)
+		return entity
+	}
+
 	gotoSpectator() {
 		if (this.current === "humanoid")
 			this.respawn()

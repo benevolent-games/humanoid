@@ -34,6 +34,10 @@ export default (realm: HuRealm, world: World<HuRealm>) => {
 		if (button.down && !button.repeat)
 			respawner.respawn()
 	})
+	realm.tact.inputs.humanoid.buttons.bot_spawn.on(button => {
+		if (button.down && !button.repeat)
+			respawner.spawnExtraBiped()
+	})
 
 	// establish a level switcher for cycling levels
 	const levelSwitcher = new LevelSwitcher(world, realm.gameplan, respawner)

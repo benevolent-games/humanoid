@@ -54,7 +54,6 @@ export class CameraRig extends HybridComponent<HuRealm, {
 		headlocus.position.y = torusLift + (torusDiameter / 2)
 
 		// parenting
-		// headbox.setParent(headlocus)
 		headlocus.setParent(torusRoot)
 		torus.setParent(torusRoot)
 		torusRoot.setParent(transform)
@@ -71,14 +70,15 @@ export class CameraRig extends HybridComponent<HuRealm, {
 
 	applyGimbal(gimbal: Vec2) {
 		const {transform, torusRoot, headlocus, headbox} = this.parts
-		const [x, y] = gimbal
 
-		// convert to [0,1] range, then apply spline, then convert back to radians
-		const rY = scalar.remap(y, halfcircle)
-		const [,mY] = apply_spline_to_gimbal_y([x, rY], [0, .5, .9])
-		const moddedGimbal: Vec2 = [x, scalar.map(mY, halfcircle)]
+		// const [x, y] = gimbal
+		// // convert to [0,1] range, then apply spline, then convert back to radians
+		// const rY = scalar.remap(y, halfcircle)
+		// const [,mY] = apply_spline_to_gimbal_y([x, rY], [0, .5, .9])
+		// const moddedGimbal: Vec2 = [x, scalar.map(mY, halfcircle)]
+		// const quaternions = gimbaltool(moddedGimbal).quaternions()
 
-		const quaternions = gimbaltool(moddedGimbal).quaternions()
+		const quaternions = gimbaltool(gimbal).quaternions()
 		transform.rotationQuaternion = quaternions.horizontal
 		torusRoot.rotationQuaternion = quaternions.vertical
 		torusRoot.computeWorldMatrix(true)
