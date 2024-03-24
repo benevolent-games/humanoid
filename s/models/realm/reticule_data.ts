@@ -1,7 +1,14 @@
 
-import {signal} from "@benev/slate"
+import {flatstate} from "@benev/slate"
 
-export class ReticuleData {
-	aim_direction = signal(0)
+export type ReticuleData = ReturnType<typeof makeReticuleData>
+
+export function makeReticuleData() {
+	return flatstate({
+		enabled: true,
+		size: 1,
+		opacity: 0.5,
+		aim_angle: 0,
+	})
 }
 

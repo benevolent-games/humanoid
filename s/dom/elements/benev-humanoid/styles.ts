@@ -39,6 +39,7 @@ canvas {
 	margin: auto;
 	z-index: 1;
 	display: block;
+	pointer-events: none;
 }
 
 `

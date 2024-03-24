@@ -28,7 +28,7 @@ export const combat = system("combat", [
 				: Melee.Angles.zones.right
 
 			meleeAim.angle = scalar.clamp(glanceAngle, ...zone)
-			realm.reticuleData.aim_direction.value = scalar.radians.to.degrees(meleeAim.angle)
+			realm.reticuleData.aim_angle = scalar.radians.to.degrees(meleeAim.angle)
 		}),
 
 	behavior("set melee intent")
