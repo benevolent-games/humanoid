@@ -110,41 +110,47 @@ export namespace Melee {
 		export const halfForbidden = forbidden / 2
 
 		/*
-		##    -45  0  45
-		##      \     /
-		## -90 ————|———— 90
-		##      /     \
-		##   -135     135
+		## angles expressed as sixteenths of a circle
+		##     -1  0  1
+		##       \ | /
+		##  -4 ————O———— 4
+		##       / | \
+		##     -7  8  7
 		*/
 		export const splines = (
 			ob({
 
 				// right side
-				a2: [0, 45, 90],
-				a3: [45, 90, 135],
-				a4: [90, 135, 180],
+				a2: [0, 1, 4],
+				a3: [1, 4, 7],
+				a4: [4, 7, 8],
 
 				// left side
-				a1: [0, -45, -90],
-				a6: [-45, -90, -135],
-				a5: [-90, -135, -180],
+				a1: [0, -1, -4],
+				a6: [-1, -4, -7],
+				a5: [-4, -7, -8],
 			})
 			.map(
 				values => values
 					.sort((a, b) => a - b)
-					.map(scalar.radians.from.degrees)
+
+					// convert circle-sixteenths into radians
+					.map(x => scalar.radians.from.turns(x / 16))
+
+					// spline point ramping from 0, to 1, back to 0
 					.map((v, index) => [v, index === 1 ? 1 : 0] as Vec2)
 			)
 		)
 
+		// TODO delete obsolete code
 		export const zones = {
 			left: [
-				degrees(0) - halfForbidden,
-				degrees(-180) + halfForbidden,
+				-scalar.radians.from.turns(1 / 16),
+				-scalar.radians.from.turns(7 / 16),
 			] as Vec2,
 			right: [
-				degrees(0) + halfForbidden,
-				degrees(180) - halfForbidden,
+				scalar.radians.from.turns(1 / 16),
+				scalar.radians.from.turns(7 / 16),
 			] as Vec2,
 		}
 	}
