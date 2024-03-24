@@ -5,18 +5,20 @@ import {Input, Menus, SettingsMenu, menu} from "@benev/toolbox"
 import {Game} from "../../../types.js"
 import {nexus} from "../../../nexus.js"
 import {NotesMenu} from "./menus/notes.js"
+import {ConfigMenu} from "./menus/config.js"
 import {LevelsMenu} from "./menus/levels.js"
-import {QualityMenu} from "./menus/quality.js"
 
-export const MenuSystem = nexus.shadow_view(use => (
+export const MenuSystem = nexus.light_view(use => (
 		game: Game,
 		render: (menus: Menus) => any,
 	) => {
 
+	use.name("menu-system")
+
 	const menus = use.once(() => new Menus([
 		menu("notes", () => NotesMenu([game])),
 		menu("levels", () => LevelsMenu([game])),
-		menu("quality", () => QualityMenu([game])),
+		menu("settings", () => ConfigMenu([game])),
 		menu("effects", () => SettingsMenu([game.stage])),
 	]))
 

@@ -47,16 +47,28 @@ export const NotesMenu = nexus.shadow_view(use => (_game: Game) => {
 				<code>tab</code> to toggle menu.
 				<code>wasd</code> to walk around.
 				<code>shift</code> for sprint.
-				<code>alt</code> for slow.
+				<code>alt</code> to walk slow.
 				<code>c</code> to crouch.
 				hold <code>z</code> to orbit the camera.
 				<code>left-click</code> to swing your sword.
-				<code>middle-click</code> or <code>r</code> to switch camera angle.
-				<code>right-click</code> or <code>t</code> to toggle human/spectator.
+				<code>middle-click</code> to stab.
+				<code>right-click</code> to parry.
+				<code>r</code> to switch camera angle.
+				<code>t</code> to toggle human/spectator.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>full 270-degree attack system.</span>
+				<small>2024-03-24</small>
+			</h1>
+			<p>now you can swing your sword in any direction, except straight up/down.</p>
+			<p>you can also parry and stab.</p>
+			<p>added a new 'settings' menu, where you can change your mouse sensitivity and set reticule preferences.</p>
+		</section>
 
 		<section>
 			<h1>

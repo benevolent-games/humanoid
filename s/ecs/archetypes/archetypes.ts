@@ -1,20 +1,11 @@
 
 import {Selectors} from "./selectors.js"
 import {arch, params} from "./helpers.js"
-import {Perspective, Sensitivity} from "../schema/schema.js"
+import {Perspective} from "../schema/schema.js"
 import {CState, Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
 
 export namespace Archetypes {
-	export const sensitivity = arch({Sensitivity}, () => ({
-		sensitivity: {
-			keys: 500 / 10_000,
-			mouse: 20 / 10_000,
-			stick: 100 / 10_000,
-		},
-	}))
-
 	export const freecam = arch(Selectors.freecam, ({position, gimbal}: {position: Vec3, gimbal: Vec2}) => ({
-		...params(sensitivity()),
 		position,
 		transform: {},
 		mouseAccumulator: {},
@@ -104,11 +95,19 @@ export namespace Archetypes {
 			},
 		},
 		rotation: quat.identity(),
-		attackage: {
-			seconds: 0,
-			technique: null,
-		},
 		orbit: null,
+		meleeAim: {
+			smoothedGlanceNormal: [1, 0],
+			lastGlanceNormal: [1, 0],
+			angle: scalar.radians.from.degrees(90),
+		},
+		meleeIntent: {
+			parry: false,
+			stab: false,
+			swing: false,
+		},
+		meleeWeapon: "longsword",
+		meleeAction: null,
 		tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
 	}))
 }

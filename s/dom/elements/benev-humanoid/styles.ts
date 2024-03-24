@@ -31,5 +31,16 @@ canvas {
 	right: 0.5em;
 }
 
+[view="reticule"] {
+	position: absolute;
+	inset: 0;
+	width: 1em;
+	height: 1em;
+	margin: auto;
+	z-index: 1;
+	display: block;
+	pointer-events: none;
+}
+
 `
 

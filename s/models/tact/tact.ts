@@ -6,7 +6,7 @@ export class HuTact extends Tact<HuBindings> {
 	connectedDevices = {
 		keyboard: new HuTact.devices.Keyboard(window),
 		mouse: new HuTact.devices.PointerMovements(window, "mouse"),
-		mouseButtons: new HuTact.devices.PointerButtons(window),
+		mouseButtons: new HuTact.devices.MouseButtons(window),
 	}
 
 	constructor() {

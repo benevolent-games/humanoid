@@ -1,8 +1,8 @@
 
 import {behavior, system} from "../../hub.js"
-import {get_trajectory_from_cardinals, vec2} from "@benev/toolbox"
+import {get_trajectory_from_cardinals, scalar, vec2} from "@benev/toolbox"
 import {MouseAccumulator} from "../../schema/hybrids/mouse_accumulator.js"
-import {Controllable, Intent, Sensitivity, Stance} from "../../schema/schema.js"
+import {Controllable, Intent, Stance} from "../../schema/schema.js"
 
 export const intentions = system("intentions", [
 	behavior("wipe intent")
@@ -14,32 +14,25 @@ export const intentions = system("intentions", [
 				fast: false,
 				slow: false,
 				jump: false,
-				attack: false,
 			}
 		}),
 
-	behavior("set attack button status")
-		.select({Controllable, Intent})
-		.act(({realm}) => c => {
-			const {down, repeat} = realm.tact.inputs.humanoid.buttons.attack.input
-			c.intent.attack = down && !repeat
-		}),
-
 	behavior("add mouse movements to glance")
-		.select({Controllable, Intent, MouseAccumulator, Sensitivity})
+		.select({Controllable, Intent, MouseAccumulator})
 		.act(({realm}) => c => {
 			const [x, y] = c.mouseAccumulator.movement.steal()
+			const mouseSensitivity = scalar.radians.from.arcseconds(realm.sensitivity.mouse)
 			c.intent.glance = vec2.add(
 				c.intent.glance,
 				realm.stage.pointerLocker.locked
-					? vec2.multiplyBy([x, -y], c.sensitivity.mouse)
+					? vec2.multiplyBy([x, -y], mouseSensitivity)
 					: vec2.zero(),
 			)
 		}),
 
 	behavior("add keyboard looking to glance")
-		.select({Controllable, Intent, Sensitivity})
-		.act(({realm}) => c => {
+		.select({Controllable, Intent})
+		.act(({realm, tick}) => c => {
 			const {buttons} = realm.tact.inputs.humanoid
 			const [x, y] = get_trajectory_from_cardinals({
 				north: buttons.up.input.down,
@@ -47,9 +40,10 @@ export const intentions = system("intentions", [
 				west: buttons.left.input.down,
 				east: buttons.right.input.down,
 			})
+			const keySensitivity = scalar.radians.from.degrees(realm.sensitivity.keys) * tick.seconds
 			c.intent.glance = vec2.add(
 				c.intent.glance,
-				vec2.multiplyBy([-x, y], c.sensitivity.keys),
+				vec2.multiplyBy([-x, y], keySensitivity),
 			)
 		}),
 
