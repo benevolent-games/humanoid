@@ -44,24 +44,24 @@ export const ConfigMenu = nexus.shadow_view(use => (game: Game) => {
 			<h2>reticule</h2>
 			${NuiCheckbox([{
 				label: "enabled",
-				checked: game.reticuleData.enabled,
-				set: c => game.reticuleData.enabled = c,
+				checked: game.reticuleState.enabled,
+				set: c => game.reticuleState.enabled = c,
 			}])}
 			${NuiRange([{
 				label: "size",
 				max: 3,
 				min: .5,
 				step: .1,
-				value: game.reticuleData.size,
-				set: x => game.reticuleData.size = x,
+				value: game.reticuleState.size,
+				set: x => game.reticuleState.size = x,
 			}])}
 			${NuiRange([{
 				label: "opacity",
 				max: 1,
 				min: .1,
 				step: .1,
-				value: game.reticuleData.opacity,
-				set: x => game.reticuleData.opacity = x,
+				value: game.reticuleState.opacity,
+				set: x => game.reticuleState.opacity = x,
 			}])}
 		</section>
 	`

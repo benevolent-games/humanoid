@@ -1,6 +1,7 @@
 
-import {Menus} from "@benev/toolbox"
 import {css, html} from "@benev/slate"
+import {Menus, scalar} from "@benev/toolbox"
+
 import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
 import {icon_tabler_chevron_up} from "../../../../icons/tabler/chevron-up.js"
@@ -19,9 +20,8 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			z-index: 1;
 			transition: 200ms linear opacity;
 
-			&[data-active] {
-				opacity: 1;
-			}
+			&[data-active] { opacity: 1; }
+			&[data-busy] { color: red; }
 		}
 
 		.graphic {
@@ -40,7 +40,7 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			width: 0.4em;
 			height: 0.4em;
 			border: 1px solid #000;
-			background: #fff;
+			background: currentColor;
 			border-radius: 1em;
 		}
 
@@ -53,18 +53,25 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 		}
 	`)
 
-	const {aim_angle, size, enabled, opacity} = game.reticuleData
+	const {aim, size, enabled, opacity} = game.reticuleState
+
+	const angleStyle = aim.angle === null
+		? `opacity: 0;`
+		: `transform: rotate(${scalar.radians.to.degrees(aim.angle)}deg);`
 
 	return enabled ? html`
 		<div
 			class="shell"
 			?data-active="${!menus.open.value}"
+			?data-busy="${aim.busy}"
 			style="font-size: ${size}em;">
 			<div class="wrapper" style="opacity: ${opacity};">
 				<div class="aim graphic">
 					<div class="point"></div>
 				</div>
-				<div class="angle graphic" style="transform: rotate(${aim_angle}deg);">
+				<div
+					class="angle graphic"
+					style="${angleStyle}">
 					${icon_tabler_chevron_up}
 				</div>
 			</div>

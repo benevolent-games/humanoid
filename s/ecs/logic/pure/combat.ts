@@ -12,7 +12,7 @@ export const combat = system("combat", [
 
 	behavior("melee aiming")
 		.select({Controllable, Intent, MeleeAim})
-		.act(({realm}) => ({intent, meleeAim}) => {
+		.act(() => ({intent, meleeAim}) => {
 			if (vec2.magnitude(intent.glance) > 0)
 				meleeAim.lastGlanceNormal = vec2.normalize(intent.glance)
 
@@ -28,7 +28,6 @@ export const combat = system("combat", [
 				: Melee.Angles.zones.right
 
 			meleeAim.angle = scalar.clamp(glanceAngle, ...zone)
-			realm.reticuleData.aim_angle = scalar.radians.to.degrees(meleeAim.angle)
 		}),
 
 	behavior("set melee intent")
@@ -148,6 +147,24 @@ export const combat = system("combat", [
 				if (meleeAction.report.phase === Melee.Phase.None) {
 					components.meleeAction = null
 				}
+			}
+		}),
+
+	behavior("melee aiming")
+		.select({Controllable, MeleeAim, MeleeAction})
+		.act(({realm}) => ({meleeAim, meleeAction}) => {
+
+			if (meleeAction === null)
+				realm.reticuleState.aim = {busy: false, angle: meleeAim.angle}
+
+			else if (Melee.Action.isParry(meleeAction))
+				realm.reticuleState.aim = {busy: false, angle: null}
+
+			else if (Melee.Action.isAttack(meleeAction)) {
+				if (meleeAction.kind === Melee.Kind.Stab)
+					realm.reticuleState.aim = {busy: true, angle: null}
+				else if (meleeAction.kind === Melee.Kind.Swing)
+					realm.reticuleState.aim = {busy: true, angle: meleeAction.angle}
 			}
 		}),
 ])
