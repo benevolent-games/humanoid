@@ -5,9 +5,7 @@ import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
 
 import {HuRealm} from "../../../models/realm/realm.js"
-import {halfcircle} from "../../../tools/halfcircle.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
-import {apply_spline_to_gimbal_y} from "../../logic/playable/simulation/apply_spline_to_gimbal_y.js"
 
 export class CameraRig extends HybridComponent<HuRealm, {
 		height: number

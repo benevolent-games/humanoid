@@ -4,7 +4,7 @@ import {Camera} from "../../schema/hybrids/camera.js"
 import {molasses3d} from "../../../tools/molasses.js"
 import {behavior, responder, system} from "../../hub.js"
 import {CameraRig} from "../../schema/hybrids/camera_rig.js"
-import {Debug, Gimbal, Orbit, Perspective, Position, Rotation, Smoothing} from "../../schema/schema.js"
+import {Controllable, Debug, Gimbal, Orbit, Perspective, Position, Rotation, Smoothing} from "../../schema/schema.js"
 
 export const camera_rigging = system("camera rigging", [
 	responder("camera rig debug")
@@ -46,7 +46,7 @@ export const camera_rigging = system("camera rigging", [
 		})),
 
 	responder("switch perspective")
-		.select({Perspective})
+		.select({Controllable, Perspective})
 		.respond(({realm}) => {
 			let unbind = () => {}
 			return {

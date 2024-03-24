@@ -45,7 +45,7 @@ export const combat = system("combat", [
 			}),
 
 		behavior("initiate melee action")
-			.select({Controllable, MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
+			.select({MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
 			.act(() => components => {
 				if (components.meleeAction)
 					return
@@ -66,14 +66,14 @@ export const combat = system("combat", [
 	]),
 
 	behavior("sustain melee action")
-		.select({Controllable, MeleeAction})
+		.select({MeleeAction})
 		.act(({tick}) => ({meleeAction}) => {
 			if (meleeAction)
 				meleeAction.seconds += tick.seconds
 		}),
 
 	behavior("update melee actions")
-		.select({Controllable, MeleeAction})
+		.select({MeleeAction})
 		.act(() => ({meleeAction}) => {
 			if (!meleeAction)
 				return
@@ -98,7 +98,7 @@ export const combat = system("combat", [
 		}),
 
 	behavior("end melee action")
-		.select({Controllable, MeleeAction})
+		.select({MeleeAction})
 		.act(() => components => {
 			const {meleeAction} = components
 

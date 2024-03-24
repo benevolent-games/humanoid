@@ -32,10 +32,11 @@ export namespace Selectors {
 	export const biped = select({
 		Debug,
 
-		Camera,
+		CameraRig,
 		MouseAccumulator,
 		Intent,
 		Gimbal,
+		Orbit,
 
 		Force,
 		Impetus,
@@ -53,6 +54,7 @@ export namespace Selectors {
 		Velocity,
 		CoolGimbal,
 
+		Perspective,
 		Character,
 		Choreography,
 		Ambulation,
@@ -67,10 +69,8 @@ export namespace Selectors {
 
 	export const humanoid = select({
 		...biped,
+		Camera,
 		Controllable,
-		CameraRig,
-		Perspective,
-		Orbit,
 	})
 }
 

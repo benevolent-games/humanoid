@@ -47,12 +47,11 @@ export namespace Archetypes {
 		position,
 		gimbal,
 
-		mouseAccumulator: {},
-		camera: {
-			fov: 90,
-			minZ: 0.12,
-			maxZ: 15_000,
+		cameraRig: {
+			height: 1.75,
+			third_person_distance: 1,
 		},
+		mouseAccumulator: {},
 		intent: {
 			amble: vec2.zero(),
 			glance: vec2.zero(),
@@ -61,6 +60,7 @@ export namespace Archetypes {
 			jump: false,
 			attack: false,
 		},
+		orbit: null,
 
 		force: vec2.zero(),
 		impetus: vec3.zero(),
@@ -81,9 +81,10 @@ export namespace Archetypes {
 		previousPosition: position,
 		coolGimbal: {gimbal, records: [gimbal]},
 		velocity: vec3.zero(),
+		perspective: "third_person",
 		character: {height: 1.75},
 		choreography: {
-			swivel: 0.5,
+			swivel: 0,
 			settings: {
 				swivel_duration: 40,
 				swivel_readjustment_margin: scalar.radians.from.degrees(10),
@@ -129,12 +130,12 @@ export namespace Archetypes {
 		}) => ({
 		...params(biped({debug, position, gimbal})),
 		controllable: {},
-		cameraRig: {
-			height: 1.75,
-			third_person_distance: 1,
+		camera: {
+			fov: 90,
+			minZ: 0.12,
+			maxZ: 15_000,
 		},
 		perspective,
-		orbit: null,
 	}))
 }
 
