@@ -1,7 +1,7 @@
 
 import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
-import {MeleeAction} from "../../schema/schema.js"
+import {Health, MeleeAction} from "../../schema/schema.js"
 import {Melee} from "../../../models/attacking/melee.js"
 import {Tracer} from "../../schema/hybrids/tracer/tracer.js"
 import {Tracing} from "../../schema/hybrids/tracer/parts/types.js"
@@ -11,7 +11,7 @@ export const melee_tracers = system("melee tracers", [
 
 	behavior("tracer")
 		.select({Character, Tracer, MeleeAction})
-		.act(({realm: {physics}}) => components => {
+		.act(({world, realm: {physics}}) => (components, id) => {
 			const {character, meleeAction, tracer} = components
 			const {swordbase, swordtip} = character.helpers
 			const attack_is_in_windup_phase = (
@@ -78,7 +78,7 @@ export const melee_tracers = system("melee tracers", [
 							nearHitCallback,
 							undefined,
 							physics.grouper.specify({
-								filter: [physics.groups.level, physics.groups.dynamic],
+								filter: [physics.groups.level, physics.groups.dynamic, physics.groups.capsule],
 								membership: [physics.groups.sensor],
 							}),
 						)
@@ -92,7 +92,7 @@ export const melee_tracers = system("melee tracers", [
 							farHitCallback,
 							undefined,
 							physics.grouper.specify({
-								filter: [physics.groups.dynamic],
+								filter: [physics.groups.dynamic, physics.groups.capsule],
 								membership: [physics.groups.sensor],
 							}),
 						)
@@ -101,6 +101,8 @@ export const melee_tracers = system("melee tracers", [
 					const [hit] = [...hits.near, ...hits.far]
 
 					if (hit) {
+						meleeAction.earlyRecovery = meleeAction.seconds
+
 						const dynamic = physics.dynamics.get(hit)
 						if (dynamic && tracingDetails.direction) {
 							dynamic.rigid.applyImpulseAtPoint(
@@ -109,7 +111,15 @@ export const melee_tracers = system("melee tracers", [
 								true,
 							)
 						}
-						meleeAction.earlyRecovery = meleeAction.seconds
+
+						const capsule = physics.capsules.get(hit)
+						if (capsule) {
+							const we_are_not_hitting_ourselves = capsule.entityId !== id
+							if (we_are_not_hitting_ourselves) {
+								const entity = world.getEntity(capsule.entityId, {Health})
+								entity.health = 0
+							}
+						}
 					}
 				}
 			}

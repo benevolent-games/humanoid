@@ -1,5 +1,5 @@
 
-import {Vec2, Vec3, World, vec3} from "@benev/toolbox"
+import {Id, Vec2, Vec3, World, vec3} from "@benev/toolbox"
 
 import {Cycle} from "../../tools/cycle.js"
 import {Archetypes} from "../../ecs/archetypes/archetypes.js"
@@ -64,14 +64,24 @@ export class Respawner {
 		this.#dispose = fn()
 	}
 
-	spawnExtraBiped() {
+	#bots: Id[] = []
+
+	spawnBot() {
 		const [selector, data] = Archetypes.bot({
+			debug: false,
 			gimbal: [0, 0],
-			debug: true,
 			position: [0, 10, 2],
 		})
 		const entity = this.world.createEntity(selector, data)
+		this.#bots.push(entity.id)
 		return entity
+	}
+
+	deleteBot() {
+		if (this.#bots.length > 0) {
+			const id = this.#bots.unshift()
+			this.world.deleteEntity(id)
+		}
 	}
 
 	gotoSpectator() {

@@ -7,7 +7,7 @@ import {GimbalRig} from "../schema/hybrids/gimbal_rig.js"
 import {CameraRig} from "../schema/hybrids/camera_rig.js"
 import {Character} from "../schema/hybrids/character/character.js"
 import {MouseAccumulator} from "../schema/hybrids/mouse_accumulator.js"
-import {AirborneTrajectory, Ambulation, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, CoolGimbal, PreviousPosition, Rotation, Smoothing, Spectator, Speeds, Stance, Velocity, Orbit, MeleeAim, MeleeIntent, MeleeWeapon, MeleeAction, Bot} from "../schema/schema.js"
+import {AirborneTrajectory, Ambulation, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, CoolGimbal, PreviousPosition, Rotation, Smoothing, Spectator, Speeds, Stance, Velocity, Orbit, MeleeAim, MeleeIntent, MeleeWeapon, MeleeAction, Bot, Ai, Seed, Health, Humanoid} from "../schema/schema.js"
 
 export namespace Selectors {
 	export const freecam = select({
@@ -30,6 +30,7 @@ export namespace Selectors {
 	})
 
 	export const biped = select({
+		Humanoid,
 		Debug,
 
 		CameraRig,
@@ -65,6 +66,8 @@ export namespace Selectors {
 		MeleeWeapon,
 		MeleeAction,
 		Tracer,
+
+		Health,
 	})
 
 	export const humanoid = select({
@@ -76,6 +79,8 @@ export namespace Selectors {
 	export const bot = select({
 		...biped,
 		Bot,
+		Ai,
+		Seed,
 	})
 }
 

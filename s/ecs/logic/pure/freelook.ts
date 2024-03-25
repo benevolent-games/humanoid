@@ -8,7 +8,7 @@ import {Gimbal, Intent, CoolGimbal, Orbit, Controllable} from "../../schema/sche
 
 export const freelook = system("freelook", [
 	behavior("apply freelook, onto glance and gimbal based on intent")
-		.select({Controllable, Intent, Gimbal})
+		.select({Intent, Gimbal})
 		.act(() => c => {
 			const {
 				gimbal: [gimbalX, gimbalY],

@@ -36,7 +36,11 @@ export default (realm: HuRealm, world: World<HuRealm>) => {
 	})
 	realm.tact.inputs.humanoid.buttons.bot_spawn.on(button => {
 		if (button.down && !button.repeat)
-			respawner.spawnExtraBiped()
+			respawner.spawnBot()
+	})
+	realm.tact.inputs.humanoid.buttons.bot_delete.on(button => {
+		if (button.down && !button.repeat)
+			respawner.deleteBot()
 	})
 
 	// establish a level switcher for cycling levels

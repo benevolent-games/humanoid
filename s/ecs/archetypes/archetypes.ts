@@ -42,6 +42,7 @@ export namespace Archetypes {
 			position,
 			gimbal,
 		}) => ({
+		humanoid: {},
 		debug,
 
 		position,
@@ -120,6 +121,7 @@ export namespace Archetypes {
 		meleeWeapon: "longsword",
 		meleeAction: null,
 		tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
+		health: 1,
 	}))
 
 	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal, perspective}: {
@@ -145,6 +147,8 @@ export namespace Archetypes {
 		}) => ({
 		...params(biped({debug, position, gimbal})),
 		bot: {},
+		ai: {},
+		seed: Math.random(),
 	}))
 }
 
