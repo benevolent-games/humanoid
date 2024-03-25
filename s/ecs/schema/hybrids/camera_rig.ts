@@ -6,6 +6,7 @@ import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/too
 
 import {HuRealm} from "../../../models/realm/realm.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
+import {adjust_gimbal_verticality_to_match_character_anim} from "../../logic/playable/simulation/adjust_gimbal_verticality_to_match_character_anim.js"
 
 export class CameraRig extends HybridComponent<HuRealm, {
 		height: number
@@ -69,14 +70,10 @@ export class CameraRig extends HybridComponent<HuRealm, {
 	applyGimbal(gimbal: Vec2) {
 		const {transform, torusRoot, headlocus, headbox} = this.parts
 
-		// const [x, y] = gimbal
-		// // convert to [0,1] range, then apply spline, then convert back to radians
-		// const rY = scalar.remap(y, halfcircle)
-		// const [,mY] = apply_spline_to_gimbal_y([x, rY], [0, .5, .9])
-		// const moddedGimbal: Vec2 = [x, scalar.map(mY, halfcircle)]
-		// const quaternions = gimbaltool(moddedGimbal).quaternions()
+		const quaternions = gimbaltool(
+			adjust_gimbal_verticality_to_match_character_anim(gimbal)
+		).quaternions()
 
-		const quaternions = gimbaltool(gimbal).quaternions()
 		transform.rotationQuaternion = quaternions.horizontal
 		torusRoot.rotationQuaternion = quaternions.vertical
 		torusRoot.computeWorldMatrix(true)

@@ -65,7 +65,7 @@ export class Respawner {
 	}
 
 	spawnExtraBiped() {
-		const [selector, data] = Archetypes.biped({
+		const [selector, data] = Archetypes.bot({
 			gimbal: [0, 0],
 			debug: true,
 			position: [0, 10, 2],

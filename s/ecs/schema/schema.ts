@@ -87,12 +87,8 @@ export class Perspective extends Component<"third_person" | "first_person"> {}
 
 export class Speeds extends Component<Speeds2>{}
 export class Stance extends Component<"stand" | "crouch"> {}
-// export class Sensitivity extends Component<{
-// 	keys: number
-// 	mouse: number
-// 	stick: number
-// }> {}
 
 export class Spectator extends Component<{}> {}
 export class Humanoid extends Component<{}> {}
+export class Bot extends Component<{}> {}
 

@@ -137,5 +137,14 @@ export namespace Archetypes {
 		},
 		perspective,
 	}))
+
+	export const bot = arch(Selectors.bot, ({debug, position, gimbal}: {
+			debug: boolean,
+			position: Vec3,
+			gimbal: Vec2,
+		}) => ({
+		...params(biped({debug, position, gimbal})),
+		bot: {},
+	}))
 }
 
