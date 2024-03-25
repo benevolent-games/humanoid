@@ -7,6 +7,14 @@ import {Melee} from "../../models/attacking/melee.js"
 import {Weapon} from "../../models/attacking/weapon.js"
 import {Choreo} from "../../models/choreographer/types.js"
 
+export class SpawnIntent extends Component<{
+	togglePlayer: boolean
+	spawnBot: boolean
+	deleteBot: boolean
+}> {}
+
+export class Spawned extends Component<{}> {}
+
 export class Debug extends Component<boolean> {}
 export class Children extends Component<Id[]> {}
 
@@ -14,7 +22,10 @@ export class Scale extends Component<Vec3> {}
 export class Position extends Component<Vec3> {}
 export class Rotation extends Component<Quat> {}
 export class Velocity extends Component<Vec3> {}
+
+/** rotations in radians, x-axis is 360 degrees, y-axis is 180 degrees from -90 to 90. */
 export class Gimbal extends Component<Vec2> {}
+
 export class CoolGimbal extends Component<{
 	records: Vec2[]
 	gimbal: Vec2
@@ -34,10 +45,8 @@ export class Shape extends Component<"box"> {}
 
 export class Ai extends Component<{}> {}
 export class Seed extends Component<number> {}
-export class DesiredDirection extends Component<Vec2> {}
 
 export class Controllable extends Component<{}> {}
-
 export class Intent extends Component<{
 	amble: Vec2
 	glance: Vec2
@@ -84,12 +93,10 @@ export class Perspective extends Component<"third_person" | "first_person"> {}
 
 export class Speeds extends Component<Speeds2>{}
 export class Stance extends Component<"stand" | "crouch"> {}
-// export class Sensitivity extends Component<{
-// 	keys: number
-// 	mouse: number
-// 	stick: number
-// }> {}
+
+export class Health extends Component<number>{}
 
 export class Spectator extends Component<{}> {}
 export class Humanoid extends Component<{}> {}
+export class Bot extends Component<{}> {}
 

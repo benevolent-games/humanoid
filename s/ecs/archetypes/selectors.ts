@@ -2,17 +2,15 @@
 import {select} from "./helpers.js"
 import {Camera} from "../schema/hybrids/camera.js"
 import {Capsule} from "../schema/hybrids/capsule.js"
-import {Transform} from "../schema/hybrids/transform.js"
 import {Tracer} from "../schema/hybrids/tracer/tracer.js"
 import {GimbalRig} from "../schema/hybrids/gimbal_rig.js"
 import {CameraRig} from "../schema/hybrids/camera_rig.js"
 import {Character} from "../schema/hybrids/character/character.js"
 import {MouseAccumulator} from "../schema/hybrids/mouse_accumulator.js"
-import {AirborneTrajectory, Ambulation, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, CoolGimbal, PreviousPosition, Rotation, Smoothing, Spectator, Speeds, Stance, Velocity, Orbit, MeleeAim, MeleeIntent, MeleeWeapon, MeleeAction} from "../schema/schema.js"
+import {AirborneTrajectory, Ambulation, Choreography, Controllable, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Perspective, Position, CoolGimbal, PreviousPosition, Rotation, Smoothing, Spectator, Speeds, Stance, Velocity, Orbit, MeleeAim, MeleeIntent, MeleeWeapon, MeleeAction, Bot, Ai, Seed, Health, Humanoid} from "../schema/schema.js"
 
 export namespace Selectors {
 	export const freecam = select({
-		Transform,
 		Camera,
 		Controllable,
 		MouseAccumulator,
@@ -31,9 +29,15 @@ export namespace Selectors {
 		GimbalRig,
 	})
 
-	export const humanoid = select({
-		...freecam,
+	export const biped = select({
+		Humanoid,
 		Debug,
+
+		CameraRig,
+		MouseAccumulator,
+		Intent,
+		Gimbal,
+		Orbit,
 
 		Force,
 		Impetus,
@@ -42,8 +46,6 @@ export namespace Selectors {
 		Speeds,
 
 		Capsule,
-		CameraRig,
-		Perspective,
 		Stance,
 		Grounding,
 		AirborneTrajectory,
@@ -52,8 +54,8 @@ export namespace Selectors {
 		PreviousPosition,
 		Velocity,
 		CoolGimbal,
-		Orbit,
 
+		Perspective,
 		Character,
 		Choreography,
 		Ambulation,
@@ -64,6 +66,21 @@ export namespace Selectors {
 		MeleeWeapon,
 		MeleeAction,
 		Tracer,
+
+		Health,
+	})
+
+	export const humanoid = select({
+		...biped,
+		Camera,
+		Controllable,
+	})
+
+	export const bot = select({
+		...biped,
+		Bot,
+		Ai,
+		Seed,
 	})
 }
 

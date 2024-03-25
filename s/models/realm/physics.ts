@@ -1,6 +1,6 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
-import {Physics, Rapier, debug_colors} from "@benev/toolbox"
+import {Id, Physics, Rapier, debug_colors} from "@benev/toolbox"
 
 export class HuPhysics extends Physics {
 	constructor({scene, hertz, colors}: {
@@ -19,5 +19,6 @@ export class HuPhysics extends Physics {
 
 	readonly trimesh_colliders = new Set<Rapier.Collider>()
 	readonly dynamics = new Map<Rapier.Collider, {rigid: Rapier.RigidBody}>()
+	readonly capsules = new Map<Rapier.Collider, {entityId: Id, rigid: Rapier.RigidBody}>()
 }
 

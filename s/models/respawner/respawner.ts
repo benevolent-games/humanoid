@@ -1,5 +1,5 @@
 
-import {Vec2, Vec3, World, vec3} from "@benev/toolbox"
+import {Id, Vec2, Vec3, World, vec3} from "@benev/toolbox"
 
 import {Cycle} from "../../tools/cycle.js"
 import {Archetypes} from "../../ecs/archetypes/archetypes.js"
@@ -7,7 +7,7 @@ import {Archetypes} from "../../ecs/archetypes/archetypes.js"
 export class Respawner {
 	constructor(public readonly world: World<any>) {}
 	#dispose = () => {}
-	#last_gimbal: Vec2 = [0, .5]
+	#last_gimbal: Vec2 = [0, 0]
 	#last_position: Vec3 = [0, 10, 0]
 	#current: "humanoid" | "spectator" = "humanoid"
 
@@ -18,7 +18,7 @@ export class Respawner {
 			this.#current = "spectator"
 			const [selector, data] = Archetypes.spectator({
 				position: vec3.add(this.#last_position, [0, 1, 0]),
-				gimbal: [0, 0.5],
+				gimbal: [0, 0],
 			})
 			const entity = this.world.createEntity( selector, {
 				...data,
@@ -62,6 +62,26 @@ export class Respawner {
 		const fn = this.#cycle.next()
 		this.#dispose()
 		this.#dispose = fn()
+	}
+
+	#bots: Id[] = []
+
+	spawnBot() {
+		const [selector, data] = Archetypes.bot({
+			debug: false,
+			gimbal: [0, 0],
+			position: [0, 10, 2],
+		})
+		const entity = this.world.createEntity(selector, data)
+		this.#bots.push(entity.id)
+		return entity
+	}
+
+	deleteBot() {
+		if (this.#bots.length > 0) {
+			const id = this.#bots.unshift()
+			this.world.deleteEntity(id)
+		}
 	}
 
 	gotoSpectator() {

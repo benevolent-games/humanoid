@@ -10,27 +10,27 @@ import {Ambulation, Choreography, Gimbal, Intent, Perspective, Position, CoolGim
 
 export const choreography = system("humanoid", [
 	behavior("sync babylon parts")
-		.select({Character, Position, CoolGimbal, Gimbal, Perspective})
-		.act(() => c => {
+		.select({Character, Position, CoolGimbal})
+		.act(() => ({character, position, coolGimbal}) => {
 			const q = babylonian.to.quat(
-				gimbaltool(c.coolGimbal.gimbal)
+				gimbaltool(coolGimbal.gimbal)
 					.quaternions().horizontal
 			)
-			c.character.parts.position.set(...c.position)
-			c.character.parts.rotation.set(...q)
+			character.parts.position.set(...position)
+			character.parts.rotation.set(...q)
 		}),
 
 	behavior("set swivel")
 		.select({Choreography, Intent})
-		.act(() => c => {
-			c.choreography.swivel = swivel_effected_by_glance(
-				c.choreography.swivel,
-				c.intent.glance,
+		.act(() => ({choreography, intent}) => {
+			choreography.swivel = swivel_effected_by_glance(
+				choreography.swivel,
+				intent.glance,
 			)
 		}),
 
 	behavior("animate the armature")
-		.select({Character, Choreography, Ambulation, Intent, Gimbal, CoolGimbal, Speeds, Perspective, MeleeAction})
+		.select({Character, Choreography, Ambulation, Gimbal, CoolGimbal, Speeds, Perspective, MeleeAction})
 		.act(() => c => {
 			const {adjustment_anims, anims, boss_anim} = c.character.coordination
 

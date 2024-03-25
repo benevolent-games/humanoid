@@ -12,8 +12,8 @@ export class Capsule extends HybridComponent<HuRealm, {
 	readonly capsule = this.realm.physics.prefabs.characterCapsule({
 		contact_force_threshold: 0.02,
 		groups: this.realm.physics.grouper.specify({
-			filter: [this.realm.physics.groups.standard],
-			membership: [this.realm.physics.groups.capsule],
+			filter: [this.realm.physics.groups.all],
+			membership: [this.realm.physics.groups.standard, this.realm.physics.groups.capsule],
 		}),
 		offset: 0.1,
 		material: this.realm.colors.cyan,
@@ -46,10 +46,15 @@ export class Capsule extends HybridComponent<HuRealm, {
 		this.capsule.bond.position = p
 	}
 
-	created() {}
+	created() {
+		const {entityId} = this
+		const {rigid} = this.capsule
+		this.realm.physics.capsules.set(this.capsule.collider, {entityId, rigid})
+	}
 	updated() {}
 	deleted() {
 		this.capsule.dispose()
+		this.realm.physics.capsules.delete(this.capsule.collider)
 	}
 }
 

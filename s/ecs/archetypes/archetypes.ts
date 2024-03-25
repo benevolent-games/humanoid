@@ -37,28 +37,40 @@ export namespace Archetypes {
 		gimbalRig: {},
 	}))
 
-	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal, perspective}: {
-			debug: boolean,
-			position: Vec3,
-			gimbal: Vec2,
-			perspective: CState<Perspective>
+	export const biped = arch(Selectors.biped, ({
+			debug,
+			position,
+			gimbal,
 		}) => ({
-		...params(spectator({position, gimbal})),
+		humanoid: {},
 		debug,
-		speeds: {base: 3, fast: 6, slow: 1.5},
-		capsule: {
-			height: 1.75,
-			radius: .2,
-		},
+
+		position,
+		gimbal,
+
 		cameraRig: {
 			height: 1.75,
 			third_person_distance: 1,
 		},
-		perspective,
-		camera: {
-			fov: 100,
-			minZ: 0.1,
-			maxZ: 15_000,
+		mouseAccumulator: {},
+		intent: {
+			amble: vec2.zero(),
+			glance: vec2.zero(),
+			fast: false,
+			slow: false,
+			jump: false,
+			attack: false,
+		},
+		orbit: null,
+
+		force: vec2.zero(),
+		impetus: vec3.zero(),
+		smoothing: 5,
+
+		speeds: {base: 3, fast: 6, slow: 1.5},
+		capsule: {
+			height: 1.75,
+			radius: .2,
 		},
 		stance: "stand",
 		grounding: {
@@ -70,9 +82,10 @@ export namespace Archetypes {
 		previousPosition: position,
 		coolGimbal: {gimbal, records: [gimbal]},
 		velocity: vec3.zero(),
+		perspective: "third_person",
 		character: {height: 1.75},
 		choreography: {
-			swivel: 0.5,
+			swivel: 0,
 			settings: {
 				swivel_duration: 40,
 				swivel_readjustment_margin: scalar.radians.from.degrees(10),
@@ -95,7 +108,6 @@ export namespace Archetypes {
 			},
 		},
 		rotation: quat.identity(),
-		orbit: null,
 		meleeAim: {
 			smoothedGlanceNormal: [1, 0],
 			lastGlanceNormal: [1, 0],
@@ -109,6 +121,34 @@ export namespace Archetypes {
 		meleeWeapon: "longsword",
 		meleeAction: null,
 		tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
+		health: 1,
+	}))
+
+	export const humanoid = arch(Selectors.humanoid, ({debug, position, gimbal, perspective}: {
+			debug: boolean,
+			position: Vec3,
+			gimbal: Vec2,
+			perspective: CState<Perspective>
+		}) => ({
+		...params(biped({debug, position, gimbal})),
+		controllable: {},
+		camera: {
+			fov: 90,
+			minZ: 0.12,
+			maxZ: 15_000,
+		},
+		perspective,
+	}))
+
+	export const bot = arch(Selectors.bot, ({debug, position, gimbal}: {
+			debug: boolean,
+			position: Vec3,
+			gimbal: Vec2,
+		}) => ({
+		...params(biped({debug, position, gimbal})),
+		bot: {},
+		ai: {},
+		seed: Math.random(),
 	}))
 }
 
