@@ -1,8 +1,8 @@
 
-import {HuRealm} from "../../../models/realm/realm.js"
-import {HybridComponent, Vec3, scalar} from "@benev/toolbox"
+import {Vec3, scalar} from "@benev/toolbox"
+import {HybridComponent} from "../../hub.js"
 
-export class Capsule extends HybridComponent<HuRealm, {
+export class Capsule extends HybridComponent<{
 		height: number
 		radius: number
 	}> {

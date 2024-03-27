@@ -12,10 +12,12 @@ import {force} from "./pure/force.js"
 import {freelook} from "./pure/freelook.js"
 import {intentions} from "./pure/intentions.js"
 import {melee_tracers} from "./pure/melee_tracers.js"
+import {spawning} from "./pure/spawning.js"
 import {velocity} from "./pure/velocity.js"
 
 export const gamelogic = system("root", [
 	system("pure", [
+		spawning,
 		bot_ai,
 		intentions,
 		freelook,

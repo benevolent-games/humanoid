@@ -1,15 +1,14 @@
 
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {HybridComponent, Rapier, Trashcan, Vec3, babylonian, label, vec3} from "@benev/toolbox"
+import {Rapier, Trashcan, Vec3, babylonian, label, vec3} from "@benev/toolbox"
 
+import {HybridComponent} from "../../../hub.js"
 import {HuRealm} from "../../../../models/realm/realm.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
 
-export class Character extends HybridComponent<HuRealm, {
-		height: number
-	}> {
+export class Character extends HybridComponent<{height: number}> {
 
 	readonly parts = prepare_choreographer_babylon_parts(
 		this.realm.scene,

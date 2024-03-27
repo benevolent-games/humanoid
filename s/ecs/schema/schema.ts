@@ -1,7 +1,8 @@
 
 import {Id} from "@benev/toolbox/x/ecs6/core/types.js"
-import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
+import {Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
+import {Component} from "../hub.js"
 import {Ambulatory} from "./types.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {Weapon} from "../../models/attacking/weapon.js"

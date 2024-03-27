@@ -7,15 +7,16 @@ import {explode_promise, maptool} from "@benev/slate"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {HybridComponent, Meshoid, Prop, Rapier, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
+import {Meshoid, Prop, Rapier, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
 
 import {HuLevel} from "../../../gameplan.js"
+import {HybridComponent} from "../../hub.js"
 import {Nametag} from "../../../tools/nametag.js"
 import {HuRealm} from "../../../models/realm/realm.js"
 import {make_skybox} from "../../../tools/make_skybox.js"
 import {make_envmap} from "../../../tools/make_envmap.js"
 
-export class Level extends HybridComponent<HuRealm, {level: HuLevel}> {
+export class Level extends HybridComponent<{level: HuLevel}> {
 	#dispose: (() => void) | null = null
 	#promise = explode_promise<void>()
 

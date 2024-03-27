@@ -1,11 +1,11 @@
 
 
 import {label} from "@benev/toolbox"
-import {HybridComponent} from "@benev/toolbox"
-import {HuRealm} from "../../../models/realm/realm.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
-export class Transform extends HybridComponent<HuRealm, {}> {
+import {HybridComponent} from "../../hub.js"
+
+export class Transform extends HybridComponent<{}> {
 	node = new TransformNode(label("node"), this.realm.stage.scene)
 
 	created() {}

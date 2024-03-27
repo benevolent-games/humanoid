@@ -1,28 +1,24 @@
 
-// import {Input} from "@benev/toolbox"
-// import {behavior, system} from "../../hub.js"
-// import {Controllable, Humanoid, SpawnIntent, Spawned} from "../../schema/schema.js"
+import {system, logic} from "../../hub.js"
 
-// export const spawning = system("spawning", [
+export const spawning = system("spawning", [
 
-// 	behavior("spawn buttons")
-// 		.select({Controllable, SpawnIntent, Spawned})
-// 		.act(({realm}) => components => {
-// 			const isPressed = ({down, repeat}: Input.Button) => (down && !repeat)
-// 			const {buttons} = realm.tact.inputs.humanoid
-// 			components.spawnIntent.togglePlayer = isPressed(buttons.respawn.input)
-// 			components.spawnIntent.spawnBot = isPressed(buttons.bot_spawn.input)
-// 			components.spawnIntent.deleteBot = isPressed(buttons.bot_delete.input)
-// 		}),
+	logic("spawn buttons", ({realm}) => {
+		const {buttons} = realm.tact.inputs.humanoid
 
-// 	behavior("actually spawn stuff")
-// 		.select({Controllable, SpawnIntent, Spawned})
-// 		.act(({world, realm}) => components => {
-// 			const {togglePlayer, spawnBot, deleteBot} = components.spawnIntent
+		buttons.respawn.onPressed(() => {
+			console.log("respawn")
+		})
 
-// 			if (togglePlayer) {
-// 				// TODO grab all player entities
-// 			}
-// 		}),
-// ])
+		buttons.bot_spawn.onPressed(() => {
+			console.log("bot_spawn")
+		})
+
+		buttons.bot_delete.onPressed(() => {
+			console.log("bot_delete")
+		})
+
+		return () => {}
+	}),
+])
 

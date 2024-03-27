@@ -1,12 +1,10 @@
 
-import {World} from "@benev/toolbox"
-
+import {Ecs} from "@benev/toolbox"
 import {HuRealm} from "../models/realm/realm.js"
-import {Respawner} from "../models/respawner/respawner.js"
 import {LevelSwitcher} from "../models/level_switcher/switcher.js"
 import warn_users_before_window_unload from "../tools/warn_users_before_window_unload.js"
 
-export default (realm: HuRealm, world: World<HuRealm>) => {
+export default (realm: HuRealm, world: Ecs.World<HuRealm>) => {
 
 	// menu button toggles pointerlock
 	realm.tact.inputs.universal.buttons.menu_toggle.on(input => {
@@ -27,24 +25,24 @@ export default (realm: HuRealm, world: World<HuRealm>) => {
 	// prevent ctrl+w instaclose accidents
 	warn_users_before_window_unload()
 
-	// controls spawning of humanoids and spectator cams
-	const respawner = new Respawner(world)
-	respawner.respawn()
-	realm.tact.inputs.humanoid.buttons.respawn.on(button => {
-		if (button.down && !button.repeat)
-			respawner.respawn()
-	})
-	realm.tact.inputs.humanoid.buttons.bot_spawn.on(button => {
-		if (button.down && !button.repeat)
-			respawner.spawnBot()
-	})
-	realm.tact.inputs.humanoid.buttons.bot_delete.on(button => {
-		if (button.down && !button.repeat)
-			respawner.deleteBot()
-	})
+	// // controls spawning of humanoids and spectator cams
+	// const respawner = new Respawner(world)
+	// respawner.respawn()
+	// realm.tact.inputs.humanoid.buttons.respawn.on(button => {
+	// 	if (button.down && !button.repeat)
+	// 		respawner.respawn()
+	// })
+	// realm.tact.inputs.humanoid.buttons.bot_spawn.on(button => {
+	// 	if (button.down && !button.repeat)
+	// 		respawner.spawnBot()
+	// })
+	// realm.tact.inputs.humanoid.buttons.bot_delete.on(button => {
+	// 	if (button.down && !button.repeat)
+	// 		respawner.deleteBot()
+	// })
 
 	// establish a level switcher for cycling levels
-	const levelSwitcher = new LevelSwitcher(world, realm.gameplan, respawner)
+	const levelSwitcher = new LevelSwitcher(world, realm.gameplan)
 
 	// switch level when we press the key
 	realm.tact.inputs.humanoid.buttons.level_swap.on(button => {
@@ -52,6 +50,6 @@ export default (realm: HuRealm, world: World<HuRealm>) => {
 			levelSwitcher.next()
 	})
 
-	return {levelSwitcher, respawner}
+	return {levelSwitcher}
 }
 

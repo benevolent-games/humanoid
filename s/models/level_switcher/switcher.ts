@@ -1,11 +1,10 @@
 
-import {World} from "@benev/toolbox"
+import {Ecs} from "@benev/toolbox"
 import {Op, ob, signals} from "@benev/slate"
 
 import {Plan} from "../planning/plan.js"
 import {HuLevel} from "../../gameplan.js"
 import {Cycle} from "../../tools/cycle.js"
-import {Respawner} from "../respawner/respawner.js"
 import {Level} from "../../ecs/schema/hybrids/level.js"
 
 type LevelState = {
@@ -25,9 +24,9 @@ export class LevelSwitcher {
 	goto: {[K in HuLevel]: () => Promise<void>}
 
 	constructor(
-			public readonly world: World<any>,
+			public readonly world: Ecs.World<any>,
 			public readonly gameplan: Plan.Game,
-			public readonly respawner: Respawner,
+			// public readonly respawner: Respawner,
 		) {
 
 		this.#cycle = new Cycle(
@@ -38,7 +37,9 @@ export class LevelSwitcher {
 			async() => { await this.#level(n as HuLevel) }
 		) as any
 
-		this.next().then(() => respawner.gotoHumanoid())
+		// // TODO
+		// this.next().then(() => respawner.gotoHumanoid())
+
 		this.#enforce_busy = true
 	}
 
@@ -50,14 +51,19 @@ export class LevelSwitcher {
 	async #level(name: HuLevel) {
 		if (this.#enforce_busy && this.#op.isLoading())
 			throw new Error("busy")
-		this.respawner.gotoSpectator()
+
+		// // TODO
+		// this.respawner.gotoSpectator()
+
 		this.#op.payload?.dispose()
+
 		return this.#op.load(async() => {
 			const {world} = this
-			const level = world.createEntity({Level}, {level: {level: name}})
-			const dispose = () => world.deleteEntity(level.id)
-			await level.data.level.doneLoading
-			return {name, dispose}
+			const level = world.createEntity(
+				new Ecs.Archetype({Level}, {level: {level: name}})
+			)
+			await level.components.level.doneLoading
+			return {name, dispose: () => level.dispose()}
 		})
 	}
 }
