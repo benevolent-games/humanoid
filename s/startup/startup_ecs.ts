@@ -10,7 +10,7 @@ import {gamelogic} from "../ecs/logic/gamelogic.js"
  */
 export default (realm: HuRealm) => {
 	const world = hub.world(realm)
-	const executive = hub.executive(realm, world, gamelogic)
-	return {world, executive}
+	const executor = gamelogic.prepareExecutor({realm, world})
+	return {world, executor}
 }
 

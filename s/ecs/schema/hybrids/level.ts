@@ -73,8 +73,6 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 		this.#spawn_level(this.realm.loadingDock.loadGlb(glb), glb.physics)
 	}
 
-	updated() {}
-
 	deleted() {
 		this.skybox.dispose()
 		this.envmap.dispose()

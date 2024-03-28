@@ -17,8 +17,6 @@ export const spawning = system("spawning", [
 		buttons.bot_delete.onPressed(() => {
 			console.log("bot_delete")
 		})
-
-		return () => {}
 	}),
 ])
 

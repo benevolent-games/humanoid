@@ -4,7 +4,6 @@ import {Op, ob, signals} from "@benev/slate"
 
 import {Plan} from "../planning/plan.js"
 import {HuLevel} from "../../gameplan.js"
-import {Cycle} from "../../tools/cycle.js"
 import {Level} from "../../ecs/schema/hybrids/level.js"
 
 type LevelState = {
@@ -12,10 +11,9 @@ type LevelState = {
 	dispose: () => void
 }
 
-export class LevelSwitcher {
+export class LevelLoader {
 	#op = signals.op<LevelState>()
-	#cycle: Cycle<() => Promise<LevelState>>
-	#enforce_busy = false
+	#count = 0
 
 	get op() {
 		return Op.morph(this.#op.value, level => level.name)
@@ -24,42 +22,24 @@ export class LevelSwitcher {
 	goto: {[K in HuLevel]: () => Promise<void>}
 
 	constructor(
-			public readonly world: Ecs.World<any>,
-			public readonly gameplan: Plan.Game,
-			// public readonly respawner: Respawner,
+			private world: Ecs.World<any>,
+			gameplan: Plan.Game,
 		) {
-
-		this.#cycle = new Cycle(
-			gameplan.levelCycle.map(n => () => this.#level(n as HuLevel))
-		)
 
 		this.goto = ob(gameplan.levels).map((_, n) =>
 			async() => { await this.#level(n as HuLevel) }
 		) as any
-
-		// // TODO
-		// this.next().then(() => respawner.gotoHumanoid())
-
-		this.#enforce_busy = true
-	}
-
-	async next() {
-		const fn = this.#cycle.next()
-		await fn()
 	}
 
 	async #level(name: HuLevel) {
-		if (this.#enforce_busy && this.#op.isLoading())
+		if (this.#count > 0 && this.#op.isLoading())
 			throw new Error("busy")
 
-		// // TODO
-		// this.respawner.gotoSpectator()
-
+		this.#count++
 		this.#op.payload?.dispose()
 
 		return this.#op.load(async() => {
-			const {world} = this
-			const level = world.createEntity(
+			const level = this.world.createEntity(
 				new Ecs.Archetype({Level}, {level: {level: name}})
 			)
 			await level.components.level.doneLoading

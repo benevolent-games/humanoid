@@ -1,10 +1,8 @@
 
-import {Ecs} from "@benev/toolbox"
 import {HuRealm} from "../models/realm/realm.js"
-import {LevelSwitcher} from "../models/level_switcher/switcher.js"
 import warn_users_before_window_unload from "../tools/warn_users_before_window_unload.js"
 
-export default (realm: HuRealm, world: Ecs.World<HuRealm>) => {
+export default (realm: HuRealm) => {
 
 	// menu button toggles pointerlock
 	realm.tact.inputs.universal.buttons.menu_toggle.on(input => {
@@ -41,15 +39,15 @@ export default (realm: HuRealm, world: Ecs.World<HuRealm>) => {
 	// 		respawner.deleteBot()
 	// })
 
-	// establish a level switcher for cycling levels
-	const levelSwitcher = new LevelSwitcher(world, realm.gameplan)
+	// // establish a level switcher for cycling levels
+	// const levelSwitcher = new LevelSwitcher(world, realm.gameplan)
 
-	// switch level when we press the key
-	realm.tact.inputs.humanoid.buttons.level_swap.on(button => {
-		if (button.down && !button.repeat)
-			levelSwitcher.next()
-	})
+	// // switch level when we press the key
+	// realm.tact.inputs.humanoid.buttons.level_swap.on(button => {
+	// 	if (button.down && !button.repeat)
+	// 		levelSwitcher.next()
+	// })
 
-	return {levelSwitcher}
+	// return {levelSwitcher}
 }
 

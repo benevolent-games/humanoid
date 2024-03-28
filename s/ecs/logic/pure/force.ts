@@ -6,9 +6,9 @@ import {Force, Intent, Smoothing} from "../../schema/schema.js"
 
 export const force = behavior("calculate force, based on intent and smoothing")
 	.select({Force, Intent, Smoothing})
-	.act(({tick}) => c => {
-		const {force, intent, smoothing} = c
+	.logic(() => tick => ({components}) => {
+		const {force, intent, smoothing} = components
 		const target = vec2.multiplyBy(intent.amble, tick.seconds)
-		c.force = molasses2d(smoothing, force, target)
+		components.force = molasses2d(smoothing, force, target)
 	})
 

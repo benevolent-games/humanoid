@@ -10,32 +10,29 @@ import {Force, Gimbal, Impetus, Intent, Position, Spectator, Speeds} from "../..
 export const spectator = system("spectator", [
 	responder("parenting the camera")
 		.select({Spectator, Camera, GimbalRig})
-		.respond(() => ({
-			added(c) {
-				c.camera.node.parent = c.gimbalRig.transformB
-			},
-			removed(c) {
+		.respond(() => ({components: c}) => {
+			c.camera.node.parent = c.gimbalRig.transformB
+			return () => {
 				if (c.camera.node.parent === c.gimbalRig.transformB)
 					c.camera.node.parent = null
-			},
-		})),
+			}
+		}),
 
 	responder("assign spectator camera")
 		.select({Spectator, Camera})
-		.respond(({realm}) => ({
-			added(c) {
-				realm.stage.rendering.setCamera(c.camera.node)
-			},
-			removed() {
-				realm.stage.rendering.setCamera(null)
-			},
-		})),
+		.respond(({realm}) => ({components: {camera}}) => {
+			realm.stage.rendering.setCamera(camera.node)
+			return () => {
+				if (realm.stage.rendering.camera === camera.node)
+					realm.stage.rendering.setCamera(null)
+			}
+		}),
 
 	behavior("calculate local force")
 		.select({Spectator, Force, Intent, Speeds, Impetus})
-		.act(() => c => {
-			const {force, intent, speeds} = c
-			c.impetus = vec3.multiplyBy(
+		.logic(() => () => ({components}) => {
+			const {force, intent, speeds} = components
+			components.impetus = vec3.multiplyBy(
 				unflatten(force),
 				intent.fast ? speeds.fast
 					: intent.slow ? speeds.slow
@@ -45,7 +42,7 @@ export const spectator = system("spectator", [
 
 	behavior("apply force to position")
 		.select({Spectator, GimbalRig, Impetus, Position})
-		.act(() => c => {
+		.logic(() => () => ({components: c}) => {
 			const {transformA, transformB} = c.gimbalRig
 			c.position = (
 				apply_3d_rotation_to_movement(
@@ -59,14 +56,14 @@ export const spectator = system("spectator", [
 
 	behavior("apply position to transform")
 		.select({Spectator, GimbalRig, Position})
-		.act(() => c => {
-			c.gimbalRig.transformA.position.set(...c.position)
+		.logic(() => () => ({components: {gimbalRig, position}}) => {
+			gimbalRig.transformA.position.set(...position)
 		}),
 
 	behavior("apply gimbal to gimbalRig")
 		.select({Spectator, Gimbal, GimbalRig, Position})
-		.act(() => c => {
-			c.gimbalRig.applyGimbal(c.gimbal)
+		.logic(() => () => ({components: {gimbalRig, gimbal}}) => {
+			gimbalRig.applyGimbal(gimbal)
 		}),
 ])
 

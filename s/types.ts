@@ -1,10 +1,8 @@
 
 import {HuRealm} from "./models/realm/realm.js"
-import {Respawner} from "./models/respawner/respawner.js"
-import {LevelSwitcher} from "./models/level_switcher/switcher.js"
+import {LevelLoader} from "./models/level_loader/loader.js"
 
 export type Game = {
-	respawner: Respawner
-	levelSwitcher: LevelSwitcher
+	levelLoader: LevelLoader
 } & HuRealm
 

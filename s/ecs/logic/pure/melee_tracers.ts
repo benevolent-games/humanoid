@@ -11,8 +11,8 @@ export const melee_tracers = system("melee tracers", [
 
 	behavior("tracer")
 		.select({Character, Tracer, MeleeAction})
-		.act(({world, realm: {physics}}) => (components, id) => {
-			const {character, meleeAction, tracer} = components
+		.logic(({world, realm: {physics}}) => _tick => entity => {
+			const {character, meleeAction, tracer} = entity.components
 			const {swordbase, swordtip} = character.helpers
 			const attack_is_in_windup_phase = (
 				Melee.is.attack(meleeAction) &&
@@ -114,10 +114,11 @@ export const melee_tracers = system("melee tracers", [
 
 						const capsule = physics.capsules.get(hit)
 						if (capsule) {
-							const we_are_not_hitting_ourselves = capsule.entityId !== id
+							const we_are_not_hitting_ourselves = capsule.entityId !== entity.id
 							if (we_are_not_hitting_ourselves) {
-								const entity = world.getEntity(capsule.entityId, {Health})
-								entity.health = 0
+								const entity = world.getEntity(capsule.entityId)
+								if (entity.has({Health}))
+									entity.components.health = 0
 							}
 						}
 					}

@@ -83,14 +83,12 @@ export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 		}
 	`)
 
-	const {levelSwitcher} = game
-
 	function levelButton(level: HuLevel) {
 		const click = () => {
-			levelSwitcher.goto[level]()
+			game.levelLoader.goto[level]()
 		}
-		const isLoading = Op.is.loading(levelSwitcher.op)
-		const isActive = level === Op.payload(levelSwitcher.op)
+		const isLoading = Op.is.loading(game.levelLoader.op)
+		const isActive = level === Op.payload(game.levelLoader.op)
 		return html`
 			<button
 				@click="${click}"
@@ -135,7 +133,7 @@ export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 				${levelButton("mt_finny")}
 			</div>
 			<div class=loading>
-				${op_effect.binary(levelSwitcher.op, () => {})}
+				${op_effect.binary(game.levelLoader.op, () => {})}
 			</div>
 		</section>
 	`
