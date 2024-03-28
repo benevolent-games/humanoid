@@ -4,10 +4,10 @@ import {Controllable, Intent, Stance} from "../../schema/schema.js"
 import {MouseAccumulator} from "../../schema/hybrids/mouse_accumulator.js"
 import {get_trajectory_from_cardinals, scalar, vec2} from "@benev/toolbox"
 
-export const intentions = system("intentions", [
+export const intentions = system("intentions", ({realm}) => [
 	behavior("wipe intent")
 		.select({Controllable, Intent})
-		.logic(() => () => ({components}) => {
+		.logic(() => ({components}) => {
 			components.intent = {
 				glance: vec2.zero(),
 				amble: vec2.zero(),
@@ -19,7 +19,7 @@ export const intentions = system("intentions", [
 
 	behavior("add mouse movements to glance")
 		.select({Controllable, Intent, MouseAccumulator})
-		.logic(({realm}) => () => ({components: c}) => {
+		.logic(() => ({components: c}) => {
 			const [x, y] = c.mouseAccumulator.movement.steal()
 			const mouseSensitivity = scalar.radians.from.arcseconds(realm.sensitivity.mouse)
 			c.intent.glance = vec2.add(
@@ -32,7 +32,7 @@ export const intentions = system("intentions", [
 
 	behavior("add keyboard looking to glance")
 		.select({Controllable, Intent})
-		.logic(({realm}) => tick => ({components: c}) => {
+		.logic(tick => ({components: c}) => {
 			const {buttons} = realm.tact.inputs.humanoid
 			const [x, y] = get_trajectory_from_cardinals({
 				north: buttons.up.input.down,
@@ -49,7 +49,7 @@ export const intentions = system("intentions", [
 
 	behavior("add move keys to amble")
 		.select({Controllable, Intent})
-		.logic(({realm}) => () => ({components: c}) => {
+		.logic(() => ({components: c}) => {
 			const {buttons} = realm.tact.inputs.humanoid
 			const vector = get_trajectory_from_cardinals({
 				north: buttons.forward.input.down,
@@ -65,7 +65,7 @@ export const intentions = system("intentions", [
 
 	behavior("apply fast and slow to intent")
 		.select({Controllable, Intent})
-		.logic(({realm}) => () => ({components}) => {
+		.logic(() => ({components}) => {
 			const {fast, slow} = realm.tact.inputs.humanoid.buttons
 			components.intent.fast = fast.input.down
 			components.intent.slow = slow.input.down
@@ -73,7 +73,7 @@ export const intentions = system("intentions", [
 
 	behavior("change stance")
 		.select({Controllable, Intent, Stance})
-		.logic(({realm}) => () => ({components: c}) => {
+		.logic(() => ({components: c}) => {
 			const {crouch} = realm.tact.inputs.humanoid.buttons
 			c.stance = (
 				c.intent.fast ? "stand"
@@ -84,7 +84,7 @@ export const intentions = system("intentions", [
 
 	behavior("set jump intent")
 		.select({Controllable, Intent})
-		.logic(({realm}) => () => ({components}) => {
+		.logic(() => ({components}) => {
 			const {down, repeat} = realm.tact.inputs.humanoid.buttons.jump.input
 			components.intent.jump = down && !repeat
 		}),

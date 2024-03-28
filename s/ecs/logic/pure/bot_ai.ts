@@ -7,11 +7,11 @@ import {Ai, Bot, Gimbal, Intent, MeleeIntent, Seed, Stance} from "../../schema/s
 const noise = Noise.seed(1)
 const {clamp, center, magnify, radians: {from: {degrees}}} = scalar
 
-export const bot_ai = system("bot ai", [
+export const bot_ai = system("bot ai", () => [
 
 	behavior("random dumb wandering")
 		.select({Bot, Intent, Ai, Seed, Stance, Gimbal, MeleeIntent})
-		.logic(() => tick => ({components}) => {
+		.logic(tick => ({components}) => {
 			let count = 0
 
 			function sample(scale = 1) {

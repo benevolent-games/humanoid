@@ -12,7 +12,22 @@ export type HuTick = {
 export const hub = new Ecs.Hub<HuRealm, HuTick>()
 export const {system, behavior, responder, logic} = hub
 
-export const HybridComponent = hub.HybridComponent
-export const Component = Ecs.Component
-export const Archetype = Ecs.Archetype
+export class Entity extends Ecs.Entity {}
+export abstract class HybridComponent<State extends Ecs.Serializable = Ecs.Serializable> extends Ecs.HybridComponent<HuRealm, State> {}
+export class Component<State extends Ecs.Serializable = Ecs.Serializable> extends Ecs.Component<State> {}
+export class Archetype<Sel extends Ecs.Selector> extends Ecs.Archetype<Sel> {}
+export class World extends Ecs.World<HuRealm> {}
+
+export const arch = (
+	<Sel extends Ecs.Selector>(selector: Sel, state: Ecs.State<Sel>) => (
+		new Archetype(selector, state)
+	)
+)
+
+// export const arch = (
+// 	<Sel extends Ecs.Selector>(
+// 		selector: Sel,
+// 		state: Ecs.State<Sel>,
+// 	): Ecs.Arch<Sel> => ({selector, state})
+// )
 

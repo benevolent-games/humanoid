@@ -6,10 +6,10 @@ import {molasses2d} from "../../../tools/molasses.js"
 import {halfcircle} from "../../../tools/halfcircle.js"
 import {Gimbal, Intent, CoolGimbal, Orbit, Controllable} from "../../schema/schema.js"
 
-export const freelook = system("freelook", [
+export const freelook = system("freelook", ({realm}) => [
 	behavior("apply freelook, onto glance and gimbal based on intent")
 		.select({Intent, Gimbal})
-		.logic(() => () => ({components}) => {
+		.logic(() => ({components}) => {
 			const {
 				gimbal: [gimbalX, gimbalY],
 				intent: {glance: [glanceX, glanceY]},
@@ -27,7 +27,7 @@ export const freelook = system("freelook", [
 
 	behavior("apply freelook onto orbit")
 		.select({Controllable, Orbit, Gimbal})
-		.logic(({realm}) => _tick => ({components: c}) => {
+		.logic(() => ({components: c}) => {
 			const wasActive = !!c.orbit
 			const active = realm.tact.inputs.humanoid.buttons.orbit.input.down
 			const hasChanged = active !== wasActive
@@ -39,7 +39,7 @@ export const freelook = system("freelook", [
 
 	behavior("calculate cool gimbal")
 		.select({Gimbal, CoolGimbal})
-		.logic(() => _tick => ({components: {gimbal, coolGimbal: cool}}) => {
+		.logic(() => ({components: {gimbal, coolGimbal: cool}}) => {
 			cool.records = avg.vec2.append(5, cool.records, gimbal)
 			const average = avg.vec2.average(cool.records)
 			const smoothed = molasses2d(5, cool.gimbal, average)

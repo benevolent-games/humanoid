@@ -8,10 +8,10 @@ import {sync_character_anims} from "../../schema/hybrids/character/choreography/
 import {apply_adjustments, swivel_effected_by_glance} from "../../schema/hybrids/character/choreography/calculations.js"
 import {Ambulation, Choreography, Gimbal, Intent, Perspective, Position, CoolGimbal, Speeds, MeleeAction} from "../../schema/schema.js"
 
-export const choreography = system("humanoid", [
+export const choreography = system("humanoid", () => [
 	behavior("sync babylon parts")
 		.select({Character, Position, CoolGimbal})
-		.logic(() => () => ({components: {character, position, coolGimbal}}) => {
+		.logic(() => ({components: {character, position, coolGimbal}}) => {
 			const q = babylonian.to.quat(
 				gimbaltool(coolGimbal.gimbal)
 					.quaternions().horizontal
@@ -22,7 +22,7 @@ export const choreography = system("humanoid", [
 
 	behavior("set swivel")
 		.select({Choreography, Intent})
-		.logic(() => () => ({components: {choreography, intent}}) => {
+		.logic(() => ({components: {choreography, intent}}) => {
 			choreography.swivel = swivel_effected_by_glance(
 				choreography.swivel,
 				intent.glance,
@@ -31,7 +31,7 @@ export const choreography = system("humanoid", [
 
 	behavior("animate the armature")
 		.select({Character, Choreography, Ambulation, Gimbal, CoolGimbal, Speeds, Perspective, MeleeAction})
-		.logic(() => () => ({components: c}) => {
+		.logic(() => ({components: c}) => {
 			const {adjustment_anims, anims, boss_anim} = c.character.coordination
 
 			apply_adjustments(

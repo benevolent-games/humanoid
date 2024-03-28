@@ -8,12 +8,12 @@ import {Weapon} from "../../../models/attacking/weapon.js"
 import {considerAttack, considerParry} from "../../../models/attacking/consider.js"
 import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../../schema/schema.js"
 
-export const combat = system("combat", [
+export const combat = system("combat", ({realm}) => [
 
-	system("intentions", [
+	system("intentions", () => [
 		behavior("set melee intent")
 			.select({Controllable, MeleeIntent})
-			.logic(({realm}) => () => ({components}) => {
+			.logic(() => ({components}) => {
 				const parry = realm.tact.inputs.humanoid.buttons.parry.input
 				const swing = realm.tact.inputs.humanoid.buttons.swing.input
 				const stab = realm.tact.inputs.humanoid.buttons.stab.input
@@ -26,7 +26,7 @@ export const combat = system("combat", [
 
 		behavior("melee aiming")
 			.select({Intent, MeleeAim})
-			.logic(() => () => ({components: {intent, meleeAim}}) => {
+			.logic(() => ({components: {intent, meleeAim}}) => {
 				if (vec2.magnitude(intent.glance) > 0)
 					meleeAim.lastGlanceNormal = vec2.normalize(intent.glance)
 
@@ -46,7 +46,7 @@ export const combat = system("combat", [
 
 		behavior("initiate melee action")
 			.select({MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
-			.logic(() => () => ({components}) => {
+			.logic(() => ({components}) => {
 				if (components.meleeAction)
 					return
 
@@ -67,14 +67,14 @@ export const combat = system("combat", [
 
 	behavior("sustain melee action")
 		.select({MeleeAction})
-		.logic(() => tick => ({components: {meleeAction}}) => {
+		.logic(tick => ({components: {meleeAction}}) => {
 			if (meleeAction)
 				meleeAction.seconds += tick.seconds
 		}),
 
 	behavior("update melee actions")
 		.select({MeleeAction})
-		.logic(() => () => ({components: {meleeAction}}) => {
+		.logic(() => ({components: {meleeAction}}) => {
 			if (!meleeAction)
 				return
 
@@ -99,7 +99,7 @@ export const combat = system("combat", [
 
 	behavior("end melee action")
 		.select({MeleeAction})
-		.logic(() => () => ({components}) => {
+		.logic(() => ({components}) => {
 			const {meleeAction} = components
 
 			if (!meleeAction)
@@ -119,7 +119,7 @@ export const combat = system("combat", [
 
 	behavior("melee aiming")
 		.select({Controllable, MeleeAim, MeleeAction})
-		.logic(({realm}) => _tick => ({components: {meleeAim, meleeAction}}) => {
+		.logic(_tick => ({components: {meleeAim, meleeAction}}) => {
 
 			if (meleeAction === null)
 				realm.reticuleState.aim = {busy: false, angle: meleeAim.angle}

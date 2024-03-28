@@ -1,8 +1,8 @@
 
 import {system} from "../hub.js"
+import {death} from "./playable/death.js"
 import {camera_rigging} from "./playable/camera_rigging.js"
 import {choreography} from "./playable/choreography.js"
-import { death } from "./playable/death.js"
 import {humanoid} from "./playable/humanoid.js"
 import {spectator} from "./playable/spectator.js"
 import {ambulation} from "./pure/ambulation.js"
@@ -15,8 +15,8 @@ import {melee_tracers} from "./pure/melee_tracers.js"
 import {spawning} from "./pure/spawning.js"
 import {velocity} from "./pure/velocity.js"
 
-export const gamelogic = system("root", [
-	system("pure", [
+export const gamelogic = system("root", () => [
+	system("pure", () => [
 		spawning,
 		bot_ai,
 		intentions,
@@ -26,7 +26,7 @@ export const gamelogic = system("root", [
 		ambulation,
 		combat,
 	]),
-	system("character", [
+	system("character", () => [
 		spectator,
 		humanoid,
 		camera_rigging,
