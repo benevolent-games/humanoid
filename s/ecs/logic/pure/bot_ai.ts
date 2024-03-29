@@ -4,7 +4,7 @@ import {behavior, system} from "../../hub.js"
 import {molasses, molasses2d} from "../../../tools/molasses.js"
 import {Ai, Bot, Gimbal, Intent, MeleeIntent, Seed, Stance} from "../../schema/schema.js"
 
-const noise = Noise.seed(1)
+const noise = Noise.seed(123)
 const {clamp, center, magnify, radians: {from: {degrees}}} = scalar
 
 export const bot_ai = system("bot ai", () => [
@@ -41,7 +41,9 @@ export const bot_ai = system("bot ai", () => [
 				? "stand"
 				: "crouch"
 
-			const m = sample(3)
+			// TODO get a better PRNG?
+			// const m = sample()
+			const m = Math.random()
 			const a = 0.3
 			components.meleeIntent.stab = scalar.within(m, a * (0/3), a * (1/3))
 			components.meleeIntent.swing = scalar.within(m, a * (1/3), a * (2/3))
