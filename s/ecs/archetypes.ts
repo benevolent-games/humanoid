@@ -15,15 +15,19 @@ type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
 )
 
+const camera = () => ({
+	fov: 90,
+	minZ: 0.12,
+	maxZ: 15_000,
+})
+
 export namespace Archetypes {
 	export const freecam = (o: {
 			position: Vec3,
 			gimbal: Vec2,
 		}) => new Archetype(
 		{
-			Camera,
 			Position,
-			Controllable,
 			MouseAccumulator,
 			Intent,
 			Gimbal,
@@ -32,12 +36,6 @@ export namespace Archetypes {
 			position: o.position,
 			gimbal: o.gimbal,
 			mouseAccumulator: {},
-			camera: {
-				fov: 90,
-				minZ: 0.12,
-				maxZ: 15_000,
-			},
-			controllable: {},
 			intent: {
 				amble: vec2.zero(),
 				glance: vec2.zero(),
@@ -48,10 +46,11 @@ export namespace Archetypes {
 		}
 	)
 
-
 	export const spectator = (o: Options<typeof freecam>) => freecam(o).extend(
 		{
 			Spectator,
+			Controllable,
+			Camera,
 			Force,
 			Impetus,
 			Smoothing,
@@ -59,9 +58,11 @@ export namespace Archetypes {
 			GimbalRig,
 		},
 		{
+			spectator: {},
+			controllable: {},
+			camera: camera(),
 			force: vec2.zero(),
 			impetus: vec3.zero(),
-			spectator: {},
 			smoothing: 5,
 			speeds: {base: 5, fast: 40, slow: 1},
 			gimbalRig: {},
@@ -186,11 +187,7 @@ export namespace Archetypes {
 		{
 			perspective: o.perspective,
 			controllable: {},
-			camera: {
-				fov: 90,
-				minZ: 0.12,
-				maxZ: 15_000,
-			},
+			camera: camera(),
 		},
 	)
 

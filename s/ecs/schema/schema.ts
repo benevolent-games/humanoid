@@ -12,6 +12,7 @@ export class Parent extends Component<Id> {}
 export class Children extends Component<Id[]> {}
 
 export class Spawner extends Component<{
+	bots: Id[]
 	starting_at: {
 		position: Vec3
 		gimbal: Vec2

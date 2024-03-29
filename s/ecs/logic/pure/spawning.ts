@@ -1,11 +1,10 @@
 
-import {Trashcan, vec3} from "@benev/toolbox"
+import {Trashcan} from "@benev/toolbox"
 
-import {Archetypes} from "../../archetypes.js"
-import {Relations} from "../utils/relations.js"
-import {blank_spawner_state} from "../utils/spawns.js"
-import {system, behavior, arch, responder} from "../../hub.js"
-import {Gimbal, Parent, Position, Spawner, SpawnTracker} from "../../schema/schema.js"
+import {system, behavior, responder} from "../../hub.js"
+import {blank_spawner_state, spawnPlayer, spawnSpectator} from "../utils/spawns.js"
+import {Gimbal, Humanoid, Parent, Position, Spawner, SpawnTracker, Spectator} from "../../schema/schema.js"
+import { Archetypes } from "../../archetypes.js"
 
 export const spawning = system("spawning", ({world, realm}) => {
 	const spawnedQuery = world.query({SpawnTracker, Parent})
@@ -28,6 +27,14 @@ export const spawning = system("spawning", ({world, realm}) => {
 					entity.components.spawner.inputs.respawn = true
 				}))
 
+				mark(buttons.bot_spawn.onPressed(() => {
+					entity.components.spawner.inputs.bot_spawn = true
+				}))
+
+				mark(buttons.bot_delete.onPressed(() => {
+					entity.components.spawner.inputs.bot_delete = true
+				}))
+
 				return dispose
 			}),
 
@@ -39,23 +46,43 @@ export const spawning = system("spawning", ({world, realm}) => {
 				if (spawner.inputs.respawn) {
 					if (spawnTracker) {
 						const player = world.get(spawnTracker.components.parent)
+						const isPlayer = player.has({Humanoid})
+						const isSpectator = player.has({Spectator})
+
 						if (player.has({Gimbal, Position})) {
 							spawner.starting_at.gimbal = player.components.gimbal
 							spawner.starting_at.position = player.components.position
 						}
+
 						player.dispose()
+
+						if (isPlayer)
+							spawnSpectator(world, spawner)
+						else if (isSpectator)
+							spawnPlayer(world, spawner)
 					}
 					else {
-						const player = world.create(Archetypes.humanoid({
-							debug: false,
-							perspective: "first_person",
-							gimbal: spawner.starting_at.gimbal,
-							position: vec3.add(spawner.starting_at.position, [0, 1, 0]),
-						}))
-						const spawnTracker = world.create(
-							arch({SpawnTracker}, {spawnTracker: {}})
-						)
-						Relations.parent(world, player, spawnTracker)
+						spawnPlayer(world, spawner)
+					}
+				}
+
+				if (spawner.inputs.bot_spawn) {
+					const bot = world.create(Archetypes.bot({
+						debug: false,
+						gimbal: [0, 0],
+						position: [0, 2, 5],
+					}))
+					spawner.bots.push(bot.id)
+				}
+
+				if (spawner.inputs.bot_delete) {
+					const exists = new Set(world.obtain(spawner.bots).map(e => e.id))
+					spawner.bots = spawner.bots.filter(id => exists.has(id))
+
+					const botId = spawner.bots.shift()
+					if (botId) {
+						const bot = world.get(botId)
+						bot.dispose()
 					}
 				}
 
