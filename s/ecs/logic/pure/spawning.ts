@@ -1,11 +1,11 @@
 
-import {Trashcan} from "@benev/toolbox"
+import {Trashcan, vec3} from "@benev/toolbox"
 
 import {Archetypes} from "../../archetypes.js"
 import {Relations} from "../utils/relations.js"
-import {blank_spawn_intent} from "../utils/spawns.js"
+import {blank_spawner_state} from "../utils/spawns.js"
 import {system, behavior, arch, responder} from "../../hub.js"
-import {Parent, SpawnIntent, SpawnTracker} from "../../schema/schema.js"
+import {Gimbal, Parent, Position, Spawner, SpawnTracker} from "../../schema/schema.js"
 
 export const spawning = system("spawning", ({world, realm}) => {
 	const spawnedQuery = world.query({SpawnTracker, Parent})
@@ -19,43 +19,47 @@ export const spawning = system("spawning", ({world, realm}) => {
 
 	return [
 		responder("spawning")
-			.select({SpawnIntent})
+			.select({Spawner})
 			.respond(entity => {
-				const {components: {spawnIntent}} = entity
 				const {mark, dispose} = new Trashcan()
 				const {buttons} = realm.tact.inputs.humanoid
 
 				mark(buttons.respawn.onPressed(() => {
-					spawnIntent.respawn = true
+					entity.components.spawner.inputs.respawn = true
 				}))
 
 				return dispose
 			}),
 
 		behavior("actuate spawning")
-			.select({SpawnIntent})
-			.logic(() => ({components: {spawnIntent}}) => {
+			.select({Spawner})
+			.logic(() => ({components: {spawner}}) => {
 				const spawnTracker = getSpawnTrackerEntity()
 
-				if (spawnIntent.respawn) {
+				if (spawner.inputs.respawn) {
 					if (spawnTracker) {
-						world.get(spawnTracker.components.parent).dispose()
+						const player = world.get(spawnTracker.components.parent)
+						if (player.has({Gimbal, Position})) {
+							spawner.starting_at.gimbal = player.components.gimbal
+							spawner.starting_at.position = player.components.position
+						}
+						player.dispose()
 					}
 					else {
-						const humanoid = world.create(Archetypes.humanoid({
+						const player = world.create(Archetypes.humanoid({
 							debug: false,
-							gimbal: [0, 0],
-							position: [0, 10, 0],
 							perspective: "first_person",
+							gimbal: spawner.starting_at.gimbal,
+							position: vec3.add(spawner.starting_at.position, [0, 1, 0]),
 						}))
 						const spawnTracker = world.create(
 							arch({SpawnTracker}, {spawnTracker: {}})
 						)
-						Relations.parent(world, humanoid, spawnTracker)
+						Relations.parent(world, player, spawnTracker)
 					}
 				}
 
-				Object.assign(spawnIntent, blank_spawn_intent())
+				spawner.inputs = blank_spawner_state().inputs
 			}),
 	]
 })

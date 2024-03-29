@@ -11,12 +11,18 @@ import {Choreo} from "../../models/choreographer/types.js"
 export class Parent extends Component<Id> {}
 export class Children extends Component<Id[]> {}
 
-export class SpawnIntent extends Component<{
-	respawn: boolean
-	bot_spawn: boolean
-	bot_delete: boolean
-	switch_to_player: boolean
-	switch_to_spectator: boolean
+export class Spawner extends Component<{
+	starting_at: {
+		position: Vec3
+		gimbal: Vec2
+	}
+	inputs: {
+		respawn: boolean
+		bot_spawn: boolean
+		bot_delete: boolean
+		switch_to_player: boolean
+		switch_to_spectator: boolean
+	}
 }> {}
 
 export class SpawnTracker extends Component<{}> {}

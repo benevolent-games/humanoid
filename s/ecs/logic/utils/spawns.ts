@@ -1,14 +1,20 @@
 
-import {Ecs} from "@benev/toolbox"
-import {SpawnIntent} from "../../schema/schema.js"
+import {Ecs, vec2, vec3} from "@benev/toolbox"
+import {Spawner} from "../../schema/schema.js"
 
-export function blank_spawn_intent(): Ecs.ComponentState<SpawnIntent> {
+export function blank_spawner_state(): Ecs.ComponentState<Spawner> {
 	return {
-		respawn: false,
-		bot_spawn: false,
-		bot_delete: false,
-		switch_to_player: false,
-		switch_to_spectator: false,
+		starting_at: {
+			gimbal: vec2.zero(),
+			position: [0, 5, 0],
+		},
+		inputs: {
+			respawn: false,
+			bot_spawn: false,
+			bot_delete: false,
+			switch_to_player: false,
+			switch_to_spectator: false,
+		},
 	}
 }
 
