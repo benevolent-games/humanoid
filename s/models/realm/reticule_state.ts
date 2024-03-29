@@ -10,13 +10,13 @@ export type Aiming = {
 
 export function makeReticuleState() {
 	return flatstate({
-		enabled: true,
+		enabled: false,
 		size: 1,
 		opacity: 0.4,
-		aim: {
+		aim: flatstate({
 			busy: false,
 			angle: null,
-		} as Aiming
+		}) as Aiming,
 	})
 }
 

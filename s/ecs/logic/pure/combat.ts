@@ -1,7 +1,7 @@
 
 import {scalar, vec2} from "@benev/toolbox"
 
-import {behavior, system} from "../../hub.js"
+import {behavior, responder, system} from "../../hub.js"
 import {molasses2d} from "../../../tools/molasses.js"
 import {Melee} from "../../../models/attacking/melee.js"
 import {Weapon} from "../../../models/attacking/weapon.js"
@@ -117,9 +117,16 @@ export const combat = system("combat", ({realm}) => [
 			}
 		}),
 
+	responder("enable/disable reticule state")
+		.select({Controllable, MeleeAim, MeleeAction})
+		.respond(() => {
+			realm.reticuleState.enabled = true
+			return () => { realm.reticuleState.enabled = false }
+		}),
+
 	behavior("melee aiming")
 		.select({Controllable, MeleeAim, MeleeAction})
-		.logic(_tick => ({components: {meleeAim, meleeAction}}) => {
+		.logic(() => ({components: {meleeAim, meleeAction}}) => {
 
 			if (meleeAction === null)
 				realm.reticuleState.aim = {busy: false, angle: meleeAim.angle}
