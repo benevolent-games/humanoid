@@ -24,10 +24,3 @@ export const arch = (
 	)
 )
 
-// export const arch = (
-// 	<Sel extends Ecs.Selector>(
-// 		selector: Sel,
-// 		state: Ecs.State<Sel>,
-// 	): Ecs.Arch<Sel> => ({selector, state})
-// )
-

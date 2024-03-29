@@ -8,18 +8,19 @@ import {Melee} from "../../models/attacking/melee.js"
 import {Weapon} from "../../models/attacking/weapon.js"
 import {Choreo} from "../../models/choreographer/types.js"
 
-export class Children extends Component<Id[]> {}
 export class Parent extends Component<Id> {}
+export class Children extends Component<Id[]> {}
 
 export class SpawnIntent extends Component<{
 	respawn: boolean
-	switch_to_player: boolean
-	switch_to_spectator: boolean
 	bot_spawn: boolean
 	bot_delete: boolean
+
+	switch_to_player: boolean
+	switch_to_spectator: boolean
 }> {}
 
-export class Spawned extends Component<"none" | "player" | "spectator"> {}
+export class Spawned extends Component<{}> {}
 
 export class Debug extends Component<boolean> {}
 

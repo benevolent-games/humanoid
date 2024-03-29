@@ -2,6 +2,7 @@
 import {Ecs} from "@benev/toolbox"
 import {Op, ob, signals} from "@benev/slate"
 
+import {arch} from "../../ecs/hub.js"
 import {Plan} from "../planning/plan.js"
 import {HuLevel} from "../../gameplan.js"
 import {Level} from "../../ecs/schema/hybrids/level.js"
@@ -39,8 +40,8 @@ export class LevelLoader {
 		this.#op.payload?.dispose()
 
 		return this.#op.load(async() => {
-			const level = this.world.createEntity(
-				new Ecs.Archetype({Level}, {level: {level: name}})
+			const level = this.world.create(
+				arch({Level}, {level: {level: name}})
 			)
 			await level.components.level.doneLoading
 			return {name, dispose: () => level.dispose()}

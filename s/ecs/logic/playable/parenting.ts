@@ -1,21 +1,13 @@
 
-import {system, logic} from "../../hub.js"
-import {Parenting} from "../utils/parenting.js"
-import {Children, Parent} from "../../schema/schema.js"
+import {system, responder} from "../../hub.js"
+import {Children} from "../../schema/schema.js"
 
-export const spawning = system("spawning", ({world, realm}) => [
-
-	// logic("parenting", ({world, realm}) => {
-	// 	const parenting = new Parenting(world)
-	// 	const parents = world.query({Parent})
-	// 	const children = world.query({Children})
-
-	// 	parents.onAdded(parent => {})
-	// 	parents.onRemoved(parent => {})
-
-	// 	return () => {
-
-	// 	}
-	// }),
+export const parenting = system("parenting", ({world}) => [
+	responder("delete orphans")
+		.select({Children})
+		.respond(parent => () => {
+			for (const child of world.obtain(parent.components.children))
+				child.dispose()
+		}),
 ])
 

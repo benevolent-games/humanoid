@@ -40,6 +40,7 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 			}
 
 			tracer.state = {lines}
+			tracer.update()
 
 			if (attack_is_in_release_phase) {
 				const {details: tracingDetails} = tracer
@@ -117,7 +118,7 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 						if (capsule) {
 							const we_are_not_hitting_ourselves = capsule.entityId !== entity.id
 							if (we_are_not_hitting_ourselves) {
-								const entity = world.getEntity(capsule.entityId)
+								const entity = world.get(capsule.entityId)
 								if (entity.has({Health}))
 									entity.components.health = 0
 							}

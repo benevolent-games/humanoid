@@ -9,6 +9,8 @@ import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
 import {LevelLoader} from "./models/level_loader/loader.js"
 import { Game } from "./types.js"
+import { arch } from "./ecs/hub.js"
+import { SpawnIntent } from "./ecs/schema/schema.js"
 
 // html and ui
 startup_web_components()
@@ -36,6 +38,16 @@ nexus.context.gameOp.setReady(game)
 
 // initial starting level
 game.levelLoader.goto.gym()
+
+world.create(arch({SpawnIntent}, {
+	spawnIntent: {
+		respawn: true,
+		bot_spawn: false,
+		bot_delete: false,
+		switch_to_player: false,
+		switch_to_spectator: false,
+	},
+}))
 
 // indicating that things are going well
 console.log("🏃 humanoid up and running")

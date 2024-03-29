@@ -24,8 +24,7 @@ export class Tracer extends HybridComponent<{lines: Tracing.Line[]}> {
 		}
 	}
 
-	created() {}
-	updated() {
+	update() {
 		const {scene, colors} = this.realm
 		const {lines} = this.state
 		const lines_have_changed = lines.length !== this.#lastLineCount
@@ -42,6 +41,8 @@ export class Tracer extends HybridComponent<{lines: Tracing.Line[]}> {
 			}
 		}
 	}
+
+	created() {}
 	deleted() {
 		this.#deleteGraphics()
 	}

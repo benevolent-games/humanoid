@@ -14,9 +14,11 @@ import {intentions} from "./pure/intentions.js"
 import {melee_tracers} from "./pure/melee_tracers.js"
 import {spawning} from "./pure/spawning.js"
 import {velocity} from "./pure/velocity.js"
+import {parenting} from "./playable/parenting.js"
 
 export const gamelogic = system("root", () => [
 	system("pure", () => [
+		parenting,
 		spawning,
 		bot_ai,
 		intentions,
