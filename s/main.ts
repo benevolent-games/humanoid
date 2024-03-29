@@ -8,9 +8,9 @@ import startup_ecs from "./startup/startup_ecs.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
 import {LevelLoader} from "./models/level_loader/loader.js"
-import { Game } from "./types.js"
-import { arch } from "./ecs/hub.js"
-import { SpawnIntent } from "./ecs/schema/schema.js"
+import {Game} from "./types.js"
+import {arch} from "./ecs/hub.js"
+import {SpawnIntent} from "./ecs/schema/schema.js"
 
 // html and ui
 startup_web_components()
@@ -39,6 +39,7 @@ nexus.context.gameOp.setReady(game)
 // initial starting level
 game.levelLoader.goto.gym()
 
+// spawn intent
 world.create(arch({SpawnIntent}, {
 	spawnIntent: {
 		respawn: true,

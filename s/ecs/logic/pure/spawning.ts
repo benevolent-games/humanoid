@@ -1,67 +1,61 @@
 
+import {Trashcan} from "@benev/toolbox"
+
 import {Archetypes} from "../../archetypes.js"
 import {Relations} from "../utils/relations.js"
-import {system, behavior, arch} from "../../hub.js"
-import {SpawnIntent, Spawned} from "../../schema/schema.js"
+import {blank_spawn_intent} from "../utils/spawns.js"
+import {system, behavior, arch, responder} from "../../hub.js"
+import {Parent, SpawnIntent, SpawnTracker} from "../../schema/schema.js"
 
 export const spawning = system("spawning", ({world, realm}) => {
-	const spawnedQuery = world.query({Spawned})
+	const spawnedQuery = world.query({SpawnTracker, Parent})
 
-	function getSpawned() {
-		const [spawned] = spawnedQuery.matches
-		return spawned
-			? spawned
+	function getSpawnTrackerEntity() {
+		const [entity] = spawnedQuery.matches
+		return entity
+			? entity
 			: undefined
 	}
 
 	return [
-		behavior("spawn intentions")
+		responder("spawning")
 			.select({SpawnIntent})
-			.logic(() => ({components: {spawnIntent}}) => {
+			.respond(entity => {
+				const {components: {spawnIntent}} = entity
+				const {mark, dispose} = new Trashcan()
 				const {buttons} = realm.tact.inputs.humanoid
 
-				if (buttons.respawn.pressed) {
+				mark(buttons.respawn.onPressed(() => {
 					spawnIntent.respawn = true
-					console.log("pressed respawn")
-				}
+				}))
 
-				if (buttons.bot_spawn.pressed)
-					spawnIntent.bot_spawn = true
-
-				if (buttons.bot_delete.pressed)
-					spawnIntent.bot_delete = true
+				return dispose
 			}),
 
 		behavior("actuate spawning")
 			.select({SpawnIntent})
 			.logic(() => ({components: {spawnIntent}}) => {
-				const spawned = getSpawned()
+				const spawnTracker = getSpawnTrackerEntity()
 
-				if (!spawned) {
-					if (spawnIntent.respawn) {
-						console.log("respawn")
+				if (spawnIntent.respawn) {
+					if (spawnTracker) {
+						world.get(spawnTracker.components.parent).dispose()
+					}
+					else {
 						const humanoid = world.create(Archetypes.humanoid({
 							debug: false,
 							gimbal: [0, 0],
 							position: [0, 10, 0],
 							perspective: "first_person",
 						}))
-						const spawnTracker = world.create(arch({Spawned}, {spawned: {}}))
+						const spawnTracker = world.create(
+							arch({SpawnTracker}, {spawnTracker: {}})
+						)
 						Relations.parent(world, humanoid, spawnTracker)
-					}
-
-					if (spawnIntent.bot_spawn) {
-						console.log("bot_spawn")
-					}
-
-					if (spawnIntent.bot_delete) {
-						console.log("bot_delete")
 					}
 				}
 
-				spawnIntent.respawn = false
-				spawnIntent.bot_spawn = false
-				spawnIntent.bot_delete = false
+				Object.assign(spawnIntent, blank_spawn_intent())
 			}),
 	]
 })
