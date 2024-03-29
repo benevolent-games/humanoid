@@ -48,8 +48,6 @@ export function standard_glb_post_process({gameplan, loadingDock}: HuRealm): Glb
 			2
 		)
 
-		console.log("maxLights", maxLights)
-
 		// set max light limit
 		for (const material of container.materials) {
 			if (material instanceof PBRMaterial || material instanceof NodeMaterial)
