@@ -122,7 +122,7 @@ export namespace Archetypes {
 			impetus: vec3.zero(),
 			smoothing: 5,
 
-			speeds: {base: 3, fast: 6, slow: 1.5},
+			speeds: {base: 2.75, fast: 4.75, slow: 1.5},
 			capsule: {
 				height: 1.75,
 				radius: .2,
