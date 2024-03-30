@@ -1,6 +1,5 @@
 
-import {Id} from "@benev/toolbox/x/ecs6/core/types.js"
-import {Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
+import {Id, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Component} from "../hub.js"
 import {Ambulatory} from "./types.js"
