@@ -38,7 +38,7 @@ const game: Game = {
 nexus.context.gameOp.setReady(game)
 
 // initial starting level
-game.levelLoader.goto.gym()
+game.levelLoader.goto.viking_village()
 
 // spawner
 const spawner = blank_spawner_state()
