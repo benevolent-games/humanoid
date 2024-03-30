@@ -1,8 +1,7 @@
 
-import {HybridComponent} from "@benev/toolbox"
-import {HuRealm} from "../../../models/realm/realm.js"
+import {HybridComponent} from "../../hub.js"
 
-export class MouseAccumulator extends HybridComponent<HuRealm, {}> {
+export class MouseAccumulator extends HybridComponent<{}> {
 	movement = this.realm.tact.connectedDevices.mouse.make_accumulator()
 	created() {}
 	updated() {}

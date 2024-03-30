@@ -1,5 +1,5 @@
 
-import {CState, Speeds, Vec2, scalar} from "@benev/toolbox"
+import {Ecs, Speeds, Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../../types.js"
@@ -27,7 +27,7 @@ export function sync_character_anims({
 		ambulatory: Ambulatory
 		boss_anim: AnimationGroup
 		meleeWeights: Melee.Weights
-		perspective: CState<Perspective>
+		perspective: Ecs.ComponentState<Perspective>
 		speeds: Speeds & {creep: number}
 	}) {
 

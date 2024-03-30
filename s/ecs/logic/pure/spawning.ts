@@ -1,28 +1,93 @@
 
-// import {Input} from "@benev/toolbox"
-// import {behavior, system} from "../../hub.js"
-// import {Controllable, Humanoid, SpawnIntent, Spawned} from "../../schema/schema.js"
+import {Trashcan} from "@benev/toolbox"
 
-// export const spawning = system("spawning", [
+import {system, behavior, responder} from "../../hub.js"
+import {blank_spawner_state, spawnPlayer, spawnSpectator} from "../utils/spawns.js"
+import {Gimbal, Humanoid, Parent, Position, Spawner, SpawnTracker, Spectator} from "../../schema/schema.js"
+import { Archetypes } from "../../archetypes.js"
 
-// 	behavior("spawn buttons")
-// 		.select({Controllable, SpawnIntent, Spawned})
-// 		.act(({realm}) => components => {
-// 			const isPressed = ({down, repeat}: Input.Button) => (down && !repeat)
-// 			const {buttons} = realm.tact.inputs.humanoid
-// 			components.spawnIntent.togglePlayer = isPressed(buttons.respawn.input)
-// 			components.spawnIntent.spawnBot = isPressed(buttons.bot_spawn.input)
-// 			components.spawnIntent.deleteBot = isPressed(buttons.bot_delete.input)
-// 		}),
+export const spawning = system("spawning", ({world, realm}) => {
+	const spawnedQuery = world.query({SpawnTracker, Parent})
 
-// 	behavior("actually spawn stuff")
-// 		.select({Controllable, SpawnIntent, Spawned})
-// 		.act(({world, realm}) => components => {
-// 			const {togglePlayer, spawnBot, deleteBot} = components.spawnIntent
+	function getSpawnTrackerEntity() {
+		const [entity] = spawnedQuery.matches
+		return entity
+			? entity
+			: undefined
+	}
 
-// 			if (togglePlayer) {
-// 				// TODO grab all player entities
-// 			}
-// 		}),
-// ])
+	return [
+		responder("spawning")
+			.select({Spawner})
+			.respond(entity => {
+				const {mark, dispose} = new Trashcan()
+				const {buttons} = realm.tact.inputs.humanoid
+
+				mark(buttons.respawn.onPressed(() => {
+					entity.components.spawner.inputs.respawn = true
+				}))
+
+				mark(buttons.bot_spawn.onPressed(() => {
+					entity.components.spawner.inputs.bot_spawn = true
+				}))
+
+				mark(buttons.bot_delete.onPressed(() => {
+					entity.components.spawner.inputs.bot_delete = true
+				}))
+
+				return dispose
+			}),
+
+		behavior("actuate spawning")
+			.select({Spawner})
+			.logic(() => ({components: {spawner}}) => {
+				const spawnTracker = getSpawnTrackerEntity()
+
+				if (spawner.inputs.respawn) {
+					if (spawnTracker) {
+						const player = world.get(spawnTracker.components.parent)
+						const isPlayer = player.has({Humanoid})
+						const isSpectator = player.has({Spectator})
+
+						if (player.has({Gimbal, Position})) {
+							spawner.starting_at.gimbal = player.components.gimbal
+							spawner.starting_at.position = player.components.position
+						}
+
+						player.dispose()
+
+						if (isPlayer)
+							spawnSpectator(world, spawner)
+						else if (isSpectator)
+							spawnPlayer(world, spawner)
+					}
+					else {
+						spawnPlayer(world, spawner)
+					}
+				}
+
+				if (spawner.inputs.bot_spawn) {
+					const bot = world.create(Archetypes.bot({
+						debug: false,
+						gimbal: [0, 0],
+						position: [0, 2, 5],
+					}))
+					spawner.bots.push(bot.id)
+				}
+
+				if (spawner.inputs.bot_delete) {
+					const exists = new Set(world.obtain(spawner.bots).map(e => e.id))
+					spawner.bots = spawner.bots.filter(id => exists.has(id))
+
+					const botId = spawner.bots.shift()
+					if (botId) {
+						const bot = world.get(botId)
+						bot.dispose()
+					}
+				}
+
+				spawner.inputs = blank_spawner_state().inputs
+			}),
+	]
+})
 

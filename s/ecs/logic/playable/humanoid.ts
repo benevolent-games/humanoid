@@ -8,31 +8,29 @@ import {behavior, responder, system} from "../../hub.js"
 import {molasses, molasses3d} from "../../../tools/molasses.js"
 import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Speeds, Stance} from "../../schema/schema.js"
 
-export const humanoid = system("humanoid", [
+export const humanoid = system("humanoid", () => [
 	responder("capsule debug")
 		.select({Capsule, Debug})
-		.respond(() => ({
-			added(c) { c.capsule.setDebug(c.debug) },
-			removed() {},
-		})),
+		.respond(({components}) => {
+			components.capsule.setDebug(components.debug)
+		}),
 
 	responder("establish capsule position")
 		.select({Capsule, Position})
-		.respond(() => ({
-			added(c) { c.capsule.position = c.position },
-			removed() {},
-		})),
+		.respond(({components}) => {
+			components.capsule.position = components.position
+		}),
 
 	behavior("reset impetus")
 		.select({Capsule, Impetus})
-		.act(() => c => {
-			c.impetus = vec3.zero()
+		.logic(() => ({components}) => {
+			components.impetus = vec3.zero()
 		}),
 
 	behavior("impetus for walking around")
 		.select({Capsule, Impetus, Force, Stance, Intent, Speeds, Grounding, Gimbal})
-		.act(({tick}) => c => {
-			const {stance, force, intent, speeds, grounding, gimbal, impetus} = c
+		.logic(tick => ({components}) => {
+			const {stance, force, intent, speeds, grounding, gimbal, impetus} = components
 			const [x, z] = force
 
 			if (grounding.grounded) {
@@ -63,7 +61,7 @@ export const humanoid = system("humanoid", [
 					)
 				}
 
-				c.impetus = vec3.add(
+				components.impetus = vec3.add(
 					impetus,
 					gimbaltool(gimbal).rotate(target),
 				)
@@ -72,21 +70,20 @@ export const humanoid = system("humanoid", [
 
 	behavior("airborne")
 		.select({Capsule, AirborneTrajectory})
-		.act(() => c => {
-			const {airborneTrajectory} = c
-			c.airborneTrajectory = molasses3d(
+		.logic(() => ({components}) => {
+			components.airborneTrajectory = molasses3d(
 				100,
-				airborneTrajectory,
+				components.airborneTrajectory,
 				vec3.zero(),
 			)
 		}),
 
 	behavior("apply reduced force onto airborneTrajectory")
 		.select({Capsule, AirborneTrajectory, Force, Grounding, Gimbal})
-		.act(({tick}) => c => {
+		.logic(tick => ({components}) => {
 			const factor = 1 / 5
 			const maxSpeed = 5 * tick.seconds
-			const {force, grounding, gimbal, airborneTrajectory} = c
+			const {force, grounding, gimbal, airborneTrajectory} = components
 
 			if (!grounding.grounded) {
 				const global_airforce = unflatten(vec2.multiplyBy(force, factor))
@@ -96,26 +93,26 @@ export const humanoid = system("humanoid", [
 				if (vec3.magnitude(new_trajectory) > maxSpeed) {
 					const direction = vec3.normalize(new_trajectory)
 					const scaled_airforce = vec3.multiplyBy(direction, maxSpeed - vec3.magnitude(airborneTrajectory))
-					c.airborneTrajectory = vec3.add(airborneTrajectory, scaled_airforce)
+					components.airborneTrajectory = vec3.add(airborneTrajectory, scaled_airforce)
 				}
 				else {
-					c.airborneTrajectory = new_trajectory
+					components.airborneTrajectory = new_trajectory
 				}
 			}
 		}),
 
 	behavior("apply airborne trajectory to impetus")
 		.select({Capsule, AirborneTrajectory, Grounding, Impetus})
-		.act(() => c => {
-			const {grounding, impetus, airborneTrajectory} = c
+		.logic(() => ({components}) => {
+			const {grounding, impetus, airborneTrajectory} = components
 			if (!grounding.grounded)
-				c.impetus = vec3.add(impetus, airborneTrajectory)
+				components.impetus = vec3.add(impetus, airborneTrajectory)
 		}),
 
 	behavior("apply artificial gravity on impetus")
 		.select({Capsule, Grounding, Impetus})
-		.act(({tick}) => c => {
-			const {grounded, seconds} = c.grounding
+		.logic(tick => ({components}) => {
+			const {grounded, seconds} = components.grounding
 			const subtle_grounding_force = 5 * tick.seconds
 
 			let y = -subtle_grounding_force
@@ -137,13 +134,13 @@ export const humanoid = system("humanoid", [
 				y = -gravity_for_this_tick
 			}
 
-			c.impetus[1] = y
+			components.impetus[1] = y
 		}),
 
 	behavior("add jump power to impetus")
 		.select({Capsule, Grounding, Intent, Jump, Impetus})
-		.act(({tick}) => c => {
-			const {intent, jump, grounding} = c
+		.logic(tick => ({components}) => {
+			const {intent, jump, grounding} = components
 			const {grounded} = grounding
 
 			const power = 7
@@ -166,7 +163,7 @@ export const humanoid = system("humanoid", [
 			let y = 0
 
 			if (phase_start_jump(jump)) {
-				c.jump = true
+				components.jump = true
 				y += kick
 			}
 			else if (phase_sustain_jump(jump)) {
@@ -177,15 +174,15 @@ export const humanoid = system("humanoid", [
 				])
 			}
 			else if (phase_end_jump(jump)) {
-				c.jump = false
+				components.jump = false
 			}
 
-			c.impetus[1] += y
+			components.impetus[1] += y
 		}),
 
 	behavior("apply capsule movement, set grounding and airborne_trajectory")
 		.select({Capsule, Grounding, Impetus, AirborneTrajectory})
-		.act(({tick}) => c => {
+		.logic(tick => ({components: c}) => {
 			const {capsule} = c.capsule
 			const {grounded} = capsule.applyMovement(c.impetus)
 
@@ -204,7 +201,7 @@ export const humanoid = system("humanoid", [
 
 	behavior("update position with smoothing on y-axis")
 		.select({Capsule, Position, PreviousPosition})
-		.act(() => c => {
+		.logic(() => ({components: c}) => {
 			const [,previousY] = c.previousPosition
 			const [x, y, z] = c.capsule.position
 			const smoothY = molasses(3, previousY, y)

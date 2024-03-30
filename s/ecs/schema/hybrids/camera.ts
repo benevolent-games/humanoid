@@ -1,12 +1,11 @@
 
 import {label, scalar} from "@benev/toolbox"
-import {HybridComponent} from "@benev/toolbox"
 import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {TargetCamera} from "@babylonjs/core/Cameras/targetCamera.js"
 
-import {HuRealm} from "../../../models/realm/realm.js"
+import {HybridComponent} from "../../hub.js"
 
-export class Camera extends HybridComponent<HuRealm, {
+export class Camera extends HybridComponent<{
 		fov: number
 		minZ: number
 		maxZ: number
@@ -22,7 +21,6 @@ export class Camera extends HybridComponent<HuRealm, {
 		node.ignoreParentScaling = true
 	}
 
-	updated() {}
 	deleted() {
 		this.node.dispose()
 	}

@@ -1,18 +1,19 @@
 
 import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 import {behavior, system} from "../../hub.js"
-import {Health, MeleeAction} from "../../schema/schema.js"
 import {Melee} from "../../../models/attacking/melee.js"
+import {Health, MeleeAction} from "../../schema/schema.js"
 import {Tracer} from "../../schema/hybrids/tracer/tracer.js"
 import {Tracing} from "../../schema/hybrids/tracer/parts/types.js"
 import {Character} from "../../schema/hybrids/character/character.js"
 
-export const melee_tracers = system("melee tracers", [
+export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
 	behavior("tracer")
 		.select({Character, Tracer, MeleeAction})
-		.act(({world, realm: {physics}}) => (components, id) => {
-			const {character, meleeAction, tracer} = components
+		.logic(() => entity => {
+			const {physics} = realm
+			const {character, meleeAction, tracer} = entity.components
 			const {swordbase, swordtip} = character.helpers
 			const attack_is_in_windup_phase = (
 				Melee.is.attack(meleeAction) &&
@@ -39,6 +40,7 @@ export const melee_tracers = system("melee tracers", [
 			}
 
 			tracer.state = {lines}
+			tracer.update()
 
 			if (attack_is_in_release_phase) {
 				const {details: tracingDetails} = tracer
@@ -114,10 +116,11 @@ export const melee_tracers = system("melee tracers", [
 
 						const capsule = physics.capsules.get(hit)
 						if (capsule) {
-							const we_are_not_hitting_ourselves = capsule.entityId !== id
+							const we_are_not_hitting_ourselves = capsule.entityId !== entity.id
 							if (we_are_not_hitting_ourselves) {
-								const entity = world.getEntity(capsule.entityId, {Health})
-								entity.health = 0
+								const entity = world.get(capsule.entityId)
+								if (entity.has({Health}))
+									entity.components.health = 0
 							}
 						}
 					}
@@ -126,3 +129,4 @@ export const melee_tracers = system("melee tracers", [
 		}),
 
 ])
+

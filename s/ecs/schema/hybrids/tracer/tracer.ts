@@ -1,11 +1,9 @@
 
-import {HybridComponent} from "@benev/toolbox"
-
 import {Tracing} from "./parts/types.js"
-import {HuRealm} from "../../../../models/realm/realm.js"
+import {HybridComponent} from "../../../hub.js"
 import {apply_update_to_tracer_graphics, establish_tracer_graphics} from "./parts/fns.js"
 
-export class Tracer extends HybridComponent<HuRealm, {lines: Tracing.Line[]}> {
+export class Tracer extends HybridComponent<{lines: Tracing.Line[]}> {
 	#graphics: null | Tracing.Graphics = null
 	#lastLineCount = 0
 
@@ -26,8 +24,7 @@ export class Tracer extends HybridComponent<HuRealm, {lines: Tracing.Line[]}> {
 		}
 	}
 
-	created() {}
-	updated() {
+	update() {
 		const {scene, colors} = this.realm
 		const {lines} = this.state
 		const lines_have_changed = lines.length !== this.#lastLineCount
@@ -44,6 +41,8 @@ export class Tracer extends HybridComponent<HuRealm, {lines: Tracing.Line[]}> {
 			}
 		}
 	}
+
+	created() {}
 	deleted() {
 		this.#deleteGraphics()
 	}

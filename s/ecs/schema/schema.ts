@@ -1,22 +1,33 @@
 
-import {Id} from "@benev/toolbox/x/ecs6/core/types.js"
-import {Component, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
+import {Id, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
+import {Component} from "../hub.js"
 import {Ambulatory} from "./types.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {Weapon} from "../../models/attacking/weapon.js"
 import {Choreo} from "../../models/choreographer/types.js"
 
-export class SpawnIntent extends Component<{
-	togglePlayer: boolean
-	spawnBot: boolean
-	deleteBot: boolean
+export class Parent extends Component<Id> {}
+export class Children extends Component<Id[]> {}
+
+export class Spawner extends Component<{
+	bots: Id[]
+	starting_at: {
+		position: Vec3
+		gimbal: Vec2
+	}
+	inputs: {
+		respawn: boolean
+		bot_spawn: boolean
+		bot_delete: boolean
+		switch_to_player: boolean
+		switch_to_spectator: boolean
+	}
 }> {}
 
-export class Spawned extends Component<{}> {}
+export class SpawnTracker extends Component<{}> {}
 
 export class Debug extends Component<boolean> {}
-export class Children extends Component<Id[]> {}
 
 export class Scale extends Component<Vec3> {}
 export class Position extends Component<Vec3> {}

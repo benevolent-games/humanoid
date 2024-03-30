@@ -1,34 +1,23 @@
 
-import {Scene} from "@babylonjs/core/scene.js"
 import {Stage, debug_colors} from "@benev/toolbox"
 
 import {HuTact} from "../tact/tact.js"
 import {HuPhysics} from "./physics.js"
 import {HuGameplan} from "../../gameplan.js"
+import {makeSensitivity} from "./sensitivity.js"
+import {makeReticuleState} from "./reticule_state.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 import {optimize_scene} from "../../tools/optimize_scene.js"
 import {CharacterContainer} from "../character/container.js"
-import {Sensitivity, makeSensitivity} from "./sensitivity.js"
-import {ReticuleState, makeReticuleState} from "./reticule_state.js"
 
 export type RealmParams = {
 	tickrate_hz: number
 	gameplan: HuGameplan
 }
 
-export type HuRealm = {
-	scene: Scene
-	stage: Stage
-	tact: HuTact
-	physics: HuPhysics
-	loadingDock: LoadingDock
-	sensitivity: Sensitivity
-	reticuleState: ReticuleState
-	character: CharacterContainer
-	colors: ReturnType<typeof debug_colors>
-} & RealmParams
+export type HuRealm = Awaited<ReturnType<typeof makeRealm>>
 
-export async function makeRealm(params: RealmParams): Promise<HuRealm> {
+export async function makeRealm(params: RealmParams) {
 	const {gameplan, tickrate_hz} = params
 
 	const stage = new Stage({

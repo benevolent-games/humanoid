@@ -11,7 +11,7 @@ const smoothing = 5
 
 export const ambulation = behavior("calculate ambulatory data")
 	.select({Ambulation, Velocity, Speeds, Gimbal, Stance, Grounding})
-	.act(({tick}) => c => {
+	.logic(tick => ({components: c}) => {
 		const {smooth} = c.ambulation
 
 		const globalvel = vec2.multiplyBy(

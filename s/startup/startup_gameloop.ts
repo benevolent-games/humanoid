@@ -1,6 +1,5 @@
 
 import {scalar} from "@benev/toolbox"
-import {Executive} from "@benev/toolbox/x/ecs6/exe/executive.js"
 
 import {HuTick} from "../ecs/hub.js"
 import {HuRealm} from "../models/realm/realm.js"
@@ -13,7 +12,7 @@ import {HuRealm} from "../models/realm/realm.js"
  */
 export default (
 		realm: HuRealm,
-		executive: Executive<HuRealm, HuTick>,
+		executor: (tick: HuTick) => void,
 	) => {
 
 	let count = 0
@@ -39,7 +38,7 @@ export default (
 			hz: 1 / seconds,
 		}
 
-		executive.execute(tick)
+		executor(tick)
 	})
 
 	realm.stage.gameloop.start()

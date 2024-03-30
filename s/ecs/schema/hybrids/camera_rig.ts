@@ -2,13 +2,13 @@
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {HybridComponent, Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
+import {Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
 
-import {HuRealm} from "../../../models/realm/realm.js"
+import {HybridComponent} from "../../hub.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
 import {adjust_gimbal_verticality_to_match_character_anim} from "../../logic/playable/simulation/adjust_gimbal_verticality_to_match_character_anim.js"
 
-export class CameraRig extends HybridComponent<HuRealm, {
+export class CameraRig extends HybridComponent<{
 		height: number
 		third_person_distance: number
 	}> {
