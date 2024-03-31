@@ -21,9 +21,9 @@ export const ConfigMenu = nexus.shadow_view(use => (game: Game) => {
 
 	return html`
 		<section>
-			<h2>sensitivities</h2>
+			<h2>sensitivity</h2>
 			${NuiRange([{
-				label: "mouse (arcseconds/count)",
+				label: "mouse apd (arcseconds-per-dot)",
 				max: 1000,
 				min: 1,
 				step: 1,
@@ -37,6 +37,15 @@ export const ConfigMenu = nexus.shadow_view(use => (game: Game) => {
 				step: 1,
 				value: game.sensitivity.keys,
 				set: x => game.sensitivity.keys = x,
+			}])}
+		</section>
+
+		<section>
+			<h2>debug</h2>
+			${NuiCheckbox([{
+				label: "melee tracers",
+				checked: game.debug.meleeTracers,
+				set: c => game.debug.meleeTracers = c,
 			}])}
 		</section>
 

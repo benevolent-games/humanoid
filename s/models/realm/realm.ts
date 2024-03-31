@@ -4,6 +4,7 @@ import {Stage, debug_colors} from "@benev/toolbox"
 import {HuTact} from "../tact/tact.js"
 import {HuPhysics} from "./physics.js"
 import {HuGameplan} from "../../gameplan.js"
+import {makeDebugState} from "./debug_state.js"
 import {makeSensitivity} from "./sensitivity.js"
 import {makeReticuleState} from "./reticule_state.js"
 import {LoadingDock} from "../planning/loading_dock.js"
@@ -47,6 +48,7 @@ export async function makeRealm(params: RealmParams) {
 		physics,
 		character,
 		loadingDock,
+		debug: makeDebugState(),
 		sensitivity: makeSensitivity(),
 		reticuleState: makeReticuleState(),
 	}

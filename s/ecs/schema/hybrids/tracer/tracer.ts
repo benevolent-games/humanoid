@@ -37,7 +37,12 @@ export class Tracer extends HybridComponent<{lines: Tracing.Line[]}> {
 				if (this.#graphics)
 					apply_update_to_tracer_graphics(this.#graphics, lines)
 				else
-					this.#graphics = establish_tracer_graphics(scene, colors, lines)
+					this.#graphics = establish_tracer_graphics(
+						scene,
+						colors,
+						lines,
+						this.realm.debug.meleeTracers,
+					)
 			}
 		}
 	}
