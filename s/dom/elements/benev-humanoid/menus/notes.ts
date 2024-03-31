@@ -36,14 +36,16 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 	return wrap(html`
 		<section class=lead>
-			<h1>welcome to humanoid (<code>${game.commit.short}</code>)</h1>
-			<p>the humanoid sandbox is an open source web game template.</p>
-			<p>we're building it so we can make a cool game. join our <a target=_blank href="https://discord.gg/BnZx2utdev">discord</a> community.</p>
-		</section>
+			<h1>welcome to humanoid <code>${game.commit.short}</code>.</h1>
+			<p>our mission is to make web games amazing and cool.</p>
+			<p>humanoid is a work-in-progress open source web game template.</p>
+			<p>join our <a target=_blank href="https://discord.gg/BnZx2utdev">discord</a> community.</p>
+			<br/>
 
-		<section class=controls>
-			<h1>controls.</h1>
-			<p>
+			<p><strong>it's not done yet</strong> — there's tons of stuff that's janky and incomplete, we're actively working on it.</p>
+			<br/>
+
+			<p><strong>controls</strong> —
 				<code>tab</code> to toggle menu.
 				<code>wasd</code> to walk around.
 				<code>shift</code> for sprint.
@@ -54,11 +56,25 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<code>middle-click</code> to stab.
 				<code>right-click</code> to parry.
 				<code>r</code> to switch camera angle.
-				<code>t</code> to toggle human/spectator.
+				<code>t</code> to respawn or toggle to spectator mode.
+				<code>b</code> to spawn bots.
+				<code>shift+b</code> to delete bots.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>viking village.</span>
+				<small>2024-03-31</small>
+			</h1>
+			<p>so, we added lonnie's work-in-progress viking village level.</p>
+			<p>you can now spawn dumb bots to play with. be careful, they are dangerous and might kill you.</p>
+			<p>i rewrote the ecs framework, we're now on "ecs7".</p>
+			<p>added new settings for melee tracers.</p>
+			<p>slowed down walking/sprinting speeds a little.</p>
+		</section>
 
 		<section>
 			<h1>
