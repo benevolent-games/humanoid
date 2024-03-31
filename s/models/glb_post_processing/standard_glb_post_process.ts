@@ -4,9 +4,9 @@ import {Material} from "@babylonjs/core/Materials/material.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
+import {HuRealm} from "../realm/realm.js"
 import {Nametag} from "../../tools/nametag.js"
 import {Quality} from "../../tools/quality.js"
-import {HuRealm} from "../realm/realm.js"
 import {GlbPostProcess} from "./parts/types.js"
 import {Shader} from "../assets/parts/make_shader.js"
 
