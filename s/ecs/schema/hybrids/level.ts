@@ -52,6 +52,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 		const {sky} = this.#levelplan
 		return make_skybox({
 			scene: this.realm.scene,
+			commit: this.realm.commit,
 			links: sky.images,
 			yaw: sky.rotation,
 			size: sky.size,
@@ -62,6 +63,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 		const {env} = this.#levelplan
 		return make_envmap(
 			this.realm.scene,
+			this.realm.commit,
 			env.url,
 			env.rotation,
 		)

@@ -6,6 +6,8 @@ import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial.js"
 
+import {CommitHash} from "./commit_hash"
+
 export type SkyboxLinks = {
 	px: string
 	py: string
@@ -36,8 +38,10 @@ export function make_skybox({
 			yaw,
 			size,
 			links,
+			commit,
 		}: {
 		scene: Scene
+		commit: CommitHash
 		links: SkyboxLinks
 	} & SkyboxParams) {
 
@@ -63,7 +67,7 @@ export function make_skybox({
 			scene,
 			extensions,
 			noMipmap,
-			files,
+			files.map(link => commit.augment(link)),
 		)
 	})()
 
