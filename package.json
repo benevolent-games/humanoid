@@ -12,8 +12,7 @@
 	],
 	"scripts": {
 		"prepare": "babylon-cleanup",
-		"build": "run-s commit-hash && turtle-standard && run-s links",
-		"commit-hash": "mkdir -p x && git rev-parse HEAD > x/commit-hash.txt",
+		"build": "turtle-standard && run-s links",
 		"links": "ln -s \"$(realpath assets)\" x/assets",
 		"start": "turtle-standard-watch",
 		"mount": "s/bin/mount",
@@ -30,6 +29,7 @@
 		"@dimforge/rapier3d": "^0.12.0",
 		"@dimforge/rapier3d-compat": "^0.12.0",
 		"es-module-shims": "^1.9.0",
+		"shelljs": "^0.8.5",
 		"simplex-noise": "^4.0.1"
 	},
 	"peerDependencies": {

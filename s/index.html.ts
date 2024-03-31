@@ -1,9 +1,10 @@
 
-import {template, html, easypage, startup_scripts_with_dev_mode, read_file} from "@benev/turtle"
+import shell from "shelljs"
+import {template, html, easypage, startup_scripts_with_dev_mode} from "@benev/turtle"
 
 export default template(async basic => {
 	const path = basic.path(import.meta.url)
-	const commitHash = (await read_file("x/commit-hash.txt")).trim()
+	const commitHash = shell.exec(`git rev-parse HEAD`, {silent: true}).stdout
 
 	return easypage({
 		path,
