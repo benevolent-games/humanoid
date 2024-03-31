@@ -12,7 +12,8 @@
 	],
 	"scripts": {
 		"prepare": "babylon-cleanup",
-		"build": "turtle-standard && npm run links",
+		"build": "run-s commit-hash && turtle-standard && run-s links",
+		"commit-hash": "git rev-parse HEAD > x/commit-hash.txt",
 		"links": "ln -s \"$(realpath assets)\" x/assets",
 		"start": "turtle-standard-watch",
 		"mount": "s/bin/mount",

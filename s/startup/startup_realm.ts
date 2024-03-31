@@ -2,6 +2,7 @@
 import {Quality} from "../tools/quality.js"
 import {make_gameplan} from "../gameplan.js"
 import {makeRealm} from "../models/realm/realm.js"
+import {CommitHash} from "../tools/commit_hash.js"
 import {determine_quality_mode} from "../tools/determine_quality_mode.js"
 import {determine_local_dev_mode} from "../tools/determine_local_dev_mode.js"
 import {standard_glb_post_process} from "../models/glb_post_processing/standard_glb_post_process.js"
@@ -12,8 +13,9 @@ import {standard_glb_post_process} from "../models/glb_post_processing/standard_
  *  - this bootstraps our babylonjs engine and scene
  *  - we are using an op for the async operation so the ui can show a loading spinner
  */
-export default async() => {
+export default async(commit: CommitHash) => {
 	const realm = await makeRealm({
+		commit,
 		tickrate_hz: 60,
 		gameplan: make_gameplan({
 			quality: determine_quality_mode(location.href, Quality.Mid),

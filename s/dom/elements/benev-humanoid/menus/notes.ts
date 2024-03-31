@@ -3,7 +3,7 @@ import {css, html} from "@benev/slate"
 import {Game} from "../../../../types.js"
 import {nexus} from "../../../../nexus.js"
 
-export const NotesMenu = nexus.shadow_view(use => (_game: Game) => {
+export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 	use.name("notes-menu")
 	use.styles(css`
 		.base {
@@ -36,7 +36,7 @@ export const NotesMenu = nexus.shadow_view(use => (_game: Game) => {
 
 	return wrap(html`
 		<section class=lead>
-			<h1>welcome to humanoid.</h1>
+			<h1>welcome to humanoid (<code>${game.commit.short}</code>)</h1>
 			<p>the humanoid sandbox is an open source web game template.</p>
 			<p>we're building it so we can make a cool game. join our <a target=_blank href="https://discord.gg/BnZx2utdev">discord</a> community.</p>
 		</section>

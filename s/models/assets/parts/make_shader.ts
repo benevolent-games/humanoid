@@ -5,6 +5,7 @@ import {is} from "@benev/slate"
 import {label} from "@benev/toolbox"
 import {Plan} from "../../planning/plan.js"
 import {Scene} from "@babylonjs/core/scene.js"
+import {CommitHash} from "../../../tools/commit_hash.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 import {url_replace_extension} from "../../../tools/url_replace_extension.js"
@@ -42,11 +43,12 @@ export class Shader<Inputs extends object = object> {
 
 export async function make_shader<I extends object>(
 		scene: Scene,
+		commit: CommitHash,
 		{url, inputs, forced_extension_for_textures}: Plan.Shader<I>,
 	) {
 
 	NodeMaterial.IgnoreTexturesAtLoadTime = true
-	const material = await NodeMaterial.ParseFromFileAsync(label("shader"), url, scene)
+	const material = await NodeMaterial.ParseFromFileAsync(label("shader"), commit.augment(url), scene)
 	material.name = label("shader")
 
 	for (const texblock of material.getTextureBlocks()) {
@@ -55,7 +57,7 @@ export async function make_shader<I extends object>(
 		else {
 			const rebased_url = new URL(texblock.name, new URL(url, location.href)).href
 			const new_url = url_replace_extension(rebased_url, forced_extension_for_textures)
-			const texture = new Texture(new_url, scene)
+			const texture = new Texture(commit.augment(new_url), scene)
 			texblock.texture = texture
 		}
 	}

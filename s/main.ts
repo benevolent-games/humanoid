@@ -1,5 +1,5 @@
 
-console.log("🏃 humanoid starting up")
+console.log(`🏃 humanoid starting up`)
 
 import {nexus} from "./nexus.js"
 import startup_web_components from "./startup/startup_web_components.js"
@@ -12,12 +12,16 @@ import {Game} from "./types.js"
 import {arch} from "./ecs/hub.js"
 import {Spawner} from "./ecs/schema/schema.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
+import {CommitHash} from "./tools/commit_hash.js"
+
+const commit = CommitHash.parse_from_dom()
+console.log(`🏷️ commit hash ${commit.short}`)
 
 // html and ui
 startup_web_components()
 
 // realm contains all the global facilities for the game
-const realm = await startup_realm()
+const realm = await startup_realm(commit)
 
 // all our game logic is expressed in behaviors and systems
 const {world, executor} = startup_ecs(realm)
@@ -46,5 +50,5 @@ spawner.inputs.respawn = true
 world.create(arch({Spawner}, {spawner}))
 
 // indicating that things are going well
-console.log("🏃 humanoid up and running")
+console.log(`🏃 humanoid up and running`)
 

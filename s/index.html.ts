@@ -1,8 +1,9 @@
 
-import {template, html, easypage, startup_scripts_with_dev_mode} from "@benev/turtle"
+import {template, html, easypage, startup_scripts_with_dev_mode, read_file} from "@benev/turtle"
 
 export default template(async basic => {
 	const path = basic.path(import.meta.url)
+	const commitHash = (await read_file("x/commit-hash.txt")).trim()
 
 	return easypage({
 		path,
@@ -10,6 +11,7 @@ export default template(async basic => {
 		title: "@benev/humanoid",
 		head: html`
 			<link rel="icon" href="https://benevolent.games/assets/benevolent.svg"/>
+			<meta data-commit-hash="${commitHash}"/>
 			${startup_scripts_with_dev_mode(path)}
 		`,
 		body: html`
