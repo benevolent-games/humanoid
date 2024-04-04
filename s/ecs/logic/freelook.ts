@@ -5,7 +5,7 @@ import {avg} from "../../tools/avg.js"
 import {behavior, system} from "../hub.js"
 import {molasses2d} from "../../tools/molasses.js"
 import {halfcircle} from "../../tools/halfcircle.js"
-import {Gimbal, Intent, CoolGimbal, Orbit, Controllable} from "../components/plain_components.js"
+import {Gimbal, Intent, GimbalSway, Orbit, Controllable} from "../components/plain_components.js"
 
 export const freelook = system("freelook", ({realm}) => [
 	behavior("apply freelook, onto glance and gimbal based on intent")
@@ -38,12 +38,12 @@ export const freelook = system("freelook", ({realm}) => [
 					: null
 		}),
 
-	behavior("calculate cool gimbal")
-		.select({Gimbal, CoolGimbal})
-		.logic(() => ({components: {gimbal, coolGimbal: cool}}) => {
-			cool.records = avg.vec2.append(5, cool.records, gimbal)
-			const average = avg.vec2.average(cool.records)
-			const smoothed = molasses2d(5, cool.gimbal, average)
+	behavior("calculate gimbal sway")
+		.select({Gimbal, GimbalSway})
+		.logic(() => ({components: {gimbal, gimbalSway}}) => {
+			gimbalSway.records = avg.vec2.append(5, gimbalSway.records, gimbal)
+			const average = avg.vec2.average(gimbalSway.records)
+			const smoothed = molasses2d(5, gimbalSway.gimbal, average)
 
 			const diff = vec2.subtract(gimbal, average)
 			const [x, y] = vec2.add(smoothed, diff)
@@ -53,7 +53,7 @@ export const freelook = system("freelook", ({realm}) => [
 			const aX = scalar.nearby(initX, x, bound)
 			const aY = scalar.nearby(initY, y, bound)
 
-			cool.gimbal = [aX, scalar.clamp(aY, ...halfcircle)]
+			gimbalSway.gimbal = [aX, scalar.clamp(aY, ...halfcircle)]
 		}),
 ])
 

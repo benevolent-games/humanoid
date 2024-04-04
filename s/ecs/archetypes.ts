@@ -10,7 +10,7 @@ import {Tracer} from "./components/hybrids/tracer/tracer.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
-import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, CoolGimbal, Debug, Force, Gimbal, Grounding, Health, Humanoid, Impetus, Intent, Jump, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
+import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Health, Humanoid, Impetus, Intent, Jump, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
@@ -101,7 +101,7 @@ export namespace Archetypes {
 
 			PreviousPosition,
 			Velocity,
-			CoolGimbal,
+			GimbalSway,
 
 			Perspective,
 			Character,
@@ -144,7 +144,7 @@ export namespace Archetypes {
 			airborneTrajectory: vec3.zero(),
 			jump: false,
 			previousPosition: o.position,
-			coolGimbal: {gimbal: o.gimbal, records: [o.gimbal]},
+			gimbalSway: {gimbal: o.gimbal, records: [o.gimbal]},
 			velocity: vec3.zero(),
 			perspective: "third_person",
 			character: {height: 1.75},

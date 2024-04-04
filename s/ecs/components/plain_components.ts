@@ -37,7 +37,7 @@ export class Velocity extends Component<Vec3> {}
 /** rotations in radians, x-axis is 360 degrees, y-axis is 180 degrees from -90 to 90. */
 export class Gimbal extends Component<Vec2> {}
 
-export class CoolGimbal extends Component<{
+export class GimbalSway extends Component<{
 	records: Vec2[]
 	gimbal: Vec2
 }> {}
