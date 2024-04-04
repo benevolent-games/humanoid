@@ -50,7 +50,7 @@ export const huBindings = () => Tact.bindings(({
 			orbit: buttons(b("KeyZ")),
 
 			swing: buttons(b("MousePrimary"), b("Semicolon")),
-			parry: buttons(b("MouseSecondary"), b("Slash")),
+			parry: buttons(b("MouseSecondary"), b("Quote"), b("Slash")),
 			stab: buttons(b("MouseTertiary"), b("KeyP")),
 
 			test_bracket_left: buttons(b("BracketLeft")),
