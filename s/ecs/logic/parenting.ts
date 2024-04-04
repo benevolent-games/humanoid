@@ -1,6 +1,6 @@
 
-import {system, responder} from "../../hub.js"
-import {Children} from "../../schema/schema.js"
+import {system, responder} from "../hub.js"
+import {Children} from "../schema/schema.js"
 
 export const parenting = system("parenting", ({world}) => [
 	responder("delete orphans")

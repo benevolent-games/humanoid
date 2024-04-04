@@ -6,7 +6,7 @@ import {Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
 
 import {HybridComponent} from "../../hub.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
-import {adjust_gimbal_verticality_to_match_character_anim} from "../../logic/playable/simulation/adjust_gimbal_verticality_to_match_character_anim.js"
+import {adjust_gimbal_verticality_to_match_character_anim} from "../../logic/utils/adjust_gimbal_verticality_to_match_character_anim.js"
 
 export class CameraRig extends HybridComponent<{
 		height: number

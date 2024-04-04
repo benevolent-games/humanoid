@@ -1,8 +1,8 @@
 
 import {Noise, scalar} from "@benev/toolbox"
-import {behavior, system} from "../../hub.js"
-import {molasses, molasses2d} from "../../../tools/molasses.js"
-import {Ai, Bot, Gimbal, Intent, MeleeIntent, Seed, Stance} from "../../schema/schema.js"
+import {behavior, system} from "../hub.js"
+import {molasses, molasses2d} from "../../tools/molasses.js"
+import {Ai, Bot, Gimbal, Intent, MeleeIntent, Seed, Stance} from "../schema/schema.js"
 
 const noise = Noise.seed(123)
 const {clamp, center, magnify, radians: {from: {degrees}}} = scalar

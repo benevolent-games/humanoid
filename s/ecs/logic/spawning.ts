@@ -1,10 +1,10 @@
 
 import {Trashcan} from "@benev/toolbox"
 
-import {system, behavior, responder} from "../../hub.js"
-import {blank_spawner_state, spawnPlayer, spawnSpectator} from "../utils/spawns.js"
-import {Gimbal, Humanoid, Parent, Position, Spawner, SpawnTracker, Spectator} from "../../schema/schema.js"
-import { Archetypes } from "../../archetypes.js"
+import {Archetypes} from "../archetypes.js"
+import {system, behavior, responder} from "../hub.js"
+import {blank_spawner_state, spawnPlayer, spawnSpectator} from "./utils/spawns.js"
+import {Gimbal, Humanoid, Parent, Position, Spawner, SpawnTracker, Spectator} from "../schema/schema.js"
 
 export const spawning = system("spawning", ({world, realm}) => {
 	const spawnedQuery = world.query({SpawnTracker, Parent})

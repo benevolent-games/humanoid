@@ -1,12 +1,12 @@
 
 import {scalar, vec2} from "@benev/toolbox"
 
-import {behavior, responder, system} from "../../hub.js"
-import {molasses2d} from "../../../tools/molasses.js"
-import {Melee} from "../../../models/attacking/melee.js"
-import {Weapon} from "../../../models/attacking/weapon.js"
-import {considerAttack, considerParry} from "../../../models/attacking/consider.js"
-import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../../schema/schema.js"
+import {molasses2d} from "../../tools/molasses.js"
+import {behavior, responder, system} from "../hub.js"
+import {Melee} from "../../models/attacking/melee.js"
+import {Weapon} from "../../models/attacking/weapon.js"
+import {considerAttack, considerParry} from "../../models/attacking/consider.js"
+import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../schema/schema.js"
 
 export const combat = system("combat", ({realm}) => [
 

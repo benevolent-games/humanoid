@@ -1,10 +1,11 @@
 
 import {scalar, vec2} from "@benev/toolbox"
-import {avg} from "../../../tools/avg.js"
-import {behavior, system} from "../../hub.js"
-import {molasses2d} from "../../../tools/molasses.js"
-import {halfcircle} from "../../../tools/halfcircle.js"
-import {Gimbal, Intent, CoolGimbal, Orbit, Controllable} from "../../schema/schema.js"
+
+import {avg} from "../../tools/avg.js"
+import {behavior, system} from "../hub.js"
+import {molasses2d} from "../../tools/molasses.js"
+import {halfcircle} from "../../tools/halfcircle.js"
+import {Gimbal, Intent, CoolGimbal, Orbit, Controllable} from "../schema/schema.js"
 
 export const freelook = system("freelook", ({realm}) => [
 	behavior("apply freelook, onto glance and gimbal based on intent")

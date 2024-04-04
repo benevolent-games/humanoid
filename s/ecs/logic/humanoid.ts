@@ -1,12 +1,12 @@
 
 import {spline, vec2, vec3} from "@benev/toolbox"
 
-import {unflatten} from "../../../tools/flatten.js"
-import {Capsule} from "../../schema/hybrids/capsule.js"
-import {gimbaltool} from "../../../tools/gimbaltool.js"
-import {behavior, responder, system} from "../../hub.js"
-import {molasses, molasses3d} from "../../../tools/molasses.js"
-import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Speeds, Stance} from "../../schema/schema.js"
+import {unflatten} from "../../tools/flatten.js"
+import {Capsule} from "../schema/hybrids/capsule.js"
+import {gimbaltool} from "../../tools/gimbaltool.js"
+import {behavior, responder, system} from "../hub.js"
+import {molasses, molasses3d} from "../../tools/molasses.js"
+import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Speeds, Stance} from "../schema/schema.js"
 
 export const humanoid = system("humanoid", () => [
 	responder("capsule debug")
