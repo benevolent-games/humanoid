@@ -7,7 +7,7 @@ import {Perspective} from "../../../plain_components.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {Melee} from "../../../../../models/attacking/melee.js"
-import {setup_anim_modulators} from "./animworks/modulators.js"
+import {setup_anim_modulators} from "./modulators.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
 

@@ -1,5 +1,5 @@
 
-import {Ambulatory} from "../../../../types.js"
+import {Ambulatory} from "../../../types.js"
 import {Speeds, scalar, spline} from "@benev/toolbox"
 
 export function setup_anim_modulators({

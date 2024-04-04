@@ -4,11 +4,11 @@ import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
 import {HybridComponent} from "../../../hub.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
-import {prepare_choreographer_babylon_parts} from "./choreography/prepare_choreographer_babylon_parts.js"
+import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
 
 export class Character extends HybridComponent<{height: number}> {
 
-	readonly parts = prepare_choreographer_babylon_parts(
+	readonly parts = prepare_character_component_parts(
 		this.realm.scene,
 		this.realm.character.instance(),
 		this.state.height,

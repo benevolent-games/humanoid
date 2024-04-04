@@ -4,7 +4,7 @@ import {Meshoid, babylonian, label, quat, vec3} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {CharacterInstance} from "../../../../../models/character/instance.js"
 
-export function prepare_choreographer_babylon_parts(
+export function prepare_character_component_parts(
 		scene: Scene,
 		character: CharacterInstance,
 		height: number,
