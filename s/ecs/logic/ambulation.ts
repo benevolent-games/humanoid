@@ -5,7 +5,7 @@ import {behavior} from "../hub.js"
 import {flatten} from "../../tools/flatten.js"
 import {gimbaltool} from "../../tools/gimbaltool.js"
 import {molasses, molasses2d} from "../../tools/molasses.js"
-import {Ambulation, Gimbal, Grounding, Speeds, Stance, Velocity} from "../schema/schema.js"
+import {Ambulation, Gimbal, Grounding, Speeds, Stance, Velocity} from "../components/plain_components.js"
 
 const smoothing = 5
 

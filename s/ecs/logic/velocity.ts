@@ -1,7 +1,7 @@
 
 import {vec3} from "@benev/toolbox"
 import {behavior} from "../hub.js"
-import {Position, PreviousPosition, Velocity} from "../schema/schema.js"
+import {Position, PreviousPosition, Velocity} from "../components/plain_components.js"
 
 export const velocity = behavior("calculate velocity")
 	.select({Position, Velocity, PreviousPosition})

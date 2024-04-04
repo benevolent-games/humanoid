@@ -3,7 +3,7 @@ import {Ecs, Speeds, Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../../types.js"
-import {Perspective} from "../../../schema.js"
+import {Perspective} from "../../../plain_components.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {Melee} from "../../../../../models/attacking/melee.js"

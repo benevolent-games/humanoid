@@ -3,7 +3,7 @@ import {vec2} from "@benev/toolbox"
 
 import {behavior} from "../hub.js"
 import {molasses2d} from "../../tools/molasses.js"
-import {Force, Intent, Smoothing} from "../schema/schema.js"
+import {Force, Intent, Smoothing} from "../components/plain_components.js"
 
 export const force = behavior("calculate force, based on intent and smoothing")
 	.select({Force, Intent, Smoothing})

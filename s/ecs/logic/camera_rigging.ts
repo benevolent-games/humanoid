@@ -1,10 +1,10 @@
 
 import {babylonian} from "@benev/toolbox"
-import {Camera} from "../schema/hybrids/camera.js"
+import {Camera} from "../components/hybrids/camera.js"
 import {molasses3d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
-import {CameraRig} from "../schema/hybrids/camera_rig.js"
-import {Controllable, Debug, Gimbal, Orbit, Perspective, Position, Rotation, Smoothing} from "../schema/schema.js"
+import {CameraRig} from "../components/hybrids/camera_rig.js"
+import {Controllable, Debug, Gimbal, Orbit, Perspective, Position, Rotation, Smoothing} from "../components/plain_components.js"
 
 export const camera_rigging = system("camera rigging", ({realm}) => [
 

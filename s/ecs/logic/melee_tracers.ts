@@ -2,10 +2,10 @@
 import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {Health, MeleeAction} from "../schema/schema.js"
-import {Tracer} from "../schema/hybrids/tracer/tracer.js"
-import {Tracing} from "../schema/hybrids/tracer/parts/types.js"
-import {Character} from "../schema/hybrids/character/character.js"
+import {Health, MeleeAction} from "../components/plain_components.js"
+import {Tracer} from "../components/hybrids/tracer/tracer.js"
+import {Tracing} from "../components/hybrids/tracer/parts/types.js"
+import {Character} from "../components/hybrids/character/character.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 

@@ -10,7 +10,7 @@ import startup_gameloop from "./startup/startup_gameloop.js"
 import {LevelLoader} from "./models/level_loader/loader.js"
 import {Game} from "./types.js"
 import {arch} from "./ecs/hub.js"
-import {Spawner} from "./ecs/schema/schema.js"
+import {Spawner} from "./ecs/components/plain_components.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import {CommitHash} from "./tools/commit_hash.js"
 

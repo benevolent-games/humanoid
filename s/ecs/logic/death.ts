@@ -1,6 +1,6 @@
 
 import {behavior, system} from "../hub.js"
-import {Health} from "../schema/schema.js"
+import {Health} from "../components/plain_components.js"
 
 export const death = system("death", () => [
 	behavior("without health, you die")

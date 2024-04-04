@@ -1,11 +1,11 @@
 
 import {vec3} from "@benev/toolbox"
-import {Camera} from "../schema/hybrids/camera.js"
+import {Camera} from "../components/hybrids/camera.js"
 import {behavior, responder, system} from "../hub.js"
-import {GimbalRig} from "../schema/hybrids/gimbal_rig.js"
+import {GimbalRig} from "../components/hybrids/gimbal_rig.js"
 import {flatten, unflatten} from "../../tools/flatten.js"
 import {apply_3d_rotation_to_movement} from "./utils/apply_3d_rotation_to_movement.js"
-import {Force, Gimbal, Impetus, Intent, Position, Spectator, Speeds} from "../schema/schema.js"
+import {Force, Gimbal, Impetus, Intent, Position, Spectator, Speeds} from "../components/plain_components.js"
 
 export const spectator = system("spectator", ({realm}) => [
 	responder("parenting the camera")
