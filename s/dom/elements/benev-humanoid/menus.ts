@@ -1,5 +1,5 @@
 
-import {html, reactor} from "@benev/slate"
+import {html} from "@benev/slate"
 import {Input, Menus, SettingsMenu, menu} from "@benev/toolbox"
 
 import {Game} from "../../../types.js"
@@ -21,22 +21,6 @@ export const MenuSystem = nexus.light_view(use => (
 		menu("settings", () => ConfigMenu([game])),
 		menu("effects", () => SettingsMenu([game.stage])),
 	]))
-
-	use.mount(() => reactor.reaction(() => {
-		const {modes} = game.tact
-		if (menus.open.value) {
-			modes.enable("menus")
-			modes.disable("humanoid")
-		}
-		else {
-			modes.disable("menus")
-			modes.enable("humanoid")
-		}
-	}))
-
-	use.mount(() => game.stage.pointerLocker.onLockChange(
-		locked => menus.open.value = !locked)
-	)
 
 	use.mount(() => {
 		const pressed = (fn: () => void) => (input: Input.Button) => {

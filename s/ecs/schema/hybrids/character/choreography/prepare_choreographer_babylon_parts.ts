@@ -22,9 +22,19 @@ export function prepare_choreographer_babylon_parts(
 		= transform.rotationQuaternion
 		= babylonian.from.quat(quat.identity())
 
-	const sword = character.root
-		.getChildMeshes()
-		.find(m => m.name.includes("longsword")) as Meshoid
+	const meshes = character.root.getChildMeshes()
+	const sword = meshes.find(m => m.name.includes("longsword")) as Meshoid
+
+	const plz_disable = [
+		"shield",
+		"hatchet",
+		"reference_weapon",
+	]
+
+	for (const mesh of meshes) {
+		if (plz_disable.some(keyword => mesh.name.includes(keyword)))
+			mesh.dispose()
+	}
 
 	return {
 		sword,
