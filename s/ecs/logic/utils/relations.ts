@@ -1,6 +1,6 @@
 
 import {Entity, World, arch} from "../../hub.js"
-import {Children, Parent} from "../../schema/schema.js"
+import {Children, Parent} from "../../components/plain_components.js"
 
 export class Relations {
 

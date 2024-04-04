@@ -3,7 +3,7 @@ import {World, arch} from "../../hub.js"
 import {Relations} from "./relations.js"
 import {Ecs, vec2, vec3} from "@benev/toolbox"
 import {Archetypes} from "../../archetypes.js"
-import {SpawnTracker, Spawner} from "../../schema/schema.js"
+import {SpawnTracker, Spawner} from "../../components/plain_components.js"
 
 export function blank_spawner_state(): Ecs.ComponentState<Spawner> {
 	return {

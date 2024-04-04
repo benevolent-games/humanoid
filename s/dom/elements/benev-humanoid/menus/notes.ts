@@ -57,12 +57,22 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<code>right-click</code> to parry.
 				<code>r</code> to switch camera angle.
 				<code>t</code> to respawn or toggle to spectator mode.
-				<code>b</code> to spawn bots.
+				<code>b</code> to spawn bots (beware of lag).
 				<code>shift+b</code> to delete bots.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>mobile controls, reworked animations.</span>
+				<small>2024-04-04</small>
+			</h1>
+			<p>lonnie reworked the animations, so now your weapon swings and stabs actually aim at your reticule in the center of your screen.</p>
+			<p>now you can play the game on your phone. it's a crude first-draft, but when you use a touch screen the game enters a "mobile" mode where you get a thumbstick on the left and you can touch-drag anywhere else to control your aim. you can't sprint or attack yet, i'll slowly chip away at this in my "off time" so to speak.</p>
+			<p>improved ultrawide monitor support: the ui and menu system is now constrained to 16/9 so it stays centered on your screen.</p>
+		</section>
 
 		<section>
 			<h1>

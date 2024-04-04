@@ -2,15 +2,15 @@
 import {Ecs, Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
 
 import {Archetype} from "./hub.js"
-import {Camera} from "./schema/hybrids/camera.js"
-import {Capsule} from "./schema/hybrids/capsule.js"
-import {GimbalRig} from "./schema/hybrids/gimbal_rig.js"
-import {CameraRig} from "./schema/hybrids/camera_rig.js"
-import {Tracer} from "./schema/hybrids/tracer/tracer.js"
-import {Character} from "./schema/hybrids/character/character.js"
-import {MouseAccumulator} from "./schema/hybrids/mouse_accumulator.js"
-import {LookpadAccumulator} from "./schema/hybrids/lookpad_accumulator.js"
-import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, CoolGimbal, Debug, Force, Gimbal, Grounding, Health, Humanoid, Impetus, Intent, Jump, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./schema/schema.js"
+import {Camera} from "./components/hybrids/camera.js"
+import {Capsule} from "./components/hybrids/capsule.js"
+import {GimbalRig} from "./components/hybrids/gimbal_rig.js"
+import {CameraRig} from "./components/hybrids/camera_rig.js"
+import {Tracer} from "./components/hybrids/tracer/tracer.js"
+import {Character} from "./components/hybrids/character/character.js"
+import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
+import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
+import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, CoolGimbal, Debug, Force, Gimbal, Grounding, Health, Humanoid, Impetus, Intent, Jump, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]

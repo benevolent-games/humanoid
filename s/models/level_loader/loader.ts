@@ -5,7 +5,7 @@ import {Op, ob, signals} from "@benev/slate"
 import {arch} from "../../ecs/hub.js"
 import {Plan} from "../planning/plan.js"
 import {HuLevel} from "../../gameplan.js"
-import {Level} from "../../ecs/schema/hybrids/level.js"
+import {Level} from "../../ecs/components/hybrids/level.js"
 
 type LevelState = {
 	name: HuLevel
