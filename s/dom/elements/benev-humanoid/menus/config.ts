@@ -24,11 +24,19 @@ export const ConfigMenu = nexus.shadow_view(use => (game: Game) => {
 			<h2>sensitivity</h2>
 			${NuiRange([{
 				label: "mouse apd (arcseconds-per-dot)",
-				max: 1000,
+				max: 5000,
 				min: 1,
 				step: 1,
 				value: game.sensitivity.mouse,
 				set: x => game.sensitivity.mouse = x,
+			}])}
+			${NuiRange([{
+				label: "touch apd (arcseconds-per-dot)",
+				max: 5000,
+				min: 1,
+				step: 1,
+				value: game.sensitivity.touch,
+				set: x => game.sensitivity.touch = x,
 			}])}
 			${NuiRange([{
 				label: "keys (degrees/second)",

@@ -1,8 +1,10 @@
 
+import {cap_vector_to_magnitude_1, get_trajectory_from_cardinals, human, scalar, vec2} from "@benev/toolbox"
+
 import {behavior, system} from "../../hub.js"
 import {Controllable, Intent, Stance} from "../../schema/schema.js"
 import {MouseAccumulator} from "../../schema/hybrids/mouse_accumulator.js"
-import {get_trajectory_from_cardinals, scalar, vec2} from "@benev/toolbox"
+import {LookpadAccumulator} from "../../schema/hybrids/lookpad_accumulator.js"
 
 export const intentions = system("intentions", ({realm}) => [
 	behavior("wipe intent")
@@ -21,14 +23,26 @@ export const intentions = system("intentions", ({realm}) => [
 		.select({Controllable, Intent, MouseAccumulator})
 		.logic(() => ({components: c}) => {
 			const [x, y] = c.mouseAccumulator.movement.steal()
-			const mouseSensitivity = scalar.radians.from.arcseconds(realm.sensitivity.mouse)
+			const sens = scalar.radians.from.arcseconds(realm.sensitivity.mouse)
 			c.intent.glance = vec2.add(
 				c.intent.glance,
 				realm.stage.pointerLocker.locked
-					? vec2.multiplyBy([x, -y], mouseSensitivity)
+					? vec2.multiplyBy([x, -y], sens)
 					: vec2.zero(),
 			)
 		}),
+
+	behavior("add lookpad movements to glance")
+		.select({Controllable, Intent, LookpadAccumulator})
+		.logic(() => ({components: c}) => {
+			const [x, y] = c.lookpadAccumulator.movement.steal()
+			const sens = scalar.radians.from.arcseconds(realm.sensitivity.touch)
+			c.intent.glance = vec2.add(
+				c.intent.glance,
+				vec2.multiplyBy([x, -y], sens),
+			)
+		}),
+
 
 	behavior("add keyboard looking to glance")
 		.select({Controllable, Intent})
@@ -49,7 +63,7 @@ export const intentions = system("intentions", ({realm}) => [
 
 	behavior("add move keys to amble")
 		.select({Controllable, Intent})
-		.logic(() => ({components: c}) => {
+		.logic(() => ({components: {intent}}) => {
 			const {buttons} = realm.tact.inputs.humanoid
 			const vector = get_trajectory_from_cardinals({
 				north: buttons.forward.input.down,
@@ -57,10 +71,23 @@ export const intentions = system("intentions", ({realm}) => [
 				west: buttons.leftward.input.down,
 				east: buttons.rightward.input.down,
 			})
-			c.intent.amble = vec2.add(
-				c.intent.amble,
+			intent.amble = vec2.add(
+				intent.amble,
 				vector,
 			)
+		}),
+
+	behavior("add move stick to amble")
+		.select({Controllable, Intent})
+		.logic(() => ({components: {intent}}) => {
+			const {vector: [x, y]} = realm.tact.connectedDevices.stick
+			intent.amble = vec2.add(intent.amble, [-x, y])
+		}),
+
+	behavior("cap amble to magnitude 1")
+		.select({Intent})
+		.logic(() => ({components: {intent}}) => {
+			intent.amble = cap_vector_to_magnitude_1(intent.amble)
 		}),
 
 	behavior("apply fast and slow to intent")
@@ -85,8 +112,8 @@ export const intentions = system("intentions", ({realm}) => [
 	behavior("set jump intent")
 		.select({Controllable, Intent})
 		.logic(() => ({components}) => {
-			const {down, repeat} = realm.tact.inputs.humanoid.buttons.jump.input
-			components.intent.jump = down && !repeat
+			const {jump} = realm.tact.inputs.humanoid.buttons
+			components.intent.jump = !!jump.pressed
 		}),
 ])
 

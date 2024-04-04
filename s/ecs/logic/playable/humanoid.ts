@@ -39,7 +39,7 @@ export const humanoid = system("humanoid", () => [
 				if (stance === "stand") {
 					if (z > 0.001 && intent.fast) {
 						target = vec3.multiplyBy(
-							vec3.normalize([(x / 2), 0, z]),
+							vec3.normalize([(x / 3), 0, z]),
 							speeds.fast * tick.seconds,
 						)
 					}

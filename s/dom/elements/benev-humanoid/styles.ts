@@ -42,5 +42,33 @@ canvas {
 	pointer-events: none;
 }
 
+.mobile_controls {
+	position: absolute;
+	inset: 0;
+	top: 20%;
+	overflow: hidden;
+
+	& [view="nub-lookpad"] {
+		display: block;
+		position: absolute;
+		inset: 0;
+		width: unset;
+		height: unset;
+		border: none;
+	}
+
+	& [view="nub-stick"] {
+		opacity: 0.2;
+
+		position: absolute;
+		bottom: 5%;
+		left: 5%;
+		aspect-ratio: 1 / 1;
+		width: 20em;
+		max-width: 25%;
+		height: unset;
+	}
+}
+
 `
 

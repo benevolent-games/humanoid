@@ -11,6 +11,9 @@ export type Sensitivity = {
 
 	/** degrees/second */
 	stick: number
+
+	/** arcseconds/count */
+	touch: number
 }
 
 export function makeSensitivity() {
@@ -18,6 +21,7 @@ export function makeSensitivity() {
 		mouse: 360,
 		keys: 180,
 		stick: 180,
+		touch: 1440,
 	})
 }
 

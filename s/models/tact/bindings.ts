@@ -23,11 +23,7 @@ export const huBindings = () => Tact.bindings(({
 	}),
 
 	humanoid: mode({
-		vectors: {
-			mouselook: ["mouse"],
-			sticklook: ["look"],
-			move: ["leftstick"],
-		},
+		vectors: {},
 		buttons: {
 			perspective: buttons(b("KeyR")),
 			respawn: buttons(b("KeyT")),

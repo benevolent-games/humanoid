@@ -9,6 +9,7 @@ import {CameraRig} from "./schema/hybrids/camera_rig.js"
 import {Tracer} from "./schema/hybrids/tracer/tracer.js"
 import {Character} from "./schema/hybrids/character/character.js"
 import {MouseAccumulator} from "./schema/hybrids/mouse_accumulator.js"
+import {LookpadAccumulator} from "./schema/hybrids/lookpad_accumulator.js"
 import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, CoolGimbal, Debug, Force, Gimbal, Grounding, Health, Humanoid, Impetus, Intent, Jump, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./schema/schema.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
@@ -29,6 +30,7 @@ export namespace Archetypes {
 		{
 			Position,
 			MouseAccumulator,
+			LookpadAccumulator,
 			Intent,
 			Gimbal,
 		},
@@ -36,6 +38,7 @@ export namespace Archetypes {
 			position: o.position,
 			gimbal: o.gimbal,
 			mouseAccumulator: {},
+			lookpadAccumulator: {},
 			intent: {
 				amble: vec2.zero(),
 				glance: vec2.zero(),
