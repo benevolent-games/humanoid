@@ -3,8 +3,8 @@ import {Quality} from "../tools/quality.js"
 import {make_gameplan} from "../gameplan.js"
 import {makeRealm} from "../models/realm/realm.js"
 import {CommitHash} from "../tools/commit_hash.js"
+import {determine_local_mode} from "../tools/determine_local_mode.js"
 import {determine_quality_mode} from "../tools/determine_quality_mode.js"
-import {should_we_use_local_assets} from "../tools/should_we_use_local_assets.js"
 import {standard_glb_post_process} from "../models/glb_post_processing/standard_glb_post_process.js"
 
 /**
@@ -14,12 +14,15 @@ import {standard_glb_post_process} from "../models/glb_post_processing/standard_
  *  - we are using an op for the async operation so the ui can show a loading spinner
  */
 export default async(commit: CommitHash) => {
+	const local = determine_local_mode(location.href)
+
 	const realm = await makeRealm({
 		commit,
 		tickrate_hz: 60,
 		gameplan: make_gameplan({
+			local,
 			quality: determine_quality_mode(location.href, Quality.Mid),
-			root_url: should_we_use_local_assets(location.href)
+			root_url: local
 				? "/assets"
 				: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
 		}),

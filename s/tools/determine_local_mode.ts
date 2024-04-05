@@ -1,5 +1,5 @@
 
-export function should_we_use_local_assets(url: string) {
+export function determine_local_mode(url: string) {
 	const {host, search} = new URL(url)
 	const params = new URLSearchParams(search)
 	const hostname_suggests_local = (

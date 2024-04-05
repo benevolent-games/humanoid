@@ -16,10 +16,16 @@ type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
 )
 
+// const camera = () => ({
+// 	fov: 90,
+// 	minZ: 0.12,
+// 	maxZ: 15_000,
+// })
+
 const camera = () => ({
 	fov: 90,
-	minZ: 0.12,
-	maxZ: 15_000,
+	minZ: 0.02,
+	maxZ: 1_000,
 })
 
 export namespace Archetypes {

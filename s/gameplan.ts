@@ -9,6 +9,7 @@ const kilometers = (m: number) => m * 1000
 const degrees = scalar.radians.from.degrees
 
 export const make_gameplan = Plan.gameplan(({
+		local,
 		quality,
 		root_url,
 		character, levels, glb, sky, env, shader,
@@ -16,6 +17,7 @@ export const make_gameplan = Plan.gameplan(({
 
 	quality,
 	root_url,
+	local,
 
 	shaders: {
 		terrain: shader("shaders/terrain/shader.json", {}),
@@ -32,47 +34,37 @@ export const make_gameplan = Plan.gameplan(({
 		pimsley: character("glbs/characters/mr_pimsley.glb"),
 	},
 
-	...(levels()
-		.specification({
-			viking_village: {
-				glb: glb("glbs/levels/viking_village.glb", "physics"),
-				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
-				env: env("envmaps/sunset_cloudy.env", degrees(180)),
-			},
-			gym: {
-				glb: glb("glbs/levels/gym.glb", "physics"),
-				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
-				env: env("envmaps/sunset_cloudy.env", degrees(90)),
-			},
-			mountainside: {
-				glb: glb("glbs/levels/mountainside.glb", "physics"),
-				sky: sky("skyboxes/sky_01", kilometers(10), degrees(270)),
-				env: env("envmaps/sunset_cloudy.env", degrees(180)),
-			},
-			pillar_room: {
-				glb: glb("glbs/levels/pillar_room.glb", "physics"),
-				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
-				env: env("envmaps/wrynth_interior.env", degrees(90)),
-			},
-			wrynth_dungeon: {
-				glb: glb("glbs/levels/wrynth_dungeon.glb", "physics"),
-				sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
-				env: env("envmaps/wrynth_interior.env", degrees(90)),
-			},
-			mt_finny: {
-				glb: glb("glbs/levels/mt_finny.glb", "physics"),
-				sky: sky("skyboxes/sky_01", kilometers(2), degrees(180)),
-				env: env("envmaps/sunset_cloudy.env", degrees(0)),
-			},
-		})
-		.cycle(
-			"viking_village",
-			"gym",
-			"mountainside",
-			"pillar_room",
-			"wrynth_dungeon",
-			"mt_finny",
-		)
-	),
+	levels: levels({
+		viking_village: {
+			glb: glb("glbs/levels/viking_village.glb", "physics"),
+			sky: sky("skyboxes/sky_01", kilometers(1), degrees(270)),
+			env: env("envmaps/sunset_cloudy.env", degrees(180)),
+		},
+		gym: {
+			glb: glb("glbs/levels/gym.glb", "physics"),
+			sky: sky("skyboxes/sky_01", kilometers(1), degrees(270)),
+			env: env("envmaps/sunset_cloudy.env", degrees(90)),
+		},
+		// mountainside: {
+		// 	glb: glb("glbs/levels/mountainside.glb", "physics"),
+		// 	sky: sky("skyboxes/sky_01", kilometers(10), degrees(270)),
+		// 	env: env("envmaps/sunset_cloudy.env", degrees(180)),
+		// },
+		// pillar_room: {
+		// 	glb: glb("glbs/levels/pillar_room.glb", "physics"),
+		// 	sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
+		// 	env: env("envmaps/wrynth_interior.env", degrees(90)),
+		// },
+		// wrynth_dungeon: {
+		// 	glb: glb("glbs/levels/wrynth_dungeon.glb", "physics"),
+		// 	sky: sky("skyboxes/sky_01", kilometers(2), degrees(270)),
+		// 	env: env("envmaps/wrynth_interior.env", degrees(90)),
+		// },
+		// mt_finny: {
+		// 	glb: glb("glbs/levels/mt_finny.glb", "physics"),
+		// 	sky: sky("skyboxes/sky_01", kilometers(2), degrees(180)),
+		// 	env: env("envmaps/sunset_cloudy.env", degrees(0)),
+		// },
+	}),
 }))
 
