@@ -6,6 +6,7 @@ import {arch} from "../../ecs/hub.js"
 import {Plan} from "../planning/plan.js"
 import {HuLevel} from "../../gameplan.js"
 import {Level} from "../../ecs/components/hybrids/level.js"
+import {Bot, Spawner} from "../../ecs/components/plain_components.js"
 
 type LevelState = {
 	name: HuLevel
@@ -40,6 +41,12 @@ export class LevelLoader {
 		this.#op.payload?.dispose()
 
 		return this.#op.load(async() => {
+			for (const bot of this.world.query({Bot}).matches)
+				bot.dispose()
+			const [entity] = this.world.query({Spawner}).matches
+			if (entity)
+				entity.components.spawner.inputs.switch_to_spectator = true
+
 			const level = this.world.create(
 				arch({Level}, {level: {level: name}})
 			)

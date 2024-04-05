@@ -7,10 +7,12 @@ const compressed_image_extension = ".webp"
 export class PlanningHelpers {
 	root_url: string
 	quality: Quality
+	local: boolean
 
 	constructor(s: Plan.Situation) {
 		this.root_url = s.root_url
 		this.quality = s.quality
+		this.local = s.local
 	}
 
 	resolve = (path: string) => `${this.root_url}/${path}`
@@ -57,13 +59,7 @@ export class PlanningHelpers {
 		glb: this.glb(path),
 	})
 
-	levels = () => ({
-		specification: <LevelName extends string>(levels: Record<LevelName, Plan.Level>) => ({
-			cycle: (...levelCycle: LevelName[]) => ({
-				levels,
-				levelCycle,
-			}),
-		})
-	})
+	level = (level: Plan.Level) => level
+	levels = <LevelName extends string>(levels: Record<LevelName, Plan.Level>) => levels
 }
 

@@ -66,6 +66,22 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
+				<span>baby steps.</span>
+				<small>2024-04-05</small>
+			</h1>
+			<p>added bounce-back animation when you hit something with your sword.</p>
+			<p>fixed arms clipping through camera during attack animations.</p>
+			<p>disabled all levels except gym and viking_village, for now at least.</p>
+			<p>when you switch levels, it now forces you into spectator mode so you don't fall through the map.</p>
+			<p><a target="_blank" href="https://github.com/naderslr">nader</a> from <a target="_blank" href="https://twitter.com/EasyAimTrainer">easyaim</a> helped us optimize our renderloop.</p>
+			<p>removed obsolete tickrate indicator.</p>
+			<p>desynchronized canvas to reduce latency.</p>
+			<p>set babylon to intermediate optimization mode.</p>
+			<p>now using raw mouse input via <code>pointerrawupdate</code> in browsers that <a target="_blank" href="https://caniuse.com/?search=pointerrawupdate">support it.</a></p>
+		</section>
+
+		<section>
+			<h1>
 				<span>mobile controls, reworked animations.</span>
 				<small>2024-04-04</small>
 			</h1>

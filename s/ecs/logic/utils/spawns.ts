@@ -3,7 +3,7 @@ import {World, arch} from "../../hub.js"
 import {Relations} from "./relations.js"
 import {Ecs, vec2, vec3} from "@benev/toolbox"
 import {Archetypes} from "../../archetypes.js"
-import {SpawnTracker, Spawner} from "../../components/plain_components.js"
+import {Gimbal, Position, SpawnTracker, Spawner} from "../../components/plain_components.js"
 
 export function blank_spawner_state(): Ecs.ComponentState<Spawner> {
 	return {
@@ -19,6 +19,17 @@ export function blank_spawner_state(): Ecs.ComponentState<Spawner> {
 			switch_to_player: false,
 			switch_to_spectator: false,
 		},
+	}
+}
+
+export function updateStartingAt(
+		spawner: Ecs.ComponentState<Spawner>,
+		spawned: Ecs.Entity,
+	) {
+
+	if (spawned.has({Gimbal, Position})) {
+		spawner.starting_at.gimbal = spawned.components.gimbal
+		spawner.starting_at.position = spawned.components.position
 	}
 }
 

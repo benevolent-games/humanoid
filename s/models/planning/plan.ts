@@ -8,7 +8,6 @@ export namespace Plan {
 		root_url: string
 		characters: Pojo<Character>
 		levels: Pojo<Level>
-		levelCycle: string[]
 		shaders: Pojo<Shader<any>>
 	}
 
@@ -52,8 +51,9 @@ export namespace Plan {
 	}
 
 	export type Situation = {
-		root_url: string
+		local: boolean
 		quality: Quality
+		root_url: string
 	}
 
 	export const gameplan = (
