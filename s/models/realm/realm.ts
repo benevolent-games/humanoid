@@ -9,31 +9,29 @@ import {makeSensitivity} from "./sensitivity.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {makeReticuleState} from "./reticule_state.js"
 import {LoadingDock} from "../planning/loading_dock.js"
-import {optimize_scene} from "../../tools/optimize_scene.js"
 import {CharacterContainer} from "../character/container.js"
+// import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
 	commit: CommitHash
-	tickrate_hz: number
 	gameplan: HuGameplan
 }
 
 export type HuRealm = Awaited<ReturnType<typeof makeRealm>>
 
 export async function makeRealm(params: RealmParams) {
-	const {gameplan, tickrate_hz, commit} = params
+	const {gameplan, commit} = params
 
-	const stage = new Stage({
-		background: Stage.backgrounds.sky(),
-		tickrate_hz,
-	})
+	const stage = new Stage({background: Stage.backgrounds.sky()})
 	const {scene} = stage
-	optimize_scene(scene)
+
+	// // disabled: because it breaks our postpro effects
+	// optimize_scene(scene)
 
 	const loadingDock = new LoadingDock(scene, commit)
 	const tact = new HuTact()
 	const colors = debug_colors(scene)
-	const physics = new HuPhysics({scene, colors, hertz: tickrate_hz})
+	const physics = new HuPhysics({scene, colors})
 
 	const character = new CharacterContainer(
 		await loadingDock.loadGlb(

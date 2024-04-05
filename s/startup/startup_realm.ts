@@ -18,7 +18,6 @@ export default async(commit: CommitHash) => {
 
 	const realm = await makeRealm({
 		commit,
-		tickrate_hz: 60,
 		gameplan: make_gameplan({
 			local,
 			quality: determine_quality_mode(location.href, Quality.Mid),

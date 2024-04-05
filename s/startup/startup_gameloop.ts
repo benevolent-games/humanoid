@@ -5,41 +5,31 @@ import {HuTick} from "../ecs/hub.js"
 import {HuRealm} from "../models/realm/realm.js"
 
 /**
- * start the game
- *  - render loop
- *  - physics loop
- *  - game tick loop
+ * start the gameloop, to execute physics and game logic.
  */
 export default (
-		realm: HuRealm,
-		executor: (tick: HuTick) => void,
+		{stage, physics}: HuRealm,
+		executeGamelogic: (tick: HuTick) => void,
 	) => {
 
 	let count = 0
 	let gametime = 0
-	let last_time = performance.now()
 
-	realm.stage.gameloop.onTick(() => {
-		const last = last_time
-		realm.physics.step()
-
-		const seconds = scalar.clamp(
-			((last_time = performance.now()) - last),
-			0,
-			1000 / 30, // clamp delta to avoid large over-corrections
-		) / 1000
-
+	stage.gameloop.beforeRender(ms => {
+		ms = scalar.top(ms, 1000 / 10)
+		const seconds = ms / 1000
 		gametime += seconds
 
-		const tick: HuTick = {
+		physics.step(seconds)
+
+		executeGamelogic({
 			seconds,
 			gametime,
 			count: count++,
 			hz: 1 / seconds,
-		}
-
-		executor(tick)
+		})
 	})
 
-	realm.stage.gameloop.start()
+	stage.gameloop.start()
 }
+
