@@ -3,12 +3,11 @@ import {Scene} from "@babylonjs/core/scene.js"
 import {Id, Physics, Rapier, debug_colors} from "@benev/toolbox"
 
 export class HuPhysics extends Physics {
-	constructor({scene, hertz, colors}: {
+	constructor({scene, colors}: {
 			scene: Scene
-			hertz: number
 			colors: ReturnType<typeof debug_colors>
 		}) {
-		super({hertz, scene, colors, gravity: [0, -9.81, 0]})
+		super({scene, colors, gravity: [0, -9.81, 0]})
 	}
 
 	readonly groups = (() => {

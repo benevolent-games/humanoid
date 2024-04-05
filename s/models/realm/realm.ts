@@ -14,26 +14,22 @@ import {CharacterContainer} from "../character/container.js"
 
 export type RealmParams = {
 	commit: CommitHash
-	tickrate_hz: number
 	gameplan: HuGameplan
 }
 
 export type HuRealm = Awaited<ReturnType<typeof makeRealm>>
 
 export async function makeRealm(params: RealmParams) {
-	const {gameplan, tickrate_hz, commit} = params
+	const {gameplan, commit} = params
 
-	const stage = new Stage({
-		background: Stage.backgrounds.sky(),
-		tickrate_hz,
-	})
+	const stage = new Stage({background: Stage.backgrounds.sky()})
 	const {scene} = stage
 	optimize_scene(scene)
 
 	const loadingDock = new LoadingDock(scene, commit)
 	const tact = new HuTact()
 	const colors = debug_colors(scene)
-	const physics = new HuPhysics({scene, colors, hertz: tickrate_hz})
+	const physics = new HuPhysics({scene, colors})
 
 	const character = new CharacterContainer(
 		await loadingDock.loadGlb(
