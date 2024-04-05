@@ -3,8 +3,8 @@ import {Trashcan} from "@benev/toolbox"
 
 import {Archetypes} from "../archetypes.js"
 import {system, behavior, responder} from "../hub.js"
-import {blank_spawner_state, spawnPlayer, spawnSpectator} from "./utils/spawns.js"
-import {Gimbal, Humanoid, Parent, Position, Spawner, SpawnTracker, Spectator} from "../components/plain_components.js"
+import {Humanoid, Parent, Spawner, SpawnTracker, Spectator} from "../components/plain_components.js"
+import {blank_spawner_state, spawnPlayer, spawnSpectator, updateStartingAt} from "./utils/spawns.js"
 
 export const spawning = system("spawning", ({world, realm}) => {
 	const spawnedQuery = world.query({SpawnTracker, Parent})
@@ -14,6 +14,13 @@ export const spawning = system("spawning", ({world, realm}) => {
 		return entity
 			? entity
 			: undefined
+	}
+
+	function getAlreadySpawned() {
+		const spawnTracker = getSpawnTrackerEntity()
+		return spawnTracker
+			? world.get(spawnTracker.components.parent)
+			: null
 	}
 
 	return [
@@ -41,30 +48,45 @@ export const spawning = system("spawning", ({world, realm}) => {
 		behavior("actuate spawning")
 			.select({Spawner})
 			.logic(() => ({components: {spawner}}) => {
-				const spawnTracker = getSpawnTrackerEntity()
+				const {respawn, switch_to_player, switch_to_spectator} = spawner.inputs
 
-				if (spawner.inputs.respawn) {
-					if (spawnTracker) {
-						const player = world.get(spawnTracker.components.parent)
-						const isPlayer = player.has({Humanoid})
-						const isSpectator = player.has({Spectator})
-
-						if (player.has({Gimbal, Position})) {
-							spawner.starting_at.gimbal = player.components.gimbal
-							spawner.starting_at.position = player.components.position
-						}
-
-						player.dispose()
-
-						if (isPlayer)
-							spawnSpectator(world, spawner)
-						else if (isSpectator)
-							spawnPlayer(world, spawner)
+				if (respawn) {
+					const spawned = getAlreadySpawned()
+					if (spawned) {
+						const isHumanoid = spawned.has({Humanoid})
+						updateStartingAt(spawner, spawned)
+						spawned.dispose()
+						if (isHumanoid) spawnSpectator(world, spawner)
+						else spawnPlayer(world, spawner)
 					}
 					else {
+						spawner.starting_at = blank_spawner_state().starting_at
 						spawnPlayer(world, spawner)
 					}
 				}
+
+				else if (switch_to_player) {
+					const spawned = getAlreadySpawned()
+					if (spawned && !spawned.has({Humanoid})) {
+						updateStartingAt(spawner, spawned)
+						spawned.dispose()
+						spawnPlayer(world, spawner)
+					}
+				}
+
+				else if (switch_to_spectator) {
+					const spawned = getAlreadySpawned()
+					if (spawned && !spawned.has({Spectator})) {
+						updateStartingAt(spawner, spawned)
+						spawned.dispose()
+						spawnSpectator(world, spawner)
+					}
+				}
+			}),
+
+		behavior("bot spawns")
+			.select({Spawner})
+			.logic(() => ({components: {spawner}}) => {
 
 				if (spawner.inputs.bot_spawn) {
 					const bot = world.create(Archetypes.bot({
@@ -85,7 +107,11 @@ export const spawning = system("spawning", ({world, realm}) => {
 						bot.dispose()
 					}
 				}
+			}),
 
+		behavior("reset spawn inputs")
+			.select({Spawner})
+			.logic(() => ({components: {spawner}}) => {
 				spawner.inputs = blank_spawner_state().inputs
 			}),
 	]
