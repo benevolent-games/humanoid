@@ -76,7 +76,15 @@ export function considerAttack(
 			recovery: phase === Melee.Phase.Recovery ? seconds - d : null,
 		}
 
-	const progress = (earlyRecovery ?? seconds) / e
+	// // simple early recovery with no bounce-back
+	// const progress = (earlyRecovery ?? seconds) / e
+
+	// bounce back on early recovery
+	const progress = (
+		earlyRecovery === null
+			? seconds
+			: scalar.bottom(earlyRecovery - ((seconds - earlyRecovery) / 3), 0)
+	) / e
 
 	weights.progress = progress
 
