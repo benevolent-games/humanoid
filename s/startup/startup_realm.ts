@@ -4,7 +4,7 @@ import {make_gameplan} from "../gameplan.js"
 import {makeRealm} from "../models/realm/realm.js"
 import {CommitHash} from "../tools/commit_hash.js"
 import {determine_quality_mode} from "../tools/determine_quality_mode.js"
-import {determine_local_dev_mode} from "../tools/determine_local_dev_mode.js"
+import {should_we_use_local_assets} from "../tools/should_we_use_local_assets.js"
 import {standard_glb_post_process} from "../models/glb_post_processing/standard_glb_post_process.js"
 
 /**
@@ -19,7 +19,7 @@ export default async(commit: CommitHash) => {
 		tickrate_hz: 60,
 		gameplan: make_gameplan({
 			quality: determine_quality_mode(location.href, Quality.Mid),
-			root_url: determine_local_dev_mode(location.href)
+			root_url: should_we_use_local_assets(location.href)
 				? "/assets"
 				: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
 		}),
