@@ -42,7 +42,7 @@ export const make_gameplan = Plan.gameplan(({
 		},
 		gym: {
 			glb: glb("glbs/levels/gym.glb", "physics"),
-			sky: sky("skyboxes/sky_01", kilometers(1), degrees(270)),
+			sky: sky("skyboxes/sky_01", kilometers(1), degrees(0)),
 			env: env("envmaps/sunset_cloudy.env", degrees(90)),
 		},
 		// mountainside: {
