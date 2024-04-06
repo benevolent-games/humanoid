@@ -94,14 +94,6 @@ export function sync_character_anims({
 	// upper-body
 	//
 
-	const w = meleeWeights
-
-	function animateAttack(anim: ManualAnim, weight: number) {
-		anim.weight = weight
-		if (weight)
-			anim.forceProgress(w.progress)
-	}
-
 	const grip = (() => (
 		meleeWeights.grip === "fists" ? {
 			guard: anims.fists,
@@ -158,6 +150,14 @@ export function sync_character_anims({
 		}
 	))()
 
+	const w = meleeWeights
+
+	function animateAttack(anim: ManualAnim, weight: number) {
+		anim.weight = weight
+		if (weight)
+			anim.forceProgress(w.progress)
+	}
+
 	animateAttack(grip.parry, w.parry)
 	animateAttack(grip.attack_1, w.a1)
 	animateAttack(grip.attack_2, w.a2)
@@ -166,13 +166,12 @@ export function sync_character_anims({
 	animateAttack(grip.attack_5, w.a5)
 	animateAttack(grip.attack_6, w.a6)
 	animateAttack(grip.attack_7, w.a7 + w.a8)
-	// animateAttack(grip.twohander_attack_8, w.a8)
+	// animateAttack(grip.attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
-	grip.parry.weight = meleeWeights.parry
 	grip.airborne.weight = airborne * w.inactive
 	grip.guard.weight = tinyfix + (w.inactive * groundage * stillness)
-	grip.forward.weight = north * w.inactive * groundage * unstillness
+	grip.forward.weight = tinyfix + north * w.inactive * groundage * unstillness
 	grip.backward.weight = south * w.inactive * groundage * unstillness
 	grip.leftward.weight = west * w.inactive * groundage * unstillness
 	grip.rightward.weight = east * w.inactive * groundage * unstillness

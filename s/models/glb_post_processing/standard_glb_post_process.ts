@@ -1,4 +1,5 @@
 
+import {fix_animation_groups} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Material} from "@babylonjs/core/Materials/material.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
@@ -53,6 +54,8 @@ export function standard_glb_post_process({gameplan, loadingDock}: HuRealm): Glb
 			if (material instanceof PBRMaterial || material instanceof NodeMaterial)
 				material.maxSimultaneousLights = maxLights
 		}
+
+		fix_animation_groups(container.animationGroups)
 
 		return container
 	}

@@ -8,7 +8,7 @@ import {Weapon} from "./weapon.js"
 const blendtime = 0.1
 
 export function considerParry(weapon: Weapon.Config, seconds: number) {
-	const {block, recovery} = weapon.parry
+	const {block, recovery} = weapon.timings.parry
 	const a = 0
 	const b = blendtime
 	const c = block

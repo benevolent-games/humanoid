@@ -55,7 +55,7 @@ export namespace Melee {
 
 	export function zeroWeights(): Melee.Weights {
 		return {
-			grip: "twohander",
+			grip: "fists",
 			active: 0,
 			inactive: 1,
 			parry: 0,
@@ -119,8 +119,8 @@ export namespace Melee {
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.stab,
-			...considerAttack(weapon.stab, Kind.Stab, 0, null, angle),
+			attackDurations: weapon.timings.stab,
+			...considerAttack(weapon.timings.stab, Kind.Stab, 0, null, angle),
 		}),
 		swing: (weapon: Weapon.Config, angle: number): Action.Swing => ({
 			kind: Kind.Swing,
@@ -128,8 +128,8 @@ export namespace Melee {
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.stab,
-			...considerAttack(weapon.swing, Kind.Swing, 0, null, angle),
+			attackDurations: weapon.timings.swing,
+			...considerAttack(weapon.timings.swing, Kind.Swing, 0, null, angle),
 		}),
 	}
 

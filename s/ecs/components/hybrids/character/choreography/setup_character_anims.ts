@@ -1,14 +1,14 @@
 
 import {BasedAnim} from "../../../../../models/choreographer/anims/based.js"
-import {CharacterInstance} from "../../../../../models/character/instance.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
 import {manifest_anims} from "../../../../../models/choreographer/utils/manifest_anims.js"
 import {ManualAdditiveAnim} from "../../../../../models/choreographer/anims/manual_additive.js"
+import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
 
 export type CharacterAnims = ReturnType<typeof setup_character_anims>
 
 export const setup_character_anims = (
-		character: CharacterInstance,
+		character: ContainerInstance,
 		onMissingAnim: (name: string) => void,
 	) => manifest_anims({
 
@@ -99,5 +99,5 @@ export const setup_character_anims = (
 	spine_lean: g => new ManualAdditiveAnim(g, 50),
 	spine_bend: g => new ManualAdditiveAnim(g, 50),
 
-}, name => character.get_animation_group(name), onMissingAnim)
+}, name => character.animationGroups.get(name), onMissingAnim)
 
