@@ -38,6 +38,7 @@ export namespace Melee {
 	}
 
 	export type Weights = {
+		grip: "fists" | "twohander" | "onehander"
 		active: number
 		inactive: number
 		parry: number
@@ -54,6 +55,7 @@ export namespace Melee {
 
 	export function zeroWeights(): Melee.Weights {
 		return {
+			grip: "twohander",
 			active: 0,
 			inactive: 1,
 			parry: 0,
