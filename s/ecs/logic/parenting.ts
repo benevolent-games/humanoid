@@ -14,8 +14,8 @@ export const parenting = system("parenting", ({world}) => [
 	responder("remove child reference when it's deleted")
 		.select({Parent}) // remember, this entity has a parent (it is the child)
 		.respond(child => () => {
-			const parent = world.get(child.components.parent)
-			if (parent.has({Children}))
+			const parent = world.maybe(child.components.parent)
+			if (parent?.has({Children}))
 				parent.components.children = parent.components.children
 					.filter(id => id !== child.id)
 		}),
