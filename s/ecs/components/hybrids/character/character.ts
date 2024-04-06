@@ -1,12 +1,12 @@
 
-import {Meshoid, Trashcan, label} from "@benev/toolbox"
+import {Trashcan, label} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 
 import {HybridComponent} from "../../../hub.js"
 import {Nametag} from "../../../../tools/nametag.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
+import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
-import { ContainerInstance } from "../../../../models/glb_post_processing/container_instance.js"
 
 export class Character extends HybridComponent<{height: number}> {
 

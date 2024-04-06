@@ -1,6 +1,7 @@
 
 import {Meshoid, Quat, Vec3, babylonian} from "@benev/toolbox"
-import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
+
+import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 import {AssetContainer, InstantiatedEntries} from "@babylonjs/core/assetContainer.js"
@@ -9,21 +10,20 @@ export class ContainerInstance {
 	root: TransformNode
 	instantiated: InstantiatedEntries
 
-	meshes: Map<string, Meshoid>
-	animationGroups: Map<string, AnimationGroup>
+	meshes = new Map<string, Meshoid>()
+	animationGroups = new Map<string, AnimationGroup>()
 
 	constructor(public container: AssetContainer) {
-		ContainerInstance.#set_original_reference_metadata([
-			...container.getNodes(),
-			...container.animationGroups,
-		])
-
-		this.instantiated = container.instantiateModelsToScene()
+		this.instantiated = container.instantiateModelsToScene(name => name)
 		const [__root__] = this.instantiated.rootNodes
 		this.root = __root__.getChildren()[0] as TransformNode
 
-		this.meshes = ContainerInstance.#recover_names_for_meshes(this.root.getChildMeshes())
-		this.animationGroups = ContainerInstance.#recover_names(this.instantiated.animationGroups)
+		this.root.getChildren(node => node instanceof AbstractMesh, false)
+			.map(node => node as Meshoid)
+			.forEach(mesh => this.meshes.set(mesh.name, mesh))
+
+		this.instantiated.animationGroups
+			.forEach(group => this.animationGroups.set(group.name, group))
 	}
 
 	get position() { return babylonian.to.vec3(this.root.position) }
@@ -34,29 +34,6 @@ export class ContainerInstance {
 
 	dispose() {
 		this.instantiated.dispose()
-	}
-
-	static #set_original_reference_metadata(items: {metadata: any}[]) {
-		for (const item of items)
-			item.metadata = {...(item.metadata ?? {}), original: item}
-	}
-
-	static #recover_names<T extends {metadata: any}>(items: T[]) {
-		return new Map<string, T>(
-			items.map(item => [item.metadata.original.name, item])
-		)
-	}
-
-	static #recover_names_for_meshes<T extends Meshoid>(mesh: T[]) {
-		return new Map<string, T>(
-			mesh.map(mesh => [
-				(mesh instanceof InstancedMesh
-					? mesh.sourceMesh
-					: mesh
-				).metadata.original.name,
-				mesh,
-			])
-		)
 	}
 }
 
