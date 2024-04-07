@@ -52,8 +52,12 @@ export function sync_character_anims({
 	const crouching = inverse(standing)
 	const airborne = inverse(groundage)
 
-	anims.grip_left.forceProgress(1)
-	anims.grip_right.forceProgress(1)
+	Object.values(anims).forEach(anim => anim.weight = 0)
+	anims.tpose.weight = -1
+	anims.head_scale.weight = 1
+	anims.grip_left.weight = 1
+	anims.grip_right.weight = 1
+
 	anims.head_scale.forceProgress(
 		(perspective === "first_person")
 			? 0.05
@@ -160,6 +164,7 @@ export function sync_character_anims({
 
 	anims.onehander_parry.weight = 0
 	anims.onehander_shield_parry.weight = 0
+
 	Object.values(grip_groups)
 		.forEach(anims => Object.values(anims)
 			.forEach(anim => anim.weight = 0))
@@ -169,7 +174,7 @@ export function sync_character_anims({
 
 	function animateAttack(anim: ManualAnim, weight: number) {
 		anim.weight = weight
-		if (weight)
+		if (weight > (1 / 100))
 			anim.forceProgress(w.progress)
 	}
 

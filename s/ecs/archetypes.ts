@@ -187,16 +187,7 @@ export namespace Archetypes {
 				shield: true,
 				belt: {
 					equippedIndex: 0,
-					slots: [
-						Weapon.library.fists,
-						Weapon.library.adze,
-						Weapon.library.hatchet,
-						Weapon.library.mace,
-						Weapon.library.hammer,
-						Weapon.library.axe,
-						Weapon.library.sledgehammer,
-						Weapon.library.longsword,
-					],
+					slots: Weapon.listing,
 				},
 			},
 			meleeAction: null,

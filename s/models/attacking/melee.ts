@@ -72,7 +72,7 @@ export namespace Melee {
 
 	export type AttackReport = {
 		phase: Phase
-		times: Times
+		// times: Times
 		milestones: [number, number, number, number, number]
 	}
 

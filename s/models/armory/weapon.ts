@@ -63,6 +63,7 @@ export namespace Weapon {
 	export type Details = {name: Name} & Config
 
 	export const library = weaponLibrary
+	export const listing = Object.values(weaponLibrary)
 	export const fallback: Details = {...library.fists, name: "fists"}
 	export type Name = keyof typeof library
 
