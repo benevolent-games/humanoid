@@ -1,13 +1,13 @@
 
 import {babylonian} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
+import {Weapon} from "../../models/armory/weapon.js"
 import {gimbaltool} from "../../tools/gimbaltool.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {Character} from "../components/hybrids/character/character.js"
 import {sync_character_anims} from "../components/hybrids/character/choreography/sync_character_anims.js"
 import {apply_adjustments, swivel_effected_by_glance} from "../components/hybrids/character/choreography/calculations.js"
 import {Ambulation, Choreography, Gimbal, Intent, Perspective, Position, GimbalSway, Speeds, MeleeAction, MeleeWeapon} from "../components/plain_components.js"
-import { Weapon } from "../../models/attacking/weapon.js"
 
 export const choreography = system("humanoid", () => [
 	behavior("sync babylon parts")
@@ -34,6 +34,7 @@ export const choreography = system("humanoid", () => [
 		.select({Character, MeleeWeapon})
 		.logic(() => ({components: {character, meleeWeapon}}) => {
 			const weapon = Weapon.library[meleeWeapon]
+
 			if (weapon.grip === "onehander") {
 				const shield = character.weapons.left.get("shield")
 				if (shield)

@@ -2,9 +2,9 @@
 import {scalar, vec2} from "@benev/toolbox"
 
 import {molasses2d} from "../../tools/molasses.js"
+import {Weapon} from "../../models/armory/weapon.js"
 import {behavior, responder, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {Weapon} from "../../models/attacking/weapon.js"
 import {considerAttack, considerParry} from "../../models/attacking/consider.js"
 import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../components/plain_components.js"
 

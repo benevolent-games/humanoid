@@ -3,7 +3,7 @@ import {is} from "@benev/slate"
 import {scalar, spline} from "@benev/toolbox"
 
 import {Melee} from "./melee.js"
-import {Weapon} from "./weapon.js"
+import {Weapon} from "../armory/weapon.js"
 
 const blendtime = 0.1
 
@@ -39,7 +39,7 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 
 export function considerAttack(
 		grip: Weapon.Grip,
-		attackDurations: Weapon.AttackDurations,
+		attackDurations: Weapon.AttackTimings,
 		kind: Melee.Kind,
 		seconds: number,
 		earlyRecovery: null | number,

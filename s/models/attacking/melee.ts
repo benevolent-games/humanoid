@@ -1,7 +1,8 @@
 
 import {ob} from "@benev/slate"
-import {Weapon} from "./weapon.js"
 import {Vec2, scalar} from "@benev/toolbox"
+
+import {Weapon} from "../armory/weapon.js"
 import {considerAttack, considerParry} from "./consider.js"
 
 const {degrees} = scalar.radians.from
@@ -87,7 +88,7 @@ export namespace Melee {
 		export type Offensive = {
 			angle: number
 			report: AttackReport
-			attackDurations: Weapon.AttackDurations
+			attackDurations: Weapon.AttackTimings
 			earlyRecovery: null | number
 		} & Base
 

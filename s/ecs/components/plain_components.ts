@@ -3,8 +3,8 @@ import {Id, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Component} from "../hub.js"
 import {Ambulatory} from "./types.js"
+import {Weapon} from "../../models/armory/weapon.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {Weapon} from "../../models/attacking/weapon.js"
 import {Choreo} from "../../models/choreographer/types.js"
 
 export class Parent extends Component<Id> {}
