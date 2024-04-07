@@ -182,7 +182,7 @@ export namespace Archetypes {
 				stab: false,
 				swing: false,
 			},
-			meleeWeapon: "longsword",
+			meleeWeapon: "axe",
 			meleeAction: null,
 			tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
 			health: 1,

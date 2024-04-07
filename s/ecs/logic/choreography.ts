@@ -6,7 +6,8 @@ import {Melee} from "../../models/attacking/melee.js"
 import {Character} from "../components/hybrids/character/character.js"
 import {sync_character_anims} from "../components/hybrids/character/choreography/sync_character_anims.js"
 import {apply_adjustments, swivel_effected_by_glance} from "../components/hybrids/character/choreography/calculations.js"
-import {Ambulation, Choreography, Gimbal, Intent, Perspective, Position, GimbalSway, Speeds, MeleeAction} from "../components/plain_components.js"
+import {Ambulation, Choreography, Gimbal, Intent, Perspective, Position, GimbalSway, Speeds, MeleeAction, MeleeWeapon} from "../components/plain_components.js"
+import { Weapon } from "../../models/attacking/weapon.js"
 
 export const choreography = system("humanoid", () => [
 	behavior("sync babylon parts")
@@ -29,8 +30,23 @@ export const choreography = system("humanoid", () => [
 			)
 		}),
 
+	behavior("show active weapon")
+		.select({Character, MeleeWeapon})
+		.logic(() => ({components: {character, meleeWeapon}}) => {
+			const weapon = Weapon.library[meleeWeapon]
+			if (weapon.grip === "onehander") {
+				const shield = character.weapons.left.get("shield")
+				if (shield)
+					shield.isVisible = !!shield
+			}
+
+			for (const [name, mesh] of character.weapons.right) {
+				mesh.isVisible = name === meleeWeapon
+			}
+		}),
+
 	behavior("animate the armature")
-		.select({Character, Choreography, Ambulation, Gimbal, GimbalSway, Speeds, Perspective, MeleeAction})
+		.select({Character, Choreography, Ambulation, Gimbal, GimbalSway, Speeds, Perspective, MeleeAction, MeleeWeapon})
 		.logic(() => ({components: c}) => {
 			const {adjustment_anims, anims, boss_anim} = c.character.coordination
 
@@ -41,12 +57,14 @@ export const choreography = system("humanoid", () => [
 				3,
 			)
 
+			const weapon = Weapon.library[c.meleeWeapon]
+
 			sync_character_anims({
 				anims,
 				boss_anim,
 				gimbal: c.gimbalSway.gimbal,
 				choreo: c.choreography,
-				meleeWeights: c.meleeAction?.weights ?? Melee.zeroWeights(),
+				meleeWeights: c.meleeAction?.weights ?? Melee.zeroWeights(weapon.grip),
 				ambulatory: c.ambulation,
 				perspective: c.perspective,
 				speeds: {...c.speeds, creep: 1.5},

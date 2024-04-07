@@ -38,7 +38,7 @@ export namespace Melee {
 	}
 
 	export type Weights = {
-		grip: "fists" | "twohander" | "onehander"
+		grip: Weapon.Grip
 		active: number
 		inactive: number
 		parry: number
@@ -53,9 +53,9 @@ export namespace Melee {
 		progress: number
 	}
 
-	export function zeroWeights(): Melee.Weights {
+	export function zeroWeights(grip: Weapon.Grip): Melee.Weights {
 		return {
-			grip: "fists",
+			grip,
 			active: 0,
 			inactive: 1,
 			parry: 0,
@@ -120,7 +120,7 @@ export namespace Melee {
 			seconds: 0,
 			earlyRecovery: null,
 			attackDurations: weapon.timings.stab,
-			...considerAttack(weapon.timings.stab, Kind.Stab, 0, null, angle),
+			...considerAttack(weapon.grip, weapon.timings.stab, Kind.Stab, 0, null, angle),
 		}),
 		swing: (weapon: Weapon.Config, angle: number): Action.Swing => ({
 			kind: Kind.Swing,
@@ -129,7 +129,7 @@ export namespace Melee {
 			seconds: 0,
 			earlyRecovery: null,
 			attackDurations: weapon.timings.swing,
-			...considerAttack(weapon.timings.swing, Kind.Swing, 0, null, angle),
+			...considerAttack(weapon.grip, weapon.timings.swing, Kind.Swing, 0, null, angle),
 		}),
 	}
 

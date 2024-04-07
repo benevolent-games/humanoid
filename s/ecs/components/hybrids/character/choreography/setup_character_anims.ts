@@ -83,6 +83,7 @@ export const setup_character_anims = (
 	onehander_rightward: g => new BasedAnim(g),
 	onehander_sprint: g => new BasedAnim(g),
 	onehander_parry: g => new ManualAnim(g),
+	onehander_shield_parry: g => new ManualAnim(g),
 	onehander_attack_1: g => new ManualAnim(g),
 	onehander_attack_2: g => new ManualAnim(g),
 	onehander_attack_3: g => new ManualAnim(g),
@@ -91,6 +92,7 @@ export const setup_character_anims = (
 	onehander_attack_6: g => new ManualAnim(g),
 	onehander_attack_7: g => new ManualAnim(g),
 	onehander_attack_8: g => new ManualAnim(g),
+
 
 	head_scale: g => new ManualAnim(g),
 	grip_left: g => new ManualAnim(g),

@@ -84,6 +84,7 @@ export const combat = system("combat", ({realm}) => [
 			}
 			else if (Melee.is.attack(meleeAction)) {
 				const {report, weights} = considerAttack(
+					meleeAction.weapon.grip,
 					meleeAction.kind === Melee.Kind.Stab
 						? meleeAction.weapon.timings.stab
 						: meleeAction.weapon.timings.swing,
