@@ -53,6 +53,10 @@ export const huBindings = () => Tact.bindings(({
 			parry: buttons(b("MouseSecondary"), b("Quote"), b("Slash")),
 			stab: buttons(b("MouseTertiary"), b("KeyP")),
 
+			weapon_next: buttons(b("KeyE")),
+			weapon_previous: buttons(b("KeyQ")),
+			shield_toggle: buttons(b("KeyX")),
+
 			test_bracket_left: buttons(b("BracketLeft")),
 			test_bracket_right: buttons(b("BracketRight")),
 			test_comma: buttons(b("Comma")),

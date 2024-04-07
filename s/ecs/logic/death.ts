@@ -1,15 +1,27 @@
 
+import {scalar} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
-import {Health} from "../components/plain_components.js"
+import {Health} from "../components/topics/warrior.js"
+
+const bleed_per_second = 3 / 100
 
 export const death = system("death", () => [
+
+	behavior("bleeding drains your hp")
+		.select({Health})
+		.logic(tick => ({components: {health}}) => {
+			if (health.bleeding > 0) {
+				const loss = scalar.top(bleed_per_second * tick.seconds, health.bleeding)
+				health.hp -= loss
+				health.bleeding -= loss
+			}
+		}),
+
 	behavior("without health, you die")
 		.select({Health})
-		.logic(() => {
-			return entity => {
-				if (entity.components.health <= 0)
-					entity.dispose()
-			}
+		.logic(() => entity => {
+			if (entity.components.health.hp <= 0)
+				entity.dispose()
 		}),
 ])
 

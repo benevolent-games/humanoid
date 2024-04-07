@@ -1,16 +1,17 @@
 
-import {Trashcan, label} from "@benev/toolbox"
-import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
+import {Meshoid, Trashcan, nametag} from "@benev/toolbox"
 
 import {HybridComponent} from "../../../hub.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
+import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js"
 
 export class Character extends HybridComponent<{height: number}> {
 
 	readonly parts = prepare_character_component_parts(
 		this.realm.scene,
-		this.realm.character.instance(),
+		new ContainerInstance(this.realm.characterContainer),
 		this.state.height,
 	)
 
@@ -20,26 +21,45 @@ export class Character extends HybridComponent<{height: number}> {
 		name => console.warn(`missing character animation "${name}"`),
 	)
 
+	readonly weapons = (() => {
+		const left = new Map<string, Meshoid>()
+		const right = new Map<string, Meshoid>()
+		for (const mesh of this.parts.character.meshes.values()) {
+			const parsed = nametag(mesh.name)
+			if (parsed.has("weapon")) {
+				mesh.isVisible = false
+				if (parsed.get("weapon") === "right")
+					right.set(parsed.name, mesh)
+				else
+					left.set(parsed.name, mesh)
+			}
+		}
+		return {left, right}
+	})()
+
 	readonly helpers = (() => {
 		const {scene} = this.realm
-		const {sword} = this.parts
+		const referenceWeapon = this.weapons.right.get("reference")!
 		const trash = new Trashcan()
 
 		const swordlength = 1.2
 
 		const swordtip = trash.bag(
-			new TransformNode(label("swordtip"), scene)
+			new TransformNode("swordtip", scene)
 		).dump(t => t.dispose())
-		swordtip.parent = sword
-		swordtip.position.set(0, 0, swordlength)
+		swordtip.parent = referenceWeapon
+		swordtip.position.set(0, swordlength, 0)
 
 		const swordbase = trash.bag(
-			new TransformNode(label("swordbase"), scene)
+			new TransformNode("swordbase", scene)
 		).dump(t => t.dispose())
-		swordbase.parent = sword
+		swordbase.parent = referenceWeapon
 		swordbase.position.set(0, 0, 0)
 
-		return {swordbase, swordtip, dispose: trash.dispose}
+		return {
+			swordbase, swordtip,
+			dispose: trash.dispose,
+		}
 	})()
 
 	created() {}

@@ -3,12 +3,12 @@ import {is} from "@benev/slate"
 import {scalar, spline} from "@benev/toolbox"
 
 import {Melee} from "./melee.js"
-import {Weapon} from "./weapon.js"
+import {Weapon} from "../armory/weapon.js"
 
 const blendtime = 0.1
 
 export function considerParry(weapon: Weapon.Config, seconds: number) {
-	const {block, recovery} = weapon.parry
+	const {block, recovery} = weapon.timings.parry
 	const a = 0
 	const b = blendtime
 	const c = block
@@ -29,15 +29,14 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 	return {weights}
 }
 
-/*
-##    windup    release    recovery
-## [----------|----------|----------]
-##                x[----------]
-##                earlyRecovery
-*/
+//    windup    release    recovery
+// [----------|----------|----------]
+// a b        c          d          e
+//                x[----------]
+//                earlyRecovery
 
 export function considerAttack(
-		attackDurations: Weapon.AttackDurations,
+		attackDurations: Weapon.AttackTimings,
 		kind: Melee.Kind,
 		seconds: number,
 		earlyRecovery: null | number,
@@ -64,29 +63,21 @@ export function considerAttack(
 				Melee.Phase.None
 		)
 
-	const times = is.defined(earlyRecovery)
-		? {
-			windup: null,
-			release: null,
-			recovery: earlyRecovery - c,
-		}
-		: {
-			windup: phase === Melee.Phase.Windup ? seconds - a : null,
-			release: phase === Melee.Phase.Release ? seconds - c : null,
-			recovery: phase === Melee.Phase.Recovery ? seconds - d : null,
-		}
-
-	// // simple early recovery with no bounce-back
-	// const progress = (earlyRecovery ?? seconds) / e
-
 	// bounce back on early recovery
-	const progress = (
+	const bouncySeconds = (
 		earlyRecovery === null
 			? seconds
 			: scalar.bottom(earlyRecovery - ((seconds - earlyRecovery) / 3), 0)
-	) / e
+	)
 
-	weights.progress = progress
+	const progress = spline.linear(bouncySeconds, [
+		[a, 0 / 3],
+		[c, 1 / 3],
+		[d, 2 / 3],
+		[e, 3 / 3],
+	])
+
+	weights.progress = scalar.clamp(progress)
 
 	weights.active = is.defined(earlyRecovery)
 		? spline.linear(seconds - earlyRecovery, [
@@ -123,7 +114,7 @@ export function considerAttack(
 		weights,
 		report: {
 			phase,
-			times,
+			// times,
 			milestones: [a, b, c, d, e],
 		} as Melee.AttackReport,
 	}

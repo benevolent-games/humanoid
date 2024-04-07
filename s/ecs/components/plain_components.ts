@@ -3,8 +3,6 @@ import {Id, Quat, Speeds as Speeds2, Vec2, Vec3} from "@benev/toolbox"
 
 import {Component} from "../hub.js"
 import {Ambulatory} from "./types.js"
-import {Melee} from "../../models/attacking/melee.js"
-import {Weapon} from "../../models/attacking/weapon.js"
 import {Choreo} from "../../models/choreographer/types.js"
 
 export class Parent extends Component<Id> {}
@@ -37,7 +35,7 @@ export class Velocity extends Component<Vec3> {}
 /** rotations in radians, x-axis is 360 degrees, y-axis is 180 degrees from -90 to 90. */
 export class Gimbal extends Component<Vec2> {}
 
-export class CoolGimbal extends Component<{
+export class GimbalSway extends Component<{
 	records: Vec2[]
 	gimbal: Vec2
 }> {}
@@ -66,19 +64,6 @@ export class Intent extends Component<{
 	jump: boolean
 }> {}
 
-export class MeleeAim extends Component<{
-	lastGlanceNormal: Vec2
-	smoothedGlanceNormal: Vec2
-	angle: number
-}> {}
-export class MeleeIntent extends Component<{
-	parry: boolean
-	swing: boolean
-	stab: boolean
-}> {}
-export class MeleeWeapon extends Component<Weapon.Name> {}
-export class MeleeAction extends Component<null | Melee.Action.Any> {}
-
 export class Force extends Component<Vec2> {}
 export class AirborneTrajectory extends Component<Vec3> {}
 export class Impetus extends Component<Vec3> {}
@@ -104,8 +89,6 @@ export class Perspective extends Component<"third_person" | "first_person"> {}
 
 export class Speeds extends Component<Speeds2>{}
 export class Stance extends Component<"stand" | "crouch"> {}
-
-export class Health extends Component<number>{}
 
 export class Spectator extends Component<{}> {}
 export class Humanoid extends Component<{}> {}

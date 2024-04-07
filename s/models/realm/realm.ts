@@ -9,7 +9,6 @@ import {makeSensitivity} from "./sensitivity.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {makeReticuleState} from "./reticule_state.js"
 import {LoadingDock} from "../planning/loading_dock.js"
-import {CharacterContainer} from "../character/container.js"
 // import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
@@ -33,10 +32,8 @@ export async function makeRealm(params: RealmParams) {
 	const colors = debug_colors(scene)
 	const physics = new HuPhysics({scene, colors})
 
-	const character = new CharacterContainer(
-		await loadingDock.loadGlb(
-			gameplan.characters.pimsley.glb
-		)
+	const characterContainer = await loadingDock.loadGlb(
+		gameplan.characters.pimsley.glb
 	)
 
 	return {
@@ -46,8 +43,8 @@ export async function makeRealm(params: RealmParams) {
 		stage,
 		colors,
 		physics,
-		character,
 		loadingDock,
+		characterContainer,
 		debug: makeDebugState(),
 		sensitivity: makeSensitivity(),
 		reticuleState: makeReticuleState(),

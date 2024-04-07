@@ -1,14 +1,14 @@
 
 import {BasedAnim} from "../../../../../models/choreographer/anims/based.js"
-import {CharacterInstance} from "../../../../../models/character/instance.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
 import {manifest_anims} from "../../../../../models/choreographer/utils/manifest_anims.js"
 import {ManualAdditiveAnim} from "../../../../../models/choreographer/anims/manual_additive.js"
+import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
 
 export type CharacterAnims = ReturnType<typeof setup_character_anims>
 
 export const setup_character_anims = (
-		character: CharacterInstance,
+		character: ContainerInstance,
 		onMissingAnim: (name: string) => void,
 	) => manifest_anims({
 
@@ -42,19 +42,21 @@ export const setup_character_anims = (
 	unarmed_sprint: g => new BasedAnim(g),
 
 	fists: g => new BasedAnim(g),
+	fists_airborne: g => new BasedAnim(g),
 	fists_forward: g => new BasedAnim(g),
 	fists_backward: g => new BasedAnim(g),
 	fists_leftward: g => new BasedAnim(g),
 	fists_rightward: g => new BasedAnim(g),
 	fists_sprint: g => new BasedAnim(g),
-	// fists_attack_1: g => new ManualAnim(g),
-	// fists_attack_2: g => new ManualAnim(g),
-	// fists_attack_3: g => new ManualAnim(g),
-	// fists_attack_4: g => new ManualAnim(g),
-	// fists_attack_5: g => new ManualAnim(g),
-	// fists_attack_6: g => new ManualAnim(g),
-	// fists_attack_7: g => new ManualAnim(g),
-	// fists_attack_8: g => new ManualAnim(g),
+	fists_parry: g => new ManualAnim(g),
+	fists_attack_1: g => new ManualAnim(g),
+	fists_attack_2: g => new ManualAnim(g),
+	fists_attack_3: g => new ManualAnim(g),
+	fists_attack_4: g => new ManualAnim(g),
+	fists_attack_5: g => new ManualAnim(g),
+	fists_attack_6: g => new ManualAnim(g),
+	fists_attack_7: g => new ManualAnim(g),
+	fists_attack_8: g => new ManualAnim(g),
 
 	twohander: g => new BasedAnim(g),
 	twohander_airborne: g => new BasedAnim(g),
@@ -63,8 +65,7 @@ export const setup_character_anims = (
 	twohander_leftward: g => new BasedAnim(g),
 	twohander_rightward: g => new BasedAnim(g),
 	twohander_sprint: g => new BasedAnim(g),
-	twohander_parry1: g => new ManualAnim(g),
-	twohander_parry2: g => new ManualAnim(g),
+	twohander_parry: g => new ManualAnim(g),
 	twohander_attack_1: g => new ManualAnim(g),
 	twohander_attack_2: g => new ManualAnim(g),
 	twohander_attack_3: g => new ManualAnim(g),
@@ -72,7 +73,25 @@ export const setup_character_anims = (
 	twohander_attack_5: g => new ManualAnim(g),
 	twohander_attack_6: g => new ManualAnim(g),
 	twohander_attack_7: g => new ManualAnim(g),
-	// twohander_attack_8: g => new ManualAnim(g),
+	twohander_attack_8: g => new ManualAnim(g),
+
+	onehander: g => new BasedAnim(g),
+	onehander_airborne: g => new BasedAnim(g),
+	onehander_forward: g => new BasedAnim(g),
+	onehander_backward: g => new BasedAnim(g),
+	onehander_leftward: g => new BasedAnim(g),
+	onehander_rightward: g => new BasedAnim(g),
+	onehander_sprint: g => new BasedAnim(g),
+	onehander_parry: g => new ManualAnim(g),
+	onehander_shield_parry: g => new ManualAnim(g),
+	onehander_attack_1: g => new ManualAnim(g),
+	onehander_attack_2: g => new ManualAnim(g),
+	onehander_attack_3: g => new ManualAnim(g),
+	onehander_attack_4: g => new ManualAnim(g),
+	onehander_attack_5: g => new ManualAnim(g),
+	onehander_attack_6: g => new ManualAnim(g),
+	onehander_attack_7: g => new ManualAnim(g),
+	onehander_attack_8: g => new ManualAnim(g),
 
 	head_scale: g => new ManualAnim(g),
 	grip_left: g => new ManualAnim(g),
@@ -81,5 +100,5 @@ export const setup_character_anims = (
 	spine_lean: g => new ManualAdditiveAnim(g, 50),
 	spine_bend: g => new ManualAdditiveAnim(g, 50),
 
-}, name => character.get_animation_group(name), onMissingAnim)
+}, name => character.animationGroups.get(name), onMissingAnim)
 

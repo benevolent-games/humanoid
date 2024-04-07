@@ -7,11 +7,10 @@ import {explode_promise, maptool} from "@benev/slate"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {Meshoid, Prop, Rapier, Vec3, babylonian, quat, vec3} from "@benev/toolbox"
+import {Meshoid, Prop, Rapier, Vec3, babylonian, nametag, nametagQuery, quat, vec3} from "@benev/toolbox"
 
 import {HuLevel} from "../../../gameplan.js"
 import {HybridComponent} from "../../hub.js"
-import {Nametag} from "../../../tools/nametag.js"
 import {HuRealm} from "../../../models/realm/realm.js"
 import {make_skybox} from "../../../tools/make_skybox.js"
 import {make_envmap} from "../../../tools/make_envmap.js"
@@ -162,11 +161,8 @@ function thinnify(daddy: Mesh, babies: InstancedMesh[]) {
 	daddy.thinInstanceRefreshBoundingInfo()
 }
 
-function is_marked_thin(meshoid: Meshoid) {
-	return !!(
-		Nametag.parse(meshoid.name).tag("thin") ||
-		(meshoid.material && Nametag.parse(meshoid.material.name).tag("thin"))
-	)
+function is_marked_thin(mesh: Meshoid) {
+	return !!nametagQuery(mesh, "thin")
 }
 
 function setup_thin_instances(params: LevelInstance) {
@@ -190,7 +186,7 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 				mesh.name.includes("feature") ||
 				mesh.name.includes("toy")
 			))
-			.filter(mesh => !Nametag.query(mesh, "ghost"))
+			.filter(mesh => !nametagQuery(mesh, "ghost"))
 
 		const dynamic_nodes = level
 			.top_level_nodes

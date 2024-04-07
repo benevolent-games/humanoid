@@ -1,14 +1,37 @@
 
-import {scalar, vec2} from "@benev/toolbox"
+import {Trashcan, scalar, vec2} from "@benev/toolbox"
 
 import {molasses2d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {Weapon} from "../../models/attacking/weapon.js"
+import {Controllable, Intent} from "../components/plain_components.js"
+import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {considerAttack, considerParry} from "../../models/attacking/consider.js"
-import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../components/plain_components.js"
+import {Inventory, MeleeAction, MeleeAim, MeleeIntent} from "../components/topics/warrior.js"
 
 export const combat = system("combat", ({realm}) => [
+
+	responder("inventory controls")
+		.select({Controllable, Inventory})
+		.respond(entity => {
+			const trash = new Trashcan()
+			const {buttons} = realm.tact.inputs.humanoid
+			const inventory = new InventoryManager(entity.components.inventory)
+
+			trash.mark(buttons.weapon_next.onPressed(() => {
+				inventory.nextWeapon()
+			}))
+
+			trash.mark(buttons.weapon_previous.onPressed(() => {
+				inventory.previousWeapon()
+			}))
+
+			trash.mark(buttons.shield_toggle.onPressed(() => {
+				inventory.toggleShield()
+			}))
+
+			return trash.dispose
+		}),
 
 	system("intentions", () => [
 		behavior("set melee intent")
@@ -45,13 +68,13 @@ export const combat = system("combat", ({realm}) => [
 			}),
 
 		behavior("initiate melee action")
-			.select({MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
+			.select({MeleeAim, MeleeIntent, MeleeAction, Inventory})
 			.logic(() => ({components}) => {
 				if (components.meleeAction)
 					return
 
 				const {angle} = components.meleeAim
-				const weapon = Weapon.get(components.meleeWeapon)
+				const {weapon} = new InventoryManager(components.inventory)
 				const {parry, stab, swing} = components.meleeIntent
 
 				if (parry)
@@ -85,8 +108,8 @@ export const combat = system("combat", ({realm}) => [
 			else if (Melee.is.attack(meleeAction)) {
 				const {report, weights} = considerAttack(
 					meleeAction.kind === Melee.Kind.Stab
-						? meleeAction.weapon.stab
-						: meleeAction.weapon.swing,
+						? meleeAction.weapon.timings.stab
+						: meleeAction.weapon.timings.swing,
 					meleeAction.kind,
 					meleeAction.seconds,
 					meleeAction.earlyRecovery,

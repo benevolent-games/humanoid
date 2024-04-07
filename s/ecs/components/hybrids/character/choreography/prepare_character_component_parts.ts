@@ -1,12 +1,12 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
-import {Meshoid, babylonian, label, quat, vec3} from "@benev/toolbox"
+import {babylonian, label, quat, vec3} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {CharacterInstance} from "../../../../../models/character/instance.js"
+import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
 
 export function prepare_character_component_parts(
 		scene: Scene,
-		character: CharacterInstance,
+		character: ContainerInstance,
 		height: number,
 	) {
 
@@ -22,22 +22,7 @@ export function prepare_character_component_parts(
 		= transform.rotationQuaternion
 		= babylonian.from.quat(quat.identity())
 
-	const meshes = character.root.getChildMeshes()
-	const sword = meshes.find(m => m.name.includes("longsword")) as Meshoid
-
-	const plz_disable = [
-		"shield",
-		"hatchet",
-		"reference_weapon",
-	]
-
-	for (const mesh of meshes) {
-		if (plz_disable.some(keyword => mesh.name.includes(keyword)))
-			mesh.dispose()
-	}
-
 	return {
-		sword,
 		transform,
 		character,
 		position,

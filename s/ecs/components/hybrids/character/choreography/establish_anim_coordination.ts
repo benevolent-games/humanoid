@@ -5,17 +5,16 @@ import {make_dummy_anim_group} from "./dummy_anim_group.js"
 import {HuRealm} from "../../../../../models/realm/realm.js"
 import {setup_character_anims} from "./setup_character_anims.js"
 import {AdjustmentAnims} from "../../../../../models/choreographer/types.js"
-import {CharacterInstance} from "../../../../../models/character/instance.js"
 import {adjustment_anim_for_direction} from "./adjustment_anim_for_direction.js"
+import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
 import {calculate_adjustment_weight} from "../../../../../models/choreographer/utils/calculate_adjustment_weight.js"
 
-export function establish_anim_coordination(realm: HuRealm, character: CharacterInstance, onMissingAnim: (name: string) => void) {
+export function establish_anim_coordination(realm: HuRealm, character: ContainerInstance, onMissingAnim: (name: string) => void) {
 	const anims = setup_character_anims(character, onMissingAnim)
-	// console.log("character", character, anims)
+	console.log("character", character, anims)
 
-	anims.head_scale.weight = 1
-	anims.grip_left.weight = 1
-	anims.grip_right.weight = 1
+	anims.grip_left.forceProgress(1)
+	anims.grip_right.forceProgress(1)
 
 	const ambulation_anims = [
 		anims.stand_forward,

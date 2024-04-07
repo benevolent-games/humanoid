@@ -1,7 +1,8 @@
 
 import {ob} from "@benev/slate"
-import {Weapon} from "./weapon.js"
 import {Vec2, scalar} from "@benev/toolbox"
+
+import {Weapon} from "../armory/weapon.js"
 import {considerAttack, considerParry} from "./consider.js"
 
 const {degrees} = scalar.radians.from
@@ -71,7 +72,7 @@ export namespace Melee {
 
 	export type AttackReport = {
 		phase: Phase
-		times: Times
+		// times: Times
 		milestones: [number, number, number, number, number]
 	}
 
@@ -85,7 +86,7 @@ export namespace Melee {
 		export type Offensive = {
 			angle: number
 			report: AttackReport
-			attackDurations: Weapon.AttackDurations
+			attackDurations: Weapon.AttackTimings
 			earlyRecovery: null | number
 		} & Base
 
@@ -117,8 +118,8 @@ export namespace Melee {
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.stab,
-			...considerAttack(weapon.stab, Kind.Stab, 0, null, angle),
+			attackDurations: weapon.timings.stab,
+			...considerAttack(weapon.timings.stab, Kind.Stab, 0, null, angle),
 		}),
 		swing: (weapon: Weapon.Config, angle: number): Action.Swing => ({
 			kind: Kind.Swing,
@@ -126,8 +127,8 @@ export namespace Melee {
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.stab,
-			...considerAttack(weapon.swing, Kind.Swing, 0, null, angle),
+			attackDurations: weapon.timings.swing,
+			...considerAttack(weapon.timings.swing, Kind.Swing, 0, null, angle),
 		}),
 	}
 

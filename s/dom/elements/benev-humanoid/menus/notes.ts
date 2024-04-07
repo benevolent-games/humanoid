@@ -49,20 +49,34 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<code>tab</code> to toggle menu.
 				<code>wasd</code> to walk around.
 				<code>shift</code> for sprint.
-				<code>alt</code> to walk slow.
-				<code>c</code> to crouch.
-				hold <code>z</code> to orbit the camera.
 				<code>left-click</code> to swing your sword.
 				<code>middle-click</code> to stab.
 				<code>right-click</code> to parry.
-				<code>r</code> to switch camera angle.
 				<code>t</code> to respawn or toggle to spectator mode.
+				<code>r</code> to switch camera angle.
+				<code>q</code> and <code>e</code> to switch weapons.
+				<code>x</code> to toggle your shield (for one-handed weapons only).
 				<code>b</code> to spawn bots (beware of lag).
 				<code>shift+b</code> to delete bots.
+				hold <code>z</code> to orbit the camera.
+				<code>c</code> to crouch.
+				<code>alt</code> to walk slow.
 			</p>
 		</section>
 
 		<hr/>
+
+		<section>
+			<h1>
+				<span>🪓🛡️ new weapons and shield!</span>
+				<small>2024-04-07</small>
+			</h1>
+			<p>shield, fists, adze, hammer, mace, hatchet, axe, longsword, and sledgehammer.</p>
+			<p>you can now switch weapons by pressing <code>q</code> and <code>e</code>.</p>
+			<p>and you can toggle your shield with <code>x</code>.</p>
+			<p>each weapon has its own set of windup/release/recovery timings, which gives each weapon its own feel.</p>
+			<p>for now, they're all still using the longsword's hit-detection tracer.</p>
+		</section>
 
 		<section>
 			<h1>

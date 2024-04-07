@@ -1,11 +1,11 @@
 
+import {fix_animation_groups, nametag} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Material} from "@babylonjs/core/Materials/material.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
 import {HuRealm} from "../realm/realm.js"
-import {Nametag} from "../../tools/nametag.js"
 import {Quality} from "../../tools/quality.js"
 import {GlbPostProcess} from "./parts/types.js"
 import {Shader} from "../assets/parts/make_shader.js"
@@ -18,9 +18,9 @@ export function standard_glb_post_process({gameplan, loadingDock}: HuRealm): Glb
 
 		// load shaders
 		for (const material of container.materials) {
-			const nametag = Nametag.parse(material.name)
-			if (nametag.tag("shader")) {
-				const name = nametag.name as keyof typeof gameplan.shaders
+			const tag = nametag(material.name)
+			if (tag.get("shader")) {
+				const name = tag.name as keyof typeof gameplan.shaders
 				if (name in gameplan.shaders) {
 					const plan = gameplan.shaders[name]
 					const shader = await loadingDock.loadShader(plan)
@@ -53,6 +53,8 @@ export function standard_glb_post_process({gameplan, loadingDock}: HuRealm): Glb
 			if (material instanceof PBRMaterial || material instanceof NodeMaterial)
 				material.maxSimultaneousLights = maxLights
 		}
+
+		fix_animation_groups(container.animationGroups)
 
 		return container
 	}

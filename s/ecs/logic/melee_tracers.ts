@@ -2,10 +2,10 @@
 import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {Health, MeleeAction} from "../components/plain_components.js"
 import {Tracer} from "../components/hybrids/tracer/tracer.js"
 import {Tracing} from "../components/hybrids/tracer/parts/types.js"
 import {Character} from "../components/hybrids/character/character.js"
+import {Health, MeleeAction} from "../components/topics/warrior.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
@@ -103,7 +103,11 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 					const [hit] = [...hits.near, ...hits.far]
 
 					if (hit) {
-						meleeAction.earlyRecovery = meleeAction.seconds
+						const capsule = physics.capsules.get(hit)
+						const we_are_not_hitting_ourselves = capsule?.entityId !== entity.id
+
+						if (we_are_not_hitting_ourselves)
+							meleeAction.earlyRecovery = meleeAction.seconds
 
 						const dynamic = physics.dynamics.get(hit)
 						if (dynamic && tracingDetails.direction) {
@@ -114,13 +118,11 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 							)
 						}
 
-						const capsule = physics.capsules.get(hit)
 						if (capsule) {
-							const we_are_not_hitting_ourselves = capsule.entityId !== entity.id
 							if (we_are_not_hitting_ourselves) {
 								const entity = world.get(capsule.entityId)
 								if (entity.has({Health}))
-									entity.components.health = 0
+									entity.components.health.hp = 0
 							}
 						}
 					}

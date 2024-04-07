@@ -3,11 +3,12 @@ import {Ecs, Speeds, Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../../types.js"
+import {setup_anim_modulators} from "./modulators.js"
 import {Perspective} from "../../../plain_components.js"
 import {CharacterAnims} from "./setup_character_anims.js"
+import {Weapon} from "../../../../../models/armory/weapon.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {Melee} from "../../../../../models/attacking/melee.js"
-import {setup_anim_modulators} from "./modulators.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
 
@@ -15,6 +16,8 @@ export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
+		weapon,
+		shield,
 		boss_anim,
 		ambulatory,
 		perspective,
@@ -23,8 +26,10 @@ export function sync_character_anims({
 	}: {
 		gimbal: Vec2
 		choreo: Choreo
+		shield: boolean
 		anims: CharacterAnims
 		ambulatory: Ambulatory
+		weapon: Weapon.Details
 		boss_anim: AnimationGroup
 		meleeWeights: Melee.Weights
 		perspective: Ecs.ComponentState<Perspective>
@@ -47,8 +52,12 @@ export function sync_character_anims({
 	const crouching = inverse(standing)
 	const airborne = inverse(groundage)
 
-	anims.grip_left.forceProgress(1)
-	anims.grip_right.forceProgress(1)
+	Object.values(anims).forEach(anim => anim.weight = 0)
+	anims.tpose.weight = -1
+	anims.head_scale.weight = 1
+	anims.grip_left.weight = 1
+	anims.grip_right.weight = 1
+
 	anims.head_scale.forceProgress(
 		(perspective === "first_person")
 			? 0.05
@@ -94,32 +103,98 @@ export function sync_character_anims({
 	// upper-body
 	//
 
+	const grip_groups = {
+		fists: {
+			guard: anims.fists,
+			airborne: anims.fists_airborne,
+			forward: anims.fists_forward,
+			backward: anims.fists_backward,
+			leftward: anims.fists_leftward,
+			rightward: anims.fists_rightward,
+			sprint: anims.fists_sprint,
+			parry: anims.fists_parry,
+			attack_1: anims.fists_attack_1,
+			attack_2: anims.fists_attack_2,
+			attack_3: anims.fists_attack_3,
+			attack_4: anims.fists_attack_4,
+			attack_5: anims.fists_attack_5,
+			attack_6: anims.fists_attack_6,
+			attack_7: anims.fists_attack_7,
+			attack_8: anims.fists_attack_8,
+		},
+		onehander: {
+			guard: anims.onehander,
+			airborne: anims.onehander_airborne,
+			forward: anims.onehander_forward,
+			backward: anims.onehander_backward,
+			leftward: anims.onehander_leftward,
+			rightward: anims.onehander_rightward,
+			sprint: anims.onehander_sprint,
+			parry: shield
+				? anims.onehander_shield_parry
+				: anims.onehander_parry,
+			attack_1: anims.onehander_attack_1,
+			attack_2: anims.onehander_attack_2,
+			attack_3: anims.onehander_attack_3,
+			attack_4: anims.onehander_attack_4,
+			attack_5: anims.onehander_attack_5,
+			attack_6: anims.onehander_attack_6,
+			attack_7: anims.onehander_attack_7,
+			attack_8: anims.onehander_attack_8,
+		},
+		twohander: {
+			guard: anims.twohander,
+			airborne: anims.twohander_airborne,
+			forward: anims.twohander_forward,
+			backward: anims.twohander_backward,
+			leftward: anims.twohander_leftward,
+			rightward: anims.twohander_rightward,
+			sprint: anims.twohander_sprint,
+			parry: anims.twohander_parry,
+			attack_1: anims.twohander_attack_1,
+			attack_2: anims.twohander_attack_2,
+			attack_3: anims.twohander_attack_3,
+			attack_4: anims.twohander_attack_4,
+			attack_5: anims.twohander_attack_5,
+			attack_6: anims.twohander_attack_6,
+			attack_7: anims.twohander_attack_7,
+			attack_8: anims.twohander_attack_8,
+		},
+	}
+
+	anims.onehander_parry.weight = 0
+	anims.onehander_shield_parry.weight = 0
+
+	Object.values(grip_groups)
+		.forEach(anims => Object.values(anims)
+			.forEach(anim => anim.weight = 0))
+
+	const grip = grip_groups[weapon.grip]
 	const w = meleeWeights
 
 	function animateAttack(anim: ManualAnim, weight: number) {
 		anim.weight = weight
-		if (weight)
+		if (weight > (1 / 100))
 			anim.forceProgress(w.progress)
 	}
 
-	animateAttack(anims.twohander_parry1, w.parry)
-	animateAttack(anims.twohander_attack_1, w.a1)
-	animateAttack(anims.twohander_attack_2, w.a2)
-	animateAttack(anims.twohander_attack_3, w.a3)
-	animateAttack(anims.twohander_attack_4, w.a4)
-	animateAttack(anims.twohander_attack_5, w.a5)
-	animateAttack(anims.twohander_attack_6, w.a6)
-	animateAttack(anims.twohander_attack_7, w.a7 + w.a8)
-	// animateAttack(anims.twohander_attack_8, w.a8)
+	animateAttack(grip.parry, w.parry)
+	animateAttack(grip.attack_1, w.a1)
+	animateAttack(grip.attack_2, w.a2)
+	animateAttack(grip.attack_3, w.a3)
+	animateAttack(grip.attack_4, w.a4)
+	animateAttack(grip.attack_5, w.a5)
+	animateAttack(grip.attack_6, w.a6)
+	animateAttack(grip.attack_7, w.a7 + w.a8)
+	// animateAttack(grip.attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
-	anims.twohander_parry1.weight = meleeWeights.parry
-	anims.twohander_airborne.weight = airborne * w.inactive
-	anims.twohander.weight = tinyfix + (w.inactive * groundage * stillness)
-	anims.twohander_forward.weight = north * w.inactive * groundage * unstillness
-	anims.twohander_backward.weight = south * w.inactive * groundage * unstillness
-	anims.twohander_leftward.weight = west * w.inactive * groundage * unstillness
-	anims.twohander_rightward.weight = east * w.inactive * groundage * unstillness
+	grip.airborne.weight = airborne * w.inactive
+	grip.guard.weight = tinyfix + (w.inactive * groundage * stillness)
+	grip.forward.weight = tinyfix + north * w.inactive * groundage * unstillness
+	grip.backward.weight = south * w.inactive * groundage * unstillness
+	grip.leftward.weight = west * w.inactive * groundage * unstillness
+	grip.rightward.weight = east * w.inactive * groundage * unstillness
 
 	//
 	// specials

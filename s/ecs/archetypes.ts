@@ -2,6 +2,7 @@
 import {Ecs, Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
 
 import {Archetype} from "./hub.js"
+import {Weapon} from "../models/armory/weapon.js"
 import {Camera} from "./components/hybrids/camera.js"
 import {Capsule} from "./components/hybrids/capsule.js"
 import {GimbalRig} from "./components/hybrids/gimbal_rig.js"
@@ -10,7 +11,8 @@ import {Tracer} from "./components/hybrids/tracer/tracer.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
-import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, CoolGimbal, Debug, Force, Gimbal, Grounding, Health, Humanoid, Impetus, Intent, Jump, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
+import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent} from "./components/topics/warrior.js"
+import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
@@ -101,7 +103,7 @@ export namespace Archetypes {
 
 			PreviousPosition,
 			Velocity,
-			CoolGimbal,
+			GimbalSway,
 
 			Perspective,
 			Character,
@@ -109,13 +111,12 @@ export namespace Archetypes {
 			Ambulation,
 			Rotation,
 
+			Health,
+			Inventory,
 			MeleeAim,
 			MeleeIntent,
-			MeleeWeapon,
 			MeleeAction,
 			Tracer,
-
-			Health,
 		},
 		{
 			humanoid: {},
@@ -144,7 +145,7 @@ export namespace Archetypes {
 			airborneTrajectory: vec3.zero(),
 			jump: false,
 			previousPosition: o.position,
-			coolGimbal: {gimbal: o.gimbal, records: [o.gimbal]},
+			gimbalSway: {gimbal: o.gimbal, records: [o.gimbal]},
 			velocity: vec3.zero(),
 			perspective: "third_person",
 			character: {height: 1.75},
@@ -182,10 +183,21 @@ export namespace Archetypes {
 				stab: false,
 				swing: false,
 			},
-			meleeWeapon: "longsword",
+			inventory: {
+				shield: true,
+				belt: {
+					equippedIndex: Weapon.listing.indexOf(
+						Weapon.library.hatchet
+					),
+					slots: Weapon.listing,
+				},
+			},
 			meleeAction: null,
 			tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
-			health: 1,
+			health: {
+				hp: 1,
+				bleeding: 0,
+			},
 		},
 	)
 
