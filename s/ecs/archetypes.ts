@@ -2,6 +2,7 @@
 import {Ecs, Vec2, Vec3, quat, scalar, vec2, vec3} from "@benev/toolbox"
 
 import {Archetype} from "./hub.js"
+import {Weapon} from "../models/armory/weapon.js"
 import {Camera} from "./components/hybrids/camera.js"
 import {Capsule} from "./components/hybrids/capsule.js"
 import {GimbalRig} from "./components/hybrids/gimbal_rig.js"
@@ -10,9 +11,8 @@ import {Tracer} from "./components/hybrids/tracer/tracer.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
+import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent} from "./components/topics/warrior.js"
 import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
-import { Health, Inventory, MeleeAction, MeleeAim, MeleeIntent } from "./components/topics/warrior.js"
-import { Weapon } from "../models/armory/weapon.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
@@ -186,7 +186,9 @@ export namespace Archetypes {
 			inventory: {
 				shield: true,
 				belt: {
-					equippedIndex: 0,
+					equippedIndex: Weapon.listing.indexOf(
+						Weapon.library.hatchet
+					),
 					slots: Weapon.listing,
 				},
 			},
