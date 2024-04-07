@@ -99,8 +99,8 @@ export function sync_character_anims({
 	// upper-body
 	//
 
-	const grip = (() => (
-		weapon.grip === "fists" ? {
+	const grip_groups = {
+		fists: {
 			guard: anims.fists,
 			airborne: anims.fists_airborne,
 			forward: anims.fists_forward,
@@ -117,8 +117,28 @@ export function sync_character_anims({
 			attack_6: anims.fists_attack_6,
 			attack_7: anims.fists_attack_7,
 			attack_8: anims.fists_attack_8,
-		} :
-		weapon.grip === "twohander" ? {
+		},
+		onehander: {
+			guard: anims.onehander,
+			airborne: anims.onehander_airborne,
+			forward: anims.onehander_forward,
+			backward: anims.onehander_backward,
+			leftward: anims.onehander_leftward,
+			rightward: anims.onehander_rightward,
+			sprint: anims.onehander_sprint,
+			parry: shield
+				? anims.onehander_shield_parry
+				: anims.onehander_parry,
+			attack_1: anims.onehander_attack_1,
+			attack_2: anims.onehander_attack_2,
+			attack_3: anims.onehander_attack_3,
+			attack_4: anims.onehander_attack_4,
+			attack_5: anims.onehander_attack_5,
+			attack_6: anims.onehander_attack_6,
+			attack_7: anims.onehander_attack_7,
+			attack_8: anims.onehander_attack_8,
+		},
+		twohander: {
 			guard: anims.twohander,
 			airborne: anims.twohander_airborne,
 			forward: anims.twohander_forward,
@@ -135,28 +155,16 @@ export function sync_character_anims({
 			attack_6: anims.twohander_attack_6,
 			attack_7: anims.twohander_attack_7,
 			attack_8: anims.twohander_attack_8,
-		} : {
-			guard: anims.onehander,
-			airborne: anims.onehander_airborne,
-			forward: anims.onehander_forward,
-			backward: anims.onehander_backward,
-			leftward: anims.onehander_leftward,
-			rightward: anims.onehander_rightward,
-			sprint: anims.onehander_sprint,
-			parry: shield
-				? anims.onehander_parry
-				: anims.onehander_shield_parry,
-			attack_1: anims.onehander_attack_1,
-			attack_2: anims.onehander_attack_2,
-			attack_3: anims.onehander_attack_3,
-			attack_4: anims.onehander_attack_4,
-			attack_5: anims.onehander_attack_5,
-			attack_6: anims.onehander_attack_6,
-			attack_7: anims.onehander_attack_7,
-			attack_8: anims.onehander_attack_8,
-		}
-	))()
+		},
+	}
 
+	anims.onehander_parry.weight = 0
+	anims.onehander_shield_parry.weight = 0
+	Object.values(grip_groups)
+		.forEach(anims => Object.values(anims)
+			.forEach(anim => anim.weight = 0))
+
+	const grip = grip_groups[weapon.grip]
 	const w = meleeWeights
 
 	function animateAttack(anim: ManualAnim, weight: number) {

@@ -1,16 +1,37 @@
 
-import {scalar, vec2} from "@benev/toolbox"
+import {Trashcan, scalar, vec2} from "@benev/toolbox"
 
 import {molasses2d} from "../../tools/molasses.js"
-import {Weapon} from "../../models/armory/weapon.js"
 import {behavior, responder, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {considerAttack, considerParry} from "../../models/attacking/consider.js"
 import {Controllable, Intent} from "../components/plain_components.js"
+import {InventoryManager} from "../../models/armory/inventory-manager.js"
+import {considerAttack, considerParry} from "../../models/attacking/consider.js"
 import {Inventory, MeleeAction, MeleeAim, MeleeIntent} from "../components/topics/warrior.js"
-import { InventoryManager } from "../../models/armory/inventory-manager.js"
 
 export const combat = system("combat", ({realm}) => [
+
+	responder("inventory controls")
+		.select({Controllable, Inventory})
+		.respond(entity => {
+			const trash = new Trashcan()
+			const {buttons} = realm.tact.inputs.humanoid
+			const inventory = new InventoryManager(entity.components.inventory)
+
+			trash.mark(buttons.weapon_next.onPressed(() => {
+				inventory.nextWeapon()
+			}))
+
+			trash.mark(buttons.weapon_previous.onPressed(() => {
+				inventory.previousWeapon()
+			}))
+
+			trash.mark(buttons.shield_toggle.onPressed(() => {
+				inventory.toggleShield()
+			}))
+
+			return trash.dispose
+		}),
 
 	system("intentions", () => [
 		behavior("set melee intent")

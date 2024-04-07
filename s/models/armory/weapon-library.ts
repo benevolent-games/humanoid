@@ -181,7 +181,7 @@ export const weaponLibrary = ob({
 	},
 
 	axe: {
-		grip: "onehander",
+		grip: "twohander",
 		timings: {
 			parry: {block: .5, recovery: .5},
 			swing: {windup: .4, release: .4, recovery: .4},

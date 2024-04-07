@@ -5,6 +5,7 @@ import {HybridComponent} from "../../../hub.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js"
 
 export class Character extends HybridComponent<{height: number}> {
 
@@ -38,25 +39,25 @@ export class Character extends HybridComponent<{height: number}> {
 
 	readonly helpers = (() => {
 		const {scene} = this.realm
-		// const {sword} = this.weapons
+		const referenceWeapon = this.weapons.right.get("reference")!
 		const trash = new Trashcan()
 
-		// const swordlength = 1.2
+		const swordlength = 1.2
 
-		// const swordtip = trash.bag(
-		// 	new TransformNode(label("swordtip"), scene)
-		// ).dump(t => t.dispose())
-		// swordtip.parent = sword
-		// swordtip.position.set(0, 0, swordlength)
+		const swordtip = trash.bag(
+			new TransformNode("swordtip", scene)
+		).dump(t => t.dispose())
+		swordtip.parent = referenceWeapon
+		swordtip.position.set(0, swordlength, 0)
 
-		// const swordbase = trash.bag(
-		// 	new TransformNode(label("swordbase"), scene)
-		// ).dump(t => t.dispose())
-		// swordbase.parent = sword
-		// swordbase.position.set(0, 0, 0)
+		const swordbase = trash.bag(
+			new TransformNode("swordbase", scene)
+		).dump(t => t.dispose())
+		swordbase.parent = referenceWeapon
+		swordbase.position.set(0, 0, 0)
 
 		return {
-			// swordbase, swordtip,
+			swordbase, swordtip,
 			dispose: trash.dispose,
 		}
 	})()
