@@ -1,0 +1,33 @@
+
+import {Vec2} from "@benev/toolbox"
+import {Component} from "../../hub.js"
+import {Weapon} from "../../../models/armory/weapon.js"
+import {Melee} from "../../../models/attacking/melee.js"
+
+export class Health extends Component<{
+	hp: number
+	bleeding: number
+}>{}
+
+export class Inventory extends Component<{
+	shield: boolean
+	belt: {
+		equippedIndex: number
+		slots: Weapon.Details[]
+	}
+}> {}
+
+export class MeleeAction extends Component<null | Melee.Action.Any> {}
+
+export class MeleeAim extends Component<{
+	lastGlanceNormal: Vec2
+	smoothedGlanceNormal: Vec2
+	angle: number
+}> {}
+
+export class MeleeIntent extends Component<{
+	parry: boolean
+	swing: boolean
+	stab: boolean
+}> {}
+

@@ -20,8 +20,7 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 		[d, 0],
 	])
 	const weights: Melee.Weights = {
-		...Melee.zeroWeights(weapon.grip),
-		grip: weapon.grip,
+		...Melee.zeroWeights(),
 		active,
 		parry: active,
 		inactive: scalar.inverse(active),
@@ -38,7 +37,6 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 */
 
 export function considerAttack(
-		grip: Weapon.Grip,
 		attackDurations: Weapon.AttackTimings,
 		kind: Melee.Kind,
 		seconds: number,
@@ -46,7 +44,7 @@ export function considerAttack(
 		angle: number,
 	) {
 
-	const weights = Melee.zeroWeights(grip)
+	const weights = Melee.zeroWeights()
 	const {windup, release, recovery} = attackDurations
 
 	const a = 0

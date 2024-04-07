@@ -10,7 +10,9 @@ import {Tracer} from "./components/hybrids/tracer/tracer.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
-import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Health, Humanoid, Impetus, Intent, Jump, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
+import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
+import { Health, Inventory, MeleeAction, MeleeAim, MeleeIntent } from "./components/topics/warrior.js"
+import { Weapon } from "../models/armory/weapon.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
@@ -109,13 +111,12 @@ export namespace Archetypes {
 			Ambulation,
 			Rotation,
 
+			Health,
+			Inventory,
 			MeleeAim,
 			MeleeIntent,
-			MeleeWeapon,
 			MeleeAction,
 			Tracer,
-
-			Health,
 		},
 		{
 			humanoid: {},
@@ -182,10 +183,28 @@ export namespace Archetypes {
 				stab: false,
 				swing: false,
 			},
-			meleeWeapon: "axe",
+			inventory: {
+				shield: true,
+				belt: {
+					equippedIndex: 0,
+					slots: [
+						Weapon.library.fists,
+						Weapon.library.adze,
+						Weapon.library.hatchet,
+						Weapon.library.mace,
+						Weapon.library.hammer,
+						Weapon.library.axe,
+						Weapon.library.sledgehammer,
+						Weapon.library.longsword,
+					],
+				},
+			},
 			meleeAction: null,
 			tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
-			health: 1,
+			health: {
+				hp: 1,
+				bleeding: 0,
+			},
 		},
 	)
 

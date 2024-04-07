@@ -57,14 +57,13 @@ export namespace Weapon {
 		grip: Grip
 		shape: Shape
 		timings: Timings
-		damages: {
-			swing: Damage
-			stab: Damage
-		}
+		damages: {swing: Damage, stab: Damage}
 	}
 
+	export type Details = {name: Name} & Config
+
 	export const library = weaponLibrary
-	export const fallback = library.fists
+	export const fallback: Details = {...library.fists, name: "fists"}
 	export type Name = keyof typeof library
 
 	export function get(name: Name) {

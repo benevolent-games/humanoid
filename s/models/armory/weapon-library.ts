@@ -1,8 +1,8 @@
 
-import {Pojo} from "@benev/slate"
+import {Pojo, ob} from "@benev/slate"
 import {Weapon} from "./weapon.js"
 
-export const weaponLibrary = {
+export const weaponLibrary = ob({
 
 	fists: {
 		grip: "fists",
@@ -204,5 +204,7 @@ export const weaponLibrary = {
 		},
 	},
 
-} satisfies Pojo<Weapon.Config>
+} satisfies Pojo<Weapon.Config>).map(
+	(config, name): Weapon.Details => ({...config, name})
+)
 

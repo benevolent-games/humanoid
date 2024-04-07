@@ -3,11 +3,12 @@ import {Ecs, Speeds, Vec2, scalar} from "@benev/toolbox"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 import {Ambulatory} from "../../../types.js"
+import {setup_anim_modulators} from "./modulators.js"
 import {Perspective} from "../../../plain_components.js"
 import {CharacterAnims} from "./setup_character_anims.js"
+import {Weapon} from "../../../../../models/armory/weapon.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {Melee} from "../../../../../models/attacking/melee.js"
-import {setup_anim_modulators} from "./modulators.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
 
@@ -15,6 +16,8 @@ export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
+		weapon,
+		shield,
 		boss_anim,
 		ambulatory,
 		perspective,
@@ -23,8 +26,10 @@ export function sync_character_anims({
 	}: {
 		gimbal: Vec2
 		choreo: Choreo
+		shield: boolean
 		anims: CharacterAnims
 		ambulatory: Ambulatory
+		weapon: Weapon.Details
 		boss_anim: AnimationGroup
 		meleeWeights: Melee.Weights
 		perspective: Ecs.ComponentState<Perspective>
@@ -95,7 +100,7 @@ export function sync_character_anims({
 	//
 
 	const grip = (() => (
-		meleeWeights.grip === "fists" ? {
+		weapon.grip === "fists" ? {
 			guard: anims.fists,
 			airborne: anims.fists_airborne,
 			forward: anims.fists_forward,
@@ -113,7 +118,7 @@ export function sync_character_anims({
 			attack_7: anims.fists_attack_7,
 			attack_8: anims.fists_attack_8,
 		} :
-		meleeWeights.grip === "twohander" ? {
+		weapon.grip === "twohander" ? {
 			guard: anims.twohander,
 			airborne: anims.twohander_airborne,
 			forward: anims.twohander_forward,
@@ -138,8 +143,9 @@ export function sync_character_anims({
 			leftward: anims.onehander_leftward,
 			rightward: anims.onehander_rightward,
 			sprint: anims.onehander_sprint,
-			// parry: anims.onehander_parry,
-			parry: anims.onehander_shield_parry,
+			parry: shield
+				? anims.onehander_parry
+				: anims.onehander_shield_parry,
 			attack_1: anims.onehander_attack_1,
 			attack_2: anims.onehander_attack_2,
 			attack_3: anims.onehander_attack_3,

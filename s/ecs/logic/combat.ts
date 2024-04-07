@@ -6,7 +6,9 @@ import {Weapon} from "../../models/armory/weapon.js"
 import {behavior, responder, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {considerAttack, considerParry} from "../../models/attacking/consider.js"
-import {Controllable, Intent, MeleeAction, MeleeAim, MeleeIntent, MeleeWeapon} from "../components/plain_components.js"
+import {Controllable, Intent} from "../components/plain_components.js"
+import {Inventory, MeleeAction, MeleeAim, MeleeIntent} from "../components/topics/warrior.js"
+import { InventoryManager } from "../../models/armory/inventory-manager.js"
 
 export const combat = system("combat", ({realm}) => [
 
@@ -45,13 +47,13 @@ export const combat = system("combat", ({realm}) => [
 			}),
 
 		behavior("initiate melee action")
-			.select({MeleeAim, MeleeIntent, MeleeAction, MeleeWeapon})
+			.select({MeleeAim, MeleeIntent, MeleeAction, Inventory})
 			.logic(() => ({components}) => {
 				if (components.meleeAction)
 					return
 
 				const {angle} = components.meleeAim
-				const weapon = Weapon.get(components.meleeWeapon)
+				const {weapon} = new InventoryManager(components.inventory)
 				const {parry, stab, swing} = components.meleeIntent
 
 				if (parry)
@@ -84,7 +86,6 @@ export const combat = system("combat", ({realm}) => [
 			}
 			else if (Melee.is.attack(meleeAction)) {
 				const {report, weights} = considerAttack(
-					meleeAction.weapon.grip,
 					meleeAction.kind === Melee.Kind.Stab
 						? meleeAction.weapon.timings.stab
 						: meleeAction.weapon.timings.swing,
