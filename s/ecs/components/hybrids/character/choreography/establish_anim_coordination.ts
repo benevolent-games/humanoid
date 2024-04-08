@@ -1,6 +1,4 @@
 
-import {scalar} from "@benev/toolbox"
-
 import {make_dummy_anim_group} from "./dummy_anim_group.js"
 import {HuRealm} from "../../../../../models/realm/realm.js"
 import {setup_character_anims} from "./setup_character_anims.js"
