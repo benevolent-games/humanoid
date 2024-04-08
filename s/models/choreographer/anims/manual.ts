@@ -12,7 +12,7 @@ export class ManualAnim extends Anim {
 		)
 	}
 
-	forceProgress(fraction: number) {
+	setProgress(fraction: number) {
 		const frame = this.calculateFrameFromFraction(fraction)
 		this.group?.stop()
 		this.group?.start(true, this.speedRatio, frame, frame)
@@ -20,7 +20,7 @@ export class ManualAnim extends Anim {
 
 	init() {
 		this.weight = 0
-		this.forceProgress(0)
+		this.setProgress(0)
 	}
 }
 

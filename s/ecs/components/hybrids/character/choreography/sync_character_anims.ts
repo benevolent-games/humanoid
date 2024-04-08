@@ -58,7 +58,7 @@ export function sync_character_anims({
 	anims.grip_left.weight = 1
 	anims.grip_right.weight = 1
 
-	anims.head_scale.forceProgress(
+	anims.head_scale.setProgress(
 		(perspective === "first_person")
 			? 0.05
 			: 0.5
@@ -175,7 +175,7 @@ export function sync_character_anims({
 	function animateAttack(anim: ManualAnim, weight: number) {
 		anim.weight = weight
 		if (weight > (1 / 100))
-			anim.forceProgress(w.progress)
+			anim.setProgress(w.progress)
 	}
 
 	animateAttack(grip.parry, w.parry)
@@ -204,9 +204,9 @@ export function sync_character_anims({
 	const swivel = scalar.remap(choreo.swivel, halfcircle)
 
 	anims.spine_bend.weight = 1
-	anims.spine_bend.forceProgress(vertical)
+	anims.spine_bend.setProgress(vertical)
 
 	anims.legs_swivel.weight = 1
-	anims.legs_swivel.forceProgress(swivel)
+	anims.legs_swivel.setProgress(swivel)
 }
 

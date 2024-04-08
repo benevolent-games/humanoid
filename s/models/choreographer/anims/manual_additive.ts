@@ -17,7 +17,7 @@ export class ManualAdditiveAnim extends ManualAnim {
 
 	init() {
 		this.weight = 0
-		this.forceProgress(this.referenceFraction)
+		this.setProgress(this.referenceFraction)
 	}
 }
 
