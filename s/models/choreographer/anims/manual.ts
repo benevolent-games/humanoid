@@ -3,7 +3,6 @@ import {Anim} from "./anim.js"
 import {scalar} from "@benev/toolbox"
 
 export class ManualAnim extends Anim {
-
 	calculateFrameFromFraction(fraction: number) {
 		return scalar.lerp(
 			fraction,
@@ -15,7 +14,7 @@ export class ManualAnim extends Anim {
 	setProgress(fraction: number) {
 		const frame = this.calculateFrameFromFraction(fraction)
 		this.group?.stop()
-		this.group?.start(true, this.speedRatio, frame, frame)
+		this.group?.start(false, 0, frame, frame)
 	}
 
 	init() {
