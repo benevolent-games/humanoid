@@ -31,7 +31,10 @@ export const gamelogic = system("root", () => [
 	humanoid,
 	camera_rigging,
 	choreography,
-	melee_tracers,
 	death,
+])
+
+export const logic_after_anims = system("after anims", () => [
+	melee_tracers,
 ])
 

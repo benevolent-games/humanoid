@@ -1,6 +1,5 @@
 
-import {scalar} from "@benev/toolbox"
-
+import {Execute} from "../types.js"
 import {HuTick} from "../ecs/hub.js"
 import {HuRealm} from "../models/realm/realm.js"
 
@@ -9,26 +8,29 @@ import {HuRealm} from "../models/realm/realm.js"
  */
 export default (
 		{stage, physics}: HuRealm,
-		executeGamelogic: (tick: HuTick) => void,
+		execute: Execute
 	) => {
 
-	let count = 0
-	let gametime = 0
+	const tick: HuTick = {
+		count: 0,
+		seconds: 0,
+		gametime: 0,
+		hz: 0,
+	}
 
-	stage.gameloop.beforeRender(ms => {
-		ms = scalar.top(ms, 1000 / 10)
-		const seconds = ms / 1000
-		gametime += seconds
-
-		physics.step(seconds)
-
-		executeGamelogic({
-			seconds,
-			gametime,
-			count: count++,
-			hz: 1 / seconds,
-		})
+	stage.gameloop.on(ms => {
+		tick.count++
+		tick.seconds = ms / 1000
+		tick.gametime += tick.seconds
+		tick.hz = 1 / tick.seconds
 	})
+
+	stage.gameloop.on(() => {
+		physics.step(tick.seconds)
+		execute.gamelogic(tick)
+	})
+
+	stage.scene.onAfterAnimationsObservable.add(() => execute.after_anims(tick))
 
 	stage.gameloop.start()
 }

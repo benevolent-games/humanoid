@@ -1,7 +1,8 @@
 
 import {hub} from "../ecs/hub.js"
+import {Execute} from "../types.js"
 import {HuRealm} from "../models/realm/realm.js"
-import {gamelogic} from "../ecs/gamelogic.js"
+import {gamelogic, logic_after_anims} from "../ecs/gamelogic.js"
 
 /**
  * entity component system
@@ -10,7 +11,11 @@ import {gamelogic} from "../ecs/gamelogic.js"
  */
 export default (realm: HuRealm) => {
 	const world = hub.world(realm)
-	const executor = gamelogic.prepareExecutor({realm, world})
-	return {world, executor}
+	const basis = {realm, world}
+	const execute: Execute = {
+		gamelogic: gamelogic.prepareExecutor(basis),
+		after_anims: logic_after_anims.prepareExecutor(basis),
+	}
+	return {world, execute}
 }
 

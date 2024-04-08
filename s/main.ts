@@ -24,13 +24,13 @@ startup_web_components()
 const realm = await startup_realm(commit)
 
 // all our game logic is expressed in behaviors and systems
-const {world, executor} = startup_ecs(realm)
+const {world, execute} = startup_ecs(realm)
 
 // preventing certain default browser keypress behaviors
 startup_housekeeping(realm)
 
 // running the actual gameloop tick
-startup_gameloop(realm, executor)
+startup_gameloop(realm, execute)
 
 // define the game, which extends the realm
 const game: Game = {
