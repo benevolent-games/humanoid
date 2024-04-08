@@ -16,25 +16,26 @@ import {spawning} from "./logic/spawning.js"
 import {velocity} from "./logic/velocity.js"
 import {parenting} from "./logic/parenting.js"
 
-export const gamelogic = system("root", () => [
-	parenting,
-	spawning,
-	bot_ai,
-	intentions,
-	freelook,
-	force,
-	velocity,
-	ambulation,
-	combat,
+export const gamelogic = {
+	primary: system("root", () => [
+		parenting,
+		spawning,
+		bot_ai,
+		intentions,
+		freelook,
+		force,
+		velocity,
+		ambulation,
+		combat,
 
-	spectator,
-	humanoid,
-	camera_rigging,
-	choreography,
-	death,
-])
-
-export const logic_after_anims = system("after anims", () => [
-	melee_tracers,
-])
+		spectator,
+		humanoid,
+		camera_rigging,
+		choreography,
+		death,
+	]),
+	afterAnims: system("post anim logic", () => [
+		melee_tracers,
+	]),
+}
 

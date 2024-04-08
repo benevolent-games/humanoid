@@ -27,12 +27,13 @@ export default async(commit: CommitHash) => {
 		}),
 	})
 
-	// lower resolution for potatoes
-	realm.stage.porthole.resolution = (
-		realm.gameplan.quality === Quality.Potato
-			? 0.5
-			: 1
-	)
+	// use lower quality stuff in potato mode
+	if (realm.gameplan.quality === Quality.Potato) {
+		realm.stage.porthole.resolution = 0.5
+		realm.stage.rendering.setEffects({
+			antialiasing: {fxaa: false, samples: 0},
+		})
+	}
 
 	// our standard glb postpro will apply shaders and stuff like that,
 	// before it's copied to the scene.

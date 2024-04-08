@@ -1,15 +1,15 @@
 
-import {Execute} from "../types.js"
-import {HuTick} from "../ecs/hub.js"
+import {ob} from "@benev/slate"
+import {HuTick, World} from "../ecs/hub.js"
+import {gamelogic} from "../ecs/gamelogic.js"
 import {HuRealm} from "../models/realm/realm.js"
 
 /**
  * start the gameloop, to execute physics and game logic.
  */
-export default (
-		{stage, physics}: HuRealm,
-		execute: Execute
-	) => {
+export default (realm: HuRealm, world: World) => {
+	const {stage, physics} = realm
+	const executeGamelogic = ob(gamelogic).map(s => s.prepareExecutor({realm, world}))
 
 	const tick: HuTick = {
 		count: 0,
@@ -27,10 +27,10 @@ export default (
 
 	stage.gameloop.on(() => {
 		physics.step(tick.seconds)
-		execute.gamelogic(tick)
+		executeGamelogic.primary(tick)
 	})
 
-	stage.scene.onAfterAnimationsObservable.add(() => execute.after_anims(tick))
+	stage.scene.onAfterAnimationsObservable.add(() => executeGamelogic.afterAnims(tick))
 
 	stage.gameloop.start()
 }
