@@ -22,11 +22,7 @@ export function manifest_anims<M extends Pojo<AnimManifestFn<Anim>>>(
 	})
 
 	// instantiate anim classes
-	return ob(manifest).map((fn, name) => {
-		const anim = fn(getAnimationGroup(name))
-		anim.init()
-		return anim
-	}) as {
+	return ob(manifest).map((fn, name) => fn(getAnimationGroup(name))) as {
 		[P in keyof M]: M[P] extends AnimManifestFn<infer Anim>
 			? Anim
 			: never

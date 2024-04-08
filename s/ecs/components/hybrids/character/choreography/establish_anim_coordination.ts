@@ -69,12 +69,8 @@ export function establish_anim_coordination(realm: HuRealm, character: Container
 		},
 		update: ({direction, progress}) => {
 			const anim = adjustment_anim_for_direction(anims, direction)
-			const frame = scalar.map(progress, [
-				anim.from,
-				anim.to,
-			])
 			anim.weight = calculate_adjustment_weight(progress)
-			anim.forceFrame(frame)
+			anim.forceProgress(progress)
 		},
 	}
 

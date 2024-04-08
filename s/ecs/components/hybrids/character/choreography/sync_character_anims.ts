@@ -204,9 +204,9 @@ export function sync_character_anims({
 	const swivel = scalar.remap(choreo.swivel, halfcircle)
 
 	anims.spine_bend.weight = 1
-	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)
+	anims.spine_bend.forceProgress(vertical)
 
 	anims.legs_swivel.weight = 1
-	anims.legs_swivel.forceFrame(swivel * anims.legs_swivel.to)
+	anims.legs_swivel.forceProgress(swivel)
 }
 

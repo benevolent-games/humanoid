@@ -96,9 +96,9 @@ export const setup_character_anims = (
 	head_scale: g => new ManualAnim(g),
 	grip_left: g => new ManualAnim(g),
 	grip_right: g => new ManualAnim(g),
-	legs_swivel: g => new ManualAdditiveAnim(g, 50),
-	spine_lean: g => new ManualAdditiveAnim(g, 50),
-	spine_bend: g => new ManualAdditiveAnim(g, 50),
+	legs_swivel: g => new ManualAdditiveAnim(g, 0.5),
+	spine_lean: g => new ManualAdditiveAnim(g, 0.5),
+	spine_bend: g => new ManualAdditiveAnim(g, 0.5),
 
 }, name => character.animationGroups.get(name), onMissingAnim)
 
