@@ -1,5 +1,4 @@
 
-import {Quality} from "../tools/quality.js"
 import {make_gameplan} from "../gameplan.js"
 import {makeRealm} from "../models/realm/realm.js"
 import {CommitHash} from "../tools/commit_hash.js"
@@ -20,7 +19,7 @@ export default async(commit: CommitHash) => {
 		commit,
 		gameplan: make_gameplan({
 			local,
-			quality: determine_quality_mode(location.href, Quality.Mid),
+			quality: determine_quality_mode(location.href, "mid"),
 			root_url: local
 				? "/assets"
 				: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
@@ -28,7 +27,7 @@ export default async(commit: CommitHash) => {
 	})
 
 	// use lower quality stuff in potato mode
-	if (realm.gameplan.quality === Quality.Potato) {
+	if (realm.gameplan.quality === "potato") {
 		realm.stage.porthole.resolution = 0.5
 		realm.stage.rendering.setEffects({
 			antialiasing: {fxaa: false, samples: 0},

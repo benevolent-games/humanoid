@@ -1,25 +1,19 @@
 
-export enum Quality {
-	Fancy = 0,
-	Mid = 1,
-	Potato = 2,
+export type Quality = "fancy" | "mid" | "potato"
+
+export function normalize(quality: string): Quality {
+	quality = quality.toLowerCase()
+	if (quality.startsWith("fancy")) return "fancy"
+	else if (quality.startsWith("mid")) return "mid"
+	else return "potato"
 }
 
-export type QualityString = "fancy" | "mid" | "potato"
-
-export function quality_to_string(q: Quality): QualityString {
-	return (
-		q === Quality.Fancy ? "fancy" :
-		q === Quality.Mid ? "mid" :
-		"potato"
-	)
-}
-
-export function quality_from_string(q: string) {
-	return (
-		q === "fancy" ? Quality.Fancy :
-		q === "mid" ? Quality.Mid :
-		Quality.Potato
-	)
+export function qualityNumber(quality: Quality) {
+	switch (quality) {
+		case "fancy": return 0
+		case "mid": return 1
+		case "potato": return 2
+		default: return 2
+	}
 }
 

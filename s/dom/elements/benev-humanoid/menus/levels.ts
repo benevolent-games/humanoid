@@ -4,7 +4,7 @@ import {Op, css, html} from "@benev/slate"
 import {Game} from "../../../../types.js"
 import {nexus} from "../../../../nexus.js"
 import {HuLevel} from "../../../../gameplan.js"
-import {QualityString, quality_from_string} from "../../../../tools/quality.js"
+import {Quality} from "../../../../tools/quality.js"
 
 export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 	use.name("levels-menu")
@@ -96,9 +96,9 @@ export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 		`
 	}
 
-	function qualityButton(emoji: string, label: QualityString, urlquality: string = label) {
-		const href = `?quality=${urlquality}`
-		const active = game.gameplan.quality === quality_from_string(label)
+	function qualityButton(emoji: string, label: Quality) {
+		const href = `?quality=${label}`
+		const active = game.gameplan.quality === label
 		const click = () => window.location.assign(href)
 		return html`
 			<button
@@ -114,7 +114,7 @@ export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 			<h2>change quality mode</h2>
 			<p class=notice>changing quality mode will restart the game. <em>i'm sorry.</em></p>
 			<div>
-				${qualityButton("🥔", "potato", "bingus")}
+				${qualityButton("🥔", "potato")}
 				${qualityButton("😐", "mid")}
 				${qualityButton("🧐", "fancy")}
 			</div>
