@@ -1,161 +1,73 @@
 
-import {Vec3} from "@benev/toolbox"
 import {Pojo, ob} from "@benev/slate"
 import {Weapon} from "./weapon.js"
 
 const ms = (ms: number) => ms / 1000
 const percent = (percent: number) => percent * 1000
 
-/** weapon timings in milliseconds */
-const times = (windup: number, release: number, recovery: number): Weapon.Timings => ({
-	parry: {block: ms(500), recovery: ms(500)},
-	swing: {windup: ms(windup), release: ms(release), recovery: ms(recovery)},
-	stab: {
-		windup: ms(windup),
-		release: ms(release - (release / 2)),
-		recovery: ms(recovery + (release / 2)),
-	},
-})
+const weapon = {
+	grips: (grips: Weapon.Grips) => grips,
+}
 
-/** ribbons */
-const offset = (...offset: Vec3) => ({
-	size: (...size: Vec3) => ({
-		swing: (...swingRibbons: [Weapon.RibbonKind, Vec3, Vec3][]) => ({
-			stab: (...stabRibbons: [Weapon.RibbonKind, Vec3, Vec3][]): Weapon.Shape => ({
-				size,
-				offset,
-				swingRibbons: swingRibbons.map(([kind, a, b]) => ({kind, a, b})),
-				stabRibbons: stabRibbons.map(([kind, a, b]) => ({kind, a, b})),
-			}),
-		}),
-	}),
-})
-
-/** weapon damages in percentages */
-const dmg = (blunt1: number, bleed1: number, pierce1: number) => ({
-	stab: (blunt2: number, bleed2: number, pierce2: number): Weapon.Damages => ({
-		swing: {blunt: percent(blunt1), bleed: percent(bleed1), pierce: percent(pierce1)},
-		stab: {blunt: percent(blunt2), bleed: percent(bleed2), pierce: percent(pierce2)},
+const timings = (windup: number, release: number, recovery: number) => ({
+	damage: (blunt1: number, bleed1: number, pierce1: number) => ({
+		stab: (blunt2: number, bleed2: number, pierce2: number): Weapon.Details => {
+			return {
+				parry: {timing: {block: ms(500), recovery: ms(500)}},
+				swing: {
+					timing: {windup: ms(windup), release: ms(release), recovery: ms(recovery)},
+					damage: {blunt: percent(blunt1), bleed: percent(bleed1), pierce: percent(pierce1)},
+				},
+				stab: {
+					damage: {blunt: percent(blunt2), bleed: percent(bleed2), pierce: percent(pierce2)},
+					timing: {
+						windup: ms(windup),
+						release: ms(release - (release / 2)),
+						recovery: ms(recovery + (release / 2)),
+					},
+				},
+			}
+		},
 	}),
 })
 
 export const weaponLibrary = ob({
 
-	fists: {
-		grip: "fists",
-		timings: times(300, 500, 300),
-		damages: dmg(10, 0, 0).stab(5, 0, 0),
-		shape: offset(0, 0, 0).size(0, .15, 0)
-			.swing(["danger", [0, 0, 0], [0, 1, 0]])
-			.stab(["danger", [0, 0, 0], [0, 1, 0]])
-	},
+	fists: weapon.grips({
+		fists: timings(300, 500, 300).damage(10, 0, 0).stab(5, 0, 0),
+	}),
 
-	adze: {
-		grip: "onehander",
-		timings: times(400, 500, 400),
-		damages: dmg(40, 20, 30).stab(10, 0, 0),
-		shape: offset(0, 0, 0).size(.1, .1, .1)
-			.swing(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			)
-			.stab(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			),
-	},
+	adze: weapon.grips({
+		onehander: timings(400, 500, 400).damage(40, 20, 0).stab(10, 0, 0),
+	}),
 
-	hammer: {
-		grip: "onehander",
-		timings: times(500, 500, 400),
-		damages: dmg(40, 20, 30).stab(10, 0, 0),
-		shape: offset(0, 0, 0).size(.1, .8, .1)
-			.swing(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			)
-			.stab(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			),
-	},
+	hammer: weapon.grips({
+		onehander: timings(500, 500, 400).damage(40, 0, 50).stab(10, 0, 0),
+	}),
 
-	mace: {
-		grip: "onehander",
-		timings: times(400, 500, 500),
-		damages: dmg(40, 20, 30).stab(10, 0, 0),
-		shape: offset(0, 0, 0).size(.1, .8, .1)
-			.swing(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			)
-			.stab(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			),
-	},
+	mace: weapon.grips({
+		onehander: timings(400, 500, 500).damage(50, 0, 60).stab(10, 0, 0),
+	}),
 
-	hatchet: {
-		grip: "onehander",
-		timings: times(400, 500, 400),
-		damages: dmg(40, 20, 30).stab(10, 0, 0),
-		shape: offset(0, -.26, -.06).size(.1, .42, .17)
-			.swing(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			)
-			.stab(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			),
-	},
+	hatchet: weapon.grips({
+		onehander: timings(400, 500, 400).damage(40, 40, 30).stab(10, 0, 0),
+	}),
 
-	axe: {
-		grip: "onehander",
-		timings: times(500, 600, 500),
-		damages: dmg(40, 20, 30).stab(10, 0, 0),
-		shape: offset(0, 0, 0).size(.1, .8, .1)
-			.swing(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			)
-			.stab(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			),
-	},
+	axe: weapon.grips({
+		twohander: timings(500, 600, 500).damage(60, 60, 60).stab(20, 0, 0),
+		onehander: timings(600, 600, 700).damage(40, 40, 40).stab(10, 0, 0),
+	}),
 
-	longsword: {
-		grip: "twohander",
-		timings: times(500, 600, 400),
-		damages: dmg(20, 50, 0).stab(20, 30, 40),
-		shape: offset(0, 0, 0).size(.1, .8, .1)
-			.swing(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			)
-			.stab(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			),
-	},
+	longsword: weapon.grips({
+		twohander: timings(500, 600, 400).damage(10, 90, 0).stab(20, 40, 80),
+		onehander: timings(600, 600, 600).damage(60, 40, 40).stab(10, 40, 80),
+	}),
 
-	sledgehammer: {
-		grip: "twohander",
-		timings: times(800, 600, 800),
-		damages: dmg(80, 0, 0).stab(20, 0, 80),
-		shape: offset(0, 0, 0).size(.1, .8, .1)
-			.swing(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			)
-			.stab(
-				["handle", [0, 0/8, 0], [0, 7/8, 0]],
-				["danger", [0, 7/8, 0], [0, 8/8, 0]],
-			),
-	},
+	sledgehammer: weapon.grips({
+		twohander: timings(800, 600, 900).damage(90, 0, 90).stab(20, 0, 80),
+	}),
 
-} satisfies Pojo<Weapon.Config>).map(
-	(config, name): Weapon.Details => ({...config, name})
+} satisfies Pojo<Weapon.Grips>).map(
+	(details, name) => ({...details, name} as {name: typeof name} & Weapon.Data)
 )
 

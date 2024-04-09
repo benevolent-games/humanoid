@@ -1,76 +1,49 @@
 
-import {Vec3} from "@benev/toolbox"
 import {weaponLibrary} from "./weapon-library.js"
 
 export namespace Weapon {
-	export type ParryTimings = {
+
+	export type Data = {
+		name: string
+		grips: Grips
+	}
+
+	export const library = weaponLibrary
+	export type Name = keyof typeof library
+	export const fallback = library.fists
+
+	export function get(name: Name) {
+		return name in library
+			? library[name]
+			: fallback
+	}
+
+	//////////
+
+	export type Grip = "fists" | "onehander" | "twohander"
+	export type Grips = Partial<Record<Grip, Details>>
+
+	export type Details = {
+		parry: {timing: ParryTiming}
+		swing: {timing: AttackTiming, damage: Damage}
+		stab: {timing: AttackTiming, damage: Damage}
+	}
+
+	export type ParryTiming = {
 		block: number
 		recovery: number
 	}
 
-	export type AttackTimings = {
+	export type AttackTiming = {
 		windup: number
 		release: number
 		recovery: number
-	}
-
-	export type Timings = {
-		parry: ParryTimings
-		swing: AttackTimings
-		stab: AttackTimings
 	}
 
 	export type Damage = {
 		blunt: number
 		bleed: number
 		pierce: number
-	}
-
-	export type Damages = {
-		swing: Damage
-		stab: Damage
-	}
-
-	export type RibbonKind = (
-		| "handle" // weak part of weapon
-		| "danger" // part that deals damage
-		| "grace" // passes through environment, but still deals damage
-	)
-
-	export type Ribbon = {
-		label?: string
-		kind: RibbonKind
-		a: Vec3
-		b: Vec3
-	}
-
-	export type Shape = {
-		size: Vec3
-		offset: Vec3
-		swingRibbons: Ribbon[]
-		stabRibbons: Ribbon[]
-	}
-
-	export type Grip = "fists" | "onehander" | "twohander"
-
-	export type Config = {
-		grip: Grip
-		shape: Shape
-		timings: Timings
-		damages: Damages
-	}
-
-	export type Details = {name: Name} & Config
-
-	export const library = weaponLibrary
-	export const listing = Object.values(weaponLibrary)
-	export const fallback: Details = library.fists
-	export type Name = keyof typeof library
-
-	export function get(name: Name) {
-		if (!(name in library))
-			throw new Error(`weapon not found "${name}"`)
-		return library[name]
 	}
 }
 
