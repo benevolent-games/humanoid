@@ -23,126 +23,126 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 			tracers.update({gametime, referenceWeapon, releasePhase})
 		}),
 
-	// behavior("tracer")
-	// 	.select({Character, Tracer, MeleeAction})
-	// 	.logic(() => entity => {
-	// 		const {physics} = realm
-	// 		const {character, meleeAction, tracer} = entity.components
-	// 		const {swordbase, swordtip} = character.helpers
-	// 		const attack_is_in_windup_phase = (
-	// 			Melee.is.attack(meleeAction) &&
-	// 			meleeAction.report.phase === Melee.Phase.Windup
-	// 		)
-	// 		const attack_is_in_release_phase = (
-	// 			Melee.is.attack(meleeAction) &&
-	// 			meleeAction.report.phase === Melee.Phase.Release
-	// 		)
+	behavior("tracer")
+		.select({Character, Tracer, MeleeAction})
+		.logic(() => entity => {
+			const {physics} = realm
+			const {character, meleeAction, tracer} = entity.components
+			const {swordbase, swordtip} = character.helpers
+			const attack_is_in_windup_phase = (
+				Melee.is.attack(meleeAction) &&
+				meleeAction.report.phase === Melee.Phase.Windup
+			)
+			const attack_is_in_release_phase = (
+				Melee.is.attack(meleeAction) &&
+				meleeAction.report.phase === Melee.Phase.Release
+			)
 
-	// 		if (attack_is_in_windup_phase)
-	// 			tracer.state.lines = []
+			if (attack_is_in_windup_phase)
+				tracer.state.lines = []
 
-	// 		const {lines} = tracer.state
+			const {lines} = tracer.state
 
-	// 		if (attack_is_in_release_phase) {
-	// 			swordbase.computeWorldMatrix(true)
-	// 			swordtip.computeWorldMatrix(true)
-	// 			const a = babylonian.to.vec3(swordbase.absolutePosition)
-	// 			const b = babylonian.to.vec3(swordtip.absolutePosition)
-	// 			lines.push([a, b])
-	// 			while (lines.length > 100)
-	// 				lines.shift()
-	// 		}
+			if (attack_is_in_release_phase) {
+				swordbase.computeWorldMatrix(true)
+				swordtip.computeWorldMatrix(true)
+				const a = babylonian.to.vec3(swordbase.absolutePosition)
+				const b = babylonian.to.vec3(swordtip.absolutePosition)
+				lines.push([a, b])
+				while (lines.length > 100)
+					lines.shift()
+			}
 
-	// 		tracer.state = {lines}
-	// 		tracer.update()
+			tracer.state = {lines}
+			tracer.update()
 
-	// 		if (attack_is_in_release_phase) {
-	// 			const {details: tracingDetails} = tracer
+			if (attack_is_in_release_phase) {
+				const {details: tracingDetails} = tracer
 
-	// 			if (tracingDetails) {
-	// 				const {xyz} = vec3.to
-	// 				const {xyzw} = quat.to
-	// 				const noPosition = xyz(vec3.zero())
-	// 				const noRotation = xyzw(quat.identity())
-	// 				const hits = {
-	// 					near: [] as Rapier.Collider[],
-	// 					far: [] as Rapier.Collider[],
-	// 				}
-	// 				const nearHitCallback = (hit: Rapier.Collider): boolean => {
-	// 					hits.near.push(hit)
-	// 					return true
-	// 				}
-	// 				const farHitCallback = (hit: Rapier.Collider): boolean => {
-	// 					hits.far.push(hit)
-	// 					return true
-	// 				}
-	// 				function triangulate(...triangles: Tracing.Triangle[]) {
-	// 					return triangles.map(t => new Rapier.Triangle(
-	// 						xyz(t[0]),
-	// 						xyz(t[1]),
-	// 						xyz(t[2])),
-	// 					)
-	// 				}
-	// 				const nearTriangles = triangulate(...tracingDetails.ribbonNearEdgeTriangles)
-	// 				const farTriangles = triangulate(...tracingDetails.ribbonFarEdgeTriangles)
+				if (tracingDetails) {
+					const {xyz} = vec3.to
+					const {xyzw} = quat.to
+					const noPosition = xyz(vec3.zero())
+					const noRotation = xyzw(quat.identity())
+					const hits = {
+						near: [] as Rapier.Collider[],
+						far: [] as Rapier.Collider[],
+					}
+					const nearHitCallback = (hit: Rapier.Collider): boolean => {
+						hits.near.push(hit)
+						return true
+					}
+					const farHitCallback = (hit: Rapier.Collider): boolean => {
+						hits.far.push(hit)
+						return true
+					}
+					function triangulate(...triangles: Tracing.Triangle[]) {
+						return triangles.map(t => new Rapier.Triangle(
+							xyz(t[0]),
+							xyz(t[1]),
+							xyz(t[2])),
+						)
+					}
+					const nearTriangles = triangulate(...tracingDetails.ribbonNearEdgeTriangles)
+					const farTriangles = triangulate(...tracingDetails.ribbonFarEdgeTriangles)
 
-	// 				for (const tri of nearTriangles) {
-	// 					physics.world.intersectionsWithShape(
-	// 						noPosition,
-	// 						noRotation,
-	// 						tri,
-	// 						nearHitCallback,
-	// 						undefined,
-	// 						physics.grouper.specify({
-	// 							filter: [physics.groups.level, physics.groups.dynamic, physics.groups.capsule],
-	// 							membership: [physics.groups.sensor],
-	// 						}),
-	// 					)
-	// 				}
+					for (const tri of nearTriangles) {
+						physics.world.intersectionsWithShape(
+							noPosition,
+							noRotation,
+							tri,
+							nearHitCallback,
+							undefined,
+							physics.grouper.specify({
+								filter: [physics.groups.level, physics.groups.dynamic, physics.groups.capsule],
+								membership: [physics.groups.sensor],
+							}),
+						)
+					}
 
-	// 				for (const tri of farTriangles) {
-	// 					physics.world.intersectionsWithShape(
-	// 						noPosition,
-	// 						noRotation,
-	// 						tri,
-	// 						farHitCallback,
-	// 						undefined,
-	// 						physics.grouper.specify({
-	// 							filter: [physics.groups.dynamic, physics.groups.capsule],
-	// 							membership: [physics.groups.sensor],
-	// 						}),
-	// 					)
-	// 				}
+					for (const tri of farTriangles) {
+						physics.world.intersectionsWithShape(
+							noPosition,
+							noRotation,
+							tri,
+							farHitCallback,
+							undefined,
+							physics.grouper.specify({
+								filter: [physics.groups.dynamic, physics.groups.capsule],
+								membership: [physics.groups.sensor],
+							}),
+						)
+					}
 
-	// 				const [hit] = [...hits.near, ...hits.far]
+					const [hit] = [...hits.near, ...hits.far]
 
-	// 				if (hit) {
-	// 					const capsule = physics.capsules.get(hit)
-	// 					const we_are_not_hitting_ourselves = capsule?.entityId !== entity.id
+					if (hit) {
+						const capsule = physics.capsules.get(hit)
+						const we_are_not_hitting_ourselves = capsule?.entityId !== entity.id
 
-	// 					if (we_are_not_hitting_ourselves)
-	// 						meleeAction.earlyRecovery = meleeAction.seconds
+						if (we_are_not_hitting_ourselves)
+							meleeAction.earlyRecovery = meleeAction.seconds
 
-	// 					const dynamic = physics.dynamics.get(hit)
-	// 					if (dynamic && tracingDetails.direction) {
-	// 						dynamic.rigid.applyImpulseAtPoint(
-	// 							vec3.to.xyz(vec3.multiplyBy(tracingDetails.direction, 1_000)),
-	// 							dynamic.rigid.translation(),
-	// 							true,
-	// 						)
-	// 					}
+						const dynamic = physics.dynamics.get(hit)
+						if (dynamic && tracingDetails.direction) {
+							dynamic.rigid.applyImpulseAtPoint(
+								vec3.to.xyz(vec3.multiplyBy(tracingDetails.direction, 1_000)),
+								dynamic.rigid.translation(),
+								true,
+							)
+						}
 
-	// 					if (capsule) {
-	// 						if (we_are_not_hitting_ourselves) {
-	// 							const entity = world.get(capsule.entityId)
-	// 							if (entity.has({Health}))
-	// 								entity.components.health.hp = 0
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}),
+						if (capsule) {
+							if (we_are_not_hitting_ourselves) {
+								const entity = world.get(capsule.entityId)
+								if (entity.has({Health}))
+									entity.components.health.hp = 0
+							}
+						}
+					}
+				}
+			}
+		}),
 
 ])
 
