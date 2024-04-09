@@ -119,9 +119,8 @@ export class Tracers extends HybridComponent<{
 
 	#make_refbox_fit_weapon_shape(update: TracerUpdate) {
 		const box = this.#refbox
-		const shape = update.shape
-		const size: Vec3 = shape ? shape.size : [1, 1, 1]
-		box.scaling.set(...size)
+		box.position.set(...update.shape.offset)
+		box.scaling.set(...update.shape.size)
 		box.parent = update.referenceWeapon
 	}
 

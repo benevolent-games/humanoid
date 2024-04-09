@@ -31,12 +31,6 @@ export namespace Weapon {
 		stab: Damage
 	}
 
-	/** dimensions of the weapon's bounding box */
-	export type Box = Vec3
-
-	/** scaled to the weapon box, so 0 is one side, 1 is the other side, 0.5 is the middle */
-	export type Space = Vec3
-
 	export type RibbonKind = (
 		| "handle" // weak part of weapon
 		| "danger" // part that deals damage
@@ -46,12 +40,13 @@ export namespace Weapon {
 	export type Ribbon = {
 		label?: string
 		kind: RibbonKind
-		a: Space
-		b: Space
+		a: Vec3
+		b: Vec3
 	}
 
 	export type Shape = {
-		size: Box
+		size: Vec3
+		offset: Vec3
 		swingRibbons: Ribbon[]
 		stabRibbons: Ribbon[]
 	}
