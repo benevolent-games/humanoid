@@ -1,6 +1,6 @@
 
 import {Plan} from "./plan.js"
-import {Quality, qualityNumber} from "../../tools/quality.js"
+import {Quality, normalizeQualityString} from "../../tools/quality.js"
 
 const compressed_image_extension = ".webp"
 
@@ -11,7 +11,7 @@ export class PlanningHelpers {
 
 	constructor(s: Plan.Situation) {
 		this.root_url = s.root_url
-		this.quality = s.quality
+		this.quality = normalizeQualityString(s.quality)
 		this.local = s.local
 	}
 
@@ -23,7 +23,7 @@ export class PlanningHelpers {
 		const dotted = filename.split(".")
 		const extension = dotted.pop()!
 		const name = dotted.join(".")
-		return `${slashed.join("/")}/${name}.${qualityNumber(this.quality)}.${extension}`
+		return `${slashed.join("/")}/${name}.${this.quality}.${extension}`
 	}
 
 	glb = (path: string, physics?: "physics" | undefined): Plan.Glb => ({
