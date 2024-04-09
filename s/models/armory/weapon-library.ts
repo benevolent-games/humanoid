@@ -1,207 +1,156 @@
 
 import {Pojo, ob} from "@benev/slate"
 import {Weapon} from "./weapon.js"
+import { Vec3 } from "@benev/toolbox"
+
+const ms = (ms: number) => ms / 1000
+const percent = (percent: number) => percent * 1000
+
+
+/** weapon timings in milliseconds */
+const times = (windup: number, release: number, recovery: number): Weapon.Timings => ({
+	parry: {block: ms(500), recovery: ms(500)},
+	swing: {windup, release, recovery},
+	stab: {
+		windup,
+		release: release - (release / 2),
+		recovery: recovery + (release / 2)
+	},
+})
+
+/** ribbons */
+const shape = (x: number, y: number, z: number) => ({
+	swing: (...swingRibbons: [Weapon.RibbonKind, Vec3, Vec3][]) => ({
+		stab: (...stabRibbons: [Weapon.RibbonKind, Vec3, Vec3][]): Weapon.Shape => ({
+			size: [x, y, z],
+			swingRibbons: swingRibbons.map(([kind, a, b]) => ({kind, a, b})),
+			stabRibbons: stabRibbons.map(([kind, a, b]) => ({kind, a, b})),
+		}),
+	}),
+})
+
+/** weapon damages in percentages */
+const dmg = (blunt1: number, bleed1: number, pierce1: number) => ({
+	stab: (blunt2: number, bleed2: number, pierce2: number): Weapon.Damages => ({
+		swing: {blunt: percent(blunt1), bleed: percent(bleed1), pierce: percent(pierce1)},
+		stab: {blunt: percent(blunt2), bleed: percent(bleed2), pierce: percent(pierce2)},
+	}),
+})
 
 export const weaponLibrary = ob({
 
 	fists: {
 		grip: "fists",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .3, release: .5, recovery: .3},
-			stab: {windup: .3, release: .3, recovery: .5},
-		},
-		damages: {
-			swing: {blunt: 10, bleed: 0, pierce: 0},
-			stab: {blunt: 5, bleed: 0, pierce: 0},
-		},
-		shape: {
-			size: [0, 0.15, 0],
-			swingRibbons: [
-				{
-					kind: "danger",
-					a: [0, 0, 0],
-					b: [0, 1, 0],
-				},
-			],
-			stabRibbons: [
-				{
-					kind: "danger",
-					a: [0, 0, 0],
-					b: [0, 1, 0],
-				},
-			],
-		},
+		timings: times(300, 500, 300),
+		damages: dmg(10, 0, 0).stab(5, 0, 0),
+		shape: shape(0, .15, 0)
+			.swing(["danger", [0, 0, 0], [0, 1, 0]])
+			.stab(["danger", [0, 0, 0], [0, 1, 0]])
 	},
 
 	adze: {
 		grip: "onehander",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .4, release: .5, recovery: .4},
-			stab: {windup: .4, release: .3, recovery: .6},
-		},
-		damages: {
-			swing: {blunt: 40, bleed: 20, pierce: 30},
-			stab: {blunt: 10, bleed: 0, pierce: 0},
-		},
-		shape: {
-			size: [0.1, 0.8, 0.1],
-			swingRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-			stabRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-		},
+		timings: times(400, 500, 400),
+		damages: dmg(40, 20, 30).stab(10, 0, 0),
+		shape: shape(.1, .8, .1)
+			.swing(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			)
+			.stab(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			),
 	},
 
 	hammer: {
 		grip: "onehander",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .5, release: .5, recovery: .4},
-			stab: {windup: .5, release: .3, recovery: .6},
-		},
-		damages: {
-			swing: {blunt: 40, bleed: 20, pierce: 30},
-			stab: {blunt: 10, bleed: 0, pierce: 0},
-		},
-		shape: {
-			size: [0.1, 0.8, 0.1],
-			swingRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-			stabRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-		},
+		timings: times(500, 500, 400),
+		damages: dmg(40, 20, 30).stab(10, 0, 0),
+		shape: shape(.1, .8, .1)
+			.swing(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			)
+			.stab(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			),
 	},
 
 	mace: {
 		grip: "onehander",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .4, release: .5, recovery: .5},
-			stab: {windup: .4, release: .3, recovery: .7},
-		},
-		damages: {
-			swing: {blunt: 40, bleed: 20, pierce: 30},
-			stab: {blunt: 10, bleed: 0, pierce: 0},
-		},
-		shape: {
-			size: [0.1, 0.8, 0.1],
-			swingRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-			stabRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-		},
+		timings: times(400, 500, 500),
+		damages: dmg(40, 20, 30).stab(10, 0, 0),
+		shape: shape(.1, .8, .1)
+			.swing(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			)
+			.stab(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			),
 	},
 
 	hatchet: {
 		grip: "onehander",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .4, release: .5, recovery: .4},
-			stab: {windup: .4, release: .3, recovery: .6},
-		},
-		damages: {
-			swing: {blunt: 40, bleed: 20, pierce: 30},
-			stab: {blunt: 10, bleed: 0, pierce: 0},
-		},
-		shape: {
-			size: [0.1, 0.8, 0.1],
-			swingRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-			stabRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-		},
+		timings: times(400, 500, 400),
+		damages: dmg(40, 20, 30).stab(10, 0, 0),
+		shape: shape(.1, .8, .1)
+			.swing(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			)
+			.stab(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			),
 	},
 
 	axe: {
 		grip: "onehander",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .5, release: .6, recovery: .5},
-			stab: {windup: .5, release: .4, recovery: .7},
-		},
-		damages: {
-			swing: {blunt: 40, bleed: 20, pierce: 30},
-			stab: {blunt: 10, bleed: 0, pierce: 0},
-		},
-		shape: {
-			size: [0.1, 0.8, 0.1],
-			swingRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-			stabRibbons: [
-				{kind: "handle", a: [0, 0 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "danger", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-		},
+		timings: times(500, 600, 500),
+		damages: dmg(40, 20, 30).stab(10, 0, 0),
+		shape: shape(.1, .8, .1)
+			.swing(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			)
+			.stab(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			),
 	},
 
 	longsword: {
 		grip: "twohander",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .5, release: .6, recovery: .4},
-			stab: {windup: .5, release: .4, recovery: .6},
-		},
-		damages: {
-			swing: {blunt: 20, bleed: 50, pierce: 0},
-			stab: {blunt: 20, bleed: 30, pierce: 40},
-		},
-		shape: {
-			size: [0.1, 1.2, 0.1],
-			swingRibbons: [
-				{kind: "handle", a: [0, -4 / 8, 0], b: [0, 1 / 8, 0]},
-				{kind: "danger", a: [0, 1 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "grace", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-			stabRibbons: [
-				{kind: "handle", a: [0, -4 / 8, 0], b: [0, 1 / 8, 0]},
-				{kind: "danger", a: [0, 1 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-		},
+		timings: times(500, 600, 400),
+		damages: dmg(20, 50, 0).stab(20, 30, 40),
+		shape: shape(.1, .8, .1)
+			.swing(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			)
+			.stab(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			),
 	},
 
 	sledgehammer: {
 		grip: "twohander",
-		timings: {
-			parry: {block: .5, recovery: .5},
-			swing: {windup: .8, release: .6, recovery: .8},
-			stab: {windup: .8, release: .4, recovery: 1},
-		},
-		damages: {
-			swing: {blunt: 80, bleed: 0, pierce: 80},
-			stab: {blunt: 20, bleed: 0, pierce: 80},
-		},
-		shape: {
-			size: [0.1, 1.2, 0.1],
-			swingRibbons: [
-				{kind: "handle", a: [0, -4 / 8, 0], b: [0, 1 / 8, 0]},
-				{kind: "danger", a: [0, 1 / 8, 0], b: [0, 7 / 8, 0]},
-				{kind: "grace", a: [0, 7 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-			stabRibbons: [
-				{kind: "handle", a: [0, -4 / 8, 0], b: [0, 1 / 8, 0]},
-				{kind: "danger", a: [0, 1 / 8, 0], b: [0, 8 / 8, 0]},
-			],
-		},
+		timings: times(800, 600, 800),
+		damages: dmg(80, 0, 0).stab(20, 0, 80),
+		shape: shape(.1, .8, .1)
+			.swing(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			)
+			.stab(
+				["handle", [0, 0/8, 0], [0, 7/8, 0]],
+				["danger", [0, 7/8, 0], [0, 8/8, 0]],
+			),
 	},
 
 } satisfies Pojo<Weapon.Config>).map(

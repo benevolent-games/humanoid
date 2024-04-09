@@ -26,6 +26,11 @@ export namespace Weapon {
 		pierce: number
 	}
 
+	export type Damages = {
+		swing: Damage
+		stab: Damage
+	}
+
 	/** dimensions of the weapon's bounding box */
 	export type Box = Vec3
 
@@ -57,7 +62,7 @@ export namespace Weapon {
 		grip: Grip
 		shape: Shape
 		timings: Timings
-		damages: {swing: Damage, stab: Damage}
+		damages: Damages
 	}
 
 	export type Details = {name: Name} & Config
