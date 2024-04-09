@@ -1,20 +1,19 @@
 
+import {Vec3} from "@benev/toolbox"
 import {Pojo, ob} from "@benev/slate"
 import {Weapon} from "./weapon.js"
-import { Vec3 } from "@benev/toolbox"
 
 const ms = (ms: number) => ms / 1000
 const percent = (percent: number) => percent * 1000
 
-
 /** weapon timings in milliseconds */
 const times = (windup: number, release: number, recovery: number): Weapon.Timings => ({
 	parry: {block: ms(500), recovery: ms(500)},
-	swing: {windup, release, recovery},
+	swing: {windup: ms(windup), release: ms(release), recovery: ms(recovery)},
 	stab: {
-		windup,
-		release: release - (release / 2),
-		recovery: recovery + (release / 2)
+		windup: ms(windup),
+		release: ms(release - (release / 2)),
+		recovery: ms(recovery + (release / 2)),
 	},
 })
 
