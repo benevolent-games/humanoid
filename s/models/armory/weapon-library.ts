@@ -51,7 +51,7 @@ export const weaponLibrary = ob({
 		grip: "onehander",
 		timings: times(400, 500, 400),
 		damages: dmg(40, 20, 30).stab(10, 0, 0),
-		shape: shape(.1, .8, .1)
+		shape: shape(.1, .1, .1)
 			.swing(
 				["handle", [0, 0/8, 0], [0, 7/8, 0]],
 				["danger", [0, 7/8, 0], [0, 8/8, 0]],

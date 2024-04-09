@@ -1,6 +1,5 @@
 
-import {Meshoid, Vec3} from "@benev/toolbox"
-import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
+import {Meshoid, Vec3, logSlow} from "@benev/toolbox"
 import {Material} from "@babylonjs/core/Materials/material.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 
@@ -11,14 +10,22 @@ import {apply_update_to_ribbon, establish_ribbon} from "./utils.js"
 
 const ribbon_lifespan = 10
 
+export type TracerUpdate = {
+	gametime: number
+	shape: Weapon.Shape
+	releasePhase: boolean
+	referenceWeapon: Meshoid
+}
+
 export class Tracers extends HybridComponent<{
-		releasePhase: boolean
-		weaponShape: Weapon.Shape
+		// releasePhase: boolean
+		// weaponShape: Weapon.Shape
 	}> {
 
 	#refbox = (() => {
-		const box = MeshBuilder.CreateBox("refbox", {size: 1})
-		box.showBoundingBox = true
+		const box = MeshBuilder.CreateBox("refbox", {size: 1}, this.realm.scene)
+		// box.showBoundingBox = true
+		box.material = this.realm.colors.magenta
 		return box
 	})()
 
@@ -47,25 +54,20 @@ export class Tracers extends HybridComponent<{
 		}[]
 	} = null
 
-	update({gametime, releasePhase, referenceWeapon}: {
-			gametime: number
-			releasePhase: boolean
-			referenceWeapon: Meshoid
-		}) {
+	update(update: TracerUpdate) {
+		this.#destroy_expired_ribbons(update.gametime)
+		this.#make_refbox_fit_weapon_shape(update)
 
-		this.#destroy_expired_ribbons(gametime)
-		this.#make_refbox_fit_weapon_shape(this.#refbox, referenceWeapon)
-
-		if (releasePhase) {
-			if (!this.#wip) this.#start_tracing(gametime, referenceWeapon)
+		if (update.releasePhase) {
+			if (!this.#wip) this.#start_tracing(update)
 			else this.#continue_tracing()
 		}
 		else if (this.#wip) this.#finish_tracing()
 	}
 
-	#start_tracing(gametime: number, referenceWeapon: Meshoid) {
-		const shape = this.state.weaponShape
-		const expiresAtGametime = gametime + ribbon_lifespan
+	#start_tracing(update: TracerUpdate) {
+		const shape = update.shape
+		const expiresAtGametime = update.gametime + ribbon_lifespan
 		const ribbonize = (spec: Weapon.Ribbon) => ({
 			spec,
 			edge: null,
@@ -77,8 +79,9 @@ export class Tracers extends HybridComponent<{
 				this.#materials.edges[spec.kind],
 			),
 		})
+		console.log("START TRACING")
 		this.#wip = {
-			referenceWeapon,
+			referenceWeapon: update.referenceWeapon,
 			ribbons: [
 				...shape.swingRibbons.map(ribbonize),
 				...shape.stabRibbons.map(ribbonize),
@@ -87,6 +90,7 @@ export class Tracers extends HybridComponent<{
 	}
 
 	#continue_tracing() {
+		console.log("...tracing...")
 		if (this.#wip) {
 			for (const ribbon of this.#wip.ribbons) {
 				ribbon.lines.push([ribbon.spec.a, ribbon.spec.b])
@@ -96,6 +100,7 @@ export class Tracers extends HybridComponent<{
 	}
 
 	#finish_tracing() {
+		console.log("STOP TRACING")
 		if (this.#wip) {
 			for (const ribbon of this.#wip.ribbons)
 				this.#ribbons.add(ribbon.data)
@@ -112,11 +117,12 @@ export class Tracers extends HybridComponent<{
 		}
 	}
 
-	#make_refbox_fit_weapon_shape(box: Mesh, referenceWeapon: Meshoid) {
-		const shape = this.state.weaponShape
+	#make_refbox_fit_weapon_shape(update: TracerUpdate) {
+		const box = this.#refbox
+		const shape = update.shape
 		const size: Vec3 = shape ? shape.size : [1, 1, 1]
 		box.scaling.set(...size)
-		box.parent = referenceWeapon
+		box.parent = update.referenceWeapon
 	}
 
 	created() {}
