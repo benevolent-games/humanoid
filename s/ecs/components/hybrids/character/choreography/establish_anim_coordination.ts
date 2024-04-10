@@ -1,6 +1,4 @@
 
-import {scalar} from "@benev/toolbox"
-
 import {make_dummy_anim_group} from "./dummy_anim_group.js"
 import {HuRealm} from "../../../../../models/realm/realm.js"
 import {setup_character_anims} from "./setup_character_anims.js"
@@ -13,8 +11,8 @@ export function establish_anim_coordination(realm: HuRealm, character: Container
 	const anims = setup_character_anims(character, onMissingAnim)
 	console.log("character", character, anims)
 
-	anims.grip_left.forceProgress(1)
-	anims.grip_right.forceProgress(1)
+	anims.grip_left.setProgress(1)
+	anims.grip_right.setProgress(1)
 
 	const ambulation_anims = [
 		anims.stand_forward,
@@ -69,12 +67,8 @@ export function establish_anim_coordination(realm: HuRealm, character: Container
 		},
 		update: ({direction, progress}) => {
 			const anim = adjustment_anim_for_direction(anims, direction)
-			const frame = scalar.map(progress, [
-				anim.from,
-				anim.to,
-			])
 			anim.weight = calculate_adjustment_weight(progress)
-			anim.forceFrame(frame)
+			anim.setProgress(progress)
 		},
 	}
 

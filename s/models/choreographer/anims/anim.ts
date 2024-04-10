@@ -3,7 +3,10 @@ import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 export abstract class Anim {
 	abstract init(): void
-	constructor(public group: AnimationGroup | undefined) {}
+
+	constructor(public group: AnimationGroup | undefined) {
+		this.init()
+	}
 
 	get is_available() {
 		return !!this.group

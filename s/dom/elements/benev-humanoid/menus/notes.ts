@@ -52,10 +52,11 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<code>left-click</code> to swing your sword.
 				<code>middle-click</code> to stab.
 				<code>right-click</code> to parry.
+				<code>r</code> to change weapon grip.
+				<code>x</code> to toggle your shield.
 				<code>t</code> to respawn or toggle to spectator mode.
-				<code>r</code> to switch camera angle.
+				<code>g</code> to switch camera angle.
 				<code>q</code> and <code>e</code> to switch weapons.
-				<code>x</code> to toggle your shield (for one-handed weapons only).
 				<code>b</code> to spawn bots (beware of lag).
 				<code>shift+b</code> to delete bots.
 				hold <code>z</code> to orbit the camera.

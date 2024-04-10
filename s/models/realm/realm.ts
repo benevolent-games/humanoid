@@ -12,6 +12,7 @@ import {LoadingDock} from "../planning/loading_dock.js"
 // import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
+	allow_webgpu: boolean
 	commit: CommitHash
 	gameplan: HuGameplan
 }
@@ -21,7 +22,21 @@ export type HuRealm = Awaited<ReturnType<typeof makeRealm>>
 export async function makeRealm(params: RealmParams) {
 	const {gameplan, commit} = params
 
-	const stage = new Stage({background: Stage.backgrounds.sky()})
+	const stage = await Stage.create({
+		background: Stage.backgrounds.sky(),
+		allow_webgpu: params.allow_webgpu,
+		webgl_options: {
+			alpha: false,
+			desynchronized: true,
+			preserveDrawingBuffer: false,
+		},
+		webgpu_options: {
+			antialias: true,
+			audioEngine: true,
+			powerPreference: "high-performance",
+		},
+	})
+
 	const {scene} = stage
 
 	// // disabled: because it breaks our postpro effects

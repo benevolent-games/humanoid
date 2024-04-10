@@ -1,6 +1,6 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
-import {babylonian, label, quat, vec3} from "@benev/toolbox"
+import {babyloid, label, quat, vec3} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
 
@@ -16,11 +16,11 @@ export function prepare_character_component_parts(
 
 	const position
 		= transform.position
-		= babylonian.from.vec3(vec3.zero())
+		= babyloid.from.vec3(vec3.zero())
 
 	const rotation
 		= transform.rotationQuaternion
-		= babylonian.from.quat(quat.identity())
+		= babyloid.from.quat(quat.identity())
 
 	return {
 		transform,

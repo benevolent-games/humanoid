@@ -1,9 +1,9 @@
 
-import {Quality} from "../tools/quality.js"
 import {make_gameplan} from "../gameplan.js"
 import {makeRealm} from "../models/realm/realm.js"
 import {CommitHash} from "../tools/commit_hash.js"
 import {determine_local_mode} from "../tools/determine_local_mode.js"
+import {determine_webgpu_mode} from "../tools/determine_webgpu_mode.js"
 import {determine_quality_mode} from "../tools/determine_quality_mode.js"
 import {standard_glb_post_process} from "../models/glb_post_processing/standard_glb_post_process.js"
 
@@ -18,21 +18,23 @@ export default async(commit: CommitHash) => {
 
 	const realm = await makeRealm({
 		commit,
+		allow_webgpu: determine_webgpu_mode(location.href),
 		gameplan: make_gameplan({
 			local,
-			quality: determine_quality_mode(location.href, Quality.Mid),
+			quality: determine_quality_mode(location.href, "mid"),
 			root_url: local
 				? "/assets"
 				: "https://benev-storage.sfo2.cdn.digitaloceanspaces.com/x/assets",
 		}),
 	})
 
-	// lower resolution for potatoes
-	realm.stage.porthole.resolution = (
-		realm.gameplan.quality === Quality.Potato
-			? 0.5
-			: 1
-	)
+	// use lower quality stuff in potato mode
+	if (realm.gameplan.quality === "potato") {
+		realm.stage.porthole.resolution = 0.5
+		realm.stage.rendering.setEffects({
+			antialiasing: {fxaa: false, samples: 0},
+		})
+	}
 
 	// our standard glb postpro will apply shaders and stuff like that,
 	// before it's copied to the scene.

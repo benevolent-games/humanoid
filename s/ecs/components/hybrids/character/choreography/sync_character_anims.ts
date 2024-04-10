@@ -16,7 +16,8 @@ export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
-		weapon,
+		gripName,
+		// weapon,
 		shield,
 		boss_anim,
 		ambulatory,
@@ -26,6 +27,7 @@ export function sync_character_anims({
 	}: {
 		gimbal: Vec2
 		choreo: Choreo
+		gripName: Weapon.Grip
 		shield: boolean
 		anims: CharacterAnims
 		ambulatory: Ambulatory
@@ -58,7 +60,7 @@ export function sync_character_anims({
 	anims.grip_left.weight = 1
 	anims.grip_right.weight = 1
 
-	anims.head_scale.forceProgress(
+	anims.head_scale.setProgress(
 		(perspective === "first_person")
 			? 0.05
 			: 0.5
@@ -160,7 +162,7 @@ export function sync_character_anims({
 			attack_7: anims.twohander_attack_7,
 			attack_8: anims.twohander_attack_8,
 		},
-	}
+	} satisfies Record<Weapon.Grip, any>
 
 	anims.onehander_parry.weight = 0
 	anims.onehander_shield_parry.weight = 0
@@ -169,13 +171,13 @@ export function sync_character_anims({
 		.forEach(anims => Object.values(anims)
 			.forEach(anim => anim.weight = 0))
 
-	const grip = grip_groups[weapon.grip]
+	const grip = grip_groups[gripName]
 	const w = meleeWeights
 
 	function animateAttack(anim: ManualAnim, weight: number) {
 		anim.weight = weight
 		if (weight > (1 / 100))
-			anim.forceProgress(w.progress)
+			anim.setProgress(scalar.clamp(w.progress))
 	}
 
 	animateAttack(grip.parry, w.parry)
@@ -189,6 +191,7 @@ export function sync_character_anims({
 	// animateAttack(grip.attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
+	anims.equip.weight = w.equip
 	grip.airborne.weight = airborne * w.inactive
 	grip.guard.weight = tinyfix + (w.inactive * groundage * stillness)
 	grip.forward.weight = tinyfix + north * w.inactive * groundage * unstillness
@@ -204,9 +207,9 @@ export function sync_character_anims({
 	const swivel = scalar.remap(choreo.swivel, halfcircle)
 
 	anims.spine_bend.weight = 1
-	anims.spine_bend.forceFrame(vertical * anims.spine_bend.to)
+	anims.spine_bend.setProgress(vertical)
 
 	anims.legs_swivel.weight = 1
-	anims.legs_swivel.forceFrame(swivel * anims.legs_swivel.to)
+	anims.legs_swivel.setProgress(swivel)
 }
 

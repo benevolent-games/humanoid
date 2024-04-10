@@ -1,10 +1,11 @@
 
-import {css, html} from "@benev/slate"
+import {css, html, is} from "@benev/slate"
 import {Menus, scalar} from "@benev/toolbox"
 
 import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
 import {icon_tabler_chevron_up} from "../../../../icons/tabler/chevron-up.js"
+import { Melee } from "../../../../../models/attacking/melee.js"
 
 export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 	use.name("reticule")
@@ -21,7 +22,12 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			transition: 200ms linear opacity;
 
 			&[data-active] { opacity: 1; }
-			&[data-busy] { color: red; }
+
+			&[data-mode="attack"] { color: #a00; }
+			&[data-mode="attack-release"] { color: #f00; }
+
+			&[data-mode="parry"] { color: #088; }
+			&[data-mode="parry-protective"] { color: #0ff; }
 		}
 
 		.graphic {
@@ -53,17 +59,38 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 		}
 	`)
 
-	const {aim, size, enabled, opacity} = game.reticuleState
+	const {enabled, size, opacity, data} = game.reticuleState
 
-	const angleStyle = aim.angle === null
-		? `opacity: 0;`
-		: `transform: rotate(${scalar.radians.to.degrees(aim.angle)}deg);`
+	const aim = data?.meleeAim
+	const action = data?.meleeAction
+
+	const angle = (Melee.is.stab(action) || Melee.is.parry(action))
+		? null
+		: Melee.is.swing(action)
+			? action?.angle
+			: aim?.angle
+
+	const mode = (
+		Melee.is.attack(action)
+			? action.report.phase === "release"
+				? "attack-release"
+				: "attack"
+			: Melee.is.parry(action)
+				? action.protective
+					? "parry-protective"
+					: "parry"
+				: "plain"
+	)
+
+	const angleStyle = is.defined(angle)
+		? `transform: rotate(${scalar.radians.to.degrees(angle)}deg);`
+		: `opacity: 0;`
 
 	return enabled ? html`
 		<div
 			class="shell"
 			?data-active="${!menus.open.value}"
-			?data-busy="${aim.busy}"
+			data-mode="${mode}"
 			style="font-size: ${size}em;">
 			<div class="wrapper" style="opacity: ${opacity};">
 				<div class="aim graphic">

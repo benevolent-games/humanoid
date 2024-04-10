@@ -1,76 +1,80 @@
 
-import {Vec3} from "@benev/toolbox"
-import {weaponLibrary} from "./weapon-library.js"
+import {ob} from "@benev/slate"
+import {Meshoid, Vec3} from "@benev/toolbox"
+import {weaponDataSheet} from "./weapon-data-sheet.js"
 
 export namespace Weapon {
-	export type ParryTimings = {
-		block: number
-		recovery: number
+	export type Name = keyof typeof weaponDataSheet
+	export type Data = {
+		name: Name
+		grips: Grips
 	}
 
-	export type AttackTimings = {
+	export const library = ob(weaponDataSheet).map(
+		(grips, name) => ({grips, name})
+	) satisfies Record<Name, Data>
+
+	export const listing = Object.values(library)
+
+	export const fallback = library.fists
+
+	export function get(name: Name) {
+		return name in library
+			? library[name]
+			: fallback
+	}
+
+	export type RibbonKind = "handle" | "damage" | "grace"
+
+	export type ProtoRibbon = {
+		kind: RibbonKind
+		a: Vec3
+		b: Vec3
+	}
+
+	export type Meta = {
+		nearcap: Vec3
+		protoRibbons: ProtoRibbon[]
+	}
+
+	export type Metas = Map<Name, () => Meta>
+
+	//////////
+
+	export type Grip = "fists" | "onehander" | "twohander"
+	export type Grips = Partial<Record<Grip, Details>>
+
+	export type Details = {
+		parry: Parry
+		swing: Attack
+		stab: Attack
+	}
+
+	export type Parry = {
+		timing: ParryTiming
+	}
+
+	export type Attack = {
+		timing: AttackTiming
+		damage: Damage
+	}
+
+	export type ParryTiming = {
+		block: number
+		recovery: number
+		shieldRecovery: number
+	}
+
+	export type AttackTiming = {
 		windup: number
 		release: number
 		recovery: number
-	}
-
-	export type Timings = {
-		parry: ParryTimings
-		swing: AttackTimings
-		stab: AttackTimings
 	}
 
 	export type Damage = {
 		blunt: number
 		bleed: number
 		pierce: number
-	}
-
-	/** dimensions of the weapon's bounding box */
-	export type Box = Vec3
-
-	/** scaled to the weapon box, so 0 is one side, 1 is the other side, 0.5 is the middle */
-	export type Space = Vec3
-
-	export type RibbonKind = (
-		| "handle" // weak part of weapon
-		| "danger" // part that deals damage
-		| "grace" // passes through environment, but still deals damage
-	)
-
-	export type Ribbon = {
-		label?: string
-		kind: RibbonKind
-		a: Space
-		b: Space
-	}
-
-	export type Shape = {
-		size: Box
-		swingRibbons: Ribbon[]
-		stabRibbons: Ribbon[]
-	}
-
-	export type Grip = "fists" | "onehander" | "twohander"
-
-	export type Config = {
-		grip: Grip
-		shape: Shape
-		timings: Timings
-		damages: {swing: Damage, stab: Damage}
-	}
-
-	export type Details = {name: Name} & Config
-
-	export const library = weaponLibrary
-	export const listing = Object.values(weaponLibrary)
-	export const fallback: Details = library.fists
-	export type Name = keyof typeof library
-
-	export function get(name: Name) {
-		if (!(name in library))
-			throw new Error(`weapon not found "${name}"`)
-		return library[name]
 	}
 }
 

@@ -2,7 +2,7 @@
 import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {Vec2, Vec3, babylonian, label, scalar} from "@benev/toolbox"
+import {Vec2, Vec3, babyloid, label, scalar} from "@benev/toolbox"
 
 import {HybridComponent} from "../../hub.js"
 import {gimbaltool} from "../../../tools/gimbaltool.js"
@@ -89,7 +89,7 @@ export class CameraRig extends HybridComponent<{
 	}
 
 	get position() {
-		return babylonian.to.vec3(this.parts.transform.position)
+		return babyloid.to.vec3(this.parts.transform.position)
 	}
 
 	set position(p: Vec3) {

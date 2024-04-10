@@ -3,34 +3,13 @@ import {ob} from "@benev/slate"
 import {Vec2, scalar} from "@benev/toolbox"
 
 import {Weapon} from "../armory/weapon.js"
-import {considerAttack, considerParry} from "./consider.js"
+import {considerAttack, considerEquip, considerParry} from "./consider.js"
 
 const {degrees} = scalar.radians.from
 
 export namespace Melee {
-	export enum Kind {
-		Parry,
-		Stab,
-		Swing,
-	}
-
-	export function isParryKind(kind?: Kind) {
-		return kind === Kind.Parry
-	}
-
-	export function isAttackKind(kind?: Kind) {
-		return (
-			kind === Kind.Stab ||
-			kind === Kind.Swing
-		)
-	}
-
-	export enum Phase {
-		None,
-		Windup,
-		Release,
-		Recovery,
-	}
+	export type Kind = "equip" | "parry" | "stab" | "swing"
+	export type Phase = "none" | "windup" | "release" | "recovery"
 
 	export type Times = {
 		windup: null | number
@@ -41,6 +20,7 @@ export namespace Melee {
 	export type Weights = {
 		active: number
 		inactive: number
+		equip: number
 		parry: number
 		a1: number
 		a2: number
@@ -57,78 +37,95 @@ export namespace Melee {
 		return {
 			active: 0,
 			inactive: 1,
+			equip: 0,
 			parry: 0,
 			progress: 0,
-			a1: 0,
-			a2: 0,
-			a3: 0,
-			a4: 0,
-			a5: 0,
-			a6: 0,
-			a7: 0,
-			a8: 0,
+			a1: 0, a2: 0, a3: 0, a4: 0, a5: 0, a6: 0, a7: 0, a8: 0,
 		}
 	}
 
 	export type AttackReport = {
 		phase: Phase
-		// times: Times
 		milestones: [number, number, number, number, number]
 	}
+
+	export type EquipRoutine = "nextWeapon" | "previousWeapon" | "toggleShield" | "changeGrip"
+	export type Holdable = {releasedAt: number | null}
 
 	export namespace Action {
 		export type Base = {
 			kind: Kind
 			seconds: number
 			weights: Weights
-			weapon: Weapon.Config
 		}
+		export type Weaponized = {
+			weapon: Weapon.Details
+		} & Base
 		export type Offensive = {
 			angle: number
 			report: AttackReport
-			attackDurations: Weapon.AttackTimings
+			attackDurations: Weapon.AttackTiming
 			earlyRecovery: null | number
+		} & Weaponized
+
+		export type Equip = {
+			kind: "equip"
+			routine: EquipRoutine
+			done: boolean
 		} & Base
 
-		export type Parry = { kind: Kind.Parry } & Base
-		export type Stab = { kind: Kind.Stab } & Offensive
-		export type Swing = { kind: Kind.Swing } & Offensive
+		export type Parry = {
+			kind: "parry"
+			holdable: Holdable | null
+			protective: boolean
+		} & Weaponized
+		export type Stab = { kind: "stab" } & Offensive
+		export type Swing = { kind: "swing" } & Offensive
 
-		export type Any = Parry | Stab | Swing
 		export type Attack = Stab | Swing
+		export type Any = Equip | Parry | Attack
 	}
 
 	export const is = {
-		parry: (action: null | Action.Any): action is Action.Parry => action?.kind === Kind.Parry,
-		attack: (action: null | Action.Any): action is Action.Attack => isAttackKind(action?.kind),
-		stab: (action: null | Action.Any): action is Action.Stab => action?.kind === Kind.Stab,
-		swing: (action: null | Action.Any): action is Action.Swing => action?.kind === Kind.Swing,
+		equip: (action: Action.Any | null | undefined): action is Action.Equip => action?.kind === "equip",
+		parry: (action: Action.Any | null | undefined): action is Action.Parry => action?.kind === "parry",
+		stab: (action: Action.Any | null | undefined): action is Action.Stab => action?.kind === "stab",
+		swing: (action: Action.Any | null | undefined): action is Action.Swing => action?.kind === "swing",
+		attack: (action: Action.Any | null | undefined): action is Action.Attack => is.swing(action) || is.stab(action),
 	}
 
 	export const make = {
-		parry: (weapon: Weapon.Config): Action.Parry => ({
-			kind: Kind.Parry,
+		equip: (routine: EquipRoutine): Action.Equip => ({
+			kind: "equip",
+			routine,
+			seconds: 0,
+			done: false,
+			weights: considerEquip(0).weights,
+		}),
+		parry: (weapon: Weapon.Details, holdable: boolean): Action.Parry => ({
+			kind: "parry",
 			weapon,
 			seconds: 0,
-			...considerParry(weapon, 0),
+			holdable: holdable ? {releasedAt: null} : null,
+			...considerParry(weapon, null, 0),
 		}),
-		stab: (weapon: Weapon.Config, angle: number): Action.Stab => ({
-			kind: Kind.Stab,
+		stab: (weapon: Weapon.Details, angle: number): Action.Stab => ({
+			kind: "stab",
 			weapon,
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.timings.stab,
-			...considerAttack(weapon.timings.stab, Kind.Stab, 0, null, angle),
+			attackDurations: weapon.stab.timing,
+			...considerAttack(weapon.stab.timing, "stab", 0, null, angle),
 		}),
-		swing: (weapon: Weapon.Config, angle: number): Action.Swing => ({
-			kind: Kind.Swing,
+		swing: (weapon: Weapon.Details, angle: number): Action.Swing => ({
+			kind: "swing",
 			weapon,
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.timings.swing,
-			...considerAttack(weapon.timings.swing, Kind.Swing, 0, null, angle),
+			attackDurations: weapon.swing.timing,
+			...considerAttack(weapon.swing.timing, "swing", 0, null, angle),
 		}),
 	}
 

@@ -3,23 +3,21 @@ import {ManualAnim} from "./manual.js"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 
 export class ManualAdditiveAnim extends ManualAnim {
-	readonly referenceFrame: number
+	readonly referenceFraction: number
 
-	constructor(group: AnimationGroup | undefined, referenceFrame: number) {
+	constructor(group: AnimationGroup | undefined, referenceFraction: number) {
 		super(group)
+		this.referenceFraction = referenceFraction
 
-		this.referenceFrame = referenceFrame
-
-		if (group) {
-			this.group = AnimationGroup.MakeAnimationAdditive(group, {
-				referenceFrame,
-			})
-		}
+		if (group) this.group = AnimationGroup.MakeAnimationAdditive(
+			group,
+			{referenceFrame: this.calculateFrameFromFraction(referenceFraction)},
+		)
 	}
 
 	init() {
 		this.weight = 0
-		this.forceFrame(this.referenceFrame)
+		this.setProgress(this.referenceFraction)
 	}
 }
 

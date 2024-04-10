@@ -5,28 +5,71 @@ import {scalar, spline} from "@benev/toolbox"
 import {Melee} from "./melee.js"
 import {Weapon} from "../armory/weapon.js"
 
+const equiptime = 0.5
 const blendtime = 0.1
 
-export function considerParry(weapon: Weapon.Config, seconds: number) {
-	const {block, recovery} = weapon.timings.parry
-	const a = 0
-	const b = blendtime
-	const c = block
-	const d = block + recovery
-	const active = spline.linear(seconds, [
-		[a, 0],
-		[b, 1],
-		[c, 1],
-		[d, 0],
+export function considerEquip(seconds: number) {
+	const weights = Melee.zeroWeights()
+
+	const progress = scalar.remap(seconds, [0, equiptime])
+	weights.progress = progress
+
+	const active = spline.linear(progress, [
+		[0, 0],
+		[0.5, 1],
+		[1, 0],
 	])
-	const weights: Melee.Weights = {
-		...Melee.zeroWeights(),
-		active,
-		parry: active,
-		inactive: scalar.inverse(active),
-		progress: seconds / d,
+	weights.equip = active
+	weights.active = active
+	weights.inactive = scalar.inverse(active)
+
+	return {
+		weights,
+		ready: progress > 0.5,
 	}
-	return {weights}
+}
+
+export function considerParry(weapon: Weapon.Details, holdable: Melee.Holdable | null, seconds: number) {
+	const {block, recovery, shieldRecovery} = weapon.parry.timing
+
+	let parry: number
+	let progress: number
+	let protective = false
+
+	if (seconds < block) {
+		progress = scalar.remap(seconds, [0, block], [0, .5])
+		parry = scalar.clamp(scalar.remap(seconds, [0, blendtime], [0, 1]))
+		protective = true
+	}
+	else {
+		if (holdable) {
+			if (holdable.releasedAt === null) {
+				progress = 0.5
+				parry = 1
+				protective = true
+			}
+			else {
+				const since = (holdable.releasedAt < block)
+					? seconds - block
+					: seconds - holdable.releasedAt
+				progress = scalar.remap(since, [0, shieldRecovery], [.5, 1])
+				parry = scalar.clamp(scalar.remap(since, [0, shieldRecovery], [1, 0]), 0, 1)
+				protective = false
+			}
+		}
+		else {
+			progress = scalar.remap(seconds, [block, recovery], [.5, 1])
+			parry = scalar.clamp(scalar.remap(seconds, [block, recovery], [1, 0]), 0, 1)
+			protective = false
+		}
+	}
+
+	const weights = Melee.zeroWeights()
+	weights.parry = parry
+	weights.active = parry
+	weights.progress = progress
+	weights.inactive = scalar.inverse(parry)
+	return {weights, protective}
 }
 
 //    windup    release    recovery
@@ -36,7 +79,7 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 //                earlyRecovery
 
 export function considerAttack(
-		attackDurations: Weapon.AttackTimings,
+		attackDurations: Weapon.AttackTiming,
 		kind: Melee.Kind,
 		seconds: number,
 		earlyRecovery: null | number,
@@ -54,20 +97,21 @@ export function considerAttack(
 
 	const phase = is.defined(earlyRecovery)
 		? scalar.within(seconds - earlyRecovery, 0, recovery)
-			? Melee.Phase.Recovery
-			: Melee.Phase.None
+			? "recovery"
+			: "none"
 		: (
-			scalar.within(seconds, a, c) ? Melee.Phase.Windup :
-			scalar.within(seconds, c, d) ? Melee.Phase.Release :
-			scalar.within(seconds, d, e) ? Melee.Phase.Recovery :
-				Melee.Phase.None
+			scalar.within(seconds, a, c) ? "windup" :
+			scalar.within(seconds, c, d) ? "release" :
+			scalar.within(seconds, d, e) ? "recovery" :
+				"none"
 		)
 
 	// bounce back on early recovery
+	const bounciness = 1 / 3
 	const bouncySeconds = (
 		earlyRecovery === null
 			? seconds
-			: scalar.bottom(earlyRecovery - ((seconds - earlyRecovery) / 3), 0)
+			: scalar.bottom(earlyRecovery - ((seconds - earlyRecovery) * bounciness), 0)
 	)
 
 	const progress = spline.linear(bouncySeconds, [
@@ -77,7 +121,7 @@ export function considerAttack(
 		[e, 3 / 3],
 	])
 
-	weights.progress = scalar.clamp(progress)
+	weights.progress = progress
 
 	weights.active = is.defined(earlyRecovery)
 		? spline.linear(seconds - earlyRecovery, [
@@ -94,13 +138,13 @@ export function considerAttack(
 
 	weights.inactive = scalar.inverse(weights.active)
 
-	if (kind === Melee.Kind.Stab) {
+	if (kind === "stab") {
 		if (angle < 0)
 			weights.a7 = weights.active
 		else
 			weights.a8 = weights.active
 	}
-	else if (kind === Melee.Kind.Swing) {
+	else if (kind === "swing") {
 		const {splines} = Melee.Angles
 		weights.a1 = spline.linear(angle, splines.a1) * weights.active
 		weights.a2 = spline.linear(angle, splines.a2) * weights.active
@@ -114,7 +158,6 @@ export function considerAttack(
 		weights,
 		report: {
 			phase,
-			// times,
 			milestones: [a, b, c, d, e],
 		} as Melee.AttackReport,
 	}

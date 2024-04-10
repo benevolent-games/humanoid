@@ -8,6 +8,7 @@ import {Capsule} from "./components/hybrids/capsule.js"
 import {GimbalRig} from "./components/hybrids/gimbal_rig.js"
 import {CameraRig} from "./components/hybrids/camera_rig.js"
 import {Tracer} from "./components/hybrids/tracer/tracer.js"
+import {Tracers} from "./components/hybrids/tracers/tracers.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
@@ -116,6 +117,7 @@ export namespace Archetypes {
 			MeleeAim,
 			MeleeIntent,
 			MeleeAction,
+			Tracers,
 			Tracer,
 		},
 		{
@@ -182,18 +184,27 @@ export namespace Archetypes {
 				parry: false,
 				stab: false,
 				swing: false,
+				nextWeapon: false,
+				previousWeapon: false,
+				toggleShield: false,
+				changeGrip: false,
 			},
 			inventory: {
-				shield: true,
+				hands: {
+					shield: true,
+					grip: "onehander",
+					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.hatchet),
+				},
 				belt: {
-					equippedIndex: Weapon.listing.indexOf(
-						Weapon.library.hatchet
-					),
 					slots: Weapon.listing,
 				},
 			},
 			meleeAction: null,
 			tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
+			tracers: {
+				// releasePhase: false,
+				// weaponShape: Weapon.library.fists.shape,
+			},
 			health: {
 				hp: 1,
 				bleeding: 0,

@@ -1,34 +1,36 @@
 
-import {scalar} from "@benev/toolbox"
-
-import {HuTick} from "../ecs/hub.js"
+import {ob} from "@benev/slate"
+import {HuTick, World} from "../ecs/hub.js"
+import {gamelogic} from "../ecs/gamelogic.js"
 import {HuRealm} from "../models/realm/realm.js"
 
 /**
  * start the gameloop, to execute physics and game logic.
  */
-export default (
-		{stage, physics}: HuRealm,
-		executeGamelogic: (tick: HuTick) => void,
-	) => {
+export default (realm: HuRealm, world: World) => {
+	const {stage, physics} = realm
+	const executeGamelogic = ob(gamelogic).map(s => s.prepareExecutor({realm, world}))
 
-	let count = 0
-	let gametime = 0
+	const tick: HuTick = {
+		count: 0,
+		seconds: 0,
+		gametime: 0,
+		hz: 0,
+	}
 
-	stage.gameloop.beforeRender(ms => {
-		ms = scalar.top(ms, 1000 / 10)
-		const seconds = ms / 1000
-		gametime += seconds
-
-		physics.step(seconds)
-
-		executeGamelogic({
-			seconds,
-			gametime,
-			count: count++,
-			hz: 1 / seconds,
-		})
+	stage.gameloop.on(ms => {
+		tick.count++
+		tick.seconds = ms / 1000
+		tick.gametime += tick.seconds
+		tick.hz = 1 / tick.seconds
 	})
+
+	stage.gameloop.on(() => {
+		physics.step(tick.seconds)
+		executeGamelogic.primary(tick)
+	})
+
+	stage.scene.onAfterAnimationsObservable.add(() => executeGamelogic.afterAnims(tick))
 
 	stage.gameloop.start()
 }

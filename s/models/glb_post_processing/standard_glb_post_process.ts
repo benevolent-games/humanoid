@@ -6,7 +6,6 @@ import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
 import {HuRealm} from "../realm/realm.js"
-import {Quality} from "../../tools/quality.js"
 import {GlbPostProcess} from "./parts/types.js"
 import {Shader} from "../assets/parts/make_shader.js"
 
@@ -43,8 +42,8 @@ export function standard_glb_post_process({gameplan, loadingDock}: HuRealm): Glb
 		}
 
 		const maxLights = (
-			quality === Quality.Fancy ? 16 :
-			quality === Quality.Mid ? 8 :
+			quality === "fancy" ? 16 :
+			quality === "mid" ? 8 :
 			2
 		)
 

@@ -25,7 +25,7 @@ export const huBindings = () => Tact.bindings(({
 	humanoid: mode({
 		vectors: {},
 		buttons: {
-			perspective: buttons(b("KeyR")),
+			perspective: buttons(b("KeyG")),
 			respawn: buttons(b("KeyT")),
 			bot_spawn: buttons(mod("KeyB")),
 			bot_delete: buttons(mod("KeyB", shift)),
@@ -55,6 +55,7 @@ export const huBindings = () => Tact.bindings(({
 
 			weapon_next: buttons(b("KeyE")),
 			weapon_previous: buttons(b("KeyQ")),
+			weapon_grip_change: buttons(b("KeyR")),
 			shield_toggle: buttons(b("KeyX")),
 
 			test_bracket_left: buttons(b("BracketLeft")),

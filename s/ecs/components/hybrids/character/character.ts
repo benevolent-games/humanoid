@@ -1,11 +1,12 @@
 
-import {Meshoid, Trashcan, nametag} from "@benev/toolbox"
+import {Prop, babyloid, nametag, nquery} from "@benev/toolbox"
 
 import {HybridComponent} from "../../../hub.js"
+import {Weapon} from "../../../../models/armory/weapon.js"
+import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
-import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js"
 
 export class Character extends HybridComponent<{height: number}> {
 
@@ -22,44 +23,58 @@ export class Character extends HybridComponent<{height: number}> {
 	)
 
 	readonly weapons = (() => {
-		const left = new Map<string, Meshoid>()
-		const right = new Map<string, Meshoid>()
-		for (const mesh of this.parts.character.meshes.values()) {
-			const parsed = nametag(mesh.name)
+		const left = new Map<string, Prop>()
+		const right = new Map<string, Prop>()
+		for (const prop of this.parts.character.props.values()) {
+			const parsed = nametag(prop.name)
 			if (parsed.has("weapon")) {
-				mesh.isVisible = false
+				if (babyloid.is.meshoid(prop))
+					prop.isVisible = false
 				if (parsed.get("weapon") === "right")
-					right.set(parsed.name, mesh)
+					right.set(parsed.name, prop)
 				else
-					left.set(parsed.name, mesh)
+					left.set(parsed.name, prop)
 			}
 		}
 		return {left, right}
 	})()
 
-	readonly helpers = (() => {
-		const {scene} = this.realm
-		const referenceWeapon = this.weapons.right.get("reference")!
-		const trash = new Trashcan()
+	getWeaponMeta(name: Weapon.Name): Weapon.Meta | null {
+		const fn = this.weaponMetas.get(name)
+		return fn ? fn() : null
+	}
 
-		const swordlength = 1.2
+	readonly weaponMetas = (() => {
+		const metas = new Map<Weapon.Name, () => Weapon.Meta>()
+		const weapons = [...this.weapons.right].filter(([name]) => name !== "reference")
 
-		const swordtip = trash.bag(
-			new TransformNode("swordtip", scene)
-		).dump(t => t.dispose())
-		swordtip.parent = referenceWeapon
-		swordtip.position.set(0, swordlength, 0)
+		for (const [name, mesh] of [...weapons]) {
+			const props = mesh.getChildren(babyloid.is.prop)
+			const physics = props.filter(p => nquery(p).name("physics"))
+			const ribbonGuides = props.filter(p => nquery(p).tag("ribbon"))
+			const nearcaps = props.filter(p => nquery(p).name("near"))
+			const [nearcap] = nearcaps
 
-		const swordbase = trash.bag(
-			new TransformNode("swordbase", scene)
-		).dump(t => t.dispose())
-		swordbase.parent = referenceWeapon
-		swordbase.position.set(0, 0, 0)
+			metas.set(name as Weapon.Name, () => ({
+				nearcap: babyloid.to.vec3(nearcap.getAbsolutePosition()),
+				protoRibbons: ribbonGuides.map(prop => {
+					const length = prop.scaling.y
+					const matrix = prop.computeWorldMatrix(true)
+					const a = new Vector3(0, 0, 0)
+					const b = new Vector3(0, length, 0)
+					return {
+						kind: nametag(prop.name).name as Weapon.RibbonKind,
+						a: babyloid.to.vec3(Vector3.TransformCoordinates(a, matrix)),
+						b: babyloid.to.vec3(Vector3.TransformCoordinates(b, matrix)),
+					}
+				}),
+			}))
 
-		return {
-			swordbase, swordtip,
-			dispose: trash.dispose,
+			props.filter(babyloid.is.meshoid).forEach(mesh => mesh.isVisible = false)
+			physics.forEach(mesh => mesh.dispose())
 		}
+
+		return metas
 	})()
 
 	created() {}
@@ -67,7 +82,6 @@ export class Character extends HybridComponent<{height: number}> {
 	deleted() {
 		this.parts.dispose()
 		this.coordination.dispose()
-		this.helpers.dispose()
 	}
 }
 

@@ -15,23 +15,29 @@ import {melee_tracers} from "./logic/melee_tracers.js"
 import {spawning} from "./logic/spawning.js"
 import {velocity} from "./logic/velocity.js"
 import {parenting} from "./logic/parenting.js"
+import {turncaps} from "./logic/turncaps.js"
 
-export const gamelogic = system("root", () => [
-	parenting,
-	spawning,
-	bot_ai,
-	intentions,
-	freelook,
-	force,
-	velocity,
-	ambulation,
-	combat,
+export const gamelogic = {
+	primary: system("root", () => [
+		parenting,
+		spawning,
+		bot_ai,
+		intentions,
+		turncaps,
+		freelook,
+		force,
+		velocity,
+		ambulation,
+		combat,
 
-	spectator,
-	humanoid,
-	camera_rigging,
-	choreography,
-	melee_tracers,
-	death,
-])
+		spectator,
+		humanoid,
+		camera_rigging,
+		choreography,
+		death,
+	]),
+	afterAnims: system("post anim logic", () => [
+		melee_tracers,
+	]),
+}
 

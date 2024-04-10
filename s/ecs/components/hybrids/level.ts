@@ -7,7 +7,7 @@ import {explode_promise, maptool} from "@benev/slate"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {Meshoid, Prop, Rapier, Vec3, babylonian, nametag, nametagQuery, quat, vec3} from "@benev/toolbox"
+import {Meshoid, Prop, Rapier, Vec3, babyloid, nquery, quat, vec3} from "@benev/toolbox"
 
 import {HuLevel} from "../../../gameplan.js"
 import {HybridComponent} from "../../hub.js"
@@ -41,6 +41,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 	#spawn_level(promise: Promise<AssetContainer>, physics: boolean) {
 		return promise
 			.then(instance_level)
+			.then(setup_quality_optimizations(this.realm))
 			.then(setup_thin_instances)
 			.then(setup_level_accoutrements(this.realm, physics))
 			.then(this.#make_level_disposer)
@@ -136,6 +137,18 @@ async function instance_level(asset: AssetContainer) {
 
 type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
 
+function setup_quality_optimizations(realm: HuRealm) {
+	return (params: LevelInstance) => {
+		const {level} = params
+		if (realm.gameplan.quality === "potato") {
+			level.meshes
+				.filter(m => m.name.includes("grass"))
+				.forEach(m => m.dispose())
+		}
+		return params
+	}
+}
+
 function trace_paternity(meshes: Meshoid[]) {
 	const paternity = new Map<Mesh, InstancedMesh[]>()
 	for (const mesh of meshes) {
@@ -162,7 +175,7 @@ function thinnify(daddy: Mesh, babies: InstancedMesh[]) {
 }
 
 function is_marked_thin(mesh: Meshoid) {
-	return !!nametagQuery(mesh, "thin")
+	return !!nquery(mesh).tag("thin")
 }
 
 function setup_thin_instances(params: LevelInstance) {
@@ -186,7 +199,7 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 				mesh.name.includes("feature") ||
 				mesh.name.includes("toy")
 			))
-			.filter(mesh => !nametagQuery(mesh, "ghost"))
+			.filter(mesh => !nquery(mesh).tag("ghost"))
 
 		const dynamic_nodes = level
 			.top_level_nodes
@@ -217,7 +230,7 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 
 		const create_box_toy = (prop: Prop, params: {scale: Vec3, density: number}) => {
 			const instance = prop.instantiateHierarchy()!
-			const position = vec3.add(babylonian.to.vec3(instance.absolutePosition), [0, 1, 0])
+			const position = vec3.add(babyloid.to.vec3(instance.absolutePosition), [0, 1, 0])
 			disposables.push(() => instance.dispose())
 
 			const box = physics.prefabs.box({
@@ -251,7 +264,7 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 			}) => {
 
 			const instance = prop.instantiateHierarchy()!
-			const position = babylonian.to.vec3(instance.absolutePosition)
+			const position = babyloid.to.vec3(instance.absolutePosition)
 			disposables.push(() => instance.dispose())
 
 			const fixture = physics.prefabs.fixture({position, material: null})
