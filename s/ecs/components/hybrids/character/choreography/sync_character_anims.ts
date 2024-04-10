@@ -17,7 +17,7 @@ export function sync_character_anims({
 		choreo,
 		speeds,
 		gripName,
-		weapon,
+		// weapon,
 		shield,
 		boss_anim,
 		ambulatory,

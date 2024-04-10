@@ -1,5 +1,5 @@
 
-import {Trashcan, logSlow, scalar, vec2} from "@benev/toolbox"
+import {scalar, vec2} from "@benev/toolbox"
 
 import {molasses2d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
@@ -10,28 +10,6 @@ import {considerAttack, considerEquip, considerParry} from "../../models/attacki
 import {Inventory, MeleeAction, MeleeAim, MeleeIntent} from "../components/topics/warrior.js"
 
 export const combat = system("combat", ({realm}) => [
-
-	// responder("inventory controls")
-	// 	.select({Controllable, Inventory})
-	// 	.respond(entity => {
-	// 		const trash = new Trashcan()
-	// 		const {buttons} = realm.tact.inputs.humanoid
-	// 		const inventory = new InventoryManager(entity.components.inventory)
-
-	// 		trash.mark(buttons.weapon_next.onPressed(() => {
-	// 			inventory.nextWeapon()
-	// 		}))
-
-	// 		trash.mark(buttons.weapon_previous.onPressed(() => {
-	// 			inventory.previousWeapon()
-	// 		}))
-
-	// 		trash.mark(buttons.shield_toggle.onPressed(() => {
-	// 			inventory.toggleShield()
-	// 		}))
-
-	// 		return trash.dispose
-	// 	}),
 
 	system("intentions", () => [
 		behavior("set melee intent")

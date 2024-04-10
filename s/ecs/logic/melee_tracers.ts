@@ -8,7 +8,7 @@ import {Tracing} from "../components/hybrids/tracer/parts/types.js"
 import {Health, Inventory, MeleeAction} from "../components/topics/warrior.js"
 import {Character} from "../components/hybrids/character/character.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
-import { InventoryManager } from "../../models/armory/inventory-manager.js"
+import {InventoryManager} from "../../models/armory/inventory-manager.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
