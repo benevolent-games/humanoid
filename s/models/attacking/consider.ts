@@ -5,8 +5,8 @@ import {scalar, spline} from "@benev/toolbox"
 import {Melee} from "./melee.js"
 import {Weapon} from "../armory/weapon.js"
 
-const blendtime = 0.1
 const equiptime = 0.5
+const blendtime = 0.1
 
 export function considerEquip(seconds: number) {
 	const weights = Melee.zeroWeights()
@@ -30,30 +30,37 @@ export function considerEquip(seconds: number) {
 }
 
 export function considerParry(weapon: Weapon.Details, holdable: Melee.Holdable | null, seconds: number) {
-	const {block, recovery} = weapon.parry.timing
+	const {block, recovery, shieldRecovery} = weapon.parry.timing
 
 	let parry: number
 	let progress: number
+	let protective = false
 
 	if (seconds < block) {
 		progress = scalar.remap(seconds, [0, block], [0, .5])
 		parry = scalar.clamp(scalar.remap(seconds, [0, blendtime], [0, 1]))
+		protective = true
 	}
 	else {
 		if (holdable) {
 			if (holdable.releasedAt === null) {
 				progress = 0.5
 				parry = 1
+				protective = true
 			}
 			else {
-				const since = seconds - holdable.releasedAt
-				progress = scalar.remap(since, [0, recovery], [.5, 1])
-				parry = scalar.clamp(scalar.remap(since, [0, recovery], [1, 0]), 0, 1)
+				const since = (holdable.releasedAt < block)
+					? seconds - block
+					: seconds - holdable.releasedAt
+				progress = scalar.remap(since, [0, shieldRecovery], [.5, 1])
+				parry = scalar.clamp(scalar.remap(since, [0, shieldRecovery], [1, 0]), 0, 1)
+				protective = false
 			}
 		}
 		else {
 			progress = scalar.remap(seconds, [block, recovery], [.5, 1])
 			parry = scalar.clamp(scalar.remap(seconds, [block, recovery], [1, 0]), 0, 1)
+			protective = false
 		}
 	}
 
@@ -62,7 +69,7 @@ export function considerParry(weapon: Weapon.Details, holdable: Melee.Holdable |
 	weights.active = parry
 	weights.progress = progress
 	weights.inactive = scalar.inverse(parry)
-	return {weights}
+	return {weights, protective}
 }
 
 //    windup    release    recovery

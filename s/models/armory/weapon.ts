@@ -54,6 +54,7 @@ export namespace Weapon {
 	export type ParryTiming = {
 		block: number
 		recovery: number
+		shieldRecovery: number
 	}
 
 	export type AttackTiming = {

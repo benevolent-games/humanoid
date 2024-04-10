@@ -44,11 +44,13 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 	// because there is *not* such a common pattern.
 	damage: (blunt1: number, bleed1: number, pierce1: number) => ({
 		stab: (blunt2: number, bleed2: number, pierce2: number): Weapon.Details => {
-
 			return {
 
 				// standard parry window for all weapons, keeps players sane.
-				parry: {timing: {block: ms(350), recovery: ms(1200)}},
+				parry: {
+					timing: {block: ms(350), recovery: ms(1200), shieldRecovery: ms(600)},
+				},
+
 				swing: {
 					timing: {windup: ms(windup), release: ms(release), recovery: ms(recovery)},
 					damage: {blunt: percent(blunt1), bleed: percent(bleed1), pierce: percent(pierce1)},
