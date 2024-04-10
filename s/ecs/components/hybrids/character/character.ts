@@ -1,8 +1,9 @@
 
-import {Meshoid, Prop, Trashcan, Vec3, nametag, nquery} from "@benev/toolbox"
+import {Prop, babyloid, nametag, nquery} from "@benev/toolbox"
 
 import {HybridComponent} from "../../../hub.js"
 import {Weapon} from "../../../../models/armory/weapon.js"
+import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
@@ -22,44 +23,58 @@ export class Character extends HybridComponent<{height: number}> {
 	)
 
 	readonly weapons = (() => {
-		const left = new Map<string, Meshoid>()
-		const right = new Map<string, Meshoid>()
-		for (const mesh of this.parts.character.meshes.values()) {
-			const parsed = nametag(mesh.name)
+		const left = new Map<string, Prop>()
+		const right = new Map<string, Prop>()
+		for (const prop of this.parts.character.props.values()) {
+			const parsed = nametag(prop.name)
 			if (parsed.has("weapon")) {
-				mesh.isVisible = false
+				if (babyloid.is.meshoid(prop))
+					prop.isVisible = false
 				if (parsed.get("weapon") === "right")
-					right.set(parsed.name, mesh)
+					right.set(parsed.name, prop)
 				else
-					left.set(parsed.name, mesh)
+					left.set(parsed.name, prop)
 			}
 		}
 		return {left, right}
 	})()
 
-	readonly helpers = (() => {
-		// const {scene} = this.realm
+	getWeaponMeta(name: Weapon.Name): Weapon.Meta | null {
+		const fn = this.weaponMetas.get(name)
+		return fn ? fn() : null
+	}
 
-		// const referenceWeapon = this.weapons.right.get("reference")!
+	readonly weaponMetas = (() => {
+		const metas = new Map<Weapon.Name, () => Weapon.Meta>()
 		const weapons = [...this.weapons.right].filter(([name]) => name !== "reference")
 
-		// const protoRibbons = new Map<Weapon.Name, Weapon.ProtoRibbon>()
-
-		for (const [name, mesh] of weapons) {
-			// console.log("WEAPON", name)
-			const props = [...mesh.getChildMeshes(), ...mesh.getChildTransformNodes()] as Prop[]
-
+		for (const [name, mesh] of [...weapons]) {
+			const props = mesh.getChildren(babyloid.is.prop)
 			const physics = props.filter(p => nquery(p).name("physics"))
-			const guides = props.filter(p => nquery(p).tag("ribbon"))
+			const ribbonGuides = props.filter(p => nquery(p).tag("ribbon"))
 			const nearcaps = props.filter(p => nquery(p).name("near"))
+			const [nearcap] = nearcaps
 
-			// props.forEach(p => console.log("  - ", p.name))
+			metas.set(name as Weapon.Name, () => ({
+				nearcap: babyloid.to.vec3(nearcap.getAbsolutePosition()),
+				protoRibbons: ribbonGuides.map(prop => {
+					const length = prop.scaling.y
+					const matrix = prop.computeWorldMatrix(true)
+					const a = new Vector3(0, 0, 0)
+					const b = new Vector3(0, length, 0)
+					return {
+						kind: nametag(prop.name).name as Weapon.RibbonKind,
+						a: babyloid.to.vec3(Vector3.TransformCoordinates(a, matrix)),
+						b: babyloid.to.vec3(Vector3.TransformCoordinates(b, matrix)),
+					}
+				}),
+			}))
+
+			props.filter(babyloid.is.meshoid).forEach(mesh => mesh.isVisible = false)
 			physics.forEach(mesh => mesh.dispose())
-			guides.forEach(mesh => mesh.dispose())
-			nearcaps.forEach(mesh => mesh.dispose())
 		}
 
-		return {}
+		return metas
 	})()
 
 	created() {}

@@ -1,7 +1,6 @@
 
-import {Meshoid, Quat, Vec3, babyloid} from "@benev/toolbox"
+import {Meshoid, Prop, Quat, Vec3, babyloid} from "@benev/toolbox"
 
-import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
 import {AnimationGroup} from "@babylonjs/core/Animations/animationGroup.js"
 import {AssetContainer, InstantiatedEntries} from "@babylonjs/core/assetContainer.js"
@@ -10,6 +9,7 @@ export class ContainerInstance {
 	root: TransformNode
 	instantiated: InstantiatedEntries
 
+	props = new Map<string, Prop>()
 	meshes = new Map<string, Meshoid>()
 	animationGroups = new Map<string, AnimationGroup>()
 
@@ -18,8 +18,12 @@ export class ContainerInstance {
 		const [__root__] = this.instantiated.rootNodes
 		this.root = __root__.getChildren()[0] as TransformNode
 
-		this.root.getChildren(node => node instanceof AbstractMesh, false)
-			.map(node => node as Meshoid)
+		this.root
+			.getChildren(babyloid.is.prop, false)
+			.forEach(prop => this.props.set(prop.name, prop))
+
+		this.root
+			.getChildren(babyloid.is.meshoid, false)
 			.forEach(mesh => this.meshes.set(mesh.name, mesh))
 
 		this.instantiated.animationGroups

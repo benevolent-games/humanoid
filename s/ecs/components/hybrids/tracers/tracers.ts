@@ -1,7 +1,5 @@
 
-import {Meshoid, Vec3, logSlow} from "@benev/toolbox"
 import {Material} from "@babylonjs/core/Materials/material.js"
-import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 
 import {Tracing} from "./types.js"
 import {HybridComponent} from "../../../hub.js"
@@ -9,131 +7,98 @@ import {Weapon} from "../../../../models/armory/weapon.js"
 import {apply_update_to_ribbon, establish_ribbon} from "./utils.js"
 
 const ribbon_lifespan = 10
+const ribbon_limit = 1
 
 export type TracerUpdate = {
 	gametime: number
-	// shape: Weapon.Shape
-	releasePhase: boolean
-	referenceWeapon: Meshoid
+	weaponMeta: Weapon.Meta | null
 }
 
-export class Tracers extends HybridComponent<{
-		// releasePhase: boolean
-		// weaponShape: Weapon.Shape
-	}> {
+export class Tracers extends HybridComponent<{}> {
 
-	// #refbox = (() => {
-	// 	const box = MeshBuilder.CreateBox("refbox", {size: 1}, this.realm.scene)
-	// 	// box.showBoundingBox = true
-	// 	box.material = this.realm.colors.magenta
-	// 	return box
-	// })()
+	#materials = {
+		sheets: {
+			handle: this.realm.colors.blue,
+			damage: this.realm.colors.yellow,
+			grace: this.realm.colors.green,
+		} satisfies Record<Weapon.RibbonKind, Material>,
+		edges: {
+			handle: this.realm.colors.red,
+			damage: this.realm.colors.red,
+			grace: this.realm.colors.red,
+		} satisfies Record<Weapon.RibbonKind, Material>,
+	}
 
-	// #materials = {
-	// 	sheets: {
-	// 		handle: this.realm.colors.blue,
-	// 		danger: this.realm.colors.green,
-	// 		grace: this.realm.colors.yellow,
-	// 	} satisfies Record<Weapon.RibbonKind, Material>,
-	// 	edges: {
-	// 		handle: this.realm.colors.red,
-	// 		danger: this.realm.colors.red,
-	// 		grace: this.realm.colors.red,
-	// 	} satisfies Record<Weapon.RibbonKind, Material>,
-	// }
+	#ribbons = new Set<Tracing.Ribbon>()
 
-	// #ribbons = new Set<Tracing.Ribbon>()
+	#wip: null | {
+		lines: Tracing.Line[]
+		data: Tracing.Ribbon
+		edge: null | Tracing.RibbonEdge
+	}[] = null
 
-	// #wip: null | {
-	// 	referenceWeapon: Meshoid
-	// 	ribbons: {
-	// 		spec: Weapon.Ribbon
-	// 		data: Tracing.Ribbon
-	// 		edge: null | Tracing.RibbonEdge
-	// 		lines: Tracing.Line[]
-	// 	}[]
-	// } = null
+	update(update: TracerUpdate) {
+		this.#destroy_expired_ribbons(update.gametime)
 
-	// update(update: TracerUpdate) {
-	// 	this.#destroy_expired_ribbons(update.gametime)
-	// 	this.#make_refbox_fit_weapon_shape(update)
+		if (update.weaponMeta) {
+			if (!this.#wip) this.#start_tracing(update)
+			else this.#continue_tracing(update.weaponMeta)
+		}
+		else if (this.#wip) this.#finish_tracing()
+	}
 
-	// 	if (update.releasePhase) {
-	// 		if (!this.#wip) this.#start_tracing(update)
-	// 		else this.#continue_tracing()
-	// 	}
-	// 	else if (this.#wip) this.#finish_tracing()
-	// }
+	#start_tracing(update: TracerUpdate) {
+		const expiresAtGametime = update.gametime + ribbon_lifespan
+		const ribbonize = (proto: Weapon.ProtoRibbon) => ({
+			spec: proto,
+			edge: null,
+			lines: [[proto.a, proto.b] as Tracing.Line],
+			data: establish_ribbon(
+				this.realm.scene,
+				expiresAtGametime,
+				this.#materials.sheets[proto.kind],
+				this.#materials.edges[proto.kind],
+			),
+		})
+		this.#wip = update.weaponMeta!.protoRibbons.map(ribbonize)
+	}
 
-	// #start_tracing(update: TracerUpdate) {
-	// 	const shape = update.shape
-	// 	const expiresAtGametime = update.gametime + ribbon_lifespan
-	// 	const ribbonize = (spec: Weapon.Ribbon) => ({
-	// 		spec,
-	// 		edge: null,
-	// 		lines: [[spec.a, spec.b] as Tracing.Line],
-	// 		data: establish_ribbon(
-	// 			this.realm.scene,
-	// 			expiresAtGametime,
-	// 			this.#materials.sheets[spec.kind],
-	// 			this.#materials.edges[spec.kind],
-	// 		),
-	// 	})
-	// 	console.log("START TRACING")
-	// 	this.#wip = {
-	// 		referenceWeapon: update.referenceWeapon,
-	// 		ribbons: [
-	// 			...shape.swingRibbons.map(ribbonize),
-	// 			...shape.stabRibbons.map(ribbonize),
-	// 		],
-	// 	}
-	// }
+	#continue_tracing(meta: Weapon.Meta) {
+		if (this.#wip) {
+			meta.protoRibbons.forEach((proto, index) => {
+				const ribbon = this.#wip![index]
+				ribbon.lines.push([proto.a, proto.b])
+				ribbon.edge = apply_update_to_ribbon(ribbon.data, ribbon.lines)
+			})
+		}
+	}
 
-	// #continue_tracing() {
-	// 	console.log("...tracing...")
-	// 	if (this.#wip) {
-	// 		for (const ribbon of this.#wip.ribbons) {
-	// 			ribbon.lines.push([ribbon.spec.a, ribbon.spec.b])
-	// 			ribbon.edge = apply_update_to_ribbon(ribbon.data, ribbon.lines)
-	// 		}
-	// 	}
-	// }
+	#finish_tracing() {
+		if (this.#wip) {
+			for (const ribbon of this.#wip)
+				this.#ribbons.add(ribbon.data)
+			this.#wip = null
+		}
+	}
 
-	// #finish_tracing() {
-	// 	console.log("STOP TRACING")
-	// 	if (this.#wip) {
-	// 		for (const ribbon of this.#wip.ribbons)
-	// 			this.#ribbons.add(ribbon.data)
-	// 		this.#wip = null
-	// 	}
-	// }
-
-	// #destroy_expired_ribbons(gametime: number) {
-	// 	for (const ribbon of this.#ribbons) {
-	// 		if (gametime > ribbon.expiresAtGametime) {
-	// 			ribbon.dispose()
-	// 			this.#ribbons.delete(ribbon)
-	// 		}
-	// 	}
-	// }
-
-	// #make_refbox_fit_weapon_shape(update: TracerUpdate) {
-	// 	const box = this.#refbox
-	// 	box.position.set(...update.shape.offset)
-	// 	box.scaling.set(...update.shape.size)
-	// 	box.parent = update.referenceWeapon
-	// }
+	#destroy_expired_ribbons(gametime: number) {
+		for (const ribbon of this.#ribbons) {
+			if (gametime > ribbon.expiresAtGametime) {
+				ribbon.dispose()
+				this.#ribbons.delete(ribbon)
+			}
+		}
+	}
 
 	created() {}
 
 	deleted() {
-		// this.#refbox.dispose()
-		// const allRibbons = [
-		// 	...this.#ribbons,
-		// 	...(this.#wip?.ribbons.map(r => r.data) ?? []),
-		// ]
-		// for (const ribbon of allRibbons)
-		// 	ribbon.dispose()
+		const allRibbons = [
+			...this.#ribbons,
+			...((this.#wip ?? []).map(r => r.data) ?? []),
+		]
+		for (const ribbon of allRibbons)
+			ribbon.dispose()
 	}
 }
 

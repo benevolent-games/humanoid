@@ -16,5 +16,6 @@ export namespace Tracing {
 		vector: Vec3
 		triangles: EdgeTriangles
 	}
+
 }
 

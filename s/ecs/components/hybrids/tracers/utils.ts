@@ -4,7 +4,8 @@ import {Scene} from "@babylonjs/core/scene.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Material} from "@babylonjs/core/Materials/material.js"
 import {VertexData} from "@babylonjs/core/Meshes/mesh.vertexData.js"
-import { Tracing } from "./types"
+
+import {Tracing} from "./types.js"
 
 export function require_at_least_two_lines(lines: Tracing.Line[]) {
 	if (lines.length < 2)

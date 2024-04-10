@@ -37,11 +37,12 @@ export const choreography = system("humanoid", () => [
 			const shieldMesh = character.weapons.left.get("shield")
 			const {shield, weaponName} = new InventoryManager(inventory)
 
-			if (shieldMesh)
+			if (shieldMesh && babyloid.is.meshoid(shieldMesh))
 				shieldMesh.isVisible = shield
 
-			for (const [name, mesh] of character.weapons.right)
-				mesh.isVisible = name === weaponName
+			for (const [name, prop] of character.weapons.right)
+				if (babyloid.is.meshoid(prop))
+					prop.isVisible = name === weaponName
 		}),
 
 	behavior("animate the armature")

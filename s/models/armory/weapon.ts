@@ -1,6 +1,6 @@
 
 import {ob} from "@benev/slate"
-import {Vec3} from "@benev/toolbox"
+import {Meshoid, Vec3} from "@benev/toolbox"
 import {weaponDataSheet} from "./weapon-data-sheet.js"
 
 export namespace Weapon {
@@ -25,11 +25,19 @@ export namespace Weapon {
 	}
 
 	export type RibbonKind = "handle" | "damage" | "grace"
+
 	export type ProtoRibbon = {
 		kind: RibbonKind
 		a: Vec3
 		b: Vec3
 	}
+
+	export type Meta = {
+		nearcap: Vec3
+		protoRibbons: ProtoRibbon[]
+	}
+
+	export type Metas = Map<Name, () => Meta>
 
 	//////////
 
