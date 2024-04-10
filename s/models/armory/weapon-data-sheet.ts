@@ -21,9 +21,9 @@ const timings = (windup: number, release: number, recovery: number) => ({
 				stab: {
 					damage: {blunt: percent(blunt2), bleed: percent(bleed2), pierce: percent(pierce2)},
 					timing: {
-						windup: ms(windup),
-						release: ms(release - (release / 2)),
-						recovery: ms(recovery + (release / 2)),
+						windup: ms(windup + (release / 3)),
+						release: ms(release - (release / 3)),
+						recovery: ms(recovery),
 					},
 				},
 			}
