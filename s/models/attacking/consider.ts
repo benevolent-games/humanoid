@@ -7,8 +7,8 @@ import {Weapon} from "../armory/weapon.js"
 
 const blendtime = 0.1
 
-export function considerParry(weapon: Weapon.Config, seconds: number) {
-	const {block, recovery} = weapon.timings.parry
+export function considerParry(weapon: Weapon.Details, seconds: number) {
+	const {block, recovery} = weapon.parry.timing
 	const a = 0
 	const b = blendtime
 	const c = block
@@ -36,7 +36,7 @@ export function considerParry(weapon: Weapon.Config, seconds: number) {
 //                earlyRecovery
 
 export function considerAttack(
-		attackDurations: Weapon.AttackTimings,
+		attackDurations: Weapon.AttackTiming,
 		kind: Melee.Kind,
 		seconds: number,
 		earlyRecovery: null | number,

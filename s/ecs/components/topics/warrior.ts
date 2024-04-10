@@ -10,10 +10,13 @@ export class Health extends Component<{
 }>{}
 
 export class Inventory extends Component<{
-	shield: boolean
+	hands: {
+		shield: boolean
+		grip: Weapon.Grip
+		equippedBeltSlot: number
+	}
 	belt: {
-		equippedIndex: number
-		slots: Weapon.Details[]
+		slots: Weapon.Data[]
 	}
 }> {}
 

@@ -40,26 +40,32 @@ export class Character extends HybridComponent<{height: number}> {
 	readonly helpers = (() => {
 		const {scene} = this.realm
 		const referenceWeapon = this.weapons.right.get("reference")!
-		const trash = new Trashcan()
 
-		const swordlength = 1.2
-
-		const swordtip = trash.bag(
-			new TransformNode("swordtip", scene)
-		).dump(t => t.dispose())
-		swordtip.parent = referenceWeapon
-		swordtip.position.set(0, swordlength, 0)
-
-		const swordbase = trash.bag(
-			new TransformNode("swordbase", scene)
-		).dump(t => t.dispose())
-		swordbase.parent = referenceWeapon
-		swordbase.position.set(0, 0, 0)
-
-		return {
-			swordbase, swordtip,
-			dispose: trash.dispose,
+		for (const [name, mesh] of this.weapons.right) {
+			console.log("WEAPON", name)
+			const children = [...mesh.getChildMeshes(), ...mesh.getChildTransformNodes()] as Meshoid[]
+			for (const child of children)
+				console.log("  - ", child.name)
+			// mesh.getChildren(node => node , false)
 		}
+
+		// const trash = new Trashcan()
+
+		// const swordlength = 1.2
+
+		// const swordtip = trash.bag(
+		// 	new TransformNode("swordtip", scene)
+		// ).dump(t => t.dispose())
+		// swordtip.parent = referenceWeapon
+		// swordtip.position.set(0, swordlength, 0)
+
+		// const swordbase = trash.bag(
+		// 	new TransformNode("swordbase", scene)
+		// ).dump(t => t.dispose())
+		// swordbase.parent = referenceWeapon
+		// swordbase.position.set(0, 0, 0)
+
+		return {}
 	})()
 
 	created() {}
@@ -67,7 +73,6 @@ export class Character extends HybridComponent<{height: number}> {
 	deleted() {
 		this.parts.dispose()
 		this.coordination.dispose()
-		this.helpers.dispose()
 	}
 }
 

@@ -186,19 +186,20 @@ export namespace Archetypes {
 				swing: false,
 			},
 			inventory: {
-				shield: true,
+				hands: {
+					shield: true,
+					grip: "onehander",
+					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.hatchet),
+				},
 				belt: {
-					equippedIndex: Weapon.listing.indexOf(
-						Weapon.library.hatchet
-					),
 					slots: Weapon.listing,
 				},
 			},
 			meleeAction: null,
 			tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
 			tracers: {
-				releasePhase: false,
-				weaponShape: Weapon.library.fists.shape,
+				// releasePhase: false,
+				// weaponShape: Weapon.library.fists.shape,
 			},
 			health: {
 				hp: 1,

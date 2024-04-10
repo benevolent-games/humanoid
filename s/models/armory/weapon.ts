@@ -1,15 +1,20 @@
 
-import {weaponLibrary} from "./weapon-library.js"
+import {ob} from "@benev/slate"
+import {weaponDataSheet} from "./weapon-library.js"
 
 export namespace Weapon {
-
+	export type Name = keyof typeof weaponDataSheet
 	export type Data = {
-		name: string
+		name: Name
 		grips: Grips
 	}
 
-	export const library = weaponLibrary
-	export type Name = keyof typeof library
+	export const library = ob(weaponDataSheet).map(
+		(grips, name) => ({grips, name})
+	) satisfies Record<Name, Data>
+
+	export const listing = Object.values(library)
+
 	export const fallback = library.fists
 
 	export function get(name: Name) {

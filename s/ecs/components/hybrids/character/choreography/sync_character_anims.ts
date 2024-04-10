@@ -16,6 +16,7 @@ export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
+		gripName,
 		weapon,
 		shield,
 		boss_anim,
@@ -26,6 +27,7 @@ export function sync_character_anims({
 	}: {
 		gimbal: Vec2
 		choreo: Choreo
+		gripName: Weapon.Grip
 		shield: boolean
 		anims: CharacterAnims
 		ambulatory: Ambulatory
@@ -160,7 +162,7 @@ export function sync_character_anims({
 			attack_7: anims.twohander_attack_7,
 			attack_8: anims.twohander_attack_8,
 		},
-	}
+	} satisfies Record<Weapon.Grip, any>
 
 	anims.onehander_parry.weight = 0
 	anims.onehander_shield_parry.weight = 0
@@ -169,7 +171,7 @@ export function sync_character_anims({
 		.forEach(anims => Object.values(anims)
 			.forEach(anim => anim.weight = 0))
 
-	const grip = grip_groups[weapon.grip]
+	const grip = grip_groups[gripName]
 	const w = meleeWeights
 
 	function animateAttack(anim: ManualAnim, weight: number) {

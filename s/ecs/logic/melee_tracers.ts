@@ -12,21 +12,21 @@ import { InventoryManager } from "../../models/armory/inventory-manager.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
-	behavior("tracers")
-		.select({Character, MeleeAction, Tracers, Inventory})
-		.logic(({gametime}) => entity => {
-			// const {physics} = realm
-			const {character, meleeAction, tracers} = entity.components
+	// behavior("tracers")
+	// 	.select({Character, MeleeAction, Tracers, Inventory})
+	// 	.logic(({gametime}) => entity => {
+	// 		// const {physics} = realm
+	// 		const {character, meleeAction, tracers} = entity.components
 
-			const referenceWeapon = character.weapons.right.get("reference")!
-			const releasePhase = Melee.is.attack(meleeAction)
-				&& meleeAction.report.phase === Melee.Phase.Release
+	// 		const referenceWeapon = character.weapons.right.get("reference")!
+	// 		const releasePhase = Melee.is.attack(meleeAction)
+	// 			&& meleeAction.report.phase === Melee.Phase.Release
 
-			const inventory = new InventoryManager(entity.components.inventory)
-			const shape = inventory.weapon.shape
+	// 		const inventory = new InventoryManager(entity.components.inventory)
+	// 		const shape = inventory.weapon.shape
 
-			tracers.update({gametime, referenceWeapon, releasePhase, shape})
-		}),
+	// 		tracers.update({gametime, referenceWeapon, releasePhase, shape})
+	// 	}),
 
 	// behavior("tracer")
 	// 	.select({Character, Tracer, MeleeAction})

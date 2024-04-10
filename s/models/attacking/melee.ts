@@ -81,12 +81,12 @@ export namespace Melee {
 			kind: Kind
 			seconds: number
 			weights: Weights
-			weapon: Weapon.Config
+			weapon: Weapon.Details
 		}
 		export type Offensive = {
 			angle: number
 			report: AttackReport
-			attackDurations: Weapon.AttackTimings
+			attackDurations: Weapon.AttackTiming
 			earlyRecovery: null | number
 		} & Base
 
@@ -106,29 +106,29 @@ export namespace Melee {
 	}
 
 	export const make = {
-		parry: (weapon: Weapon.Config): Action.Parry => ({
+		parry: (weapon: Weapon.Details): Action.Parry => ({
 			kind: Kind.Parry,
 			weapon,
 			seconds: 0,
 			...considerParry(weapon, 0),
 		}),
-		stab: (weapon: Weapon.Config, angle: number): Action.Stab => ({
+		stab: (weapon: Weapon.Details, angle: number): Action.Stab => ({
 			kind: Kind.Stab,
 			weapon,
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.timings.stab,
-			...considerAttack(weapon.timings.stab, Kind.Stab, 0, null, angle),
+			attackDurations: weapon.stab.timing,
+			...considerAttack(weapon.stab.timing, Kind.Stab, 0, null, angle),
 		}),
-		swing: (weapon: Weapon.Config, angle: number): Action.Swing => ({
+		swing: (weapon: Weapon.Details, angle: number): Action.Swing => ({
 			kind: Kind.Swing,
 			weapon,
 			angle,
 			seconds: 0,
 			earlyRecovery: null,
-			attackDurations: weapon.timings.swing,
-			...considerAttack(weapon.timings.swing, Kind.Swing, 0, null, angle),
+			attackDurations: weapon.swing.timing,
+			...considerAttack(weapon.swing.timing, Kind.Swing, 0, null, angle),
 		}),
 	}
 

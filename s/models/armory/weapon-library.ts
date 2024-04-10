@@ -1,5 +1,5 @@
 
-import {Pojo, ob} from "@benev/slate"
+import {Pojo} from "@benev/slate"
 import {Weapon} from "./weapon.js"
 
 const ms = (ms: number) => ms / 1000
@@ -31,7 +31,7 @@ const timings = (windup: number, release: number, recovery: number) => ({
 	}),
 })
 
-export const weaponLibrary = ob({
+export const weaponDataSheet = {
 
 	fists: weapon.grips({
 		fists: timings(300, 500, 300).damage(10, 0, 0).stab(5, 0, 0),
@@ -67,7 +67,5 @@ export const weaponLibrary = ob({
 		twohander: timings(800, 600, 900).damage(90, 0, 90).stab(20, 0, 80),
 	}),
 
-} satisfies Pojo<Weapon.Grips>).map(
-	(details, name) => ({...details, name} as {name: typeof name} & Weapon.Data)
-)
+} satisfies Pojo<Weapon.Grips>
 

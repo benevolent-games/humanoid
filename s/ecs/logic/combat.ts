@@ -74,8 +74,8 @@ export const combat = system("combat", ({realm}) => [
 					return
 
 				const {angle} = components.meleeAim
-				const {weapon} = new InventoryManager(components.inventory)
 				const {parry, stab, swing} = components.meleeIntent
+				const {weapon} = new InventoryManager(components.inventory)
 
 				if (parry)
 					components.meleeAction = Melee.make.parry(weapon)
@@ -108,8 +108,8 @@ export const combat = system("combat", ({realm}) => [
 			else if (Melee.is.attack(meleeAction)) {
 				const {report, weights} = considerAttack(
 					meleeAction.kind === Melee.Kind.Stab
-						? meleeAction.weapon.timings.stab
-						: meleeAction.weapon.timings.swing,
+						? meleeAction.weapon.stab.timing
+						: meleeAction.weapon.swing.timing,
 					meleeAction.kind,
 					meleeAction.seconds,
 					meleeAction.earlyRecovery,
