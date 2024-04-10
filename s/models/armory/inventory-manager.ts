@@ -19,6 +19,10 @@ export class InventoryManager {
 		return this.inventory.hands.grip
 	}
 
+	get numberOfAvailableGrips() {
+		return Object.keys(this.#weaponData.grips).length
+	}
+
 	get shield() {
 		return (
 			this.inventory.hands.shield &&
@@ -60,20 +64,28 @@ export class InventoryManager {
 			0,
 			inventory.belt.slots.length,
 		)
-		this.#switch_grip_if_unavailable()
+		this.#switch_to_default_grip()
+		// this.#switch_grip_if_unavailable()
 	}
 
-	#switch_grip_if_unavailable() {
+	#switch_to_default_grip() {
 		const {inventory} = this
 		const weaponData = this.#weaponData
-		const {grip} = inventory.hands
-
-		const is_available = grip in weaponData.grips
-		if (!is_available) {
-			const fallbackGrip = Object.keys(weaponData.grips)[0] as Weapon.Grip
-			inventory.hands.grip = fallbackGrip
-		}
+		const defaultGrip = Object.keys(weaponData.grips)[0] as Weapon.Grip
+		inventory.hands.grip = defaultGrip
 	}
+
+	// #switch_grip_if_unavailable() {
+	// 	const {inventory} = this
+	// 	const weaponData = this.#weaponData
+	// 	const {grip} = inventory.hands
+
+	// 	const is_available = grip in weaponData.grips
+	// 	if (!is_available) {
+	// 		const fallbackGrip = Object.keys(weaponData.grips)[0] as Weapon.Grip
+	// 		inventory.hands.grip = fallbackGrip
+	// 	}
+	// }
 
 	#get_next_available_grip() {
 		const {inventory} = this

@@ -37,9 +37,18 @@ export namespace Weapon {
 	export type Grips = Partial<Record<Grip, Details>>
 
 	export type Details = {
-		parry: {timing: ParryTiming}
-		swing: {timing: AttackTiming, damage: Damage}
-		stab: {timing: AttackTiming, damage: Damage}
+		parry: Parry
+		swing: Attack
+		stab: Attack
+	}
+
+	export type Parry = {
+		timing: ParryTiming
+	}
+
+	export type Attack = {
+		timing: AttackTiming
+		damage: Damage
 	}
 
 	export type ParryTiming = {
