@@ -29,25 +29,39 @@ export function considerEquip(seconds: number) {
 	}
 }
 
-export function considerParry(weapon: Weapon.Details, seconds: number) {
+export function considerParry(weapon: Weapon.Details, holdable: Melee.Holdable | null, seconds: number) {
 	const {block, recovery} = weapon.parry.timing
-	const a = 0
-	const b = blendtime
-	const c = block
-	const d = block + recovery
-	const active = spline.linear(seconds, [
-		[a, 0],
-		[b, 1],
-		[c, 1],
-		[d, 0],
-	])
-	const weights: Melee.Weights = {
-		...Melee.zeroWeights(),
-		active,
-		parry: active,
-		inactive: scalar.inverse(active),
-		progress: seconds / d,
+
+	let parry: number
+	let progress: number
+
+	if (seconds < block) {
+		progress = scalar.remap(seconds, [0, block], [0, .5])
+		parry = scalar.clamp(scalar.remap(seconds, [0, blendtime], [0, 1]))
 	}
+	else {
+		if (holdable) {
+			if (holdable.releasedAt === null) {
+				progress = 0.5
+				parry = 1
+			}
+			else {
+				const since = seconds - holdable.releasedAt
+				progress = scalar.remap(since, [0, recovery], [.5, 1])
+				parry = scalar.clamp(scalar.remap(since, [0, recovery], [1, 0]), 0, 1)
+			}
+		}
+		else {
+			progress = scalar.remap(seconds, [block, recovery], [.5, 1])
+			parry = scalar.clamp(scalar.remap(seconds, [block, recovery], [1, 0]), 0, 1)
+		}
+	}
+
+	const weights = Melee.zeroWeights()
+	weights.parry = parry
+	weights.active = parry
+	weights.progress = progress
+	weights.inactive = scalar.inverse(parry)
 	return {weights}
 }
 

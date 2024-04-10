@@ -50,6 +50,7 @@ export namespace Melee {
 	}
 
 	export type EquipRoutine = "nextWeapon" | "previousWeapon" | "toggleShield" | "changeGrip"
+	export type Holdable = {releasedAt: number | null}
 
 	export namespace Action {
 		export type Base = {
@@ -73,7 +74,10 @@ export namespace Melee {
 			done: boolean
 		} & Base
 
-		export type Parry = { kind: "parry" } & Weaponized
+		export type Parry = {
+			kind: "parry"
+			holdable: Holdable | null
+		} & Weaponized
 		export type Stab = { kind: "stab" } & Offensive
 		export type Swing = { kind: "swing" } & Offensive
 
@@ -98,11 +102,12 @@ export namespace Melee {
 			done: false,
 			weights: considerEquip(0).weights,
 		}),
-		parry: (weapon: Weapon.Details): Action.Parry => ({
+		parry: (weapon: Weapon.Details, holdable: boolean): Action.Parry => ({
 			kind: "parry",
 			weapon,
 			seconds: 0,
-			...considerParry(weapon, 0),
+			holdable: holdable ? {releasedAt: null} : null,
+			...considerParry(weapon, null, 0),
 		}),
 		stab: (weapon: Weapon.Details, angle: number): Action.Stab => ({
 			kind: "stab",

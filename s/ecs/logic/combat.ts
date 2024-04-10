@@ -81,7 +81,7 @@ export const combat = system("combat", ({realm}) => [
 				const {weapon} = inventory
 
 				if (intent.parry)
-					components.meleeAction = Melee.make.parry(weapon)
+					components.meleeAction = Melee.make.parry(weapon, inventory.shield)
 
 				else if (intent.stab)
 					components.meleeAction = Melee.make.stab(weapon, angle)
@@ -108,14 +108,23 @@ export const combat = system("combat", ({realm}) => [
 	]),
 
 	behavior("sustain melee action")
-		.select({MeleeAction})
-		.logic(tick => ({components: {meleeAction}}) => {
-			if (meleeAction)
-				meleeAction.seconds += tick.seconds
+		.select({MeleeAction, MeleeIntent})
+		.logic(tick => ({components: {meleeIntent, meleeAction: action}}) => {
+			if (action) {
+				action.seconds += tick.seconds
+
+				if (Melee.is.parry(action) && action.holdable) {
+					const holding = (action.holdable && action.holdable.releasedAt === null)
+					const released = !meleeIntent.parry
+
+					if (holding && released)
+						action.holdable.releasedAt = action.seconds
+				}
+			}
 		}),
 
 	behavior("update melee actions")
-		.select({MeleeAction, Inventory, MeleeIntent})
+		.select({MeleeAction, Inventory})
 		.logic(() => ({components}) => {
 			const {meleeAction: action} = components
 
@@ -145,11 +154,7 @@ export const combat = system("combat", ({realm}) => [
 				}
 			}
 			else if (Melee.is.parry(action)) {
-				const inventory = new InventoryManager(components.inventory)
-				const held = inventory.shield && components.meleeIntent.parry
-				if (held)
-					action.seconds = scalar.top(action.seconds, inventory.weapon.parry.timing.block)
-				const {weights} = considerParry(action.weapon, action.seconds)
+				const {weights} = considerParry(action.weapon, action.holdable, action.seconds)
 				action.weights = weights
 			}
 			else if (Melee.is.attack(action)) {
