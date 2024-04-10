@@ -1,8 +1,8 @@
 
-import {Meshoid, Trashcan, nametag} from "@benev/toolbox"
+import {Meshoid, Prop, Trashcan, Vec3, nametag, nquery} from "@benev/toolbox"
 
 import {HybridComponent} from "../../../hub.js"
-import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
+import {Weapon} from "../../../../models/armory/weapon.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
@@ -38,15 +38,22 @@ export class Character extends HybridComponent<{height: number}> {
 	})()
 
 	readonly helpers = (() => {
-		const {scene} = this.realm
-		const referenceWeapon = this.weapons.right.get("reference")!
+		// const {scene} = this.realm
 
-		for (const [name, mesh] of this.weapons.right) {
+		// const referenceWeapon = this.weapons.right.get("reference")!
+		const weapons = [...this.weapons.right].filter(([name]) => name !== "reference")
+
+		// const protoRibbons = new Map<Weapon.Name, Weapon.ProtoRibbon>()
+
+		for (const [name, mesh] of weapons) {
 			console.log("WEAPON", name)
-			const children = [...mesh.getChildMeshes(), ...mesh.getChildTransformNodes()] as Meshoid[]
-			for (const child of children)
-				console.log("  - ", child.name)
-			// mesh.getChildren(node => node , false)
+			const props = [...mesh.getChildMeshes(), ...mesh.getChildTransformNodes()] as Prop[]
+			const physics = props.filter(p => nquery(p).name("physics"))
+			const guides = props.filter(p => nquery(p).name("ribbon"))
+
+			props.forEach(p => console.log("  - ", p.name))
+			physics.forEach(mesh => mesh.dispose())
+			guides.forEach(mesh => mesh.dispose())
 		}
 
 		// const trash = new Trashcan()
