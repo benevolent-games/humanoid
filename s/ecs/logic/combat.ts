@@ -78,7 +78,7 @@ export const combat = system("combat", ({realm}) => [
 				const {angle} = components.meleeAim
 				const intent = components.meleeIntent
 				const inventory = new InventoryManager(components.inventory)
-				const {weapon, numberOfAvailableGrips} = inventory
+				const {weapon} = inventory
 
 				if (intent.parry)
 					components.meleeAction = Melee.make.parry(weapon)
@@ -95,11 +95,13 @@ export const combat = system("combat", ({realm}) => [
 				else if (intent.previousWeapon)
 					components.meleeAction = Melee.make.equip("previousWeapon")
 
-				else if (intent.toggleShield)
-					components.meleeAction = Melee.make.equip("toggleShield")
+				else if (intent.toggleShield) {
+					if (inventory.canToggleShield)
+						components.meleeAction = Melee.make.equip("toggleShield")
+				}
 
 				else if (intent.changeGrip) {
-					if (numberOfAvailableGrips > 1)
+					if (inventory.numberOfAvailableGrips > 1)
 						components.meleeAction = Melee.make.equip("changeGrip")
 				}
 			}),

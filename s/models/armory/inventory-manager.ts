@@ -46,6 +46,12 @@ export class InventoryManager {
 	toggleShield() {
 		const {inventory} = this
 		inventory.hands.shield = !inventory.hands.shield
+		inventory.hands.grip = "onehander"
+	}
+
+	get canToggleShield() {
+		const data = this.#weaponData
+		return "onehander" in data.grips
 	}
 
 	////////////////////////////////////////////////
