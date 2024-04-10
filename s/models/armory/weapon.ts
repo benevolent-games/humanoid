@@ -51,10 +51,12 @@ export namespace Weapon {
 	}
 
 	export type Parry = {
+		turncap: number | null
 		timing: ParryTiming
 	}
 
 	export type Attack = {
+		turncap: number | null
 		timing: AttackTiming
 		damage: Damage
 	}
