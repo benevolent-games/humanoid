@@ -46,14 +46,14 @@ export class Character extends HybridComponent<{height: number}> {
 		// const protoRibbons = new Map<Weapon.Name, Weapon.ProtoRibbon>()
 
 		for (const [name, mesh] of weapons) {
-			console.log("WEAPON", name)
+			// console.log("WEAPON", name)
 			const props = [...mesh.getChildMeshes(), ...mesh.getChildTransformNodes()] as Prop[]
 
 			const physics = props.filter(p => nquery(p).name("physics"))
 			const guides = props.filter(p => nquery(p).tag("ribbon"))
 			const nearcaps = props.filter(p => nquery(p).name("near"))
 
-			props.forEach(p => console.log("  - ", p.name))
+			// props.forEach(p => console.log("  - ", p.name))
 			physics.forEach(mesh => mesh.dispose())
 			guides.forEach(mesh => mesh.dispose())
 			nearcaps.forEach(mesh => mesh.dispose())
