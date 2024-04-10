@@ -1,7 +1,7 @@
 
 import {ob} from "@benev/slate"
-import {weaponDataSheet} from "./weapon-library.js"
-import { Vec3 } from "@benev/toolbox"
+import {Vec3} from "@benev/toolbox"
+import {weaponDataSheet} from "./weapon-data-sheet.js"
 
 export namespace Weapon {
 	export type Name = keyof typeof weaponDataSheet
