@@ -1,49 +1,51 @@
 
-import {Trashcan, scalar, vec2} from "@benev/toolbox"
+import {Trashcan, logSlow, scalar, vec2} from "@benev/toolbox"
 
 import {molasses2d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {Controllable, Intent} from "../components/plain_components.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
-import {considerAttack, considerParry} from "../../models/attacking/consider.js"
+import {considerAttack, considerEquip, considerParry} from "../../models/attacking/consider.js"
 import {Inventory, MeleeAction, MeleeAim, MeleeIntent} from "../components/topics/warrior.js"
 
 export const combat = system("combat", ({realm}) => [
 
-	responder("inventory controls")
-		.select({Controllable, Inventory})
-		.respond(entity => {
-			const trash = new Trashcan()
-			const {buttons} = realm.tact.inputs.humanoid
-			const inventory = new InventoryManager(entity.components.inventory)
+	// responder("inventory controls")
+	// 	.select({Controllable, Inventory})
+	// 	.respond(entity => {
+	// 		const trash = new Trashcan()
+	// 		const {buttons} = realm.tact.inputs.humanoid
+	// 		const inventory = new InventoryManager(entity.components.inventory)
 
-			trash.mark(buttons.weapon_next.onPressed(() => {
-				inventory.nextWeapon()
-			}))
+	// 		trash.mark(buttons.weapon_next.onPressed(() => {
+	// 			inventory.nextWeapon()
+	// 		}))
 
-			trash.mark(buttons.weapon_previous.onPressed(() => {
-				inventory.previousWeapon()
-			}))
+	// 		trash.mark(buttons.weapon_previous.onPressed(() => {
+	// 			inventory.previousWeapon()
+	// 		}))
 
-			trash.mark(buttons.shield_toggle.onPressed(() => {
-				inventory.toggleShield()
-			}))
+	// 		trash.mark(buttons.shield_toggle.onPressed(() => {
+	// 			inventory.toggleShield()
+	// 		}))
 
-			return trash.dispose
-		}),
+	// 		return trash.dispose
+	// 	}),
 
 	system("intentions", () => [
 		behavior("set melee intent")
 			.select({Controllable, MeleeIntent})
 			.logic(() => ({components}) => {
-				const parry = realm.tact.inputs.humanoid.buttons.parry.input
-				const swing = realm.tact.inputs.humanoid.buttons.swing.input
-				const stab = realm.tact.inputs.humanoid.buttons.stab.input
+				const {buttons} = realm.tact.inputs.humanoid
 				components.meleeIntent = {
-					parry: parry.down,
-					swing: swing.down,
-					stab: stab.down,
+					parry: buttons.parry.input.down,
+					swing: buttons.swing.input.down,
+					stab: buttons.stab.input.down,
+					nextWeapon: buttons.weapon_next.input.down,
+					previousWeapon: buttons.weapon_previous.input.down,
+					toggleShield: buttons.shield_toggle.input.down,
+					changeGrip: buttons.weapon_grip_change.input.down,
 				}
 			}),
 
@@ -74,17 +76,29 @@ export const combat = system("combat", ({realm}) => [
 					return
 
 				const {angle} = components.meleeAim
-				const {parry, stab, swing} = components.meleeIntent
+				const intent = components.meleeIntent
 				const {weapon} = new InventoryManager(components.inventory)
 
-				if (parry)
+				if (intent.parry)
 					components.meleeAction = Melee.make.parry(weapon)
 
-				else if (stab)
+				else if (intent.stab)
 					components.meleeAction = Melee.make.stab(weapon, angle)
 
-				else if (swing)
+				else if (intent.swing)
 					components.meleeAction = Melee.make.swing(weapon, angle)
+
+				else if (intent.nextWeapon)
+					components.meleeAction = Melee.make.equip("nextWeapon")
+
+				else if (intent.previousWeapon)
+					components.meleeAction = Melee.make.equip("previousWeapon")
+
+				else if (intent.toggleShield)
+					components.meleeAction = Melee.make.equip("toggleShield")
+
+				else if (intent.changeGrip)
+					components.meleeAction = Melee.make.equip("changeGrip")
 			}),
 	]),
 
@@ -96,47 +110,73 @@ export const combat = system("combat", ({realm}) => [
 		}),
 
 	behavior("update melee actions")
-		.select({MeleeAction})
-		.logic(() => ({components: {meleeAction}}) => {
-			if (!meleeAction)
+		.select({MeleeAction, Inventory})
+		.logic(() => ({components}) => {
+			const {meleeAction: action} = components
+
+			if (!action)
 				return
 
-			if (Melee.is.parry(meleeAction)) {
-				const {weights} = considerParry(meleeAction.weapon, meleeAction.seconds)
-				meleeAction.weights = weights
+			if (Melee.is.equip(action)) {
+				const inventory = new InventoryManager(components.inventory)
+				const {weights, ready} = considerEquip(action.seconds)
+				action.weights = weights
+				if (ready && !action.done) {
+					action.done = true
+					switch (action.routine) {
+						case "nextWeapon":
+							inventory.nextWeapon()
+							break
+						case "previousWeapon":
+							inventory.previousWeapon()
+							break
+						case "toggleShield":
+							inventory.toggleShield()
+							break
+						case "changeGrip":
+							inventory.changeGrip()
+							break
+					}
+				}
 			}
-			else if (Melee.is.attack(meleeAction)) {
+			else if (Melee.is.parry(action)) {
+				const {weights} = considerParry(action.weapon, action.seconds)
+				action.weights = weights
+			}
+			else if (Melee.is.attack(action)) {
 				const {report, weights} = considerAttack(
-					meleeAction.kind === "stab"
-						? meleeAction.weapon.stab.timing
-						: meleeAction.weapon.swing.timing,
-					meleeAction.kind,
-					meleeAction.seconds,
-					meleeAction.earlyRecovery,
-					meleeAction.angle,
+					action.kind === "stab"
+						? action.weapon.stab.timing
+						: action.weapon.swing.timing,
+					action.kind,
+					action.seconds,
+					action.earlyRecovery,
+					action.angle,
 				)
-				meleeAction.report = report
-				meleeAction.weights = weights
+				action.report = report
+				action.weights = weights
 			}
 		}),
 
 	behavior("end melee action")
 		.select({MeleeAction})
 		.logic(() => ({components}) => {
-			const {meleeAction} = components
+			const {meleeAction: action} = components
 
-			if (!meleeAction)
+			if (!action)
 				return
 
-			if (Melee.is.parry(meleeAction)) {
-				if (meleeAction.weights.progress > 1) {
+			if (Melee.is.equip(action)) {
+				if (action.weights.progress > 1)
 					components.meleeAction = null
-				}
 			}
-			else if (Melee.is.attack(meleeAction)) {
-				if (meleeAction.report.phase === "none") {
+			else if (Melee.is.parry(action)) {
+				if (action.weights.progress > 1)
 					components.meleeAction = null
-				}
+			}
+			else if (Melee.is.attack(action)) {
+				if (action.report.phase === "none")
+					components.meleeAction = null
 			}
 		}),
 

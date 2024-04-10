@@ -177,7 +177,7 @@ export function sync_character_anims({
 	function animateAttack(anim: ManualAnim, weight: number) {
 		anim.weight = weight
 		if (weight > (1 / 100))
-			anim.setProgress(w.progress)
+			anim.setProgress(scalar.clamp(w.progress))
 	}
 
 	animateAttack(grip.parry, w.parry)

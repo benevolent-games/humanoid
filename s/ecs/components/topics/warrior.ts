@@ -32,5 +32,10 @@ export class MeleeIntent extends Component<{
 	parry: boolean
 	swing: boolean
 	stab: boolean
+
+	nextWeapon: boolean
+	previousWeapon: boolean
+	toggleShield: boolean
+	changeGrip: boolean
 }> {}
 

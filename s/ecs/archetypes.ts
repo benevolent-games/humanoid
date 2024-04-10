@@ -184,6 +184,10 @@ export namespace Archetypes {
 				parry: false,
 				stab: false,
 				swing: false,
+				nextWeapon: false,
+				previousWeapon: false,
+				toggleShield: false,
+				changeGrip: false,
 			},
 			inventory: {
 				hands: {

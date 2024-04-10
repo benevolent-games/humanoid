@@ -6,20 +6,26 @@ import {Melee} from "./melee.js"
 import {Weapon} from "../armory/weapon.js"
 
 const blendtime = 0.1
-const equiptime = 1
+const equiptime = 0.5
 
-export function considerEquip(newWeapon: Weapon.Details, oldWeapon: Weapon.Details, seconds: number) {
+export function considerEquip(seconds: number) {
 	const weights = Melee.zeroWeights()
-	const active = scalar.remap(seconds, [0, equiptime], [0, 1])
+
+	const progress = scalar.remap(seconds, [0, equiptime])
+	weights.progress = progress
+
+	const active = spline.linear(progress, [
+		[0, 0],
+		[0.5, 1],
+		[1, 0],
+	])
 	weights.equip = active
 	weights.active = active
 	weights.inactive = scalar.inverse(active)
-	const midpoint = scalar.lerp(1/2, 0, equiptime)
+
 	return {
 		weights,
-		currentWeapon: seconds > midpoint
-			? newWeapon
-			: oldWeapon,
+		ready: progress > 0.5,
 	}
 }
 
@@ -80,10 +86,11 @@ export function considerAttack(
 		)
 
 	// bounce back on early recovery
+	const bounciness = 1 / 3
 	const bouncySeconds = (
 		earlyRecovery === null
 			? seconds
-			: scalar.bottom(earlyRecovery - ((seconds - earlyRecovery) / 3), 0)
+			: scalar.bottom(earlyRecovery - ((seconds - earlyRecovery) * bounciness), 0)
 	)
 
 	const progress = spline.linear(bouncySeconds, [
@@ -93,7 +100,7 @@ export function considerAttack(
 		[e, 3 / 3],
 	])
 
-	weights.progress = scalar.clamp(progress)
+	weights.progress = progress
 
 	weights.active = is.defined(earlyRecovery)
 		? spline.linear(seconds - earlyRecovery, [

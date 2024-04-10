@@ -49,6 +49,8 @@ export namespace Melee {
 		milestones: [number, number, number, number, number]
 	}
 
+	export type EquipRoutine = "nextWeapon" | "previousWeapon" | "toggleShield" | "changeGrip"
+
 	export namespace Action {
 		export type Base = {
 			kind: Kind
@@ -67,9 +69,8 @@ export namespace Melee {
 
 		export type Equip = {
 			kind: "equip"
-			newWeapon: Weapon.Details
-			oldWeapon: Weapon.Details
-			currentWeapon: Weapon.Details
+			routine: EquipRoutine
+			done: boolean
 		} & Base
 
 		export type Parry = { kind: "parry" } & Weaponized
@@ -81,7 +82,7 @@ export namespace Melee {
 	}
 
 	export const is = {
-		equip: (action: null | Action.Any): action is Action.Equip => action?.kind === "parry",
+		equip: (action: null | Action.Any): action is Action.Equip => action?.kind === "equip",
 		parry: (action: null | Action.Any): action is Action.Parry => action?.kind === "parry",
 		stab: (action: null | Action.Any): action is Action.Stab => action?.kind === "stab",
 		swing: (action: null | Action.Any): action is Action.Swing => action?.kind === "swing",
@@ -90,12 +91,12 @@ export namespace Melee {
 	}
 
 	export const make = {
-		equip: (newWeapon: Weapon.Details, oldWeapon: Weapon.Details): Action.Equip => ({
+		equip: (routine: EquipRoutine): Action.Equip => ({
 			kind: "equip",
-			newWeapon,
-			oldWeapon,
+			routine,
 			seconds: 0,
-			...considerEquip(newWeapon, oldWeapon, 0),
+			done: false,
+			weights: considerEquip(0).weights,
 		}),
 		parry: (weapon: Weapon.Details): Action.Parry => ({
 			kind: "parry",
