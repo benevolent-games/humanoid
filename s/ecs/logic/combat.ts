@@ -107,7 +107,7 @@ export const combat = system("combat", ({realm}) => [
 			}
 			else if (Melee.is.attack(meleeAction)) {
 				const {report, weights} = considerAttack(
-					meleeAction.kind === Melee.Kind.Stab
+					meleeAction.kind === "stab"
 						? meleeAction.weapon.stab.timing
 						: meleeAction.weapon.swing.timing,
 					meleeAction.kind,
@@ -134,7 +134,7 @@ export const combat = system("combat", ({realm}) => [
 				}
 			}
 			else if (Melee.is.attack(meleeAction)) {
-				if (meleeAction.report.phase === Melee.Phase.None) {
+				if (meleeAction.report.phase === "none") {
 					components.meleeAction = null
 				}
 			}

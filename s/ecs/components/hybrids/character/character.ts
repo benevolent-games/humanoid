@@ -48,29 +48,16 @@ export class Character extends HybridComponent<{height: number}> {
 		for (const [name, mesh] of weapons) {
 			console.log("WEAPON", name)
 			const props = [...mesh.getChildMeshes(), ...mesh.getChildTransformNodes()] as Prop[]
+
 			const physics = props.filter(p => nquery(p).name("physics"))
-			const guides = props.filter(p => nquery(p).name("ribbon"))
+			const guides = props.filter(p => nquery(p).tag("ribbon"))
+			const nearcaps = props.filter(p => nquery(p).name("near"))
 
 			props.forEach(p => console.log("  - ", p.name))
 			physics.forEach(mesh => mesh.dispose())
 			guides.forEach(mesh => mesh.dispose())
+			nearcaps.forEach(mesh => mesh.dispose())
 		}
-
-		// const trash = new Trashcan()
-
-		// const swordlength = 1.2
-
-		// const swordtip = trash.bag(
-		// 	new TransformNode("swordtip", scene)
-		// ).dump(t => t.dispose())
-		// swordtip.parent = referenceWeapon
-		// swordtip.position.set(0, swordlength, 0)
-
-		// const swordbase = trash.bag(
-		// 	new TransformNode("swordbase", scene)
-		// ).dump(t => t.dispose())
-		// swordbase.parent = referenceWeapon
-		// swordbase.position.set(0, 0, 0)
 
 		return {}
 	})()

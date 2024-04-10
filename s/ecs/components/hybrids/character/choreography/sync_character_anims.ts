@@ -191,6 +191,7 @@ export function sync_character_anims({
 	// animateAttack(grip.attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
+	anims.equip.weight = w.equip
 	grip.airborne.weight = airborne * w.inactive
 	grip.guard.weight = tinyfix + (w.inactive * groundage * stillness)
 	grip.forward.weight = tinyfix + north * w.inactive * groundage * unstillness

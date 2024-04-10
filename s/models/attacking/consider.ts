@@ -6,6 +6,22 @@ import {Melee} from "./melee.js"
 import {Weapon} from "../armory/weapon.js"
 
 const blendtime = 0.1
+const equiptime = 1
+
+export function considerEquip(newWeapon: Weapon.Details, oldWeapon: Weapon.Details, seconds: number) {
+	const weights = Melee.zeroWeights()
+	const active = scalar.remap(seconds, [0, equiptime], [0, 1])
+	weights.equip = active
+	weights.active = active
+	weights.inactive = scalar.inverse(active)
+	const midpoint = scalar.lerp(1/2, 0, equiptime)
+	return {
+		weights,
+		currentWeapon: seconds > midpoint
+			? newWeapon
+			: oldWeapon,
+	}
+}
 
 export function considerParry(weapon: Weapon.Details, seconds: number) {
 	const {block, recovery} = weapon.parry.timing
@@ -54,13 +70,13 @@ export function considerAttack(
 
 	const phase = is.defined(earlyRecovery)
 		? scalar.within(seconds - earlyRecovery, 0, recovery)
-			? Melee.Phase.Recovery
-			: Melee.Phase.None
+			? "recovery"
+			: "none"
 		: (
-			scalar.within(seconds, a, c) ? Melee.Phase.Windup :
-			scalar.within(seconds, c, d) ? Melee.Phase.Release :
-			scalar.within(seconds, d, e) ? Melee.Phase.Recovery :
-				Melee.Phase.None
+			scalar.within(seconds, a, c) ? "windup" :
+			scalar.within(seconds, c, d) ? "release" :
+			scalar.within(seconds, d, e) ? "recovery" :
+				"none"
 		)
 
 	// bounce back on early recovery
@@ -94,13 +110,13 @@ export function considerAttack(
 
 	weights.inactive = scalar.inverse(weights.active)
 
-	if (kind === Melee.Kind.Stab) {
+	if (kind === "stab") {
 		if (angle < 0)
 			weights.a7 = weights.active
 		else
 			weights.a8 = weights.active
 	}
-	else if (kind === Melee.Kind.Swing) {
+	else if (kind === "swing") {
 		const {splines} = Melee.Angles
 		weights.a1 = spline.linear(angle, splines.a1) * weights.active
 		weights.a2 = spline.linear(angle, splines.a2) * weights.active
@@ -114,7 +130,6 @@ export function considerAttack(
 		weights,
 		report: {
 			phase,
-			// times,
 			milestones: [a, b, c, d, e],
 		} as Melee.AttackReport,
 	}
