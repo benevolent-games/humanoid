@@ -15,6 +15,7 @@ import {melee_tracers} from "./logic/melee_tracers.js"
 import {spawning} from "./logic/spawning.js"
 import {velocity} from "./logic/velocity.js"
 import {parenting} from "./logic/parenting.js"
+import {turncaps} from "./logic/turncaps.js"
 
 export const gamelogic = {
 	primary: system("root", () => [
@@ -22,6 +23,7 @@ export const gamelogic = {
 		spawning,
 		bot_ai,
 		intentions,
+		turncaps,
 		freelook,
 		force,
 		velocity,
