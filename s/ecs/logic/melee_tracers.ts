@@ -14,8 +14,8 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
 	behavior("tracers")
 		.select({Character, MeleeAction, Tracers, Inventory})
-		.logic(({gametime}) => entity => {
-			// const {physics} = realm
+		.logic(() => entity => {
+			const {physics} = realm
 			const {character, meleeAction, tracers} = entity.components
 
 			const releasePhase = Melee.is.attack(meleeAction)
@@ -26,7 +26,87 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 				? character.getWeaponMeta(inventory.weaponName)
 				: null
 
-			tracers.update({gametime, weaponMeta})
+			tracers.update({weaponMeta})
+
+			if (releasePhase) {
+				const wip = tracers.wip ?? []
+
+				for (const info of wip.filter(w => w.edge)) {
+					const edge = info.edge!
+					const {xyz} = vec3.to
+					const {xyzw} = quat.to
+					const noPosition = xyz(vec3.zero())
+					const noRotation = xyzw(quat.identity())
+					const hits = [] as Rapier.Collider[]
+					const hitCallback = (hit: Rapier.Collider): boolean => {
+						hits.push(hit)
+						return true
+					}
+					function triangulate(...triangles: Tracing.Triangle[]) {
+						return triangles.map(t => new Rapier.Triangle(
+							xyz(t[0]),
+							xyz(t[1]),
+							xyz(t[2])),
+						)
+					}
+					const triangles = triangulate(...edge.triangles)
+
+					for (const tri of triangles) {
+						physics.world.intersectionsWithShape(
+							noPosition,
+							noRotation,
+							tri,
+							hitCallback,
+							undefined,
+							physics.grouper.specify({
+								filter: [physics.groups.level, physics.groups.dynamic, physics.groups.capsule],
+								membership: [physics.groups.sensor],
+							}),
+						)
+					}
+
+					// for (const tri of farTriangles) {
+					// 	physics.world.intersectionsWithShape(
+					// 		noPosition,
+					// 		noRotation,
+					// 		tri,
+					// 		farHitCallback,
+					// 		undefined,
+					// 		physics.grouper.specify({
+					// 			filter: [physics.groups.dynamic, physics.groups.capsule],
+					// 			membership: [physics.groups.sensor],
+					// 		}),
+					// 	)
+					// }
+
+					const [hit] = hits
+
+					if (hit) {
+						const capsule = physics.capsules.get(hit)
+						const we_are_not_hitting_ourselves = capsule?.entityId !== entity.id
+
+						if (we_are_not_hitting_ourselves)
+							meleeAction.earlyRecovery = meleeAction.seconds
+
+						const dynamic = physics.dynamics.get(hit)
+						if (dynamic && edge.vector) {
+							dynamic.rigid.applyImpulseAtPoint(
+								vec3.to.xyz(vec3.multiplyBy(edge.vector, 1_000)),
+								dynamic.rigid.translation(),
+								true,
+							)
+						}
+
+						if (capsule) {
+							if (we_are_not_hitting_ourselves) {
+								const entity = world.get(capsule.entityId)
+								if (entity.has({Health}))
+									entity.components.health.hp = 0
+							}
+						}
+					}
+				}
+			}
 		}),
 
 	// behavior("tracer")

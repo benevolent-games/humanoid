@@ -9,7 +9,6 @@ export namespace Tracing {
 	export type Ribbon = {
 		sheetMesh: Mesh
 		edgeMesh: Mesh
-		expiresAtGametime: number
 		dispose: () => void
 	}
 	export type RibbonEdge = {

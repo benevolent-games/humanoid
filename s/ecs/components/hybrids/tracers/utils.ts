@@ -75,21 +75,22 @@ export function generate_tracer_triangles(lines: Tracing.Line[]) {
 
 export function establish_ribbon(
 		scene: Scene,
-		expiresAtGametime: number,
+		isVisible: boolean,
 		sheetMaterial: Material,
 		edgeMaterial: Material,
 	): Tracing.Ribbon {
 
 	const sheetMesh = new Mesh(label("ribbon-sheet"), scene)
 	sheetMesh.material = sheetMaterial
+	sheetMesh.isVisible = isVisible
 
 	const edgeMesh = new Mesh(label("ribbon-edge"), scene)
 	edgeMesh.material = edgeMaterial
+	edgeMesh.isVisible = isVisible
 
 	return {
 		sheetMesh,
 		edgeMesh,
-		expiresAtGametime,
 		dispose() {
 			sheetMesh.dispose()
 			edgeMesh.dispose()
