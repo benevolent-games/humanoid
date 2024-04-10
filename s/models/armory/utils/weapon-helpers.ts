@@ -48,7 +48,7 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 			return {
 
 				// standard parry window for all weapons, keeps players sane.
-				parry: {timing: {block: ms(500), recovery: ms(500)}},
+				parry: {timing: {block: ms(350), recovery: ms(1200)}},
 				swing: {
 					timing: {windup: ms(windup), release: ms(release), recovery: ms(recovery)},
 					damage: {blunt: percent(blunt1), bleed: percent(bleed1), pierce: percent(pierce1)},
