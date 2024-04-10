@@ -115,7 +115,7 @@ export const combat = system("combat", ({realm}) => [
 		}),
 
 	behavior("update melee actions")
-		.select({MeleeAction, Inventory})
+		.select({MeleeAction, Inventory, MeleeIntent})
 		.logic(() => ({components}) => {
 			const {meleeAction: action} = components
 
@@ -145,6 +145,10 @@ export const combat = system("combat", ({realm}) => [
 				}
 			}
 			else if (Melee.is.parry(action)) {
+				const inventory = new InventoryManager(components.inventory)
+				const held = inventory.shield && components.meleeIntent.parry
+				if (held)
+					action.seconds = scalar.top(action.seconds, inventory.weapon.parry.timing.block)
 				const {weights} = considerParry(action.weapon, action.seconds)
 				action.weights = weights
 			}
