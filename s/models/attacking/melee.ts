@@ -77,6 +77,7 @@ export namespace Melee {
 		export type Parry = {
 			kind: "parry"
 			holdable: Holdable | null
+			protective: boolean
 		} & Weaponized
 		export type Stab = { kind: "stab" } & Offensive
 		export type Swing = { kind: "swing" } & Offensive
@@ -86,12 +87,11 @@ export namespace Melee {
 	}
 
 	export const is = {
-		equip: (action: null | Action.Any): action is Action.Equip => action?.kind === "equip",
-		parry: (action: null | Action.Any): action is Action.Parry => action?.kind === "parry",
-		stab: (action: null | Action.Any): action is Action.Stab => action?.kind === "stab",
-		swing: (action: null | Action.Any): action is Action.Swing => action?.kind === "swing",
-
-		attack: (action: null | Action.Any): action is Action.Attack => is.swing(action) || is.stab(action),
+		equip: (action: Action.Any | null | undefined): action is Action.Equip => action?.kind === "equip",
+		parry: (action: Action.Any | null | undefined): action is Action.Parry => action?.kind === "parry",
+		stab: (action: Action.Any | null | undefined): action is Action.Stab => action?.kind === "stab",
+		swing: (action: Action.Any | null | undefined): action is Action.Swing => action?.kind === "swing",
+		attack: (action: Action.Any | null | undefined): action is Action.Attack => is.swing(action) || is.stab(action),
 	}
 
 	export const make = {

@@ -154,8 +154,9 @@ export const combat = system("combat", ({realm}) => [
 				}
 			}
 			else if (Melee.is.parry(action)) {
-				const {weights} = considerParry(action.weapon, action.holdable, action.seconds)
+				const {weights, protective} = considerParry(action.weapon, action.holdable, action.seconds)
 				action.weights = weights
+				action.protective = protective
 			}
 			else if (Melee.is.attack(action)) {
 				const {report, weights} = considerAttack(
@@ -204,20 +205,7 @@ export const combat = system("combat", ({realm}) => [
 	behavior("melee aiming")
 		.select({Controllable, MeleeAim, MeleeAction})
 		.logic(() => ({components: {meleeAim, meleeAction}}) => {
-
-			if (meleeAction === null)
-				realm.reticuleState.aim = {busy: false, angle: meleeAim.angle}
-
-			else if (Melee.is.parry(meleeAction))
-				realm.reticuleState.aim = {busy: false, angle: null}
-
-			else if (Melee.is.attack(meleeAction)) {
-				if (Melee.is.stab(meleeAction))
-					realm.reticuleState.aim = {busy: true, angle: null}
-
-				else if (Melee.is.swing(meleeAction))
-					realm.reticuleState.aim = {busy: true, angle: meleeAction.angle}
-			}
+			realm.reticuleState.data = {meleeAim, meleeAction}
 		}),
 ])
 
