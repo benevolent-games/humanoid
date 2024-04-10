@@ -1,5 +1,5 @@
 
-import {Rapier, babylonian, quat, vec3} from "@benev/toolbox"
+import {Rapier, babyloid, quat, vec3} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {Tracer} from "../components/hybrids/tracer/tracer.js"
@@ -51,8 +51,8 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 	// 		if (attack_is_in_release_phase) {
 	// 			swordbase.computeWorldMatrix(true)
 	// 			swordtip.computeWorldMatrix(true)
-	// 			const a = babylonian.to.vec3(swordbase.absolutePosition)
-	// 			const b = babylonian.to.vec3(swordtip.absolutePosition)
+	// 			const a = babyloid.to.vec3(swordbase.absolutePosition)
+	// 			const b = babyloid.to.vec3(swordtip.absolutePosition)
 	// 			lines.push([a, b])
 	// 			while (lines.length > 100)
 	// 				lines.shift()

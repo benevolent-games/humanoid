@@ -1,5 +1,5 @@
 
-import {babylonian} from "@benev/toolbox"
+import {babyloid} from "@benev/toolbox"
 import {Camera} from "../components/hybrids/camera.js"
 import {molasses3d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
@@ -84,7 +84,7 @@ export const camera_rigging = system("camera rigging", ({realm}) => [
 	behavior("update rotation")
 		.select({CameraRig, Rotation})
 		.logic(() => ({components: c}) => {
-			c.rotation = babylonian.ascertain.quat(
+			c.rotation = babyloid.ascertain.quat(
 				c.cameraRig.parts.transform
 			)
 		}),

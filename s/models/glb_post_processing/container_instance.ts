@@ -1,5 +1,5 @@
 
-import {Meshoid, Quat, Vec3, babylonian} from "@benev/toolbox"
+import {Meshoid, Quat, Vec3, babyloid} from "@benev/toolbox"
 
 import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
@@ -26,11 +26,11 @@ export class ContainerInstance {
 			.forEach(group => this.animationGroups.set(group.name, group))
 	}
 
-	get position() { return babylonian.to.vec3(this.root.position) }
+	get position() { return babyloid.to.vec3(this.root.position) }
 	set position(v: Vec3) { this.root.position.set(...v) }
 
-	get rotation() { return babylonian.ascertain.quat(this.root) }
-	set rotation(q: Quat) { this.root.rotationQuaternion = babylonian.from.quat(q) }
+	get rotation() { return babyloid.ascertain.quat(this.root) }
+	set rotation(q: Quat) { this.root.rotationQuaternion = babyloid.from.quat(q) }
 
 	dispose() {
 		this.instantiated.dispose()

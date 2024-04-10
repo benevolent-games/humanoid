@@ -7,7 +7,7 @@ import {explode_promise, maptool} from "@benev/slate"
 import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {Meshoid, Prop, Rapier, Vec3, babylonian, nquery, quat, vec3} from "@benev/toolbox"
+import {Meshoid, Prop, Rapier, Vec3, babyloid, nquery, quat, vec3} from "@benev/toolbox"
 
 import {HuLevel} from "../../../gameplan.js"
 import {HybridComponent} from "../../hub.js"
@@ -217,7 +217,7 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 
 		const create_box_toy = (prop: Prop, params: {scale: Vec3, density: number}) => {
 			const instance = prop.instantiateHierarchy()!
-			const position = vec3.add(babylonian.to.vec3(instance.absolutePosition), [0, 1, 0])
+			const position = vec3.add(babyloid.to.vec3(instance.absolutePosition), [0, 1, 0])
 			disposables.push(() => instance.dispose())
 
 			const box = physics.prefabs.box({
@@ -251,7 +251,7 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 			}) => {
 
 			const instance = prop.instantiateHierarchy()!
-			const position = babylonian.to.vec3(instance.absolutePosition)
+			const position = babyloid.to.vec3(instance.absolutePosition)
 			disposables.push(() => instance.dispose())
 
 			const fixture = physics.prefabs.fixture({position, material: null})

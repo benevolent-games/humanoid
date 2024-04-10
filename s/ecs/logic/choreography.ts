@@ -1,6 +1,6 @@
 
 import {is} from "@benev/slate"
-import {babylonian} from "@benev/toolbox"
+import {babyloid} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
 import {Weapon} from "../../models/armory/weapon.js"
 import {gimbaltool} from "../../tools/gimbaltool.js"
@@ -16,7 +16,7 @@ export const choreography = system("humanoid", () => [
 	behavior("sync babylon parts")
 		.select({Character, Position, GimbalSway})
 		.logic(() => ({components: {character, position, gimbalSway}}) => {
-			const q = babylonian.to.quat(
+			const q = babyloid.to.quat(
 				gimbaltool(gimbalSway.gimbal)
 					.quaternions().horizontal
 			)
