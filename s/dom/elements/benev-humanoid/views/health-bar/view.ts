@@ -19,21 +19,20 @@ export const HealthBar = nexus.shadow_view(use => (game: Game) => {
 			background: #0002;
 
 			display: flex;
-			padding: 0.2em;
-			gap: 0.2em;
+			gap: 0.4em;
+			padding: 0.4em;
+			border-radius: 0.2em;
 
 			&[hidden] {
 				display: none;
-			}
-
-			> * {
-				flex: 1 0 0;
-				height: 0.2em;
 			}
 		}
 
 		.bar {
 			display: flex;
+			flex: 1 0 0;
+			height: 0.8em;
+
 			> * {
 				flex: 0 0 auto;
 				height: 100%;
@@ -41,16 +40,16 @@ export const HealthBar = nexus.shadow_view(use => (game: Game) => {
 
 		}
 		.stamina {
-			background: #4408;
 			justify-content: end;
+			background: #220a;
 			.juice { background: #ff0; }
 		}
 
 		.health {
-			background: #4008;
 			justify-content: start;
+			background: #200a;
 			.hp { background: #f00; }
-			.bleed { background: #a00; }
+			.bleed { background: #a05; }
 		}
 	`)
 
