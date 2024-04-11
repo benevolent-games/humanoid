@@ -2,8 +2,8 @@
 import {cap_vector_to_magnitude_1, get_trajectory_from_cardinals, scalar, vec2} from "@benev/toolbox"
 
 import {behavior, system} from "../hub.js"
-import {Controllable, Intent, Stance} from "../components/plain_components.js"
 import {MouseAccumulator} from "../components/hybrids/mouse_accumulator.js"
+import {Controllable, Intent, Stance} from "../components/plain_components.js"
 import {LookpadAccumulator} from "../components/hybrids/lookpad_accumulator.js"
 
 export const intentions = system("intentions", ({realm}) => [

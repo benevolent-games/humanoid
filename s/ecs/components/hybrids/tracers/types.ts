@@ -1,7 +1,7 @@
 
 import {Prop, Vec3} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
-import { Material } from "@babylonjs/core/Materials/material"
+import {Material} from "@babylonjs/core/Materials/material.js"
 
 export namespace Tracing {
 	export type Line = [Vec3, Vec3]
