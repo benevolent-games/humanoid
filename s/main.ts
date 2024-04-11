@@ -14,7 +14,6 @@ import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 
 const commit = CommitHash.parse_from_dom()
-console.log(`🏷️ commit hash ${commit.short}`)
 
 // html and ui
 startup_web_components()
@@ -49,5 +48,5 @@ spawner.inputs.respawn = true
 world.create(arch({Spawner}, {spawner}))
 
 // indicating that things are going well
-console.log(`🏃 humanoid up and running`)
+console.log(`🏃 humanoid ready, took ${(performance.now() / 1000).toFixed(1)} seconds.`)
 

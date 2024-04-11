@@ -1,8 +1,8 @@
 
 import {Ecs} from "@benev/toolbox"
 import {Melee} from "../attacking/melee.js"
+import {Ribbon} from "../tracing/ribbon.js"
 import {Health} from "../../ecs/components/topics/warrior.js"
-import {Ribbon} from "../../ecs/components/hybrids/tracers/utils/ribbon.js"
 
 /** utility methods for interacting with health. */
 export class Infirmary {

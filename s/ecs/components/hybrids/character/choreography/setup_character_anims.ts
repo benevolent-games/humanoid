@@ -73,7 +73,7 @@ export const setup_character_anims = (
 	twohander_attack_5: g => new ManualAnim(g),
 	twohander_attack_6: g => new ManualAnim(g),
 	twohander_attack_7: g => new ManualAnim(g),
-	twohander_attack_8: g => new ManualAnim(g),
+	// twohander_attack_8: g => new ManualAnim(g),
 
 	onehander: g => new BasedAnim(g),
 	onehander_airborne: g => new BasedAnim(g),
@@ -91,7 +91,7 @@ export const setup_character_anims = (
 	onehander_attack_5: g => new ManualAnim(g),
 	onehander_attack_6: g => new ManualAnim(g),
 	onehander_attack_7: g => new ManualAnim(g),
-	onehander_attack_8: g => new ManualAnim(g),
+	// onehander_attack_8: g => new ManualAnim(g),
 
 	equip: g => new ManualAnim(g),
 

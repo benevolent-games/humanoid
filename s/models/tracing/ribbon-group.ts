@@ -1,7 +1,7 @@
 
-import {Scene} from "@babylonjs/core/scene.js"
 import {Ribbon} from "./ribbon.js"
-import {Tracing} from "../types.js"
+import {Tracing} from "./types.js"
+import {Scene} from "@babylonjs/core/scene.js"
 
 export class RibbonGroup {
 	ribbons: Ribbon[]

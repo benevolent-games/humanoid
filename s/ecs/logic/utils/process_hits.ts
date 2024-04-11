@@ -2,12 +2,12 @@
 import {Id, Rapier, quat, vec3} from "@benev/toolbox"
 
 import {World} from "../../hub.js"
+import {Ribbon} from "../../../models/tracing/ribbon.js"
+import {Tracing} from "../../../models/tracing/types.js"
 import {Melee} from "../../../models/attacking/melee.js"
 import {Health} from "../../components/topics/warrior.js"
 import {HuPhysics} from "../../../models/realm/physics.js"
-import {Tracing} from "../../components/hybrids/tracers/types.js"
 import {Infirmary} from "../../../models/facilities/infirmary.js"
-import {Ribbon} from "../../components/hybrids/tracers/utils/ribbon.js"
 
 const {xyz} = vec3.to
 const {xyzw} = quat.to

@@ -2,7 +2,7 @@
 import {behavior, system} from "../hub.js"
 import {processHits} from "./utils/process_hits.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {Tracers} from "../components/hybrids/tracers/tracers.js"
+import {Tracers} from "../components/hybrids/tracers.js"
 import {Character} from "../components/hybrids/character/character.js"
 import {Inventory, MeleeAction} from "../components/topics/warrior.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
