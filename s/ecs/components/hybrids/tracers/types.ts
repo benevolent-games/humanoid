@@ -1,6 +1,7 @@
 
 import {Prop, Vec3} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
+import { Material } from "@babylonjs/core/Materials/material"
 
 export namespace Tracing {
 	export type Line = [Vec3, Vec3]
@@ -34,6 +35,12 @@ export namespace Tracing {
 	export type Blueprint = {
 		nearcapPosition: Vec3
 		protoRibbons: ProtoRibbon[]
+	}
+
+	export type Appearance = {
+		isVisible: boolean
+		sheets: Record<RibbonKind, Material>
+		edges: Record<RibbonKind, Material>
 	}
 }
 
