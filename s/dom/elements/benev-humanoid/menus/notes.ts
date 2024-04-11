@@ -36,9 +36,9 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 	return wrap(html`
 		<section class=lead>
-			<h1>welcome to humanoid <code>${game.commit.short}</code>.</h1>
-			<p>our mission is to make web games amazing and cool.</p>
-			<p>humanoid is a work-in-progress open source web game template.</p>
+			<h1>welcome to the humanoid sandbox. <code>${game.commit.short}</code></h1>
+			<p>this is our work-in-progress web game. it's about vikings.</p>
+			<p>we're building open source technologies to make web games amazing.</p>
 			<p>join our <a target=_blank href="https://discord.gg/BnZx2utdev">discord</a> community.</p>
 			<br/>
 
