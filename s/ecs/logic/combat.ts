@@ -173,17 +173,17 @@ export const combat = system("combat", ({realm}) => [
 			}
 		}),
 
-	responder("enable/disable reticule state")
+	responder("enable/disable reticle state")
 		.select({Controllable, MeleeAim, MeleeAction})
 		.respond(() => {
-			realm.reticuleState.enabled = true
-			return () => { realm.reticuleState.enabled = false }
+			realm.ui.reticle.enabled = true
+			return () => { realm.ui.reticle.enabled = false }
 		}),
 
 	behavior("melee aiming")
 		.select({Controllable, MeleeAim, MeleeAction})
 		.logic(() => ({components: {meleeAim, meleeAction}}) => {
-			realm.reticuleState.data = {meleeAim, meleeAction}
+			realm.ui.reticle.data = {meleeAim, meleeAction}
 		}),
 ])
 

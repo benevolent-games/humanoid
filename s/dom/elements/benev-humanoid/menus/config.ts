@@ -27,24 +27,24 @@ export const ConfigMenu = nexus.shadow_view(use => (game: Game) => {
 				max: 5000,
 				min: 1,
 				step: 1,
-				value: game.sensitivity.mouse,
-				set: x => game.sensitivity.mouse = x,
+				value: game.ui.sensitivity.mouse,
+				set: x => game.ui.sensitivity.mouse = x,
 			}])}
 			${NuiRange([{
 				label: "touch apd (arcseconds-per-dot)",
 				max: 5000,
 				min: 1,
 				step: 1,
-				value: game.sensitivity.touch,
-				set: x => game.sensitivity.touch = x,
+				value: game.ui.sensitivity.touch,
+				set: x => game.ui.sensitivity.touch = x,
 			}])}
 			${NuiRange([{
 				label: "keys (degrees/second)",
 				max: 1000,
 				min: 1,
 				step: 1,
-				value: game.sensitivity.keys,
-				set: x => game.sensitivity.keys = x,
+				value: game.ui.sensitivity.keys,
+				set: x => game.ui.sensitivity.keys = x,
 			}])}
 		</section>
 
@@ -52,33 +52,33 @@ export const ConfigMenu = nexus.shadow_view(use => (game: Game) => {
 			<h2>debug</h2>
 			${NuiCheckbox([{
 				label: "melee tracers",
-				checked: game.debug.meleeTracers,
-				set: c => game.debug.meleeTracers = c,
+				checked: game.ui.debug.meleeTracers,
+				set: c => game.ui.debug.meleeTracers = c,
 			}])}
 		</section>
 
 		<section>
-			<h2>reticule</h2>
+			<h2>reticle</h2>
 			${NuiCheckbox([{
 				label: "enabled",
-				checked: game.reticuleState.enabled,
-				set: c => game.reticuleState.enabled = c,
+				checked: game.ui.reticle.enabled,
+				set: c => game.ui.reticle.enabled = c,
 			}])}
 			${NuiRange([{
 				label: "size",
 				max: 3,
 				min: .5,
 				step: .1,
-				value: game.reticuleState.size,
-				set: x => game.reticuleState.size = x,
+				value: game.ui.reticle.size,
+				set: x => game.ui.reticle.size = x,
 			}])}
 			${NuiRange([{
 				label: "opacity",
 				max: 1,
 				min: .1,
 				step: .1,
-				value: game.reticuleState.opacity,
-				set: x => game.reticuleState.opacity = x,
+				value: game.ui.reticle.opacity,
+				set: x => game.ui.reticle.opacity = x,
 			}])}
 		</section>
 	`

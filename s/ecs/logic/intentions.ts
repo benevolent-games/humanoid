@@ -23,7 +23,7 @@ export const intentions = system("intentions", ({realm}) => [
 		.select({Controllable, Intent, MouseAccumulator})
 		.logic(() => ({components: c}) => {
 			const [x, y] = c.mouseAccumulator.movement.steal()
-			const sens = scalar.radians.from.arcseconds(realm.sensitivity.mouse)
+			const sens = scalar.radians.from.arcseconds(realm.ui.sensitivity.mouse)
 			c.intent.glance = vec2.add(
 				c.intent.glance,
 				realm.stage.pointerLocker.locked
@@ -36,7 +36,7 @@ export const intentions = system("intentions", ({realm}) => [
 		.select({Controllable, Intent, LookpadAccumulator})
 		.logic(() => ({components: c}) => {
 			const [x, y] = c.lookpadAccumulator.movement.steal()
-			const sens = scalar.radians.from.arcseconds(realm.sensitivity.touch)
+			const sens = scalar.radians.from.arcseconds(realm.ui.sensitivity.touch)
 			c.intent.glance = vec2.add(
 				c.intent.glance,
 				vec2.multiplyBy([x, -y], sens),
@@ -54,7 +54,7 @@ export const intentions = system("intentions", ({realm}) => [
 				west: buttons.left.input.down,
 				east: buttons.right.input.down,
 			})
-			const keySensitivity = scalar.radians.from.degrees(realm.sensitivity.keys) * tick.seconds
+			const keySensitivity = scalar.radians.from.degrees(realm.ui.sensitivity.keys) * tick.seconds
 			c.intent.glance = vec2.add(
 				c.intent.glance,
 				vec2.multiplyBy([-x, y], keySensitivity),

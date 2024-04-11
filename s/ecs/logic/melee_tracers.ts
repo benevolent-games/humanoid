@@ -22,7 +22,7 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 			if (releasePhase && !tracers.current) {
 				const inventory = new InventoryManager(entity.components.inventory)
 				const ensemble = character.weaponEnsembles.get(inventory.weaponName)!
-				tracers.start(ensemble, realm.debug.meleeTracers)
+				tracers.start(ensemble, realm.ui.debug.meleeTracers)
 			}
 
 			// continue tracing
