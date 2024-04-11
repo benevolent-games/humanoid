@@ -68,6 +68,7 @@ export class Force extends Component<Vec2> {}
 export class AirborneTrajectory extends Component<Vec3> {}
 export class Impetus extends Component<Vec3> {}
 export class Jump extends Component<boolean> {}
+export class IsSprinting extends Component<boolean> {}
 
 export class Grounding extends Component<{
 	grounded: boolean

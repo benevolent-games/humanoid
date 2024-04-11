@@ -12,7 +12,7 @@ import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
 import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent, Stamina} from "./components/topics/warrior.js"
-import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
+import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity, IsSprinting} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
@@ -92,6 +92,7 @@ export namespace Archetypes {
 
 			Force,
 			Impetus,
+			IsSprinting,
 			Smoothing,
 			Speeds,
 
@@ -131,6 +132,7 @@ export namespace Archetypes {
 
 			force: vec2.zero(),
 			impetus: vec3.zero(),
+			isSprinting: false,
 			smoothing: 5,
 
 			speeds: {base: 2.75, fast: 4.75, slow: 1.5},
@@ -206,6 +208,8 @@ export namespace Archetypes {
 			},
 			stamina: {
 				juice: 1,
+				interruptionGametime: 0,
+				knownMeleeAction: null,
 			},
 		},
 	)

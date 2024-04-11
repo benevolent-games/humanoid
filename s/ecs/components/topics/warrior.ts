@@ -11,6 +11,8 @@ export class Health extends Component<{
 
 export class Stamina extends Component<{
 	juice: number
+	interruptionGametime: number
+	knownMeleeAction: null | Melee.Action.Any
 }> {}
 
 export class Inventory extends Component<{
