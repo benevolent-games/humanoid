@@ -7,13 +7,12 @@ import {Camera} from "./components/hybrids/camera.js"
 import {Capsule} from "./components/hybrids/capsule.js"
 import {GimbalRig} from "./components/hybrids/gimbal_rig.js"
 import {CameraRig} from "./components/hybrids/camera_rig.js"
-import {Tracer} from "./components/hybrids/tracer/tracer.js"
 import {Tracers} from "./components/hybrids/tracers/tracers.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
-import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent} from "./components/topics/warrior.js"
-import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
+import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent, Stamina} from "./components/topics/warrior.js"
+import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity, IsSprinting} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
 	Parameters<Fn>[0]
@@ -93,6 +92,7 @@ export namespace Archetypes {
 
 			Force,
 			Impetus,
+			IsSprinting,
 			Smoothing,
 			Speeds,
 
@@ -113,12 +113,12 @@ export namespace Archetypes {
 			Rotation,
 
 			Health,
+			Stamina,
 			Inventory,
 			MeleeAim,
 			MeleeIntent,
 			MeleeAction,
 			Tracers,
-			Tracer,
 		},
 		{
 			humanoid: {},
@@ -132,6 +132,7 @@ export namespace Archetypes {
 
 			force: vec2.zero(),
 			impetus: vec3.zero(),
+			isSprinting: false,
 			smoothing: 5,
 
 			speeds: {base: 2.75, fast: 4.75, slow: 1.5},
@@ -192,22 +193,23 @@ export namespace Archetypes {
 			inventory: {
 				hands: {
 					shield: true,
-					grip: "onehander",
-					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.hatchet),
+					grip: "twohander",
+					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.axe),
 				},
 				belt: {
 					slots: Weapon.listing,
 				},
 			},
 			meleeAction: null,
-			tracer: {lines: [[[0, 0, 0], [0, 1, 0]]]},
-			tracers: {
-				// releasePhase: false,
-				// weaponShape: Weapon.library.fists.shape,
-			},
+			tracers: {},
 			health: {
 				hp: 1,
-				bleeding: 0,
+				bleed: 0,
+			},
+			stamina: {
+				juice: 1,
+				interruptionGametime: 0,
+				knownMeleeAction: null,
 			},
 		},
 	)

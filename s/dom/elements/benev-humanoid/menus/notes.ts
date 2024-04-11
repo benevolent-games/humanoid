@@ -36,9 +36,9 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 	return wrap(html`
 		<section class=lead>
-			<h1>welcome to humanoid <code>${game.commit.short}</code>.</h1>
-			<p>our mission is to make web games amazing and cool.</p>
-			<p>humanoid is a work-in-progress open source web game template.</p>
+			<h1>welcome to the humanoid sandbox. <code>${game.commit.short}</code></h1>
+			<p>this is our work-in-progress web game. it's about vikings.</p>
+			<p>we're building open source technologies to make web games amazing.</p>
 			<p>join our <a target=_blank href="https://discord.gg/BnZx2utdev">discord</a> community.</p>
 			<br/>
 
@@ -60,7 +60,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<code>b</code> to spawn bots (beware of lag).
 				<code>shift+b</code> to delete bots.
 				hold <code>z</code> to orbit the camera.
-				<code>c</code> to crouch.
+				<code>c</code> to crouch (it's broken/unfinished lol).
 				<code>alt</code> to walk slow.
 			</p>
 		</section>
@@ -69,14 +69,29 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
+				<span>we're on a roll!</span>
+				<small>2024-04-11</small>
+			</h1>
+			<p>new healthbar and stamina bar.</p>
+			<p>weapons deal damage now. each weapon has a damage profile which can include "blunt", "bleed" and "pierce".</p>
+			<p>we rebuilt the melee tracers system, enable them in the settings! each weapon has its own unique set of tracers, this is how we are detecting handle-hits versus blade hits, etc..</p>
+			<p>added simple weapon-switching animation.</p>
+			<p>we added weapon turncaps, which limits how fast you can spin while attacking, which has a big impact on how each weapon feels.</p>
+			<p>you can now change your grip-mode, eg, onehander or twohander grip -- grip effects the timings and damages and general feel of each weapon, for better, or for much worse..</p>
+			<p>you can now "hold" your shield up and block for an indefinite amout of time.</p>
+			<p>⚠ parry is still not implemented, so beware of the false sense of security that you will get by seeing all the parry animations and parry indicators that make you feel safe... <em>you are not safe from the pimsley bots..</em></p>
+		</section>
+
+		<section>
+			<h1>
 				<span>🪓🛡️ new weapons and shield!</span>
 				<small>2024-04-07</small>
 			</h1>
 			<p>shield, fists, adze, hammer, mace, hatchet, axe, longsword, and sledgehammer.</p>
-			<p>you can now switch weapons by pressing <code>q</code> and <code>e</code>.</p>
-			<p>and you can toggle your shield with <code>x</code>.</p>
+			<p>you can now switch weapons.</p>
+			<p>and you can toggle your shield.</p>
 			<p>each weapon has its own set of windup/release/recovery timings, which gives each weapon its own feel.</p>
-			<p>for now, they're all still using the longsword's hit-detection tracer.</p>
+			<p>for now, they're all still using the longsword's hit-detection tracer..</p>
 		</section>
 
 		<section>
@@ -100,7 +115,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<span>mobile controls, reworked animations.</span>
 				<small>2024-04-04</small>
 			</h1>
-			<p>lonnie reworked the animations, so now your weapon swings and stabs actually aim at your reticule in the center of your screen.</p>
+			<p>lonnie reworked the animations, so now your weapon swings and stabs actually aim at your reticle in the center of your screen.</p>
 			<p>now you can play the game on your phone. it's a crude first-draft, but when you use a touch screen the game enters a "mobile" mode where you get a thumbstick on the left and you can touch-drag anywhere else to control your aim. you can't sprint or attack yet, i'll slowly chip away at this in my "off time" so to speak.</p>
 			<p>improved ultrawide monitor support: the ui and menu system is now constrained to 16/9 so it stays centered on your screen.</p>
 		</section>
@@ -124,7 +139,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			</h1>
 			<p>now you can swing your sword in any direction, except straight up/down.</p>
 			<p>you can also parry and stab.</p>
-			<p>added a new 'settings' menu, where you can change your mouse sensitivity and set reticule preferences.</p>
+			<p>added a new 'settings' menu, where you can change your mouse sensitivity and set reticle preferences.</p>
 		</section>
 
 		<section>

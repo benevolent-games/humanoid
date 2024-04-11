@@ -7,7 +7,7 @@ import {Melee} from "../../models/attacking/melee.js"
 import {Controllable, Intent} from "../components/plain_components.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {considerAttack, considerEquip, considerParry} from "../../models/attacking/consider.js"
-import {Inventory, MeleeAction, MeleeAim, MeleeIntent} from "../components/topics/warrior.js"
+import {Inventory, MeleeAction, MeleeAim, MeleeIntent, Stamina} from "../components/topics/warrior.js"
 
 export const combat = system("combat", ({realm}) => [
 
@@ -173,17 +173,17 @@ export const combat = system("combat", ({realm}) => [
 			}
 		}),
 
-	responder("enable/disable reticule state")
+	responder("enable/disable reticle state")
 		.select({Controllable, MeleeAim, MeleeAction})
 		.respond(() => {
-			realm.reticuleState.enabled = true
-			return () => { realm.reticuleState.enabled = false }
+			realm.ui.reticle.enabled = true
+			return () => { realm.ui.reticle.enabled = false }
 		}),
 
 	behavior("melee aiming")
 		.select({Controllable, MeleeAim, MeleeAction})
 		.logic(() => ({components: {meleeAim, meleeAction}}) => {
-			realm.reticuleState.data = {meleeAim, meleeAction}
+			realm.ui.reticle.data = {meleeAim, meleeAction}
 		}),
 ])
 

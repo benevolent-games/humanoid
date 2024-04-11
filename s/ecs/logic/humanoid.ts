@@ -6,7 +6,7 @@ import {Capsule} from "../components/hybrids/capsule.js"
 import {gimbaltool} from "../../tools/gimbaltool.js"
 import {behavior, responder, system} from "../hub.js"
 import {molasses, molasses3d} from "../../tools/molasses.js"
-import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, Jump, Position, PreviousPosition, Speeds, Stance} from "../components/plain_components.js"
+import {AirborneTrajectory, Debug, Force, Gimbal, Grounding, Impetus, Intent, IsSprinting, Jump, Position, PreviousPosition, Speeds, Stance} from "../components/plain_components.js"
 
 export const humanoid = system("humanoid", () => [
 	responder("capsule debug")
@@ -27,8 +27,14 @@ export const humanoid = system("humanoid", () => [
 			components.impetus = vec3.zero()
 		}),
 
+	behavior("reset isSprinting")
+		.select({IsSprinting})
+		.logic(() => ({components}) => {
+			components.isSprinting = false
+		}),
+
 	behavior("impetus for walking around")
-		.select({Capsule, Impetus, Force, Stance, Intent, Speeds, Grounding, Gimbal})
+		.select({Capsule, Impetus, Force, Stance, Intent, Speeds, Grounding, Gimbal, IsSprinting})
 		.logic(tick => ({components}) => {
 			const {stance, force, intent, speeds, grounding, gimbal, impetus} = components
 			const [x, z] = force
@@ -42,6 +48,7 @@ export const humanoid = system("humanoid", () => [
 							vec3.normalize([(x / 3), 0, z]),
 							speeds.fast * tick.seconds,
 						)
+						components.isSprinting = true
 					}
 					else {
 						target = vec3.multiplyBy(

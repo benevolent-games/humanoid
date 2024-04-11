@@ -1,13 +1,11 @@
 
 import {Stage, debug_colors} from "@benev/toolbox"
 
+import {Ui} from "../ui/ui.js"
 import {HuTact} from "../tact/tact.js"
 import {HuPhysics} from "./physics.js"
 import {HuGameplan} from "../../gameplan.js"
-import {makeDebugState} from "./debug_state.js"
-import {makeSensitivity} from "./sensitivity.js"
 import {CommitHash} from "../../tools/commit_hash.js"
-import {makeReticuleState} from "./reticule_state.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 // import {optimize_scene} from "../../tools/optimize_scene.js"
 
@@ -60,9 +58,7 @@ export async function makeRealm(params: RealmParams) {
 		physics,
 		loadingDock,
 		characterContainer,
-		debug: makeDebugState(),
-		sensitivity: makeSensitivity(),
-		reticuleState: makeReticuleState(),
+		ui: new Ui(),
 	}
 }
 

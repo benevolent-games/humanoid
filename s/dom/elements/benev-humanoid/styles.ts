@@ -31,7 +31,7 @@ canvas {
 	right: 0.5em;
 }
 
-[view="reticule"] {
+[view="reticle"] {
 	position: absolute;
 	inset: 0;
 	width: 1em;

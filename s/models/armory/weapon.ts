@@ -1,6 +1,5 @@
 
 import {ob} from "@benev/slate"
-import {Meshoid, Vec3} from "@benev/toolbox"
 import {weaponDataSheet} from "./weapon-data-sheet.js"
 
 export namespace Weapon {
@@ -24,21 +23,6 @@ export namespace Weapon {
 			: fallback
 	}
 
-	export type RibbonKind = "handle" | "damage" | "grace"
-
-	export type ProtoRibbon = {
-		kind: RibbonKind
-		a: Vec3
-		b: Vec3
-	}
-
-	export type Meta = {
-		nearcap: Vec3
-		protoRibbons: ProtoRibbon[]
-	}
-
-	export type Metas = Map<Name, () => Meta>
-
 	//////////
 
 	export type Grip = "fists" | "onehander" | "twohander"
@@ -51,10 +35,12 @@ export namespace Weapon {
 	}
 
 	export type Parry = {
+		turncap: number | null
 		timing: ParryTiming
 	}
 
 	export type Attack = {
+		turncap: number | null
 		timing: AttackTiming
 		damage: Damage
 	}

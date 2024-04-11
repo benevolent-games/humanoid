@@ -16,6 +16,8 @@ import {spawning} from "./logic/spawning.js"
 import {velocity} from "./logic/velocity.js"
 import {parenting} from "./logic/parenting.js"
 import {turncaps} from "./logic/turncaps.js"
+import {ui_health} from "./logic/ui_health.js"
+import {stamina} from "./logic/stamina.js"
 
 export const gamelogic = {
 	primary: system("root", () => [
@@ -28,12 +30,13 @@ export const gamelogic = {
 		force,
 		velocity,
 		ambulation,
+		stamina,
 		combat,
-
 		spectator,
 		humanoid,
 		camera_rigging,
 		choreography,
+		ui_health,
 		death,
 	]),
 	afterAnims: system("post anim logic", () => [

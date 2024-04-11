@@ -4,24 +4,21 @@ import {Menus, scalar} from "@benev/toolbox"
 
 import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
+import {Melee} from "../../../../../models/attacking/melee.js"
 import {icon_tabler_chevron_up} from "../../../../icons/tabler/chevron-up.js"
-import { Melee } from "../../../../../models/attacking/melee.js"
 
-export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
-	use.name("reticule")
+export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
+	use.name("reticle")
 	use.styles(css`
 		.shell {
 			position: absolute;
 			inset: 0;
 			width: 1em;
 			height: 1em;
+			margin: auto;
 
 			color: white;
-			opacity: 0;
-			z-index: 1;
 			transition: 200ms linear opacity;
-
-			&[data-active] { opacity: 1; }
 
 			&[data-mode="attack"] { color: #a00; }
 			&[data-mode="attack-release"] { color: #f00; }
@@ -59,7 +56,7 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 		}
 	`)
 
-	const {enabled, size, opacity, data} = game.reticuleState
+	const {enabled, size, opacity, data} = game.ui.reticle
 
 	const aim = data?.meleeAim
 	const action = data?.meleeAction
@@ -91,8 +88,7 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			class="shell"
 			?data-active="${!menus.open.value}"
 			data-mode="${mode}"
-			style="font-size: ${size}em;">
-			<div class="wrapper" style="opacity: ${opacity};">
+			style="font-size: ${size}em; opacity: ${opacity};">
 				<div class="aim graphic">
 					<div class="point"></div>
 				</div>
@@ -101,7 +97,6 @@ export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 					style="${angleStyle}">
 					${icon_tabler_chevron_up}
 				</div>
-			</div>
 		</div>
 	` : html``
 })

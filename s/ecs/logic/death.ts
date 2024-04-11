@@ -10,10 +10,10 @@ export const death = system("death", () => [
 	behavior("bleeding drains your hp")
 		.select({Health})
 		.logic(tick => ({components: {health}}) => {
-			if (health.bleeding > 0) {
-				const loss = scalar.top(bleed_per_second * tick.seconds, health.bleeding)
+			if (health.bleed > 0) {
+				const loss = scalar.top(bleed_per_second * tick.seconds, health.bleed)
 				health.hp -= loss
-				health.bleeding -= loss
+				health.bleed -= loss
 			}
 		}),
 
