@@ -3,13 +3,12 @@ import {Material} from "@babylonjs/core/Materials/material.js"
 
 import {Tracing} from "./types.js"
 import {HybridComponent} from "../../../hub.js"
-import {Weapon} from "../../../../models/armory/weapon.js"
 import {apply_update_to_ribbon, establish_ribbon} from "./utils.js"
 
-const ribbon_limit = 1
+const tracer_count_limit = 3
 
 export type TracerUpdate = {
-	weaponMeta: Weapon.Meta | null
+	blueprint: Tracing.Blueprint | null
 }
 
 export class Tracers extends HybridComponent<{}> {
@@ -19,15 +18,15 @@ export class Tracers extends HybridComponent<{}> {
 			handle: this.realm.colors.blue,
 			damage: this.realm.colors.yellow,
 			grace: this.realm.colors.green,
-		} satisfies Record<Weapon.RibbonKind, Material>,
+		} satisfies Record<Tracing.RibbonKind, Material>,
 		edges: {
 			handle: this.realm.colors.red,
 			damage: this.realm.colors.red,
 			grace: this.realm.colors.red,
-		} satisfies Record<Weapon.RibbonKind, Material>,
+		} satisfies Record<Tracing.RibbonKind, Material>,
 	}
 
-	#ribbons: Tracing.Ribbon[] = []
+	#ribbonGroups: Tracing.Ribbon[][] = []
 
 	wip: null | {
 		lines: Tracing.Line[]
@@ -36,20 +35,20 @@ export class Tracers extends HybridComponent<{}> {
 	}[] = null
 
 	update(update: TracerUpdate) {
-		if (update.weaponMeta) {
+		if (update.blueprint) {
 			if (!this.wip) this.#start_tracing(update)
-			else this.#continue_tracing(update.weaponMeta)
+			else this.#continue_tracing(update)
 		}
 		else if (this.wip) this.#finish_tracing()
 
 		this.#destroy_extra_ribbons()
 	}
 
-	#start_tracing(update: TracerUpdate) {
-		const ribbonize = (proto: Weapon.ProtoRibbon) => ({
+	#start_tracing({blueprint}: TracerUpdate) {
+		const ribbonize = (proto: Tracing.ProtoRibbon) => ({
 			spec: proto,
 			edge: null,
-			lines: [[proto.a, proto.b] as Tracing.Line],
+			lines: [proto.line],
 			data: establish_ribbon(
 				this.realm.scene,
 				this.realm.debug.meleeTracers,
@@ -57,14 +56,14 @@ export class Tracers extends HybridComponent<{}> {
 				this.#materials.edges[proto.kind],
 			),
 		})
-		this.wip = update.weaponMeta!.protoRibbons.map(ribbonize)
+		this.wip = blueprint!.protoRibbons.map(ribbonize)
 	}
 
-	#continue_tracing(meta: Weapon.Meta) {
+	#continue_tracing({blueprint}: TracerUpdate) {
 		if (this.wip) {
-			meta.protoRibbons.forEach((proto, index) => {
+			blueprint!.protoRibbons.forEach((proto, index) => {
 				const ribbon = this.wip![index]
-				ribbon.lines.push([proto.a, proto.b])
+				ribbon.lines.push(proto.line)
 				ribbon.edge = apply_update_to_ribbon(ribbon.data, ribbon.lines)
 			})
 		}
@@ -72,26 +71,28 @@ export class Tracers extends HybridComponent<{}> {
 
 	#finish_tracing() {
 		if (this.wip) {
-			for (const ribbon of this.wip)
-				this.#ribbons.push(ribbon.data)
+			this.#ribbonGroups.push(this.wip.map(w => w.data))
 			this.wip = null
 		}
 	}
 
 	#destroy_extra_ribbons() {
-		while (this.#ribbons.length > ribbon_limit)
-			this.#ribbons.shift()?.dispose()
+		while (this.#ribbonGroups.length > tracer_count_limit)
+			this.#ribbonGroups.shift()!.forEach(ribbon => ribbon.dispose())
 	}
 
 	created() {}
 
 	deleted() {
-		const allRibbons = [
-			...this.#ribbons,
-			...((this.wip ?? []).map(r => r.data) ?? []),
-		]
-		for (const ribbon of allRibbons)
+
+		// delete all ribbons
+		for (const ribbon of this.#ribbonGroups.flat())
 			ribbon.dispose()
+
+		// delete wip data
+		for (const {data} of this.wip ?? [])
+			data.dispose()
+
 	}
 }
 

@@ -1,9 +1,10 @@
 
+import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {Prop, babyloid, nametag, nquery} from "@benev/toolbox"
 
+import {Tracing} from "../tracers/types.js"
 import {HybridComponent} from "../../../hub.js"
 import {Weapon} from "../../../../models/armory/weapon.js"
-import {Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
 import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
@@ -39,13 +40,8 @@ export class Character extends HybridComponent<{height: number}> {
 		return {left, right}
 	})()
 
-	getWeaponMeta(name: Weapon.Name): Weapon.Meta | null {
-		const fn = this.weaponMetas.get(name)
-		return fn ? fn() : null
-	}
-
-	readonly weaponMetas = (() => {
-		const metas = new Map<Weapon.Name, () => Weapon.Meta>()
+	readonly weaponEnsembles = (() => {
+		const ensembles = new Map<Weapon.Name, Tracing.Ensemble>()
 		const weapons = [...this.weapons.right].filter(([name]) => name !== "reference")
 
 		for (const [name, mesh] of [...weapons]) {
@@ -55,27 +51,60 @@ export class Character extends HybridComponent<{height: number}> {
 			const nearcaps = props.filter(p => nquery(p).name("near"))
 			const [nearcap] = nearcaps
 
-			metas.set(name as Weapon.Name, () => ({
-				nearcap: babyloid.to.vec3(nearcap.getAbsolutePosition()),
-				protoRibbons: ribbonGuides.map(prop => {
-					const length = prop.scaling.y
-					const matrix = prop.computeWorldMatrix(true)
-					const a = new Vector3(0, 0, 0)
-					const b = new Vector3(0, length, 0)
-					return {
-						kind: nametag(prop.name).name as Weapon.RibbonKind,
-						a: babyloid.to.vec3(Vector3.TransformCoordinates(a, matrix)),
-						b: babyloid.to.vec3(Vector3.TransformCoordinates(b, matrix)),
-					}
+			ensembles.set(name as Weapon.Name, {
+				nearcap,
+				ribbonGuides,
+				makeRibbonBlueprint: (): Tracing.Blueprint => ({
+					nearcapPosition: babyloid.to.vec3(nearcap.getAbsolutePosition()),
+					protoRibbons: ribbonGuides.map(prop => {
+						const matrix = prop.computeWorldMatrix(true)
+						const a = new Vector3(0, 0, 0)
+						const b = new Vector3(0, 1, 0)
+						return {
+							kind: nametag(prop.name).name as Tracing.RibbonKind,
+							line: [
+								babyloid.to.vec3(Vector3.TransformCoordinates(a, matrix)),
+								babyloid.to.vec3(Vector3.TransformCoordinates(b, matrix)),
+							],
+						}
+					}),
 				}),
-			}))
+			})
 
 			props.filter(babyloid.is.meshoid).forEach(mesh => mesh.isVisible = false)
 			physics.forEach(mesh => mesh.dispose())
 		}
 
-		return metas
+		return ensembles
 	})()
+
+	// todo = (() => {
+	// 	const ensemble = this.weaponEnsembles.get("hatchet")!
+	// 	const visuals = ensemble.ribbonGuides.map(prop => {
+	// 		if (babyloid.is.meshoid(prop)) {
+	// 			prop.material = this.realm.colors.green
+	// 			prop.isVisible = true
+	// 			prop.visibility = 0.2
+	// 			console.log(prop.name, prop.scaling, prop)
+	// 		}
+	// 		const alpha = MeshBuilder.CreateIcoSphere("box", {radius: 0.04})
+	// 		const bravo = MeshBuilder.CreateIcoSphere("box", {radius: 0.04})
+	// 		alpha.material = this.realm.colors.blue
+	// 		bravo.material = this.realm.colors.red
+	// 		const update = ([a, b]: Tracing.Line) => {
+	// 			alpha.position.set(...a)
+	// 			bravo.position.set(...b)
+	// 		}
+	// 		return update
+	// 	})
+	// 	return () => {
+	// 		const blueprint = ensemble.makeRibbonBlueprint()
+	// 		blueprint.protoRibbons.forEach((proto, index) => {
+	// 			const update = visuals[index]
+	// 			update(proto.line)
+	// 		})
+	// 	}
+	// })()
 
 	created() {}
 	updated() {}
