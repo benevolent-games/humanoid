@@ -20,7 +20,7 @@ export const death = system("death", () => [
 	behavior("without health, you die")
 		.select({Health})
 		.logic(() => entity => {
-			if (entity.components.health.hp <= 0)
+			if (entity.components.health.hp < 0)
 				entity.dispose()
 		}),
 ])

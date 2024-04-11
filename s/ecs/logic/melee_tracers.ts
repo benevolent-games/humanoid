@@ -4,8 +4,8 @@ import {processHits} from "./utils/process_hits.js"
 import {Melee} from "../../models/attacking/melee.js"
 import {Tracers} from "../components/hybrids/tracers/tracers.js"
 import {Character} from "../components/hybrids/character/character.js"
-import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {Inventory, MeleeAction} from "../components/topics/warrior.js"
+import {InventoryManager} from "../../models/armory/inventory-manager.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
@@ -27,8 +27,8 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
 			// continue tracing
 			else if (releasePhase && tracers.current) {
-				for (const {ribbon, edge} of tracers.continue())
-					processHits({
+				for (const {ribbon, edge} of tracers.continue()) {
+					const hitRibbon = processHits({
 						edge,
 						ribbon,
 						world,
@@ -36,6 +36,9 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 						meleeAction,
 						entityId: entity.id,
 					})
+					if (hitRibbon)
+						break
+				}
 			}
 
 			// finish tracing

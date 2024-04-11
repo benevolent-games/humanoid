@@ -1,7 +1,7 @@
 
-import {Id, Rapier, human, quat, vec3} from "@benev/toolbox"
+import {Id, Rapier, quat, vec3} from "@benev/toolbox"
 
-import {Entity, World} from "../../hub.js"
+import {World} from "../../hub.js"
 import {Melee} from "../../../models/attacking/melee.js"
 import {Health} from "../../components/topics/warrior.js"
 import {HuPhysics} from "../../../models/realm/physics.js"
@@ -11,25 +11,6 @@ import {Ribbon} from "../../components/hybrids/tracers/utils/ribbon.js"
 
 const {xyz} = vec3.to
 const {xyzw} = quat.to
-
-export function applyDamage({
-		entity,
-		meleeAction,
-	}: {
-		meleeAction: Melee.Action.Attack
-		entity: Entity<{Health: typeof Health}>
-	}) {
-
-	const {weapon} = meleeAction
-	const {blunt, bleed, pierce} = Melee.is.swing(meleeAction)
-		? weapon.swing.damage
-		: weapon.stab.damage
-
-	console.log(`damage! ${human.vec([blunt, bleed, pierce])}`)
-
-	entity.components.health.hp -= blunt
-	entity.components.health.bleed += bleed
-}
 
 export function processHits({
 		entityId, world, physics, ribbon, edge, meleeAction,
@@ -95,10 +76,14 @@ export function processHits({
 				const entity = world.get(capsule.entityId)
 				if (entity.has({Health})) {
 					const infirmary = new Infirmary(entity.components.health)
-					infirmary.applyDamage(meleeAction)
+					infirmary.applyDamage(meleeAction, ribbon)
 				}
 			}
 		}
+
+		return ribbon
 	}
+
+	return null
 }
 
