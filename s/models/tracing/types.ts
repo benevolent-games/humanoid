@@ -21,7 +21,7 @@ export namespace Tracing {
 
 	export type Ensemble = {
 		nearcap: Prop
-		ribbonGuides: Prop[]
+		ribbonGuides: {kind: RibbonKind, prop: Prop}[]
 		makeRibbonBlueprint: () => Blueprint
 	}
 
