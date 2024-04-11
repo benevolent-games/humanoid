@@ -28,10 +28,8 @@ export class Ui {
 	})
 
 	health = flatstate({
-		displayActive: false,
 		hp: 0,
 		bleed: 0,
-		bleedRate: 0,
 		stamina: 0,
 	})
 
