@@ -8,7 +8,7 @@ import {styles} from "./styles.js"
 import {MenuSystem} from "./menus.js"
 import {Game} from "../../../types.js"
 import {nexus} from "../../../nexus.js"
-import {Reticule} from "./views/reticule/view.js"
+import {Reticle} from "./views/reticle/view.js"
 
 enum Predicament {
 	Menu,
@@ -85,7 +85,7 @@ const GameView = nexus.light_view(use => (game: Game, menus: Menus) => {
 				onBackdropTouch: toggley(setty.mobileGaming),
 			}],
 			{content: html`
-				${Reticule([game, menus])}
+				${Reticle([game, menus])}
 				${(mobile.value || null) && html`
 					<div slot=baseplate class=mobile_controls>
 						${NubLookpad([game.tact.connectedDevices.lookpad])}

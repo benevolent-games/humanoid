@@ -7,8 +7,8 @@ import {nexus} from "../../../../../nexus.js"
 import {Melee} from "../../../../../models/attacking/melee.js"
 import {icon_tabler_chevron_up} from "../../../../icons/tabler/chevron-up.js"
 
-export const Reticule = nexus.shadow_view(use => (game: Game, menus: Menus) => {
-	use.name("reticule")
+export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
+	use.name("reticle")
 	use.styles(css`
 		.shell {
 			position: absolute;

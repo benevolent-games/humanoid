@@ -100,7 +100,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<span>mobile controls, reworked animations.</span>
 				<small>2024-04-04</small>
 			</h1>
-			<p>lonnie reworked the animations, so now your weapon swings and stabs actually aim at your reticule in the center of your screen.</p>
+			<p>lonnie reworked the animations, so now your weapon swings and stabs actually aim at your reticle in the center of your screen.</p>
 			<p>now you can play the game on your phone. it's a crude first-draft, but when you use a touch screen the game enters a "mobile" mode where you get a thumbstick on the left and you can touch-drag anywhere else to control your aim. you can't sprint or attack yet, i'll slowly chip away at this in my "off time" so to speak.</p>
 			<p>improved ultrawide monitor support: the ui and menu system is now constrained to 16/9 so it stays centered on your screen.</p>
 		</section>
@@ -124,7 +124,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 			</h1>
 			<p>now you can swing your sword in any direction, except straight up/down.</p>
 			<p>you can also parry and stab.</p>
-			<p>added a new 'settings' menu, where you can change your mouse sensitivity and set reticule preferences.</p>
+			<p>added a new 'settings' menu, where you can change your mouse sensitivity and set reticle preferences.</p>
 		</section>
 
 		<section>
