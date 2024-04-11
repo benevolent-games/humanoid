@@ -22,6 +22,10 @@ export const HealthBar = nexus.shadow_view(use => (game: Game) => {
 			padding: 0.2em;
 			gap: 0.2em;
 
+			&[hidden] {
+				display: none;
+			}
+
 			> * {
 				flex: 1 0 0;
 				height: 0.2em;
@@ -50,16 +54,13 @@ export const HealthBar = nexus.shadow_view(use => (game: Game) => {
 		}
 	`)
 
-	const {hp, bleed, stamina} = game.ui.health
-	// const stamina = 0.67
-	// const hp = 0.50
-	// const bleed = 0.14
+	const {enabled, hp, bleed, stamina} = game.ui.health
 
 	const hpWidth = scalar.clamp(hp - bleed) * 100
 	const bleedWidth = bleed * 100
 
 	return html`
-		<div class=plate>
+		<div class=plate ?hidden="${!enabled}">
 			<div class="stamina bar">
 				<div class=juice style="width: ${stamina * 100}%;"></div>
 			</div>

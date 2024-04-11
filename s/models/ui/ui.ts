@@ -28,13 +28,14 @@ export class Ui {
 	})
 
 	health = flatstate({
+		enabled: false,
 		hp: 0,
 		bleed: 0,
 		stamina: 0,
 	})
 
 	equipment = flatstate({
-		displayActivated: false,
+		enabled: false,
 		shield: false,
 		weaponName: "",
 		grips: {
