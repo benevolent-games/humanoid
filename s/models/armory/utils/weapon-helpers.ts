@@ -93,7 +93,7 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 ////////////////////////////////////////////
 
 const ms = (ms: number) => ms / 1000
-const percent = (percent: number) => percent * 1000
+const percent = (percent: number) => percent / 100
 
 const xTiming = (t: Weapon.AttackTiming, x: number): Weapon.AttackTiming => ({
 	windup: t.windup * x,

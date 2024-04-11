@@ -1,5 +1,5 @@
 
-import {scalar} from "@benev/toolbox"
+import {human, scalar} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
 import {Health} from "../components/topics/warrior.js"
 
@@ -14,6 +14,7 @@ export const death = system("death", () => [
 				const loss = scalar.top(bleed_per_second * tick.seconds, health.bleeding)
 				health.hp -= loss
 				health.bleeding -= loss
+				console.log(`bleeding.. ${human.vec([health.hp, health.bleeding])}`)
 			}
 		}),
 
