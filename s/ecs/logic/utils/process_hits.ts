@@ -6,6 +6,7 @@ import {Melee} from "../../../models/attacking/melee.js"
 import {Health} from "../../components/topics/warrior.js"
 import {HuPhysics} from "../../../models/realm/physics.js"
 import {Tracing} from "../../components/hybrids/tracers/types.js"
+import {Infirmary} from "../../../models/facilities/infirmary.js"
 import {Ribbon} from "../../components/hybrids/tracers/utils/ribbon.js"
 
 const {xyz} = vec3.to
@@ -27,7 +28,7 @@ export function applyDamage({
 	console.log(`damage! ${human.vec([blunt, bleed, pierce])}`)
 
 	entity.components.health.hp -= blunt
-	entity.components.health.bleeding += bleed
+	entity.components.health.bleed += bleed
 }
 
 export function processHits({
@@ -93,10 +94,8 @@ export function processHits({
 			if (we_are_not_hitting_ourselves) {
 				const entity = world.get(capsule.entityId)
 				if (entity.has({Health})) {
-					applyDamage({
-						entity,
-						meleeAction,
-					})
+					const infirmary = new Infirmary(entity.components.health)
+					infirmary.applyDamage(meleeAction)
 				}
 			}
 		}

@@ -6,8 +6,12 @@ import {Melee} from "../../../models/attacking/melee.js"
 
 export class Health extends Component<{
 	hp: number
-	bleeding: number
+	bleed: number
 }>{}
+
+export class Stamina extends Component<{
+	juice: number
+}> {}
 
 export class Inventory extends Component<{
 	hands: {

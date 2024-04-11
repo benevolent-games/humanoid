@@ -1,6 +1,6 @@
 
 import {behavior, responder, system} from "../hub.js"
-import {Health} from "../components/topics/warrior.js"
+import {Health, Stamina} from "../components/topics/warrior.js"
 import {Controllable} from "../components/plain_components.js"
 
 export const ui_health = system("health ui", ({realm}) => [
@@ -9,18 +9,20 @@ export const ui_health = system("health ui", ({realm}) => [
 		.select({Controllable, Health})
 		.respond(() => {
 			realm.ui.health.enabled = true
-			console.log("enabled")
-			return () => {
-				realm.ui.health.enabled = false
-				console.log("not so enabled")
-			}
+			return () => realm.ui.health.enabled = false
 		}),
 
 	behavior("send health values to the ui")
 		.select({Controllable, Health})
 		.logic(() => ({components: {health}}) => {
 			realm.ui.health.hp = health.hp
-			realm.ui.health.bleed = health.bleeding
+			realm.ui.health.bleed = health.bleed
+		}),
+
+	behavior("send stamina values while we're at it")
+		.select({Controllable, Stamina})
+		.logic(() => ({components: {stamina}}) => {
+			realm.ui.health.stamina = stamina.juice
 		}),
 ])
 

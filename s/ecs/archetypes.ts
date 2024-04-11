@@ -11,7 +11,7 @@ import {Tracers} from "./components/hybrids/tracers/tracers.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
-import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent} from "./components/topics/warrior.js"
+import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent, Stamina} from "./components/topics/warrior.js"
 import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
@@ -112,6 +112,7 @@ export namespace Archetypes {
 			Rotation,
 
 			Health,
+			Stamina,
 			Inventory,
 			MeleeAim,
 			MeleeIntent,
@@ -190,8 +191,8 @@ export namespace Archetypes {
 			inventory: {
 				hands: {
 					shield: true,
-					grip: "onehander",
-					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.hatchet),
+					grip: "twohander",
+					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.axe),
 				},
 				belt: {
 					slots: Weapon.listing,
@@ -201,7 +202,10 @@ export namespace Archetypes {
 			tracers: {},
 			health: {
 				hp: 1,
-				bleeding: 0,
+				bleed: 0,
+			},
+			stamina: {
+				juice: 1,
 			},
 		},
 	)
