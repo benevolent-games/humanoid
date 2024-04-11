@@ -15,13 +15,10 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			inset: 0;
 			width: 1em;
 			height: 1em;
+			margin: auto;
 
 			color: white;
-			opacity: 0;
-			z-index: 1;
 			transition: 200ms linear opacity;
-
-			&[data-active] { opacity: 1; }
 
 			&[data-mode="attack"] { color: #a00; }
 			&[data-mode="attack-release"] { color: #f00; }
@@ -91,8 +88,7 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			class="shell"
 			?data-active="${!menus.open.value}"
 			data-mode="${mode}"
-			style="font-size: ${size}em;">
-			<div class="wrapper" style="opacity: ${opacity};">
+			style="font-size: ${size}em; opacity: ${opacity};">
 				<div class="aim graphic">
 					<div class="point"></div>
 				</div>
@@ -101,7 +97,6 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 					style="${angleStyle}">
 					${icon_tabler_chevron_up}
 				</div>
-			</div>
 		</div>
 	` : html``
 })

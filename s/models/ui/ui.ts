@@ -6,7 +6,6 @@ import {Weapon} from "../armory/weapon.js"
 import {MeleeAction, MeleeAim} from "../../ecs/components/topics/warrior.js"
 
 export class Ui {
-
 	sensitivity: Sensitivity = flatstate({
 		mouse: 360,
 		keys: 180,
@@ -39,19 +38,20 @@ export class Ui {
 	equipment = flatstate({
 		displayActivated: false,
 		shield: false,
+		weaponName: "",
 		grips: {
-			fists: {
+			fists: flatstate({
 				available: false,
 				active: false,
-			},
-			twohander: {
+			}),
+			twohander: flatstate({
 				available: false,
 				active: false,
-			},
-			onehander: {
+			}),
+			onehander: flatstate({
 				available: false,
 				active: false,
-			},
+			}),
 		} satisfies Record<Weapon.Grip, any>
 	})
 }
