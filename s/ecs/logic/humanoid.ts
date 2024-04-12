@@ -70,7 +70,7 @@ export const humanoid = system("humanoid", () => [
 
 				components.impetus = vec3.add(
 					impetus,
-					gimbaltool(gimbal).rotate(target),
+					gimbaltool(gimbal).flat.rotate(target),
 				)
 			}
 		}),
@@ -94,7 +94,7 @@ export const humanoid = system("humanoid", () => [
 
 			if (!grounding.grounded) {
 				const global_airforce = unflatten(vec2.multiplyBy(force, factor))
-				const airforce = gimbaltool(gimbal).rotate(global_airforce)
+				const airforce = gimbaltool(gimbal).flat.rotate(global_airforce)
 				const new_trajectory = vec3.add(airborneTrajectory, airforce)
 
 				if (vec3.magnitude(new_trajectory) > maxSpeed) {

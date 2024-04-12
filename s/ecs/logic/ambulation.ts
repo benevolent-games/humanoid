@@ -56,6 +56,7 @@ export const ambulation = behavior("calculate ambulatory data")
 			groundage: smooth.groundage,
 			...cardinalize(
 				gimbaltool(c.gimbal)
+					.flat
 					.unrotate2d(smooth.normal)
 			),
 		}

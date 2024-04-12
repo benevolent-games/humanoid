@@ -53,7 +53,7 @@ export const HealthBar = nexus.shadow_view(use => (game: Game) => {
 		}
 	`)
 
-	const {enabled, hp, bleed, stamina} = game.ui.health
+	const {enabled, hp, bleed, stamina} = game.ui.personalHealth
 
 	const bleedpoint = scalar.clamp(hp - bleed)
 	const hpWidth = (bleedpoint) * 100

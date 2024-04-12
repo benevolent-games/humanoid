@@ -27,7 +27,14 @@ export class Ui {
 		}
 	})
 
-	health = flatstate({
+	personalHealth = flatstate({
+		enabled: false,
+		hp: 0,
+		bleed: 0,
+		stamina: 0,
+	})
+
+	targetHealth = flatstate({
 		enabled: false,
 		hp: 0,
 		bleed: 0,
