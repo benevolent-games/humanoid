@@ -193,8 +193,8 @@ export namespace Archetypes {
 			inventory: {
 				hands: {
 					shield: true,
-					grip: "twohander",
-					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.axe),
+					grip: "onehander",
+					equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.hatchet),
 				},
 				belt: {
 					slots: Weapon.listing,

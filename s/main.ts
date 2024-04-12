@@ -45,6 +45,7 @@ await game.levelLoader.goto.viking_village()
 // spawner
 const spawner = blank_spawner_state()
 spawner.inputs.respawn = true
+spawner.inputs.bot_spawn = true
 world.create(arch({Spawner}, {spawner}))
 
 world.create(arch({AimTarget}, {aimTarget: {
