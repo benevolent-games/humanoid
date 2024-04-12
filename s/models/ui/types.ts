@@ -14,3 +14,10 @@ export type Sensitivity = {
 	touch: number
 }
 
+export type HealthState = {
+	enabled: boolean
+	hp: number
+	bleed: number
+	stamina: number
+}
+

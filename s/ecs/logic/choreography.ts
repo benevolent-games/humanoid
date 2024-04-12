@@ -34,13 +34,13 @@ export const choreography = system("humanoid", () => [
 	behavior("set visibility of active weapon")
 		.select({Character, Inventory})
 		.logic(() => ({components: {character, inventory}}) => {
-			const shieldMesh = character.weapons.left.get("shield")
+			const shieldMesh = character.weaponry.left.get("shield")
 			const {shield, weaponName} = new InventoryManager(inventory)
 
 			if (shieldMesh && babyloid.is.meshoid(shieldMesh))
 				shieldMesh.isVisible = shield
 
-			for (const [name, prop] of character.weapons.right)
+			for (const [name, prop] of character.weaponry.right)
 				if (babyloid.is.meshoid(prop))
 					prop.isVisible = name === weaponName
 		}),

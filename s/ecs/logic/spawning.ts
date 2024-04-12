@@ -1,10 +1,21 @@
 
-import {Trashcan} from "@benev/toolbox"
+import {Trashcan, Vec2, Vec3, scalar} from "@benev/toolbox"
 
 import {Archetypes} from "../archetypes.js"
+import {Weapon} from "../../models/armory/weapon.js"
 import {system, behavior, responder} from "../hub.js"
 import {Humanoid, Parent, Spawner, SpawnTracker, Spectator} from "../components/plain_components.js"
 import {blank_spawner_state, spawnPlayer, spawnSpectator, updateStartingAt} from "./utils/spawns.js"
+
+const playerStart = {
+	gimbal: [scalar.radians.from.turns(0.5), 0] as Vec2,
+	position: [0, 0, 0] as Vec3,
+}
+
+const botStart = {
+	gimbal: [0, 0] as Vec2,
+	position: [0, 2, -5] as Vec3,
+}
 
 export const spawning = system("spawning", ({world, realm}) => {
 	const spawnedQuery = world.query({SpawnTracker, Parent})
@@ -60,7 +71,7 @@ export const spawning = system("spawning", ({world, realm}) => {
 						else spawnPlayer(world, spawner)
 					}
 					else {
-						spawner.starting_at = blank_spawner_state().starting_at
+						spawner.starting_at = playerStart
 						spawnPlayer(world, spawner)
 					}
 				}
@@ -91,9 +102,18 @@ export const spawning = system("spawning", ({world, realm}) => {
 				if (spawner.inputs.bot_spawn) {
 					const bot = world.create(Archetypes.bot({
 						debug: false,
-						gimbal: [0, 0],
-						position: [0, 2, 5],
+						...botStart,
 					}))
+					bot.components.inventory = {
+						hands: {
+							shield: true,
+							grip: "twohander",
+							equippedBeltSlot: Weapon.listing.indexOf(Weapon.library.axe),
+						},
+						belt: {
+							slots: Weapon.listing,
+						},
+					}
 					spawner.bots.push(bot.id)
 				}
 

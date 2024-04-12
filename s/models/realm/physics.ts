@@ -2,6 +2,8 @@
 import {Scene} from "@babylonjs/core/scene.js"
 import {Id, Physics, Rapier, debug_colors} from "@benev/toolbox"
 
+export type CapsuleWorld = {}
+
 export class HuPhysics extends Physics {
 	constructor({scene, colors}: {
 			scene: Scene

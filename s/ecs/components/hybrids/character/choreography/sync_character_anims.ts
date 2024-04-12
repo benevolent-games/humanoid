@@ -122,7 +122,7 @@ export function sync_character_anims({
 			attack_5: anims.fists_attack_5,
 			attack_6: anims.fists_attack_6,
 			attack_7: anims.fists_attack_7,
-			attack_8: anims.fists_attack_8,
+			// attack_8: anims.fists_attack_8,
 		},
 		onehander: {
 			guard: anims.onehander,
@@ -142,7 +142,7 @@ export function sync_character_anims({
 			attack_5: anims.onehander_attack_5,
 			attack_6: anims.onehander_attack_6,
 			attack_7: anims.onehander_attack_7,
-			attack_8: anims.onehander_attack_8,
+			// attack_8: anims.onehander_attack_8,
 		},
 		twohander: {
 			guard: anims.twohander,
@@ -160,7 +160,7 @@ export function sync_character_anims({
 			attack_5: anims.twohander_attack_5,
 			attack_6: anims.twohander_attack_6,
 			attack_7: anims.twohander_attack_7,
-			attack_8: anims.twohander_attack_8,
+			// attack_8: anims.twohander_attack_8,
 		},
 	} satisfies Record<Weapon.Grip, any>
 

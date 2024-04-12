@@ -7,6 +7,7 @@ import {HuPhysics} from "./physics.js"
 import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {LoadingDock} from "../planning/loading_dock.js"
+import { Finder } from "../finder/finder.js"
 // import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
@@ -59,6 +60,7 @@ export async function makeRealm(params: RealmParams) {
 		loadingDock,
 		characterContainer,
 		ui: new Ui(),
+		finder: new Finder(physics),
 	}
 }
 

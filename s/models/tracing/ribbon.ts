@@ -3,8 +3,8 @@ import {label} from "@benev/toolbox"
 import {Scene} from "@babylonjs/core/scene.js"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 
-import {Tracing} from "../types.js"
-import {generate_data_for_ribbon} from "./utils.js"
+import {Tracing} from "./types.js"
+import {generate_data_for_ribbon} from "./utils/meshwork.js"
 
 export class Ribbon {
 	sheetMesh: Mesh
