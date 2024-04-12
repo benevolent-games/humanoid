@@ -7,11 +7,12 @@ import {arch, hub} from "./ecs/hub.js"
 import {CommitHash} from "./tools/commit_hash.js"
 import startup_realm from "./startup/startup_realm.js"
 import {LevelLoader} from "./models/level_loader/loader.js"
-import {Spawner} from "./ecs/components/plain_components.js"
+import {AimTarget, Spawner} from "./ecs/components/plain_components.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
+import startup_gamelogic from "./startup/startup_gamelogic.js"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -27,8 +28,7 @@ const world = hub.world(realm)
 // preventing certain default browser keypress behaviors
 startup_housekeeping(realm)
 
-// running the actual gameloop tick
-startup_gameloop(realm, world)
+const executeGamelogic = startup_gamelogic(realm, world)
 
 // define the game, which extends the realm
 const game: Game = {
@@ -46,6 +46,15 @@ await game.levelLoader.goto.viking_village()
 const spawner = blank_spawner_state()
 spawner.inputs.respawn = true
 world.create(arch({Spawner}, {spawner}))
+
+world.create(arch({AimTarget}, {aimTarget: {
+	targetEntityId: null,
+	recentTargetEntityId: null,
+	lastAimTime: 0,
+}}))
+
+// running the actual gameloop tick
+startup_gameloop(realm, executeGamelogic)
 
 // indicating that things are going well
 console.log(`🏃 humanoid ready, took ${(performance.now() / 1000).toFixed(1)} seconds.`)

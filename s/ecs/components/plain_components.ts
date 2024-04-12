@@ -8,6 +8,12 @@ import {Choreo} from "../../models/choreographer/types.js"
 export class Parent extends Component<Id> {}
 export class Children extends Component<Id[]> {}
 
+export class AimTarget extends Component<{
+	targetEntityId: null | Id
+	recentTargetEntityId: null | Id
+	lastAimTime: number
+}> {}
+
 export class Spawner extends Component<{
 	bots: Id[]
 	starting_at: {

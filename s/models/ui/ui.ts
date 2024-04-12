@@ -1,7 +1,7 @@
 
 import {Ecs} from "@benev/toolbox"
 import {flatstate} from "@benev/slate"
-import {Sensitivity} from "./types.js"
+import {HealthState, Sensitivity} from "./types.js"
 import {Weapon} from "../armory/weapon.js"
 import {MeleeAction, MeleeAim} from "../../ecs/components/topics/warrior.js"
 
@@ -27,18 +27,15 @@ export class Ui {
 		}
 	})
 
-	personalHealth = flatstate({
+	personalHealth: HealthState = flatstate({
 		enabled: false,
 		hp: 0,
 		bleed: 0,
 		stamina: 0,
 	})
 
-	targetHealth = flatstate({
-		enabled: false,
-		hp: 0,
-		bleed: 0,
-		stamina: 0,
+	targetHealth: HealthState = flatstate({
+		...this.personalHealth,
 	})
 
 	equipment = flatstate({

@@ -2,22 +2,13 @@
 import {scalar} from "@benev/toolbox"
 import {css, html} from "@benev/slate"
 
-import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
+import {HealthState} from "../../../../../models/ui/types.js"
 
-export const HealthBar = nexus.shadow_view(use => (game: Game) => {
+export const HealthBar = nexus.shadow_view(use => (health: HealthState) => {
 	use.name("health")
 	use.styles(css`
 		.plate {
-			position: absolute;
-			bottom: 1em;
-			left: 0;
-			right: 0;
-			margin: auto;
-
-			width: 50%;
-			background: #0002;
-
 			display: flex;
 			gap: 0.4em;
 			padding: 0.4em;
@@ -53,8 +44,7 @@ export const HealthBar = nexus.shadow_view(use => (game: Game) => {
 		}
 	`)
 
-	const {enabled, hp, bleed, stamina} = game.ui.personalHealth
-
+	const {enabled, hp, bleed, stamina} = health
 	const bleedpoint = scalar.clamp(hp - bleed)
 	const hpWidth = (bleedpoint) * 100
 	const bleedWidth = (hp - bleedpoint) * 100

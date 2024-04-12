@@ -90,7 +90,7 @@ export const spawning = system("spawning", ({world, realm}) => {
 
 				if (spawner.inputs.bot_spawn) {
 					const bot = world.create(Archetypes.bot({
-						debug: true,
+						debug: false,
 						gimbal: [0, 0],
 						position: [0, 2, 5],
 					}))

@@ -1,15 +1,13 @@
 
-import {ob} from "@benev/slate"
-import {HuTick, World} from "../ecs/hub.js"
-import {gamelogic} from "../ecs/gamelogic.js"
+import {HuTick} from "../ecs/hub.js"
 import {HuRealm} from "../models/realm/realm.js"
+import startup_gamelogic from "./startup_gamelogic.js"
 
 /**
  * start the gameloop, to execute physics and game logic.
  */
-export default (realm: HuRealm, world: World) => {
+export default (realm: HuRealm, executeGamelogic: ReturnType<typeof startup_gamelogic>) => {
 	const {stage, physics} = realm
-	const executeGamelogic = ob(gamelogic).map(s => s.prepareExecutor({realm, world}))
 
 	const tick: HuTick = {
 		count: 0,

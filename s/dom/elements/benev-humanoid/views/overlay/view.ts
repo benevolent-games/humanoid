@@ -27,14 +27,33 @@ export const Overlay = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			opacity: 0;
 			&[data-open] { opacity: 1; }
 		}
+
+		.healthbar {
+			position: absolute;
+			left: 0;
+			right: 0;
+			margin: auto;
+
+			width: 50%;
+			background: #0002;
+
+			&.target { top: 1em; }
+			&.personal { bottom: 1em; }
+		}
 	`)
 
 	return html`
 		<div class="container" ?data-open="${!menus.open.value}">
 			${Reticle([game, menus])}
-			${HealthBar([game])}
+
+			<div class="target healthbar">
+				${HealthBar([game.ui.targetHealth])}
+			</div>
+
+			<div class="personal healthbar">
+				${HealthBar([game.ui.personalHealth])}
+			</div>
 		</div>
 	`
 })
-
 

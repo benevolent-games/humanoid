@@ -17,30 +17,27 @@ export type RayParams = {
 	origin: Vec3,
 	direction: Vec3,
 	maxDistance: number,
-	maxHits: null | number,
 	ignoreColliders: Rapier.Collider[],
 }
 
 export class Finder {
 	constructor(public physics: HuPhysics) {}
 
-	rayCast({origin, direction, maxHits, maxDistance, ignoreColliders}: RayParams) {
+	rayCast({origin, direction, maxDistance, ignoreColliders}: RayParams) {
 		const {physics} = this
 		const hits: RayHit[] = []
 		const ray = new Rapier.Ray(xyz(origin), xyz(direction))
-		physics.world.intersectionsWithRay(ray, maxDistance, false, hit => {
-			if (!ignoreColliders.includes(hit.collider)) {
-				hits.push({
-					distance: hit.toi,
-					collider: hit.collider,
-					normal: vec3.from.xyz(hit.normal),
-				})
-				if (maxHits !== null && hits.length >= maxHits)
-					return true
-			}
-			return false
+		physics.world.intersectionsWithRay(ray, maxDistance, true, hit => {
+			hits.push({
+				distance: hit.toi,
+				collider: hit.collider,
+				normal: vec3.from.xyz(hit.normal),
+			})
+			return true
 		})
-		return hits.sort((a, b) => a.distance - b.distance)
+		return hits
+			.filter(hit => !ignoreColliders.includes(hit.collider))
+			.sort((a, b) => a.distance - b.distance)
 	}
 
 	rayCastForCapsules(ecsWorld: World, params: RayParams) {
