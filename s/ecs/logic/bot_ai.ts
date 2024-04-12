@@ -22,17 +22,17 @@ export const bot_ai = system("bot ai", () => [
 				)
 			}
 
-			// const strafe = center(sample())
-			// const walk = clamp(
-			// 	(sample(sample(1 / 10)) * 0.8) +
-			// 	center(sample(1 / 3))
-			// )
+			const strafe = center(sample())
+			const walk = clamp(
+				(sample(sample(1 / 10)) * 0.8) +
+				center(sample(1 / 3))
+			)
 
-			// components.intent.amble = molasses2d(20, components.intent.amble, [strafe, walk])
-			// components.intent.glance[0] = center(sample(3 / 10)) / 10
+			components.intent.amble = molasses2d(20, components.intent.amble, [strafe, walk])
+			components.intent.glance[0] = center(sample(3 / 10)) / 10
 
-			// const vertical = scalar.map(magnify(sample(1 / 10)), [degrees(-90), degrees(90)])
-			// components.gimbal[1] = molasses(10, components.gimbal[1], vertical)
+			const vertical = scalar.map(magnify(sample(1 / 10)), [degrees(-90), degrees(90)])
+			components.gimbal[1] = molasses(10, components.gimbal[1], vertical)
 
 			const speedroll = sample(1 / 10)
 			components.intent.fast = speedroll > 0.7
