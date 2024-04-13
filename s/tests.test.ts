@@ -1,5 +1,12 @@
 
-import {Suite} from "cynic"
+import type {Suite} from "cynic"
 
-export default <Suite>{}
+// emulate the browser in node, so we can accidentally import browser modules without exploding
+Object.assign(global, {HTMLElement: class {}})
+
+export default await async function() {
+	return <Suite>{
+		animBracketing: await import("./models/choreographer/bracketing/anims.test.js"),
+	}
+}()
 
