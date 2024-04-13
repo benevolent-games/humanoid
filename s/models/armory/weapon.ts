@@ -34,6 +34,8 @@ export namespace Weapon {
 		stab: Attack
 	}
 
+	export type Loadout = {name: Name} & Details
+
 	export type Parry = {
 		turncap: number | null
 		timing: ParryTiming
