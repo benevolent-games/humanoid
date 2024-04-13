@@ -31,7 +31,8 @@
 		"es-module-shims": "^1.9.0",
 		"lit": "^3.1.2",
 		"shelljs": "^0.8.5",
-		"simplex-noise": "^4.0.1"
+		"simplex-noise": "^4.0.1",
+		"sparrow-rtc": "^0.0.0-dev.7"
 	},
 	"peerDependencies": {
 		"@babylonjs/core": "^7.2.1",
