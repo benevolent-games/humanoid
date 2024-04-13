@@ -1,20 +1,30 @@
 
 import {Suite, expect} from "cynic"
-import {AnimBracket, AnimNode} from "./anims.js"
+import {AnimBracket, AnimLeaf, AnimNode} from "./anims.js"
 
 export default <Suite>{
 	async "anim brackets"() {
-		const walking = new AnimNode()
-		const running = new AnimNode()
-		const jumping = new AnimNode()
+		const walking = new AnimLeaf()
+		const running = new AnimLeaf()
+		const jumping = new AnimLeaf()
 
-		const bracket = new AnimBracket(1 / 10, [
+		const bracket = AnimBracket.root(1, [
 			walking,
 			running,
 			jumping,
 		])
 
-		return true
+		expect(bracket.weight).equals(1)
+		expect(walking.weight).equals(0)
+		expect(running.weight).equals(0)
+		expect(jumping.weight).equals(0)
+
+		bracket.activate(walking)
+		bracket.recursivelyUpdateAllWeights(0.1)
+		// expect(bracket.weight).equals(1)
+		expect(walking.weight).equals(0.5)
+		// expect(running.weight).equals(0)
+		// expect(jumping.weight).equals(0)
 	},
 }
 
