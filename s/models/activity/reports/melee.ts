@@ -1,21 +1,29 @@
 
-import {Weapon} from "../armory/weapon.js"
-import {Activity, Maneuver} from "./exports.js"
+import {Weapon} from "../../armory/weapon.js"
+import {Activity, Maneuver} from "../exports.js"
 
 export class MeleeReport {
 	readonly currentManeuver: Maneuver.Any
 	readonly currentProgress: number
 	readonly nextManeuver: Maneuver.Any | null
+	readonly currentPhase: "recovery" | "windup" | "combo" | "recovery"
 
 	constructor(public activity: Activity.Melee) {
 		const relevant = ascertain_relevant_maneuvers(activity)
 		this.currentManeuver = relevant.currentManeuver
 		this.currentProgress = relevant.currentProgress
 		this.nextManeuver = relevant.nextManeuver
+		this.currentPhase = ascertain_phase(activity.weapon, relevant.currentManeuver)
 	}
 }
 
 ///////////////////
+
+function ascertain_phase(weapon: Weapon.Loadout, maneuver: Maneuver.Any) {
+	const {windup, release, recovery} = maneuver.technique === "swing"
+		? weapon.swing.timing
+		: weapon.stab.timing
+}
 
 function ascertain_relevant_maneuvers(activity: Activity.Melee) {
 	let runningTime = 0

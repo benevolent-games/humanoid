@@ -3,6 +3,7 @@ import {Vec2} from "@benev/toolbox"
 import {Component} from "../../hub.js"
 import {Weapon} from "../../../models/armory/weapon.js"
 import {Melee} from "../../../models/attacking/melee.js"
+import {Activity} from "../../../models/activity/exports.js"
 
 export class Health extends Component<{
 	hp: number
@@ -26,6 +27,8 @@ export class Inventory extends Component<{
 	}
 }> {}
 
+export class ActivityComponent extends Component<Activity.Any | null> {}
+
 export class MeleeAction extends Component<null | Melee.Action.Any> {}
 
 export class MeleeAim extends Component<{
@@ -43,5 +46,10 @@ export class MeleeIntent extends Component<{
 	previousWeapon: boolean
 	toggleShield: boolean
 	changeGrip: boolean
+}> {}
+
+export class ProtectiveBubble extends Component<{
+	active: boolean
+	size: number
 }> {}
 

@@ -17,13 +17,14 @@ export type Parry = {
 	seconds: number
 	weapon: Weapon.Loadout
 	shield: boolean
-	holdable: {releasedAt: number} | null
+	holdable: {released: number | null} | null
 }
 
 export type Equip = {
 	kind: "equip"
 	routine: "nextWeapon" | "previousWeapon" | "toggleShield" | "changeGrip"
+	switched: boolean
 	seconds: number
-	weapon: Weapon.Loadout
+	duration: number
 }
 

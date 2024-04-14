@@ -4,14 +4,11 @@ export type Any = Swing | Stab
 export type Swing = {
 	technique: "swing"
 	angle: number
-} & Base
+	comboable: boolean
+}
 
 export type Stab = {
-	technique: "stab"
-} & Base
-
-type Base = {
 	comboable: boolean
-	phase: "windup" | "release" | "combo" | "recovery"
+	technique: "stab"
 }
 
