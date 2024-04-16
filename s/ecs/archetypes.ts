@@ -11,7 +11,7 @@ import {CameraRig} from "./components/hybrids/camera_rig.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
-import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent, ProtectiveBubble, Stamina} from "./components/topics/warrior.js"
+import {ActivityComponent, Health, Inventory, MeleeAction, MeleeAim, MeleeIntent, NextActivity, ProtectiveBubble, Stamina} from "./components/topics/warrior.js"
 import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity, IsSprinting} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
@@ -115,6 +115,8 @@ export namespace Archetypes {
 			Health,
 			Stamina,
 			Inventory,
+			ActivityComponent,
+			NextActivity,
 			MeleeAim,
 			MeleeIntent,
 			MeleeAction,
@@ -177,6 +179,8 @@ export namespace Archetypes {
 				},
 			},
 			rotation: quat.identity(),
+			activityComponent: null,
+			nextActivity: null,
 			meleeAim: {
 				smoothedGlanceNormal: [1, 0],
 				lastGlanceNormal: [1, 0],

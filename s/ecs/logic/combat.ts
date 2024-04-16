@@ -10,7 +10,9 @@ import {MeleeReport} from "../../models/activity/reports/melee.js"
 import {Controllable, Intent} from "../components/plain_components.js"
 import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
-import {Inventory, MeleeAction, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble} from "../components/topics/warrior.js"
+import {Inventory, MeleeAction, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
+import { Activity } from "../../models/activity/exports.js"
+import { makeActivityReport } from "../../models/activity/utils/make-activity-report.js"
 
 export const combat = system("combat", ({realm}) => [
 
@@ -51,18 +53,26 @@ export const combat = system("combat", ({realm}) => [
 			}),
 
 		behavior("initiate activity")
-			.select({MeleeAim, MeleeIntent, Inventory, ActivityComponent})
+			.select({MeleeAim, MeleeIntent, Inventory, ActivityComponent, NextActivity})
 			.logic(() => ({components}) => {
-				if (components.activityComponent)
-					return
-
 				const {angle} = components.meleeAim
 				const intent = components.meleeIntent
 				const inventory = new InventoryManager(components.inventory)
 				const {weapon, shield} = inventory
 
-				if (intent.parry)
-					components.activityComponent = {
+				const applyActivity = (activity: Activity.Any) => {
+					if (components.activityComponent) {
+						const report = makeActivityReport(components.activityComponent)
+						if (report.almostDone)
+							components.nextActivity = activity
+					}
+					else {
+						components.activityComponent = activity
+					}
+				}
+
+				if (intent.parry) {
+					applyActivity({
 						kind: "parry",
 						seconds: 0,
 						weapon,
@@ -70,81 +80,85 @@ export const combat = system("combat", ({realm}) => [
 						holdable: shield
 							? {released: null}
 							: null,
-					}
+					})
+				}
 
-				else if (intent.swing)
-					components.activityComponent = {
+				else if (intent.swing) {
+					applyActivity({
 						kind: "melee",
 						weapon,
 						maneuvers: [{technique: "swing", angle, comboable: true}],
 						seconds: 0,
 						cancelled: null,
-					}
+					})
+				}
 
 				else if (intent.stab)
-					components.activityComponent = {
+					applyActivity({
 						kind: "melee",
 						weapon,
 						maneuvers: [{technique: "stab", comboable: true}],
 						seconds: 0,
 						cancelled: null,
-					}
+					})
 
 				else if (intent.nextWeapon)
-					components.activityComponent = {
+					applyActivity({
 						kind: "equip",
 						routine: "nextWeapon",
 						duration: standardEquipDuration,
 						seconds: 0,
 						switched: false,
-					}
+					})
 
 				else if (intent.previousWeapon)
-					components.activityComponent = {
+					applyActivity({
 						kind: "equip",
 						routine: "previousWeapon",
 						duration: standardEquipDuration,
 						seconds: 0,
 						switched: false,
-					}
+					})
 
 				else if (intent.toggleShield) {
 					if (inventory.canToggleShield)
-						components.activityComponent = {
+						applyActivity({
 							kind: "equip",
 							routine: "toggleShield",
 							duration: standardEquipDuration,
 							seconds: 0,
 							switched: false,
-						}
+						})
 				}
 
 				else if (intent.changeGrip) {
 					if (inventory.numberOfAvailableGrips > 1)
-						components.activityComponent = {
+						applyActivity({
 							kind: "equip",
 							routine: "changeGrip",
 							duration: standardEquipDuration,
 							seconds: 0,
 							switched: false,
-						}
+						})
 				}
 			}),
 		]),
 
-	behavior("sustain activity")
-		.select({MeleeIntent, ActivityComponent})
-		.logic(tick => ({components: {meleeIntent, activityComponent: activity}}) => {
-			if (activity) {
+	behavior("activity seconds increase")
+		.select({ActivityComponent})
+		.logic(tick => ({components: {activityComponent: activity}}) => {
+			if (activity)
 				activity.seconds += tick.seconds
+		}),
 
-				if (activity.kind === "parry" && activity.holdable) {
-					const holding = (activity.holdable && activity.holdable.released === null)
-					const released = !meleeIntent.parry
-
-					if (holding && released)
-						activity.holdable.released = activity.seconds
-				}
+	behavior("parry holdable")
+		.select({MeleeIntent, ActivityComponent})
+		.logic(() => ({components: {meleeIntent, activityComponent: activity}}) => {
+			if (activity && activity.kind === "parry" && activity.holdable) {
+				const holding = (activity.holdable && activity.holdable.released === null)
+				const released = !meleeIntent.parry
+				if (holding && released)
+					activity.holdable.released = activity.seconds
 			}
 		}),
 
@@ -193,46 +207,34 @@ export const combat = system("combat", ({realm}) => [
 			if (activity && activity.kind === "melee") {
 				const melee = new MeleeReport(activity)
 				const canStartCombo = (
-					melee.currentManeuver.comboable &&
-					melee.nextManeuver === null &&
-					melee.currentPhase === "release"
+					melee.maneuver.current.comboable &&
+					melee.maneuver.next === null &&
+					melee.phase === "release"
 				)
 				if (canStartCombo) {
-					if (meleeIntent.swing)
+					if (meleeIntent.swing) {
 						activity.maneuvers.push({
 							technique: "swing",
 							comboable: true,
 							angle: components.meleeAim.angle,
 						})
-					if (meleeIntent.stab)
+					}
+					if (meleeIntent.stab) {
 						activity.maneuvers.push({
 							technique: "stab",
 							comboable: true,
 						})
+					}
 				}
 			}
 		}),
 
 	behavior("end melee action")
-		.select({MeleeAction})
+		.select({ActivityComponent})
 		.logic(() => ({components}) => {
-			const {meleeAction: action} = components
-
-			if (!action)
-				return
-
-			if (Melee.is.equip(action)) {
-				if (action.weights.progress > 1)
-					components.meleeAction = null
-			}
-			else if (Melee.is.parry(action)) {
-				if (action.weights.progress > 1)
-					components.meleeAction = null
-			}
-			else if (Melee.is.attack(action)) {
-				if (action.report.phase === "none")
-					components.meleeAction = null
-			}
+			const {activityComponent: activity} = components
+			if (activity && makeActivityReport(activity).done)
+				components.activityComponent = null
 		}),
 
 	responder("enable/disable reticle state")
@@ -242,7 +244,7 @@ export const combat = system("combat", ({realm}) => [
 			return () => { realm.ui.reticle.enabled = false }
 		}),
 
-	behavior("melee aiming")
+	behavior("update reticle ui")
 		.select({Controllable, MeleeAim, MeleeAction})
 		.logic(() => ({components: {meleeAim, meleeAction}}) => {
 			realm.ui.reticle.data = {meleeAim, meleeAction}

@@ -6,7 +6,10 @@ export type Any = Melee | Parry | Equip
 
 export type Melee = {
 	kind: "melee"
+
+	// TODO replace seconds with start time?
 	seconds: number
+
 	weapon: Weapon.Loadout
 	cancelled: number | null
 	maneuvers: Maneuver.Any[]
@@ -27,4 +30,8 @@ export type Equip = {
 	seconds: number
 	duration: number
 }
+
+//////////////////////
+
+export type Holdable = {released: number | null}
 
