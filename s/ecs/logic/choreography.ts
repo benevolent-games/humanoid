@@ -3,7 +3,7 @@ import {babyloid} from "@benev/toolbox"
 import {behavior, system} from "../hub.js"
 import {gimbaltool} from "../../tools/gimbaltool.js"
 import {Melee} from "../../models/attacking/melee.js"
-import {Inventory, MeleeAction} from "../components/topics/warrior.js"
+import {ActivityComponent, Inventory, MeleeAction} from "../components/topics/warrior.js"
 import {Character} from "../components/hybrids/character/character.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {sync_character_anims} from "../components/hybrids/character/choreography/sync_character_anims.js"
@@ -46,7 +46,7 @@ export const choreography = system("humanoid", () => [
 		}),
 
 	behavior("animate the armature")
-		.select({Character, Choreography, Ambulation, Gimbal, GimbalSway, Speeds, Perspective, MeleeAction, Inventory})
+		.select({Character, Choreography, Ambulation, Gimbal, GimbalSway, Speeds, Perspective, Inventory, ActivityComponent})
 		.logic(() => ({components: c}) => {
 			const {adjustment_anims, anims, boss_anim} = c.character.coordination
 
@@ -61,7 +61,6 @@ export const choreography = system("humanoid", () => [
 
 			sync_character_anims({
 				anims,
-				weapon,
 				shield,
 				boss_anim,
 				gripName: grip,

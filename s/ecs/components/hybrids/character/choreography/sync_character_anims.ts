@@ -8,16 +8,15 @@ import {Perspective} from "../../../plain_components.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {Weapon} from "../../../../../models/armory/weapon.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
-import {Melee} from "../../../../../models/attacking/melee.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
+import {ActivityWeights} from "../../../../../models/choreographer/activities/weights.js"
 
 export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
 		gripName,
-		// weapon,
 		shield,
 		boss_anim,
 		ambulatory,
@@ -31,9 +30,8 @@ export function sync_character_anims({
 		shield: boolean
 		anims: CharacterAnims
 		ambulatory: Ambulatory
-		weapon: Weapon.Details
 		boss_anim: AnimationGroup
-		meleeWeights: Melee.Weights
+		meleeWeights: ActivityWeights
 		perspective: Ecs.ComponentState<Perspective>
 		speeds: Speeds & {creep: number}
 	}) {

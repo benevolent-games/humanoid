@@ -3,16 +3,15 @@ import {scalar, vec2} from "@benev/toolbox"
 
 import {molasses2d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
-import {Melee} from "../../models/attacking/melee.js"
+import {Activity, Angles} from "../../models/activity/exports.js"
 import {EquipReport} from "../../models/activity/reports/equip.js"
 import {ParryReport} from "../../models/activity/reports/parry.js"
 import {MeleeReport} from "../../models/activity/reports/melee.js"
 import {Controllable, Intent} from "../components/plain_components.js"
 import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
+import {makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
 import {Inventory, MeleeAction, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
-import { Activity } from "../../models/activity/exports.js"
-import { makeActivityReport } from "../../models/activity/utils/make-activity-report.js"
 
 export const combat = system("combat", ({realm}) => [
 
@@ -46,8 +45,8 @@ export const combat = system("combat", ({realm}) => [
 
 				const glanceAngle = Math.atan2(...smoothed)
 				const zone = glanceAngle < 0
-					? Melee.Angles.zones.left
-					: Melee.Angles.zones.right
+					? Angles.zones.left
+					: Angles.zones.right
 
 				meleeAim.angle = scalar.clamp(glanceAngle, ...zone)
 			}),
