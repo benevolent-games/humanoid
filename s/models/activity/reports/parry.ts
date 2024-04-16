@@ -14,9 +14,12 @@ export class ParryReport {
 	constructor(public activity: Activity.Parry) {
 		const {weapon, seconds, holdable} = activity
 
+		const blockphase_because_of_timing = (seconds < weapon.parry.timing.block)
+		const blockphase_because_of_being_held = (holdable && holdable.released === null)
+
 		const phase = (
-			(seconds < weapon.parry.timing.block) ||
-			(holdable && holdable.released !== null)
+			blockphase_because_of_timing ||
+			blockphase_because_of_being_held
 		) ? "block" : "recovery"
 
 		const progress = calculate_parry_progress(activity, phase)
@@ -36,29 +39,37 @@ function calculate_parry_progress(
 	) {
 
 	const {timing} = weapon.parry
-	let blockProgress = 0
-	let recoveryProgress = 0
 	const {block} = timing
 	const recovery = shield
 		? timing.shieldRecovery
 		: timing.recovery
 
+	let blockProgress = 0
+	let recoveryProgress = 0
+
 	if (phase === "block")
-		blockProgress = seconds / block
+		blockProgress = scalar.clamp(seconds / block)
 
 	else {
 		blockProgress = 1
-		if (holdable)
-			recoveryProgress = holdable.released !== null
-				? (seconds - holdable.released) / recovery
-				: 0
-		else
+		if (holdable) {
+			const {released} = holdable
+			if (released !== null) {
+				const recoveryBegins = scalar.bottom(released, block)
+				const recoveryTime = seconds - recoveryBegins
+				recoveryProgress = recoveryTime / recovery
+			}
+		}
+		else {
 			recoveryProgress = (seconds - block) / recovery
+		}
 	}
 
-	return scalar.clamp(
+	const totalProgress = scalar.clamp(
 		(0.5 * blockProgress) +
 		(0.5 * recoveryProgress)
 	)
+
+	return totalProgress
 }
 

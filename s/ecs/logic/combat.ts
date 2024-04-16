@@ -59,19 +59,19 @@ export const combat = system("combat", ({realm}) => [
 				const inventory = new InventoryManager(components.inventory)
 				const {weapon, shield} = inventory
 
-				const applyActivity = (activity: Activity.Any) => {
+				const applyActivity = (activity: () => Activity.Any) => {
 					if (components.activityComponent) {
 						const report = makeActivityReport(components.activityComponent)
 						if (report.almostDone)
-							components.nextActivity = activity
+							components.nextActivity = activity()
 					}
 					else {
-						components.activityComponent = activity
+						components.activityComponent = activity()
 					}
 				}
 
 				if (intent.parry) {
-					applyActivity({
+					applyActivity(() => ({
 						kind: "parry",
 						seconds: 0,
 						weapon,
@@ -79,66 +79,66 @@ export const combat = system("combat", ({realm}) => [
 						holdable: shield
 							? {released: null}
 							: null,
-					})
+					}))
 				}
 
 				else if (intent.swing) {
-					applyActivity({
+					applyActivity(() => ({
 						kind: "melee",
 						weapon,
 						maneuvers: [{technique: "swing", comboable: true, angle}],
 						seconds: 0,
 						cancelled: null,
-					})
+					}))
 				}
 
 				else if (intent.stab)
-					applyActivity({
+					applyActivity(() => ({
 						kind: "melee",
 						weapon,
 						maneuvers: [{technique: "stab", comboable: true, angle}],
 						seconds: 0,
 						cancelled: null,
-					})
+					}))
 
 				else if (intent.nextWeapon)
-					applyActivity({
+					applyActivity(() => ({
 						kind: "equip",
 						routine: "nextWeapon",
 						duration: standardEquipDuration,
 						seconds: 0,
 						switched: false,
-					})
+					}))
 
 				else if (intent.previousWeapon)
-					applyActivity({
+					applyActivity(() => ({
 						kind: "equip",
 						routine: "previousWeapon",
 						duration: standardEquipDuration,
 						seconds: 0,
 						switched: false,
-					})
+					}))
 
 				else if (intent.toggleShield) {
 					if (inventory.canToggleShield)
-						applyActivity({
+						applyActivity(() => ({
 							kind: "equip",
 							routine: "toggleShield",
 							duration: standardEquipDuration,
 							seconds: 0,
 							switched: false,
-						})
+						}))
 				}
 
 				else if (intent.changeGrip) {
 					if (inventory.numberOfAvailableGrips > 1)
-						applyActivity({
+						applyActivity(() => ({
 							kind: "equip",
 							routine: "changeGrip",
 							duration: standardEquipDuration,
 							seconds: 0,
 							switched: false,
-						})
+						}))
 				}
 			}),
 		]),
