@@ -57,6 +57,7 @@ export namespace Weapon {
 		windup: number
 		release: number
 		recovery: number
+		combo: number
 	}
 
 	export type Damage = {

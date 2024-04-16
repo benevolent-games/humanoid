@@ -28,6 +28,7 @@ export class Inventory extends Component<{
 }> {}
 
 export class ActivityComponent extends Component<Activity.Any | null> {}
+export class NextActivity extends Component<Activity.Any | null> {}
 
 export class MeleeAction extends Component<null | Melee.Action.Any> {}
 

@@ -1,41 +1,74 @@
 
+import {scalar} from "@benev/toolbox"
 import {Weapon} from "../../armory/weapon.js"
 import {Activity, Maneuver} from "../exports.js"
+
+export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
 
 export class MeleeReport {
 	readonly currentManeuver: Maneuver.Any
 	readonly currentProgress: number
 	readonly nextManeuver: Maneuver.Any | null
-	readonly currentPhase: "recovery" | "windup" | "combo" | "recovery"
+	readonly currentPhase: ManeuverPhase
 
 	constructor(public activity: Activity.Melee) {
 		const relevant = ascertain_relevant_maneuvers(activity)
 		this.currentManeuver = relevant.currentManeuver
 		this.currentProgress = relevant.currentProgress
 		this.nextManeuver = relevant.nextManeuver
-		this.currentPhase = ascertain_phase(activity.weapon, relevant.currentManeuver)
+		this.currentPhase = ascertain_phase(
+			activity.weapon,
+			relevant.currentManeuver,
+			activity.seconds,
+		)
 	}
 }
 
 ///////////////////
 
-function ascertain_phase(weapon: Weapon.Loadout, maneuver: Maneuver.Any) {
-	const {windup, release, recovery} = maneuver.technique === "swing"
+function ascertain_phase(
+		weapon: Weapon.Loadout,
+		maneuver: Maneuver.Any,
+		seconds: number,
+	): ManeuverPhase {
+
+	const {windup, release} = maneuver.technique === "swing"
 		? weapon.swing.timing
 		: weapon.stab.timing
+
+	if (seconds < windup)
+		return "windup"
+
+	else if (seconds < windup + release)
+		return "release"
+
+	else {
+		if (maneuver.comboable)
+			return "combo"
+		else
+			return "recovery"
+	}
 }
 
 function ascertain_relevant_maneuvers(activity: Activity.Melee) {
+	const {maneuvers} = activity
+	const indexOfLastManeuver = maneuvers.length - 1
+
 	let runningTime = 0
 	let currentManeuver: Maneuver.Any | null = null
 	let currentProgress = 0
 	let nextManeuver: Maneuver.Any | null = null
 
-	for (const maneuver of activity.maneuvers) {
+	for (let i = 0; i < maneuvers.length; i++) {
+		const maneuver = maneuvers[i]
+		const isCombo = i < indexOfLastManeuver
+
 		if (activity.seconds >= runningTime) {
 			currentManeuver = maneuver
-			const duration = sum_up_maneuver_duration(activity.weapon, maneuver)
-			currentProgress = (activity.seconds - runningTime) / duration
+			const duration = sum_up_maneuver_duration(activity.weapon, maneuver, isCombo)
+			currentProgress = scalar.clamp(
+				(activity.seconds - runningTime) / duration
+			)
 			runningTime += duration
 		}
 		else {
@@ -50,7 +83,12 @@ function ascertain_relevant_maneuvers(activity: Activity.Melee) {
 	return {currentManeuver, currentProgress, nextManeuver}
 }
 
-function sum_up_maneuver_duration(weapon: Weapon.Loadout, maneuver: Maneuver.Any) {
+function sum_up_maneuver_duration(
+		weapon: Weapon.Loadout,
+		maneuver: Maneuver.Any,
+		isCombo: boolean,
+	) {
+
 	const {timing} = maneuver.technique === "swing"
 		? weapon.swing
 		: weapon.stab
@@ -58,7 +96,9 @@ function sum_up_maneuver_duration(weapon: Weapon.Loadout, maneuver: Maneuver.Any
 	const sum = (
 		timing.windup +
 		timing.release +
-		timing.recovery
+		(isCombo
+			? timing.combo
+			: timing.recovery)
 	)
 
 	return sum

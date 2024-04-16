@@ -4,14 +4,13 @@ import {scalar, vec2} from "@benev/toolbox"
 import {molasses2d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
 import {Melee} from "../../models/attacking/melee.js"
+import {EquipReport} from "../../models/activity/reports/equip.js"
+import {ParryReport} from "../../models/activity/reports/parry.js"
+import {MeleeReport} from "../../models/activity/reports/melee.js"
 import {Controllable, Intent} from "../components/plain_components.js"
 import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
-import {considerAttack, considerParry} from "../../models/attacking/consider.js"
 import {Inventory, MeleeAction, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble} from "../components/topics/warrior.js"
-import {EquipReport} from "../../models/activity/reports/equip.js"
-import {ParryReport} from "../../models/activity/reports/parry.js"
-import { MeleeReport } from "../../models/activity/reports/melee.js"
 
 export const combat = system("combat", ({realm}) => [
 
@@ -73,20 +72,20 @@ export const combat = system("combat", ({realm}) => [
 							: null,
 					}
 
-				else if (intent.stab)
-					components.activityComponent = {
-						kind: "melee",
-						weapon,
-						maneuvers: [{technique: "stab", comboable: true}],
-						seconds: 0,
-						cancelled: null,
-					}
-
 				else if (intent.swing)
 					components.activityComponent = {
 						kind: "melee",
 						weapon,
 						maneuvers: [{technique: "swing", angle, comboable: true}],
+						seconds: 0,
+						cancelled: null,
+					}
+
+				else if (intent.stab)
+					components.activityComponent = {
+						kind: "melee",
+						weapon,
+						maneuvers: [{technique: "stab", comboable: true}],
 						seconds: 0,
 						cancelled: null,
 					}
@@ -149,15 +148,11 @@ export const combat = system("combat", ({realm}) => [
 			}
 		}),
 
-	behavior("update melee actions")
-		.select({Inventory, ActivityComponent, ProtectiveBubble})
+	behavior("actuate equip routines")
+		.select({ActivityComponent, Inventory})
 		.logic(() => ({components}) => {
-			const {activityComponent: activity, protectiveBubble} = components
-
-			if (!activity)
-				return
-
-			if (activity.kind === "equip") {
+			const {activityComponent: activity} = components
+			if (activity && activity.kind === "equip") {
 				const inventory = new InventoryManager(components.inventory)
 				const {readyToSwitch} = new EquipReport(activity)
 				if (readyToSwitch && !activity.switched) {
@@ -178,26 +173,43 @@ export const combat = system("combat", ({realm}) => [
 					}
 				}
 			}
-			else if (activity.kind === "parry") {
+		}),
+
+	behavior("parry protective bubble")
+		.select({ActivityComponent, ProtectiveBubble})
+		.logic(() => ({components}) => {
+			const {protectiveBubble, activityComponent: activity} = components
+			protectiveBubble.active = false
+			if (activity && activity.kind === "parry") {
 				const {protective} = new ParryReport(activity)
 				protectiveBubble.active = protective
 			}
-			else if (activity.kind === "melee") {
+		}),
+
+	behavior("melee combo maneuvers")
+		.select({Inventory, ActivityComponent, MeleeIntent, MeleeAim})
+		.logic(() => ({components}) => {
+			const {meleeIntent, activityComponent: activity} = components
+			if (activity && activity.kind === "melee") {
 				const melee = new MeleeReport(activity)
 				const canStartCombo = (
 					melee.currentManeuver.comboable &&
+					melee.nextManeuver === null &&
+					melee.currentPhase === "release"
 				)
-				// const {report, weights} = considerAttack(
-				// 	action.kind === "stab"
-				// 		? action.weapon.stab.timing
-				// 		: action.weapon.swing.timing,
-				// 	action.kind,
-				// 	action.seconds,
-				// 	action.earlyRecovery,
-				// 	action.angle,
-				// )
-				// action.report = report
-				// action.weights = weights
+				if (canStartCombo) {
+					if (meleeIntent.swing)
+						activity.maneuvers.push({
+							technique: "swing",
+							comboable: true,
+							angle: components.meleeAim.angle,
+						})
+					if (meleeIntent.stab)
+						activity.maneuvers.push({
+							technique: "stab",
+							comboable: true,
+						})
+				}
 			}
 		}),
 
