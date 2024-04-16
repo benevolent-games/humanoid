@@ -2,10 +2,8 @@
 // // TODO DELETE
 
 // import {is} from "@benev/slate"
-// import {scalar, spline} from "@benev/toolbox"
-
-// import {Melee} from "./melee.js"
 // import {Weapon} from "../armory/weapon.js"
+// import {scalar, spline} from "@benev/toolbox"
 
 // const equiptime = 0.5
 // const blendtime = 0.1

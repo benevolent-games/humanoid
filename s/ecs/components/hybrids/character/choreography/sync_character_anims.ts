@@ -10,7 +10,7 @@ import {Weapon} from "../../../../../models/armory/weapon.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
-import {ActivityWeights} from "../../../../../models/choreographer/activities/weights.js"
+import {ActivityWeights} from "../../../../../models/choreographer/activities/kit/weights.js"
 
 export function sync_character_anims({
 		anims,
@@ -21,7 +21,7 @@ export function sync_character_anims({
 		boss_anim,
 		ambulatory,
 		perspective,
-		meleeWeights,
+		activityWeights,
 		gimbal: [,gimbalY],
 	}: {
 		gimbal: Vec2
@@ -31,7 +31,7 @@ export function sync_character_anims({
 		anims: CharacterAnims
 		ambulatory: Ambulatory
 		boss_anim: AnimationGroup
-		meleeWeights: ActivityWeights
+		activityWeights: ActivityWeights
 		perspective: Ecs.ComponentState<Perspective>
 		speeds: Speeds & {creep: number}
 	}) {
@@ -170,7 +170,7 @@ export function sync_character_anims({
 			.forEach(anim => anim.weight = 0))
 
 	const grip = grip_groups[gripName]
-	const w = meleeWeights
+	const w = activityWeights
 
 	function animateAttack(anim: ManualAnim, weight: number) {
 		anim.weight = weight

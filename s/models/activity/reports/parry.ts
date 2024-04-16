@@ -20,7 +20,6 @@ export class ParryReport {
 		) ? "block" : "recovery"
 
 		const progress = calculate_parry_progress(activity, phase)
-
 		this.phase = phase
 		this.progress = progress
 		this.protective = phase === "block"

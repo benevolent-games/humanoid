@@ -1,17 +1,19 @@
 
 import {Ecs} from "@benev/toolbox"
-import {Melee} from "../attacking/melee.js"
 import {Ribbon} from "../tracing/ribbon.js"
+import {Activity} from "../activity/exports.js"
+import {MeleeReport} from "../activity/reports/melee.js"
 import {Health} from "../../ecs/components/topics/warrior.js"
 
 /** utility methods for interacting with health. */
 export class Infirmary {
 	constructor(public health: Ecs.ComponentState<Health>) {}
 
-	applyDamage(action: Melee.Action.Attack, ribbon: Ribbon) {
+	applyDamage(activity: Activity.Melee, ribbon: Ribbon) {
 		const {health} = this
-		const {weapon} = action
-		const {blunt, bleed} = Melee.is.swing(action)
+		const {weapon} = activity
+		const {maneuver} = new MeleeReport(activity)
+		const {blunt, bleed} = maneuver.current.technique === "swing"
 			? weapon.swing.damage
 			: weapon.stab.damage
 

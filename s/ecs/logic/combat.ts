@@ -11,7 +11,7 @@ import {Controllable, Intent} from "../components/plain_components.js"
 import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
-import {Inventory, MeleeAction, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
+import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
 
 export const combat = system("combat", ({realm}) => [
 
@@ -86,7 +86,7 @@ export const combat = system("combat", ({realm}) => [
 					applyActivity({
 						kind: "melee",
 						weapon,
-						maneuvers: [{technique: "swing", angle, comboable: true}],
+						maneuvers: [{technique: "swing", comboable: true, angle}],
 						seconds: 0,
 						cancelled: null,
 					})
@@ -96,7 +96,7 @@ export const combat = system("combat", ({realm}) => [
 					applyActivity({
 						kind: "melee",
 						weapon,
-						maneuvers: [{technique: "stab", comboable: true}],
+						maneuvers: [{technique: "stab", comboable: true, angle}],
 						seconds: 0,
 						cancelled: null,
 					})
@@ -222,6 +222,7 @@ export const combat = system("combat", ({realm}) => [
 						activity.maneuvers.push({
 							technique: "stab",
 							comboable: true,
+							angle: components.meleeAim.angle,
 						})
 					}
 				}
@@ -237,16 +238,16 @@ export const combat = system("combat", ({realm}) => [
 		}),
 
 	responder("enable/disable reticle state")
-		.select({Controllable, MeleeAim, MeleeAction})
+		.select({Controllable, MeleeAim})
 		.respond(() => {
 			realm.ui.reticle.enabled = true
 			return () => { realm.ui.reticle.enabled = false }
 		}),
 
 	behavior("update reticle ui")
-		.select({Controllable, MeleeAim, MeleeAction})
-		.logic(() => ({components: {meleeAim, meleeAction}}) => {
-			realm.ui.reticle.data = {meleeAim, meleeAction}
+		.select({Controllable, MeleeAim, ActivityComponent})
+		.logic(() => ({components: {meleeAim, activityComponent}}) => {
+			realm.ui.reticle.data = {meleeAim, activity: activityComponent}
 		}),
 ])
 

@@ -3,7 +3,8 @@ import {Ecs} from "@benev/toolbox"
 import {flatstate} from "@benev/slate"
 import {HealthState, Sensitivity} from "./types.js"
 import {Weapon} from "../armory/weapon.js"
-import {MeleeAction, MeleeAim} from "../../ecs/components/topics/warrior.js"
+import {MeleeAim} from "../../ecs/components/topics/warrior.js"
+import { Activity } from "../activity/exports.js"
 
 export class Ui {
 	sensitivity: Sensitivity = flatstate({
@@ -23,7 +24,7 @@ export class Ui {
 		opacity: 0.4,
 		data: null as null | {
 			meleeAim: null | Ecs.ComponentState<MeleeAim>
-			meleeAction: null | Ecs.ComponentState<MeleeAction>
+			activity: null | Activity.Any
 		}
 	})
 

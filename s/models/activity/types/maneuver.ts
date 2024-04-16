@@ -8,7 +8,8 @@ export type Swing = {
 }
 
 export type Stab = {
-	comboable: boolean
 	technique: "stab"
+	angle: number
+	comboable: boolean
 }
 

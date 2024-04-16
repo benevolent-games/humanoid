@@ -4,7 +4,8 @@ import {Menus, scalar} from "@benev/toolbox"
 
 import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
-import {Melee} from "../../../../../models/attacking/melee.js"
+import {MeleeReport} from "../../../../../models/activity/reports/melee.js"
+import {ParryReport} from "../../../../../models/activity/reports/parry.js"
 import {icon_tabler_chevron_up} from "../../../../icons/tabler/chevron-up.js"
 
 export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
@@ -57,27 +58,35 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 	`)
 
 	const {enabled, size, opacity, data} = game.ui.reticle
+	const activity = data?.activity
 
-	const aim = data?.meleeAim
-	const action = data?.meleeAction
-
-	const angle = (Melee.is.stab(action) || Melee.is.parry(action))
-		? null
-		: Melee.is.swing(action)
-			? action?.angle
-			: aim?.angle
-
-	const mode = (
-		Melee.is.attack(action)
-			? action.report.phase === "release"
-				? "attack-release"
-				: "attack"
-			: Melee.is.parry(action)
-				? action.protective
+	const {angle, mode} = (() => {
+		if (activity?.kind === "equip") {
+			return {
+				angle: null,
+				mode: "plain",
+			}
+		}
+		else if (activity?.kind === "parry") {
+			const {protective} = new ParryReport(activity)
+			return {
+				angle: null,
+				mode: protective
 					? "parry-protective"
 					: "parry"
-				: "plain"
-	)
+			}
+		}
+		else if (activity?.kind === "melee") {
+			const {maneuver, phase} = new MeleeReport(activity)
+			return {
+				angle: maneuver.current.angle,
+				mode: phase === "release"
+					? "attack-release"
+					: "attack",
+			}
+		}
+		return {angle: null, mode: "plain"}
+	})()
 
 	const angleStyle = is.defined(angle)
 		? `transform: rotate(${scalar.radians.to.degrees(angle)}deg);`

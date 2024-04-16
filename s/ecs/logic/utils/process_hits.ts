@@ -4,23 +4,24 @@ import {Id, Rapier, quat, vec3} from "@benev/toolbox"
 import {World} from "../../hub.js"
 import {Ribbon} from "../../../models/tracing/ribbon.js"
 import {Tracing} from "../../../models/tracing/types.js"
-import {Melee} from "../../../models/attacking/melee.js"
 import {Health} from "../../components/topics/warrior.js"
 import {HuPhysics} from "../../../models/realm/physics.js"
 import {Infirmary} from "../../../models/facilities/infirmary.js"
+import { MeleeReport } from "../../../models/activity/reports/melee.js"
+import { Activity } from "../../../models/activity/exports.js"
 
 const {xyz} = vec3.to
 const {xyzw} = quat.to
 
 export function processHits({
-		entityId, world, physics, ribbon, edge, meleeAction,
+		entityId, world, physics, ribbon, edge, activity,
 	}: {
 		entityId: Id
 		world: World
 		physics: HuPhysics,
 		ribbon: Ribbon,
 		edge: Tracing.RibbonEdge,
-		meleeAction: Melee.Action.Attack,
+		activity: Activity.Melee,
 	}) {
 
 	const noPosition = xyz(vec3.zero())
@@ -60,7 +61,7 @@ export function processHits({
 		const we_are_not_hitting_ourselves = capsule?.entityId !== entityId
 
 		if (we_are_not_hitting_ourselves)
-			meleeAction.earlyRecovery = meleeAction.seconds
+			activity.cancelled = activity.seconds
 
 		const dynamic = physics.dynamics.get(hit)
 		if (dynamic && edge.vector) {
@@ -76,7 +77,7 @@ export function processHits({
 				const entity = world.get(capsule.entityId)
 				if (entity.has({Health})) {
 					const infirmary = new Infirmary(entity.components.health)
-					infirmary.applyDamage(meleeAction, ribbon)
+					infirmary.applyDamage(activity, ribbon)
 				}
 			}
 		}
