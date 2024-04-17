@@ -212,10 +212,15 @@ export const combat = system("combat", ({realm}) => [
 				)
 				if (canStartCombo) {
 					if (meleeIntent.swing) {
+						const {angle: oldAngle} = melee.maneuver.current
+						const {angle: newAngle} = components.meleeAim
+						const sameSide = (oldAngle < 0) === (newAngle < 0)
 						activity.maneuvers.push({
 							technique: "swing",
 							comboable: true,
-							angle: components.meleeAim.angle,
+							angle: sameSide
+								? -newAngle
+								: newAngle,
 						})
 					}
 					if (meleeIntent.stab) {
