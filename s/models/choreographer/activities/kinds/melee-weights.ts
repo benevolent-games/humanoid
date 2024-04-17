@@ -1,10 +1,11 @@
 
 import {Vec2, scalar, spline} from "@benev/toolbox"
+
+import {AnimMoment} from "../kit/weights.js"
 import {zeroWeights} from "../kit/zero-weights.js"
 import {combineWeights} from "../kit/combine-weights.js"
 import {Angles, Maneuver} from "../../../activity/exports.js"
 import {MeleeReport} from "../../../activity/reports/melee.js"
-import { AnimMoment } from "../kit/weights.js"
 
 export function meleeWeights({activity}: MeleeReport) {
 	const {cancelled} = activity
@@ -14,7 +15,7 @@ export function meleeWeights({activity}: MeleeReport) {
 		? activity.weapon.swing.timing
 		: activity.weapon.stab.timing
 
-	const isComboContinuation = maneuver.index > 0
+	const isFirstManeuver = maneuver.index === 0
 
 	// bounce back on early recovery
 	const bounciness = 1 / 3
@@ -24,7 +25,59 @@ export function meleeWeights({activity}: MeleeReport) {
 			: scalar.bottom(cancelled - ((seconds - cancelled) * bounciness), 0)
 	)
 
-	if (isComboContinuation) {
+	if (isFirstManeuver) {
+		const a = 0
+		const b = windup / 3
+		const c = windup
+		const d = windup + release
+		const e = windup + release + (phase === "combo" ? combo : recovery)
+
+		const weights = maneuverWeights({
+			maneuver: maneuver.current,
+			active: cancelled !== null
+				? spline.linear(seconds - cancelled, [
+					[0, 1],
+					[recovery, 0],
+				])
+				: spline.linear(seconds, [
+					[a, 0],
+					[b, 1],
+					[c, 1],
+					[d, 1],
+					[e, 0],
+				]),
+			progress: spline.linear(bouncySeconds, [
+				[a, 0 / 3],
+				[c, 1 / 3],
+				[d, 2 / 3],
+				[e, 3 / 3],
+			]),
+		})
+
+		if (maneuver.next) {
+			const nextWeights = maneuverWeights({
+				maneuver: maneuver.next,
+				active: cancelled !== null
+					? spline.linear(seconds - cancelled, [
+						[0, 1],
+						[recovery, 0],
+					])
+					: spline.linear(seconds, [
+						[a, 0],
+						[b, 0],
+						[c, 0],
+						[d, 0],
+						[e, 1],
+					]),
+				progress: 1 / 3,
+			})
+			const w = combineWeights(weights, nextWeights)
+			return w
+		}
+
+		return weights
+	}
+	else {
 		const a = 0
 		const b = release
 		const c = release + (phase === "combo" ? combo : recovery)
@@ -70,64 +123,6 @@ export function meleeWeights({activity}: MeleeReport) {
 			return combineWeights(weights, nextWeights)
 		}
 		else return weights
-	}
-	else {
-		const a = 0
-		const b = windup / 3
-		const c = windup
-		const d = windup + release
-		const e = windup + release + (phase === "combo" ? combo : recovery)
-
-		const weights = maneuverWeights({
-			maneuver: maneuver.current,
-			active: cancelled !== null
-				? spline.linear(seconds - cancelled, [
-					[0, 1],
-					[recovery, 0],
-				])
-				: spline.linear(seconds, [
-					[a, 0],
-					[b, 1],
-					[c, 1],
-					[d, 1],
-					[e, 0],
-				]),
-			progress: spline.linear(bouncySeconds, [
-				[a, 0 / 3],
-				[c, 1 / 3],
-				[d, 2 / 3],
-				[e, 3 / 3],
-			]),
-		})
-
-		if (maneuver.next) {
-			const nextWeights = maneuverWeights({
-				maneuver: maneuver.next,
-				active: cancelled !== null
-					? spline.linear(seconds - cancelled, [
-						[0, 1],
-						[recovery, 0],
-					])
-					: spline.linear(seconds, [
-						[a, 0],
-						[b, 0],
-						[c, 0],
-						[d, 0],
-						[e, 1],
-					]),
-				progress: 1 / 3,
-				// progress: spline.linear(bouncySeconds, [
-				// 	[a, 0 / 3],
-				// 	[c, 0 / 3],
-				// 	[d, 0 / 3],
-				// 	[e, 1 / 3],
-				// ]),
-			})
-			const w = combineWeights(weights, nextWeights)
-			return w
-		}
-
-		return weights
 	}
 }
 

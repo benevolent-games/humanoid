@@ -71,7 +71,7 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 
 					swing: {
 						turncap: turncap === null ? null : scalar.radians.from.degrees(turncap),
-						timing: {windup: ms(windup), release: ms(release), recovery: ms(recovery), combo: ms(recovery / 2)},
+						timing: {windup: ms(windup), release: ms(release), recovery: ms(recovery), combo: ms(recovery * 0.8)},
 						damage: {blunt: percent(blunt1), bleed: percent(bleed1), pierce: percent(pierce1)},
 					},
 

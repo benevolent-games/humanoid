@@ -45,9 +45,10 @@ function ascertain_maneuvering_report(activity: Activity.Melee) {
 	for (let i = 0; i < maneuvers.length; i++) {
 		const maneuver = maneuvers[i]
 		const isCombo = i < indexOfLastManeuver
+		const isFirstManeuver = i === 0
 
 		if (activity.seconds >= runningTime) {
-			const duration = sum_up_maneuver_duration(weapon, maneuver, isCombo)
+			const duration = sum_up_maneuver_duration(weapon, maneuver, isFirstManeuver, isCombo)
 			const maneuverSeconds = activity.seconds - runningTime
 			group = {
 				index: i,
@@ -111,6 +112,7 @@ function ascertain_phase(
 function sum_up_maneuver_duration(
 		weapon: Weapon.Loadout,
 		maneuver: Maneuver.Any,
+		isFirstManeuver: boolean,
 		isCombo: boolean,
 	) {
 
@@ -118,8 +120,12 @@ function sum_up_maneuver_duration(
 		? weapon.swing
 		: weapon.stab
 
+	const maybeWindup = isFirstManeuver
+		? timing.windup
+		: 0
+
 	const sum = (
-		timing.windup +
+		maybeWindup +
 		timing.release +
 		(isCombo
 			? timing.combo
