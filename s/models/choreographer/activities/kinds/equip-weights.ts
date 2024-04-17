@@ -1,5 +1,5 @@
 
-import {scalar, spline} from "@benev/toolbox"
+import {spline} from "@benev/toolbox"
 import {zeroWeights} from "../kit/zero-weights.js"
 import {EquipReport} from "../../../activity/reports/equip.js"
 

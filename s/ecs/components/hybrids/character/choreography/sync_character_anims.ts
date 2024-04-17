@@ -178,6 +178,8 @@ export function sync_character_anims({
 			anim.setProgress(scalar.clamp(progress))
 	}
 
+	// console.log("active", w.active.toFixed(2), "::", w.a3.weight.toFixed(2), "++", w.a6.weight.toFixed(2))
+	animateAttack(anims.equip, w.equip)
 	animateAttack(grip.parry, w.parry)
 	animateAttack(grip.attack_1, w.a1)
 	animateAttack(grip.attack_2, w.a2)
@@ -186,18 +188,11 @@ export function sync_character_anims({
 	animateAttack(grip.attack_5, w.a5)
 	animateAttack(grip.attack_6, w.a6)
 
-	const combinedStab = {
-		progress: Math.max(w.a7.progress, w.a8.progress),
-		weight: w.a7.weight + w.a8.weight,
-	}
-
-	animateAttack(grip.attack_7, combinedStab)
+	animateAttack(grip.attack_7, w.a7)
 	// animateAttack(grip.attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
-	animateAttack(anims.equip, w.equip)
 	const inactive = scalar.inverse(w.active)
-	// anims.equip.weight = w.equip
 	grip.airborne.weight = airborne * inactive
 	grip.guard.weight = tinyfix + (inactive * groundage * stillness)
 	grip.forward.weight = tinyfix + north * inactive * groundage * unstillness

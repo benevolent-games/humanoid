@@ -1,5 +1,5 @@
 
-import {scalar, spline} from "@benev/toolbox"
+import {spline} from "@benev/toolbox"
 import {zeroWeights} from "../kit/zero-weights.js"
 import {ParryReport} from "../../../activity/reports/parry.js"
 

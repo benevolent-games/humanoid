@@ -147,7 +147,7 @@ export const combat = system("combat", ({realm}) => [
 		.select({ActivityComponent})
 		.logic(tick => ({components: {activityComponent: activity}}) => {
 			if (activity)
-				activity.seconds += tick.seconds / 3
+				activity.seconds += tick.seconds
 		}),
 
 	behavior("parry holdable")
