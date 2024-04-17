@@ -2,16 +2,20 @@
 export type ActivityWeights = {
 	active: number
 	inactive: number
-	equip: number
-	parry: number
-	a1: number
-	a2: number
-	a3: number
-	a4: number
-	a5: number
-	a6: number
-	a7: number
-	a8: number
+	equip: AnimMoment
+	parry: AnimMoment
+	a1: AnimMoment
+	a2: AnimMoment
+	a3: AnimMoment
+	a4: AnimMoment
+	a5: AnimMoment
+	a6: AnimMoment
+	a7: AnimMoment
+	a8: AnimMoment
+}
+
+export type AnimMoment = {
+	weight: number
 	progress: number
 }
 

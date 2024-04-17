@@ -4,7 +4,7 @@ import {zeroWeights} from "../kit/zero-weights.js"
 import {Angles} from "../../../activity/exports.js"
 import {MeleeReport} from "../../../activity/reports/melee.js"
 
-export function equipMelee({activity}: MeleeReport) {
+export function meleeWeights({activity}: MeleeReport) {
 	const weights = zeroWeights()
 
 	const {cancelled} = activity
@@ -35,8 +35,6 @@ export function equipMelee({activity}: MeleeReport) {
 		[e, 3 / 3],
 	])
 
-	weights.progress = progress
-
 	weights.active = cancelled !== null
 		? spline.linear(seconds - cancelled, [
 			[0, 1],
@@ -54,19 +52,19 @@ export function equipMelee({activity}: MeleeReport) {
 
 	if (maneuver.current.technique === "stab") {
 		if (maneuver.current.angle < 0)
-			weights.a7 = weights.active
+			weights.a7 = {progress, weight: weights.active}
 		else
-			weights.a8 = weights.active
+			weights.a8 = {progress, weight: weights.active}
 	}
 	else if (maneuver.current.technique === "swing") {
 		const {angle} = maneuver.current
 		const {splines} = Angles
-		weights.a1 = spline.linear(angle, splines.a1) * weights.active
-		weights.a2 = spline.linear(angle, splines.a2) * weights.active
-		weights.a3 = spline.linear(angle, splines.a3) * weights.active
-		weights.a4 = spline.linear(angle, splines.a4) * weights.active
-		weights.a5 = spline.linear(angle, splines.a5) * weights.active
-		weights.a6 = spline.linear(angle, splines.a6) * weights.active
+		weights.a1 = {progress, weight: spline.linear(angle, splines.a1) * weights.active}
+		weights.a2 = {progress, weight: spline.linear(angle, splines.a2) * weights.active}
+		weights.a3 = {progress, weight: spline.linear(angle, splines.a3) * weights.active}
+		weights.a4 = {progress, weight: spline.linear(angle, splines.a4) * weights.active}
+		weights.a5 = {progress, weight: spline.linear(angle, splines.a5) * weights.active}
+		weights.a6 = {progress, weight: spline.linear(angle, splines.a6) * weights.active}
 	}
 
 	return weights

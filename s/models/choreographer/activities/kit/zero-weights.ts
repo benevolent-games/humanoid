@@ -1,12 +1,20 @@
 
-import {ActivityWeights} from "./weights.js"
+import {ActivityWeights, AnimMoment} from "./weights.js"
+
+const moment = (): AnimMoment => ({weight: 0, progress: 0})
 
 export const zeroWeights = (): ActivityWeights => ({
 	active: 0,
 	inactive: 1,
-	equip: 0,
-	parry: 0,
-	progress: 0,
-	a1: 0, a2: 0, a3: 0, a4: 0, a5: 0, a6: 0, a7: 0, a8: 0,
+	equip: moment(),
+	parry: moment(),
+	a1: moment(),
+	a2: moment(),
+	a3: moment(),
+	a4: moment(),
+	a5: moment(),
+	a6: moment(),
+	a7: moment(),
+	a8: moment(),
 })
 

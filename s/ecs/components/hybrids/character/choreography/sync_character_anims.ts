@@ -10,7 +10,7 @@ import {Weapon} from "../../../../../models/armory/weapon.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
-import {ActivityWeights} from "../../../../../models/choreographer/activities/kit/weights.js"
+import {ActivityWeights, AnimMoment} from "../../../../../models/choreographer/activities/kit/weights.js"
 
 export function sync_character_anims({
 		anims,
@@ -172,10 +172,10 @@ export function sync_character_anims({
 	const grip = grip_groups[gripName]
 	const w = activityWeights
 
-	function animateAttack(anim: ManualAnim, weight: number) {
+	function animateAttack(anim: ManualAnim, {weight, progress}: AnimMoment) {
 		anim.weight = weight
 		if (weight > (1 / 100))
-			anim.setProgress(scalar.clamp(w.progress))
+			anim.setProgress(scalar.clamp(progress))
 	}
 
 	animateAttack(grip.parry, w.parry)
@@ -185,11 +185,14 @@ export function sync_character_anims({
 	animateAttack(grip.attack_4, w.a4)
 	animateAttack(grip.attack_5, w.a5)
 	animateAttack(grip.attack_6, w.a6)
-	animateAttack(grip.attack_7, w.a7 + w.a8)
+
+	const combinedStab = {progress: w.a7.progress, weight: w.a7.weight + w.a8.weight}
+	animateAttack(grip.attack_7, combinedStab)
 	// animateAttack(grip.attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
-	anims.equip.weight = w.equip
+	animateAttack(anims.equip, w.equip)
+	// anims.equip.weight = w.equip
 	grip.airborne.weight = airborne * w.inactive
 	grip.guard.weight = tinyfix + (w.inactive * groundage * stillness)
 	grip.forward.weight = tinyfix + north * w.inactive * groundage * unstillness

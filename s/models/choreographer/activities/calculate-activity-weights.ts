@@ -1,8 +1,8 @@
 
 import {zeroWeights} from "./kit/zero-weights.js"
 import {Activity} from "../../activity/exports.js"
-import {equipParry} from "./kinds/parry-weights.js"
-import {equipMelee} from "./kinds/melee-weights.js"
+import {parryWeights} from "./kinds/parry-weights.js"
+import {meleeWeights} from "./kinds/melee-weights.js"
 import {equipWeights} from "./kinds/equip-weights.js"
 import {EquipReport} from "../../activity/reports/equip.js"
 import {ParryReport} from "../../activity/reports/parry.js"
@@ -18,10 +18,10 @@ export function calculateActivityWeights(activity: Activity.Any | null) {
 			return equipWeights(new EquipReport(activity))
 
 		case "parry":
-			return equipParry(new ParryReport(activity))
+			return parryWeights(new ParryReport(activity))
 
 		case "melee":
-			return equipMelee(new MeleeReport(activity))
+			return meleeWeights(new MeleeReport(activity))
 
 	}
 }
