@@ -96,7 +96,7 @@ export const combat = system("combat", ({realm}) => [
 					applyActivity(() => ({
 						kind: "melee",
 						weapon,
-						maneuvers: [{technique: "stab", comboable: true, angle}],
+						maneuvers: [{technique: "stab", comboable: false, angle}],
 						seconds: 0,
 						cancelled: null,
 					}))
