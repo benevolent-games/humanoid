@@ -2,49 +2,56 @@
 import {behavior, system} from "../hub.js"
 import {processHits} from "./utils/process_hits.js"
 import {Tracers} from "../components/hybrids/tracers.js"
+import {MeleeReport} from "../../models/activity/reports/melee.js"
 import {Character} from "../components/hybrids/character/character.js"
-import {Inventory} from "../components/topics/warrior.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
+import {ActivityComponent, Inventory} from "../components/topics/warrior.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
-	// behavior("tracers")
-	// 	.select({Character, MeleeAction, Tracers, Inventory})
-	// 	.logic(() => entity => {
-	// 		const {physics} = realm
-	// 		const {character, meleeAction, tracers} = entity.components
+	behavior("tracers")
+		.select({Character, ActivityComponent, Tracers, Inventory})
+		.logic(() => entity => {
+			const {physics} = realm
+			const {character, activityComponent, tracers} = entity.components
 
-	// 		const releasePhase = Melee.is.attack(meleeAction)
-	// 			&& meleeAction.report.phase === "release"
+			if (activityComponent?.kind !== "melee")
+				return
 
-	// 		// start tracing
-	// 		if (releasePhase && !tracers.current) {
-	// 			const inventory = new InventoryManager(entity.components.inventory)
-	// 			const ensemble = character.weaponEnsembles.get(inventory.weaponName)!
-	// 			tracers.start(ensemble, realm.ui.debug.meleeTracers)
-	// 		}
+			const meleeReport = new MeleeReport(activityComponent)
+			const active = (
+				meleeReport.phase === "release" &&
+				meleeReport.activity.cancelled === null
+			)
 
-	// 		// continue tracing
-	// 		else if (releasePhase && tracers.current) {
-	// 			for (const {ribbon, edge} of tracers.continue()) {
-	// 				const hitRibbon = processHits({
-	// 					edge,
-	// 					ribbon,
-	// 					world,
-	// 					physics,
-	// 					meleeAction,
-	// 					entityId: entity.id,
-	// 				})
-	// 				if (hitRibbon)
-	// 					break
-	// 			}
-	// 		}
+			// start tracing
+			if (active && !tracers.current) {
+				const inventory = new InventoryManager(entity.components.inventory)
+				const ensemble = character.weaponEnsembles.get(inventory.weaponName)!
+				tracers.start(ensemble, realm.ui.debug.meleeTracers)
+			}
 
-	// 		// finish tracing
-	// 		else if (!releasePhase && tracers.current) {
-	// 			tracers.finish()
-	// 		}
-	// 	}),
+			// continue tracing
+			else if (active && tracers.current) {
+				for (const {ribbon, edge} of tracers.continue()) {
+					const hitRibbon = processHits({
+						edge,
+						ribbon,
+						world,
+						physics,
+						meleeReport,
+						entityId: entity.id,
+					})
+					if (hitRibbon)
+						break
+				}
+			}
+
+			// finish tracing
+			else if (!active && tracers.current) {
+				tracers.finish()
+			}
+		}),
 
 ])
 

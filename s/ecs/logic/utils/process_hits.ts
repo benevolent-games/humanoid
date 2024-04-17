@@ -7,23 +7,23 @@ import {Tracing} from "../../../models/tracing/types.js"
 import {Health} from "../../components/topics/warrior.js"
 import {HuPhysics} from "../../../models/realm/physics.js"
 import {Infirmary} from "../../../models/facilities/infirmary.js"
-import { MeleeReport } from "../../../models/activity/reports/melee.js"
-import { Activity } from "../../../models/activity/exports.js"
+import {MeleeReport} from "../../../models/activity/reports/melee.js"
 
 const {xyz} = vec3.to
 const {xyzw} = quat.to
 
 export function processHits({
-		entityId, world, physics, ribbon, edge, activity,
+		entityId, world, physics, ribbon, meleeReport, edge,
 	}: {
 		entityId: Id
 		world: World
-		physics: HuPhysics,
-		ribbon: Ribbon,
-		edge: Tracing.RibbonEdge,
-		activity: Activity.Melee,
+		physics: HuPhysics
+		ribbon: Ribbon
+		meleeReport: MeleeReport
+		edge: Tracing.RibbonEdge
 	}) {
 
+	const activity = meleeReport.activity
 	const noPosition = xyz(vec3.zero())
 	const noRotation = xyzw(quat.identity())
 	const hits = [] as Rapier.Collider[]
