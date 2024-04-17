@@ -186,7 +186,11 @@ export function sync_character_anims({
 	animateAttack(grip.attack_5, w.a5)
 	animateAttack(grip.attack_6, w.a6)
 
-	const combinedStab = {progress: w.a7.progress, weight: w.a7.weight + w.a8.weight}
+	const combinedStab = {
+		progress: Math.max(w.a7.progress, w.a8.progress),
+		weight: w.a7.weight + w.a8.weight,
+	}
+
 	animateAttack(grip.attack_7, combinedStab)
 	// animateAttack(grip.attack_8, w.a8)
 
