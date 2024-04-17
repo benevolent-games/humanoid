@@ -13,7 +13,6 @@ export function parryWeights({progress}: ParryReport) {
 	])
 	weights.parry = {progress, weight: parry}
 	weights.active = parry
-	weights.inactive = scalar.inverse(parry)
 	return weights
 }
 

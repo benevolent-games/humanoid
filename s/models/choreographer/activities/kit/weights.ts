@@ -1,7 +1,6 @@
 
 export type ActivityWeights = {
 	active: number
-	inactive: number
 	equip: AnimMoment
 	parry: AnimMoment
 	a1: AnimMoment

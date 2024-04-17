@@ -12,7 +12,6 @@ export function equipWeights({progress}: EquipReport) {
 	])
 	weights.equip = {weight: active, progress}
 	weights.active = active
-	weights.inactive = scalar.inverse(active)
 	return weights
 }
 

@@ -196,13 +196,14 @@ export function sync_character_anims({
 
 	const tinyfix = 1 / 1000
 	animateAttack(anims.equip, w.equip)
+	const inactive = scalar.inverse(w.active)
 	// anims.equip.weight = w.equip
-	grip.airborne.weight = airborne * w.inactive
-	grip.guard.weight = tinyfix + (w.inactive * groundage * stillness)
-	grip.forward.weight = tinyfix + north * w.inactive * groundage * unstillness
-	grip.backward.weight = south * w.inactive * groundage * unstillness
-	grip.leftward.weight = west * w.inactive * groundage * unstillness
-	grip.rightward.weight = east * w.inactive * groundage * unstillness
+	grip.airborne.weight = airborne * inactive
+	grip.guard.weight = tinyfix + (inactive * groundage * stillness)
+	grip.forward.weight = tinyfix + north * inactive * groundage * unstillness
+	grip.backward.weight = south * inactive * groundage * unstillness
+	grip.leftward.weight = west * inactive * groundage * unstillness
+	grip.rightward.weight = east * inactive * groundage * unstillness
 
 	//
 	// specials

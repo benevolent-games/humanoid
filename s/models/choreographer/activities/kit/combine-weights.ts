@@ -2,7 +2,7 @@
 import {scalar} from "@benev/toolbox"
 import {ActivityWeights, AnimMoment} from "./weights.js"
 
-const {clamp, inverse} = scalar
+const {clamp} = scalar
 
 export function combineMoment(m1: AnimMoment, m2: AnimMoment): AnimMoment {
 	return {
@@ -13,10 +13,8 @@ export function combineMoment(m1: AnimMoment, m2: AnimMoment): AnimMoment {
 
 export function combineWeights(w1: ActivityWeights, w2: ActivityWeights): ActivityWeights {
 	const active = Math.max(w1.active, w2.active)
-	const inactive = inverse(active)
 	return {
 		active,
-		inactive,
 		equip: combineMoment(w1.equip, w2.equip),
 		parry: combineMoment(w1.parry, w2.parry),
 		a1: combineMoment(w1.a1, w2.a1),

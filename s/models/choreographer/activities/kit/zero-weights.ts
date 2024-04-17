@@ -5,7 +5,6 @@ const moment = (): AnimMoment => ({weight: 0, progress: 0})
 
 export const zeroWeights = (): ActivityWeights => ({
 	active: 0,
-	inactive: 1,
 	equip: moment(),
 	parry: moment(),
 	a1: moment(),

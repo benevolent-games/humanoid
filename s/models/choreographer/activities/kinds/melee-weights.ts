@@ -139,7 +139,6 @@ function maneuverWeights({maneuver, progress, active}: {
 	}) {
 	const weights = zeroWeights()
 	weights.active = active
-	weights.inactive = scalar.inverse(active)
 	if (maneuver.technique === "stab") {
 		if (maneuver.angle < 0)
 			weights.a7 = {progress, weight: weights.active}
