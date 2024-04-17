@@ -36,7 +36,7 @@ export function sync_character_anims({
 		speeds: Speeds & {creep: number}
 	}) {
 
-	const top_speed_anim_ratio = 1.5
+	const top_speed_anim_ratio = 1
 	const {inverse} = scalar
 	const {north, south, west, east} = ambulatory
 	const {
