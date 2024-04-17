@@ -71,19 +71,28 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 
 					swing: {
 						turncap: turncap === null ? null : scalar.radians.from.degrees(turncap),
-						timing: {windup: ms(windup), release: ms(release), recovery: ms(recovery), combo: ms(recovery * 0.8)},
 						damage: {blunt: percent(blunt1), bleed: percent(bleed1), pierce: percent(pierce1)},
+						timing: {
+							windup: ms(windup),
+							release: ms(release),
+							recovery: ms(recovery),
+							combo: ms((windup + recovery) / 2),
+						},
 					},
 
 					stab: {
 						turncap: turncap === null ? null : scalar.radians.from.degrees(turncap),
 						damage: {blunt: percent(blunt2), bleed: percent(bleed2), pierce: percent(pierce2)},
-						timing: {
-							windup: ms(windup + (release / 3)), // stabs have slower windup,
-							release: ms(release - (release / 3)), // but faster release (total attack time is same).
-							recovery: ms(recovery),
-							combo: ms(recovery / 2),
-						},
+						timing: (() => {
+							const stabWindup = windup + (release / 3) // stabs have slower windup,
+							const stabRelease = release - (release / 3) // but faster release.
+							return {
+								windup: ms(stabWindup),
+								release: ms(stabRelease),
+								recovery: ms(recovery),
+								combo: ms((stabWindup + recovery) / 2),
+							}
+						})(),
 					},
 				}
 			},
