@@ -71,8 +71,7 @@ export function meleeWeights({activity}: MeleeReport) {
 					]),
 				progress: 1 / 3,
 			})
-			const w = combineWeights(weights, nextWeights)
-			return w
+			return combineWeights(weights, nextWeights)
 		}
 
 		return weights
