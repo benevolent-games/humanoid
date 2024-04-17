@@ -137,7 +137,7 @@ export namespace Archetypes {
 			isSprinting: false,
 			smoothing: 5,
 
-			speeds: {base: 2.75, fast: 4.75, slow: 1.5},
+			speeds: {base: 2.3, fast: 4, slow: 1},
 			capsule: {
 				height: 1.75,
 				radius: .2,
