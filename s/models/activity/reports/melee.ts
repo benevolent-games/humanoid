@@ -30,6 +30,71 @@ MeleeReport
 
 */
 
+export type MeleeReport2 = {
+	activity: Activity.Melee
+	phase: ManeuverPhase
+	next: null | Maneuver.Any
+	current: {
+		maneuver: Maneuver.Any
+		seconds: number
+		index: number
+		progress: number
+	}
+	weights: ActivityWeights
+	done: boolean
+	almostDone: boolean
+}
+
+export function meleeReport(activity: Activity.Melee) {
+	const mechanical = maneuverReport(activity, activity.cancelled ?? activity.seconds)
+	const animated = maneuverReport(activity, getBouncy(activity.seconds, activity.cancelled))
+	return {
+		activity,
+		phase: mechanical.phase,
+		maneuverReport: mechanical,
+	}
+}
+
+function getBouncy(seconds: number, cancelled: number | null) {
+	if (cancelled === null)
+		return seconds
+	else {
+		const bounciness = 1 / 3
+		return cancelled === null
+			? seconds
+			: scalar.bottom(cancelled - ((seconds - cancelled) * bounciness), 0)
+	}
+}
+
+function maneuverReport({weapon, maneuvers}: Activity.Melee, time: number) {
+	let runningTime = 0
+	for (let index = 0; index < maneuvers.length; index++) {
+		const maneuver = maneuvers[index]
+		const comboIn = index !== 0
+		const comboOut = index < (maneuvers.length - 1)
+		const duration = sum_up_maneuver_duration(weapon, maneuver, comboIn, comboOut)
+		const maneuverSeconds = time - runningTime
+		runningTime += duration
+		return {
+			index,
+			maneuver,
+			duration,
+			seconds: maneuverSeconds,
+			phase: calculate_phase({
+				seconds: time,
+				comboIn,
+				comboOut,
+				timing: weapon[maneuver.technique].timing,
+			}),
+			next: comboOut
+				? maneuvers[index + 1]
+				: null,
+		}
+	}
+
+	throw new Error("maneuver not found")
+}
+
 // export class MeleeMachine {
 // 	constructor(public activity: Activity.Melee) {}
 
@@ -186,21 +251,16 @@ function ascertain_maneuvering_report(activity: Activity.Melee) {
 }
 
 function calculate_phase({
-			seconds, cancelled, comboIn, comboOut, timing
+			seconds, comboIn, comboOut, timing,
 		}: {
 		seconds: number
-		cancelled: number
 		comboIn: boolean
 		comboOut: boolean
 		timing: Weapon.AttackTiming
 	}) {
-
-
-
 	const isInitialAttack = !comboIn
 	const {windup, release} = timing
 	const outro = comboOut ? "combo" : "recovery"
-
 	return isInitialAttack
 		? (
 			(seconds < windup) ? "windup" :
@@ -255,22 +315,22 @@ function ascertain_phase(
 function sum_up_maneuver_duration(
 		weapon: Weapon.Loadout,
 		maneuver: Maneuver.Any,
-		isFirstManeuver: boolean,
-		isCombo: boolean,
+		comboIn: boolean,
+		comboOut: boolean,
 	) {
 
 	const {timing} = maneuver.technique === "swing"
 		? weapon.swing
 		: weapon.stab
 
-	const maybeWindup = isFirstManeuver
-		? timing.windup
-		: 0
+	const maybeWindup = comboIn
+		? 0
+		: timing.windup
 
 	const sum = (
 		maybeWindup +
 		timing.release +
-		(isCombo
+		(comboOut
 			? timing.combo
 			: timing.recovery)
 	)

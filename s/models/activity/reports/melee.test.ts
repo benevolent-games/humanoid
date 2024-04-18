@@ -7,7 +7,7 @@ import {middleOf, quickReport, setupActivity} from "./melee-test-tools/tooling.j
 
 export default <Suite>{
 
-	"determine current phase": async() => {
+	"basic phases": async() => {
 		expect(quickReport(middleOf.windup).phase).equals("windup")
 		expect(quickReport(middleOf.release).phase).equals("release")
 		expect(quickReport(middleOf.recovery).phase).equals("recovery")
