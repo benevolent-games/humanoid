@@ -2,8 +2,123 @@
 import {scalar} from "@benev/toolbox"
 import {Weapon} from "../../armory/weapon.js"
 import {Activity, Maneuver} from "../exports.js"
+import {ActivityWeights} from "../../choreographer/activities/kit/weights.js"
 
 export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
+
+/*
+
+Activity.Melee
+	seconds,
+	weapon,
+	cancelled,
+	maneuvers [{
+		technique,
+		angle,
+		comboable,
+	}],
+
+MeleeReport
+	activity
+	phase
+	weights
+	maneuver
+		current
+			index
+		next
+			index
+
+*/
+
+// export class MeleeMachine {
+// 	constructor(public activity: Activity.Melee) {}
+
+// 	get maneuver() {
+// 		const {activity} = this
+// 		return (activity.cancelled === null)
+// 			? maneuverReportForTime(activity, activity.seconds)
+// 			: maneuverReportForTime(activity, activity.cancelled)
+// 	}
+
+// 	get bouncySeconds() {
+// 		const {activity} = this
+// 		const {seconds, cancelled} = activity
+// 		if (cancelled === null)
+// 			return seconds
+// 		else {
+// 			const bounciness = 1 / 3
+// 			return (
+// 				cancelled === null
+// 					? seconds
+// 					: scalar.bottom(cancelled - ((seconds - cancelled) * bounciness), 0)
+// 			)
+// 		}
+// 	}
+
+// 	get animWeights() {
+// 		const maneuver = maneuverReportForTime(this.activity, this.bouncySeconds)
+// 		return null
+// 	}
+// }
+
+// export type ManeuverReport = ReturnType<typeof maneuverReportForTime>
+
+// function maneuverReportForTime(activity: Activity.Melee, seconds: number) {
+// 	const {maneuvers, weapon} = activity
+// 	const indexOfLastManeuver = maneuvers.length - 1
+
+// 	let runningTime = 0
+// 	let next: Maneuver.Any | null = null
+// 	let group: null | {
+// 		current: Maneuver.Any
+// 		seconds: number
+// 		index: number
+// 		progress: number
+// 		phase: ManeuverPhase
+// 	} = null
+
+// 	for (let i = 0; i < maneuvers.length; i++) {
+// 		const maneuver = maneuvers[i]
+// 		const isCombo = i < indexOfLastManeuver
+// 		const isFirstManeuver = i === 0
+
+// 		if (seconds >= runningTime) {
+// 			const duration = sum_up_maneuver_duration(weapon, maneuver, isFirstManeuver, isCombo)
+// 			const maneuverSeconds = seconds - runningTime
+// 			group = {
+// 				index: i,
+// 				current: maneuver,
+// 				seconds: maneuverSeconds,
+// 				progress: scalar.clamp(maneuverSeconds / duration),
+// 			}
+// 			runningTime += duration
+// 		}
+// 		else {
+// 			next = maneuver
+// 			break
+// 		}
+// 	}
+
+// 	if (!group)
+// 		throw new Error("current maneuver not found")
+
+// 	const isComboContinuation = group.index > 0
+// 	const phase = ascertain_phase(
+// 		isComboContinuation,
+// 		group.current,
+// 		next,
+// 		group.seconds,
+// 		weapon,
+// 	)
+
+// 	return {...group, next, phase}
+// }
+
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
 
 export class MeleeReport {
 	readonly maneuver: ReturnType<typeof ascertain_maneuvering_report>
@@ -70,8 +185,36 @@ function ascertain_maneuvering_report(activity: Activity.Melee) {
 	return {...group, next}
 }
 
+function calculate_phase({
+			seconds, cancelled, comboIn, comboOut, timing
+		}: {
+		seconds: number
+		cancelled: number
+		comboIn: boolean
+		comboOut: boolean
+		timing: Weapon.AttackTiming
+	}) {
+
+
+
+	const isInitialAttack = !comboIn
+	const {windup, release} = timing
+	const outro = comboOut ? "combo" : "recovery"
+
+	return isInitialAttack
+		? (
+			(seconds < windup) ? "windup" :
+			(seconds < (windup + release)) ? "release" :
+			outro
+		)
+		: (
+			seconds < release ? "release" :
+			outro
+		)
+}
+
 function ascertain_phase(
-		isCombo: boolean,
+		isComboContinuation: boolean,
 		currentManeuver: Maneuver.Any,
 		nextManeuver: Maneuver.Any | null,
 		seconds: number,
@@ -82,7 +225,7 @@ function ascertain_phase(
 		? weapon.swing.timing
 		: weapon.stab.timing
 
-	if (isCombo) {
+	if (isComboContinuation) {
 		if (seconds < release)
 			return "release"
 

@@ -17,6 +17,10 @@ export function meleeWeights({activity}: MeleeReport) {
 
 	const isFirstManeuver = maneuver.index === 0
 
+	const reconcile = phase === "combo"
+		? combo
+		: recovery
+
 	// bounce back on early recovery
 	const bounciness = 1 / 3
 	const bouncySeconds = (
@@ -30,14 +34,14 @@ export function meleeWeights({activity}: MeleeReport) {
 		const b = windup / 3
 		const c = windup
 		const d = windup + release
-		const e = windup + release + (phase === "combo" ? combo : recovery)
+		const e = windup + release + reconcile
 
 		const weights = maneuverWeights({
 			maneuver: maneuver.current,
 			active: cancelled !== null
 				? spline.linear(seconds - cancelled, [
 					[0, 1],
-					[recovery, 0],
+					[reconcile, 0],
 				])
 				: spline.linear(seconds, [
 					[a, 0],
@@ -60,7 +64,7 @@ export function meleeWeights({activity}: MeleeReport) {
 				active: cancelled !== null
 					? spline.linear(seconds - cancelled, [
 						[0, 1],
-						[recovery, 0],
+						[reconcile, 0],
 					])
 					: spline.linear(seconds, [
 						[a, 0],
@@ -79,14 +83,14 @@ export function meleeWeights({activity}: MeleeReport) {
 	else {
 		const a = 0
 		const b = release
-		const c = release + (phase === "combo" ? combo : recovery)
+		const c = release + reconcile
 
 		const weights = maneuverWeights({
 			maneuver: maneuver.current,
 			active: cancelled !== null
 				? spline.linear(seconds - cancelled, [
 					[0, 1],
-					[recovery, 0],
+					[reconcile, 0],
 				])
 				: spline.linear(seconds, [
 					[a, 1],
@@ -106,7 +110,7 @@ export function meleeWeights({activity}: MeleeReport) {
 				active: cancelled !== null
 					? spline.linear(seconds - cancelled, [
 						[0, 1],
-						[recovery, 0],
+						[reconcile, 0],
 					])
 					: spline.linear(seconds, [
 						[a, 0],
@@ -127,7 +131,7 @@ export function meleeWeights({activity}: MeleeReport) {
 
 //////////////////////////
 
-function maneuverWeights({maneuver, progress, active}: {
+export function maneuverWeights({maneuver, progress, active}: {
 		maneuver: Maneuver.Any
 		progress: number
 		active: number
