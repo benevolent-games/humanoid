@@ -64,7 +64,7 @@ function ascertainPredicament(
 				feintDuration,
 				feintProgress,
 				done: feintProgress >= 1,
-				almostDone: feintProgress >= 0.6,
+				almostDone: feintProgress >= 0.5,
 				animatedManeuver: queryManeuver(reports, rewind),
 			}
 		}
@@ -80,7 +80,7 @@ function ascertainPredicament(
 				bounceDuration,
 				bounceProgress,
 				done: bounceProgress >= 1,
-				almostDone: bounceProgress >= 0.6,
+				almostDone: bounceProgress >= (1 / 2),
 				animatedManeuver: queryManeuver(reports, augmentedRewind),
 			}
 		}
@@ -90,7 +90,7 @@ function ascertainPredicament(
 	return {
 		procedure: "normal",
 		done: maneuver.progress >= 1,
-		almostDone: maneuver.progress >= 0.8,
+		almostDone: maneuver.phase === "recovery" ? true : false,
 		animatedManeuver: maneuver,
 	}
 }

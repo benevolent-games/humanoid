@@ -26,7 +26,7 @@ export class ParryReport {
 		this.phase = phase
 		this.progress = progress
 		this.protective = phase === "block"
-		this.almostDone = progress >= 0.75
+		this.almostDone = progress >= (6 / 10)
 		this.done = progress >= 1
 	}
 }

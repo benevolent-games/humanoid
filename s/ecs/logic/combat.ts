@@ -148,6 +148,15 @@ export const combat = system("combat", ({realm}) => [
 			}),
 		]),
 
+	behavior("launch queued activity")
+		.select({ActivityComponent, NextActivity})
+		.logic(() => ({components}) => {
+			if (!components.activityComponent && components.nextActivity) {
+				components.activityComponent = components.nextActivity
+				components.nextActivity = null
+			}
+		}),
+
 	behavior("activity seconds increase")
 		.select({ActivityComponent})
 		.logic(tick => ({components: {activityComponent: activity}}) => {

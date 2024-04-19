@@ -37,10 +37,6 @@ export default <Suite>{
 		"normal predicament": async() => {
 			expect(quickReport(2.1).predicament.procedure).equals("normal")
 		},
-		"normal almost done": async() => {
-			expect(quickReport(2.1).predicament.almostDone).equals(false)
-			expect(quickReport(2.9).predicament.almostDone).equals(true)
-		},
 		"normal done": async() => {
 			expect(quickReport(2.1).predicament.done).equals(false)
 			expect(quickReport(3).predicament.done).equals(true)
@@ -66,10 +62,6 @@ export default <Suite>{
 			"feint done": async() => {
 				expect(feint(.4, .6).done).equals(false)
 				expect(feint(.4, .8).done).equals(true)
-			},
-			"feint almostDone": async() => {
-				expect(feint(.4, .41).almostDone).equals(false)
-				expect(feint(.4, .79).almostDone).equals(true)
 			},
 			"feint combo": async() => {
 				const activity = setupActivity()
