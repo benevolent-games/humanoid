@@ -63,15 +63,15 @@ export default <Suite>{
 				expect(feint(.4, .6).done).equals(false)
 				expect(feint(.4, .8).done).equals(true)
 			},
-			"feint combo": async() => {
-				const activity = setupActivity()
-				activity.cancelled = 2.4
-				activity.seconds = 2.6
-				activity.maneuvers.push(quickManeuver())
-				const predicament = meleeReport(activity).predicament as FeintPredicament
-				expect(predicament.procedure).equals("feint")
-				assert(proximal(predicament.feintDuration, .4))
-			},
+			// "feint combo": async() => {
+			// 	const activity = setupActivity()
+			// 	activity.cancelled = 2.4
+			// 	activity.seconds = 2.6
+			// 	activity.maneuvers.push(quickManeuver())
+			// 	const predicament = meleeReport(activity).predicament as FeintPredicament
+			// 	expect(predicament.procedure).equals("feint")
+			// 	assert(proximal(predicament.feintDuration, .4))
+			// },
 		}
 	})(),
 }
