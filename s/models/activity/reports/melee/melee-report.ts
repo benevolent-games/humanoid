@@ -64,7 +64,7 @@ function ascertainPredicament(
 				feintDuration,
 				feintProgress,
 				done: feintProgress >= 1,
-				almostDone: feintProgress >= 0.5,
+				almostDone: feintProgress >= (1 / 2),
 				animatedManeuver: queryManeuver(reports, rewind),
 			}
 		}

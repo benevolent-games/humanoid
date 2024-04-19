@@ -15,7 +15,7 @@ import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, N
 
 const isSwingComboable = true
 const isStabComboable = false
-const comboableReleaseThreshold = 1 / 3
+const comboableReleaseThreshold = 2 / 3
 
 export const combat = system("combat", ({realm}) => [
 
