@@ -11,7 +11,8 @@ const blend = 0.1
 
 export function meleeWeights(melee: MeleeReport): ActivityWeights {
 	const {predicament} = melee
-	const {chart, phase, progress, next, time} = melee.predicament.animatedManeuver
+	const {chart, phase, progress, next, time, duration} = melee.predicament.animatedManeuver
+	const {comboIn} = chart
 	const {windup, release} = chart.timing
 	const reconcile = phase === "combo"
 		? chart.timing.combo
@@ -19,11 +20,11 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 
 	const alphaWeights = generate_attack_weights({
 		maneuver: chart.maneuver,
-		progress: chart.comboIn
+		progress: comboIn
 			? scalar.remap(progress, [0, 1], [1/3, 1])
 			: progress,
 		active: (
-			predicament.procedure === "normal" ? spline.linear(time, chart.comboIn ? [
+			predicament.procedure === "normal" ? spline.linear(time, comboIn ? [
 				[0, 1],
 				[release, 1],
 				[release + reconcile, 0],
@@ -51,7 +52,7 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 			maneuver: next.maneuver,
 			progress: 1 / 3, // frozen in windup
 			active: predicament.procedure === "normal"
-				? spline.linear(time, next.comboIn ? [
+				? spline.linear(time, comboIn ? [
 					[0, 0],
 					[release, 0],
 					[release + reconcile, 1],

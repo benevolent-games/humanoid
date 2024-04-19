@@ -3,7 +3,7 @@ import {Weapon} from "../../../armory/weapon.js"
 import {Activity, Maneuver} from "../../exports.js"
 import {ManeuverPhase, ManeuverQuery, ManeuverChart, MeleeReport, Predicament} from "./parts/types.js"
 
-const bounciness = 1 / 3
+const bounciness = 2 / 3
 
 export function meleeReport(activity: Activity.Melee): MeleeReport {
 	const maneuverReports = generateManeuverReports(
