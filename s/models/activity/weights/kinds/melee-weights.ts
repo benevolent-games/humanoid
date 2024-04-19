@@ -11,7 +11,7 @@ const blend = 0.1
 
 export function meleeWeights(melee: MeleeReport): ActivityWeights {
 	const {predicament} = melee
-	const {chart, phase, progress, next, time, duration} = melee.predicament.animatedManeuver
+	const {chart, phase, progress, next, time} = melee.predicament.animatedManeuver
 	const {comboIn} = chart
 	const {windup, release} = chart.timing
 	const reconcile = phase === "combo"

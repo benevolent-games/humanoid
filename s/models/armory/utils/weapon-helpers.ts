@@ -77,6 +77,7 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 							release: ms(release),
 							recovery: ms(recovery),
 							combo: ms((windup + recovery) / 2),
+							bounce: ms(recovery * 0.5),
 						},
 					},
 
@@ -91,6 +92,7 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 								release: ms(stabRelease),
 								recovery: ms(recovery),
 								combo: ms((stabWindup + recovery) / 2),
+								bounce: ms(recovery * 0.5),
 							}
 						})(),
 					},
@@ -111,6 +113,7 @@ const xTiming = (t: Weapon.AttackTiming, x: number): Weapon.AttackTiming => ({
 	release: t.release * x,
 	recovery: t.recovery * x,
 	combo: t.combo * x,
+	bounce: t.bounce * x,
 })
 
 const xDamage = (d: Weapon.Damage, x: number): Weapon.Damage => ({

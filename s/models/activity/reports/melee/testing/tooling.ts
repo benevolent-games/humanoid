@@ -5,7 +5,7 @@ import {meleeReport} from "../melee-report.js"
 import {Weapon} from "../../../../armory/weapon.js"
 import {Activity, Maneuver} from "../../../exports.js"
 
-export const exampleTimings = {windup: 1, release: 1, combo: 1, recovery: 1}
+export const exampleTimings = {windup: 1, release: 1, combo: 1, recovery: 1, bounce: 1}
 
 export function setupWeapon(): Weapon.Loadout {
 	return {

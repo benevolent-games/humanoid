@@ -58,6 +58,7 @@ export namespace Weapon {
 		release: number
 		recovery: number
 		combo: number
+		bounce: number
 	}
 
 	export type Damage = {

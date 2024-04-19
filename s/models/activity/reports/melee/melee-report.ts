@@ -3,7 +3,7 @@ import {Weapon} from "../../../armory/weapon.js"
 import {Activity, Maneuver} from "../../exports.js"
 import {ManeuverPhase, ManeuverQuery, ManeuverChart, MeleeReport, Predicament} from "./parts/types.js"
 
-const bounciness = 2 / 3
+const bounciness = 1 / 3
 
 export function meleeReport(activity: Activity.Melee): MeleeReport {
 	const maneuverReports = generateManeuverReports(
@@ -71,7 +71,7 @@ function ascertainPredicament(
 
 		// bounce predicament
 		else if (maneuver.phase === "release") {
-			const bounceDuration = maneuver.chart.timing.recovery / 2
+			const bounceDuration = maneuver.chart.timing.bounce
 			const bounceProgress = since / bounceDuration
 			const augmentedRewind = cancelled - (since * bounciness)
 			return {
