@@ -1,69 +1,31 @@
 
 import {scalar} from "@benev/toolbox"
-import {Weapon} from "../../armory/weapon.js"
-import {Activity, Maneuver} from "../exports.js"
+import {Weapon} from "../../../armory/weapon.js"
+import {Activity, Maneuver} from "../../exports.js"
+import {ManeuverPhase, ManeuverQuery, ManeuverReport, MeleeReport, Predicament} from "./parts/types.js"
 
-export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
+export function meleeReport(activity: Activity.Melee): MeleeReport {
+	const maneuverReports = generateManeuverReports(
+		activity.maneuvers,
+		activity.weapon,
+	)
 
-export type ManeuverQuery = {
-	index: number
-	time: number
-	progress: number
-	phase: ManeuverPhase
-	report: ManeuverReport
-	next: ManeuverReport | null
-}
+	const activeManeuver = queryManeuver(
+		maneuverReports,
+		activity.cancelled ?? activity.seconds,
+	)
 
-export type ManeuverReport = {
-	start: number
-	duration: number
-	comboIn: boolean
-	comboOut: boolean
-	timing: Weapon.AttackTiming
-}
+	const predicament = ascertainPredicament(
+		activity,
+		maneuverReports,
+		activeManeuver,
+	)
 
-export type Normal = {
-	procedure: "normal"
-	animatedManeuver: ManeuverQuery
-	done: boolean
-	almostDone: boolean
-}
-
-export type Feint = {
-	procedure: "feint"
-	animatedManeuver: ManeuverQuery
-	feintTime: number
-	feintDuration: number
-	feintProgress: number
-	done: boolean
-	almostDone: boolean
-}
-
-export type Bounce = {
-	procedure: "bounce"
-	animatedManeuver: ManeuverQuery
-	bounceTime: number
-	bounceDuration: number
-	bounceProgress: number
-	done: boolean
-	almostDone: boolean
-}
-
-export type Predicament = Normal | Feint | Bounce
-
-export type MeleeReport4 = {
-	activity: Activity.Melee
-	maneuverReports: ManeuverReport[]
-	activeManeuver: ManeuverQuery
-	predicament: Predicament
-}
-
-export function meleeReport(activity: Activity.Melee): MeleeReport4 {
-	const maneuverReports = generateManeuverReports(activity.maneuvers, activity.weapon)
-	const activeManeuver = queryManeuver(maneuverReports, activity.cancelled ?? activity.seconds)
-	const predicament = ascertainPredicament(activity, maneuverReports, activeManeuver)
 	return {activity, maneuverReports, activeManeuver, predicament}
 }
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
 function ascertainPredicament(
 		activity: Activity.Melee,
@@ -124,24 +86,6 @@ function ascertainPredicament(
 	}
 }
 
-function calculate_phase_start_in_maneuver_time(
-		timing: Weapon.AttackTiming,
-		phase: ManeuverPhase,
-		comboIn: boolean,
-	) {
-
-	const {release} = timing
-	const maybeWindup = comboIn
-		? 0
-		: timing.windup
-
-	return (
-		phase === "windup" ? 0 :
-		phase === "release" ? maybeWindup :
-		maybeWindup + release
-	)
-}
-
 function generateManeuverReports(maneuvers: Maneuver.Any[], weapon: Weapon.Loadout) {
 	let runningTime = 0
 	return maneuvers.map((maneuver, index): ManeuverReport => {
@@ -190,6 +134,24 @@ function calculate_phase(
 			time < release ? "release" :
 			outro
 		)
+}
+
+function calculate_phase_start_in_maneuver_time(
+		timing: Weapon.AttackTiming,
+		phase: ManeuverPhase,
+		comboIn: boolean,
+	) {
+
+	const {release} = timing
+	const maybeWindup = comboIn
+		? 0
+		: timing.windup
+
+	return (
+		phase === "windup" ? 0 :
+		phase === "release" ? maybeWindup :
+		maybeWindup + release
+	)
 }
 
 function sum_maneuver_duration(

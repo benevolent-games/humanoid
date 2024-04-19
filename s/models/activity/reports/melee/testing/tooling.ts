@@ -1,10 +1,9 @@
 
 import {scalar} from "@benev/toolbox"
 
-// import {meleeReport} from "../melee.js"
-import {meleeReport} from "../melee2.js"
-import {Weapon} from "../../../armory/weapon.js"
-import {Activity, Maneuver} from "../../exports.js"
+import {meleeReport} from "../melee-report.js"
+import {Weapon} from "../../../../armory/weapon.js"
+import {Activity, Maneuver} from "../../../exports.js"
 
 export const exampleTimings = {windup: 1, release: 1, combo: 1, recovery: 1}
 

@@ -6,7 +6,7 @@ g.HTMLElement = class {}
 
 export default await async function() {
 	return <Suite>{
-		meleeReporting: (await import("./models/activity/reports/melee.test.js")).default,
+		meleeReporting: (await import("./models/activity/reports/melee/melee-report.test.js")).default,
 	}
 }()
 

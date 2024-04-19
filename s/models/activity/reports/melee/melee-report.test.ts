@@ -2,8 +2,9 @@
 import {scalar} from "@benev/toolbox"
 import {Suite, assert, expect} from "cynic"
 
-import {Feint, meleeReport} from "./melee2.js"
-import {setupActivity, quickManeuver, quickReport} from "./melee-test-tools/tooling.js"
+import {meleeReport} from "./melee-report.js"
+import {FeintPredicament} from "./parts/types.js"
+import {setupActivity, quickManeuver, quickReport} from "./testing/tooling.js"
 
 function proximal(a: number, b: number, epsilon: number = 0.01) {
 	const diff = Math.abs(a - b)
@@ -51,7 +52,7 @@ export default <Suite>{
 			const activity = setupActivity()
 			activity.cancelled = cancelled
 			activity.seconds = seconds
-			const predicament = meleeReport(activity).predicament as Feint
+			const predicament = meleeReport(activity).predicament as FeintPredicament
 			expect(predicament.procedure).equals("feint")
 			return predicament
 		}
@@ -75,7 +76,7 @@ export default <Suite>{
 				activity.cancelled = 2.4
 				activity.seconds = 2.6
 				activity.maneuvers.push(quickManeuver())
-				const predicament = meleeReport(activity).predicament as Feint
+				const predicament = meleeReport(activity).predicament as FeintPredicament
 				expect(predicament.procedure).equals("feint")
 				assert(proximal(predicament.feintDuration, .4))
 			},
