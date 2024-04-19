@@ -62,7 +62,7 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 		}
 
 		.angle.lock > svg {
-			transform: translate(0, -0.7em);
+			transform: translate(0, -0.6em);
 		}
 	`)
 
@@ -96,8 +96,9 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			const a = angle ?? 0
 			return {
 				angleAlpha: a,
-				angleBravo: -a,
-				angleLock: activeManeuver.chart.maneuver.angle,
+				angleBravo: null,
+				angleLock: activeManeuver.next?.maneuver.angle
+				?? activeManeuver.chart.maneuver.angle,
 				mode: activeManeuver.phase === "release"
 					? "attack-release"
 					: "attack",
