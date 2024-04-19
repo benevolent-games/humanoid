@@ -1,204 +1,56 @@
 
-import {Weapon} from "../../../armory/weapon.js"
-import {Activity, Maneuver} from "../../exports.js"
-import {ManeuverPhase, ManeuverQuery, ManeuverChart, MeleeReport, Predicament} from "./parts/types.js"
+import {Activity} from "../../exports.js"
+import {MeleeReport} from "./parts/types.js"
+import {assess_melee_flow} from "./parts/assess_melee_flow.js"
+import {generate_maneuver_charts} from "./parts/generate_maneuver_charts.js"
+import {query_for_melee_snapshot} from "./parts/query_for_melee_snapshot.js"
 
-const bounciness = 1 / 3
-
+// the melee activity itself contains a minimal set of high-level data,
+// from which we derive a report which tells us more detail.
 export function meleeReport(activity: Activity.Melee): MeleeReport {
-	const maneuverReports = generateManeuverReports(
+
+	// we compute maneuver charts, which gives us more detail
+	// about the maneuvers, their timings, and their relationships.
+	const charts = generate_maneuver_charts(
 		activity.maneuvers,
 		activity.weapon,
 	)
 
-	const activeManeuver = queryManeuver(
-		maneuverReports,
+	// we take a snapshot, which has information about
+	// a specific point in time within the activity.
+	// this snapshot is the one our game logic will be concerned with.
+	const logicalSnapshot = query_for_melee_snapshot(
+		charts,
+
+		// if the attack is cancelled (feint or bounce),
+		// our game logic's perspective is "frozen" at the moment of cancellation,
+		// eg, we no longer progress onward to different phases or maneuvers.
 		activity.cancelled ?? activity.seconds,
 	)
 
-	const predicament = ascertainPredicament(
+	// we compute what kind of situation (flow) our melee activity is in.
+	// eg, are we currently feinting, or bouncing off, etc.
+	const flow = assess_melee_flow(
 		activity,
-		maneuverReports,
-		activeManeuver,
+		charts,
+		logicalSnapshot,
 	)
 
 	return {
 		activity,
-		charts: maneuverReports,
-		activeManeuver,
-		predicament,
-		animatedManeuver: predicament.animatedManeuver,
-		done: predicament.done,
-		almostDone: predicament.almostDone,
+		charts,
+		flow,
+		logicalSnapshot,
+		done: flow.done,
+		almostDone: flow.almostDone,
+
+		// our animation systems don't use the logical snapshot,
+		// because some of our special effects (like feinting or bouncing)
+		// involves visually displaying a different point in time,
+		// eg, feints and bounces are effectivelly rewinding the animations.
+		// taking a whole new snapshot allows this rewinding to robustly cross
+		// over maneuver boundaries if necessary.
+		animSnapshot: flow.animSnapshot,
 	}
-}
-
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-
-function ascertainPredicament(
-		activity: Activity.Melee,
-		reports: ManeuverChart[],
-		maneuver: ManeuverQuery,
-	): Predicament {
-
-	const {seconds, cancelled} = activity
-	const wasCancelled = cancelled !== null && seconds >= cancelled
-
-	if (wasCancelled) {
-		const since = seconds - cancelled
-
-		// feint predicament
-		if (maneuver.phase === "windup") {
-			const phaseStart = calculate_phase_start_in_maneuver_time(
-				maneuver.chart.timing,
-				maneuver.phase,
-				maneuver.chart.comboIn,
-			)
-			const feintDuration = maneuver.time - phaseStart
-			const feintProgress = since / feintDuration
-			const rewind = cancelled - since
-			return {
-				procedure: "feint",
-				feintTime: since,
-				feintDuration,
-				feintProgress,
-				done: feintProgress >= 1,
-				almostDone: true,
-				animatedManeuver: queryManeuver(reports, rewind),
-			}
-		}
-
-		// bounce predicament
-		else if (maneuver.phase === "release") {
-			const bounceDuration = maneuver.chart.timing.bounce
-			const bounceProgress = since / bounceDuration
-			const augmentedRewind = cancelled - (since * bounciness)
-			return {
-				procedure: "bounce",
-				bounceTime: since,
-				bounceDuration,
-				bounceProgress,
-				done: bounceProgress >= 1,
-				almostDone: bounceProgress >= (1 / 2),
-				animatedManeuver: queryManeuver(reports, augmentedRewind),
-			}
-		}
-	}
-
-	// normal predicament
-	return {
-		procedure: "normal",
-		done: maneuver.progress >= 1,
-		almostDone: maneuver.phase === "recovery" ? true : false,
-		animatedManeuver: maneuver,
-	}
-}
-
-function generateManeuverReports(maneuvers: Maneuver.Any[], weapon: Weapon.Loadout) {
-	let runningTime = 0
-	return maneuvers.map((maneuver, index): ManeuverChart => {
-		const {timing} = weapon[maneuver.technique]
-		const start = runningTime
-		const comboIn = index !== 0
-		const comboOut = index < (maneuvers.length - 1)
-		const duration = sum_maneuver_duration(timing, comboIn, comboOut)
-		runningTime += duration
-		return {maneuver, timing, start, duration, comboIn, comboOut}
-	})
-}
-
-function queryManeuver(charts: ManeuverChart[], seconds: number) {
-	let active: ManeuverQuery | null = null
-	seconds = Math.max(seconds, 0)
-
-	charts.forEach((chart, index) => {
-		const {timing, start, duration, comboIn, comboOut} = chart
-		if (seconds >= start) {
-			const time = seconds - start
-			const phase = calculate_phase(timing, time, comboIn, comboOut)
-			const phaseStart = calculate_phase_start_in_maneuver_time(timing, phase, comboIn)
-			const phaseTime = time - phaseStart
-			const phaseProgress = phaseTime / timing[phase]
-			const progress = time / duration
-			const next = charts.at(index + 1) ?? null
-			active = {
-				chart,
-				index,
-				phase,
-				phaseTime,
-				phaseProgress,
-				time,
-				duration,
-				progress,
-				next,
-			}
-		}
-	})
-
-	if (!active)
-		throw new Error("no active maneuver")
-
-	return active
-}
-
-function calculate_phase(
-		timing: Weapon.AttackTiming,
-		time: number,
-		comboIn: boolean,
-		comboOut: boolean,
-	) {
-	const isInitialAttack = !comboIn
-	const {windup, release} = timing
-	const outro = comboOut ? "combo" : "recovery"
-	return isInitialAttack
-		? (
-			(time < windup) ? "windup" :
-			(time < (windup + release)) ? "release" :
-			outro
-		)
-		: (
-			time < release ? "release" :
-			outro
-		)
-}
-
-function calculate_phase_start_in_maneuver_time(
-		timing: Weapon.AttackTiming,
-		phase: ManeuverPhase,
-		comboIn: boolean,
-	) {
-
-	const {release} = timing
-	const maybeWindup = comboIn
-		? 0
-		: timing.windup
-
-	return (
-		phase === "windup" ? 0 :
-		phase === "release" ? maybeWindup :
-		maybeWindup + release
-	)
-}
-
-function sum_maneuver_duration(
-		timing: Weapon.AttackTiming,
-		comboIn: boolean,
-		comboOut: boolean,
-	) {
-
-	const maybeWindup = comboIn
-		? 0
-		: timing.windup
-
-	const sum = (
-		maybeWindup +
-		timing.release +
-		(comboOut
-			? timing.combo
-			: timing.recovery)
-	)
-
-	return sum
 }
 

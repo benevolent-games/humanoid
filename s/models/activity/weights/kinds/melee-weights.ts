@@ -10,8 +10,8 @@ import {MeleeReport} from "../../reports/melee/parts/types.js"
 const blend = 0.1
 
 export function meleeWeights(melee: MeleeReport): ActivityWeights {
-	const {predicament} = melee
-	const {chart, phase, progress, next, time} = melee.predicament.animatedManeuver
+	const {flow} = melee
+	const {chart, phase, progress, next, time} = melee.flow.animSnapshot
 	const {comboIn} = chart
 	const {windup, release} = chart.timing
 	const reconcile = phase === "combo"
@@ -24,7 +24,7 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 			? scalar.remap(progress, [0, 1], [1/3, 1])
 			: progress,
 		active: (
-			predicament.procedure === "normal" ? spline.linear(time, comboIn ? [
+			flow.procedure === "normal" ? spline.linear(time, comboIn ? [
 				[0, 1],
 				[release, 1],
 				[release + reconcile, 0],
@@ -34,12 +34,12 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 				[windup + release, 1],
 				[windup + release + reconcile, 0],
 			]) :
-			predicament.procedure === "feint" ? spline.linear(predicament.feintProgress, [
+			flow.procedure === "feint" ? spline.linear(flow.feintProgress, [
 				[0.0, 1],
 				[0.5, 1],
 				[1.0, 0],
 			]) :
-			predicament.procedure === "bounce" ? spline.linear(predicament.bounceProgress, [
+			flow.procedure === "bounce" ? spline.linear(flow.bounceProgress, [
 				[0.0, 1],
 				[1.0, 0],
 			]) :
@@ -51,7 +51,7 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 		const bravoWeights = generate_attack_weights({
 			maneuver: next.maneuver,
 			progress: 1 / 3, // frozen in windup
-			active: predicament.procedure === "normal"
+			active: flow.procedure === "normal"
 				? spline.linear(time, comboIn ? [
 					[0, 0],
 					[release, 0],

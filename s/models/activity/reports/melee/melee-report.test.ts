@@ -2,9 +2,9 @@
 import {scalar} from "@benev/toolbox"
 import {Suite, assert, expect} from "cynic"
 
+import {MeleeFlow} from "./parts/types.js"
 import {meleeReport} from "./melee-report.js"
-import {FeintPredicament} from "./parts/types.js"
-import {setupActivity, quickManeuver, quickReport} from "./testing/tooling.js"
+import {setupActivity, quickReport} from "./testing/tooling.js"
 
 function proximal(a: number, b: number, epsilon: number = 0.01) {
 	const diff = Math.abs(a - b)
@@ -14,11 +14,11 @@ function proximal(a: number, b: number, epsilon: number = 0.01) {
 export default <Suite>{
 
 	"basic phases": async() => {
-		expect(quickReport(0.5).activeManeuver.phase)
+		expect(quickReport(0.5).logicalSnapshot.phase)
 			.equals("windup")
-		expect(quickReport(1.5).activeManeuver.phase)
+		expect(quickReport(1.5).logicalSnapshot.phase)
 			.equals("release")
-		expect(quickReport(2.5).activeManeuver.phase)
+		expect(quickReport(2.5).logicalSnapshot.phase)
 			.equals("recovery")
 	},
 
@@ -30,16 +30,16 @@ export default <Suite>{
 			comboable: true,
 			angle: scalar.radians.from.degrees(90),
 		})
-		expect(meleeReport(activity).activeManeuver.phase).equals("combo")
+		expect(meleeReport(activity).logicalSnapshot.phase).equals("combo")
 	},
 
 	normal: {
-		"normal predicament": async() => {
-			expect(quickReport(2.1).predicament.procedure).equals("normal")
+		"normal flow": async() => {
+			expect(quickReport(2.1).flow.procedure).equals("normal")
 		},
 		"normal done": async() => {
-			expect(quickReport(2.1).predicament.done).equals(false)
-			expect(quickReport(3).predicament.done).equals(true)
+			expect(quickReport(2.1).flow.done).equals(false)
+			expect(quickReport(3).flow.done).equals(true)
 		},
 	},
 
@@ -48,9 +48,9 @@ export default <Suite>{
 			const activity = setupActivity()
 			activity.cancelled = cancelled
 			activity.seconds = seconds
-			const predicament = meleeReport(activity).predicament as FeintPredicament
-			expect(predicament.procedure).equals("feint")
-			return predicament
+			const flow = meleeReport(activity).flow as MeleeFlow.Feint
+			expect(flow.procedure).equals("feint")
+			return flow
 		}
 		return {
 			"feint duration": async() => {
@@ -68,9 +68,9 @@ export default <Suite>{
 			// 	activity.cancelled = 2.4
 			// 	activity.seconds = 2.6
 			// 	activity.maneuvers.push(quickManeuver())
-			// 	const predicament = meleeReport(activity).predicament as FeintPredicament
-			// 	expect(predicament.procedure).equals("feint")
-			// 	assert(proximal(predicament.feintDuration, .4))
+			// 	const flow = meleeReport(activity).flow as MeleeFlow.Feint
+			// 	expect(flow.procedure).equals("feint")
+			// 	assert(proximal(flow.feintDuration, .4))
 			// },
 		}
 	})(),
