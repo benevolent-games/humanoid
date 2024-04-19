@@ -11,7 +11,7 @@ import {CameraRig} from "./components/hybrids/camera_rig.js"
 import {Character} from "./components/hybrids/character/character.js"
 import {MouseAccumulator} from "./components/hybrids/mouse_accumulator.js"
 import {LookpadAccumulator} from "./components/hybrids/lookpad_accumulator.js"
-import {Health, Inventory, MeleeAction, MeleeAim, MeleeIntent, Stamina} from "./components/topics/warrior.js"
+import {ActivityComponent, Health, Inventory, MeleeAim, MeleeIntent, NextActivity, ProtectiveBubble, Stamina} from "./components/topics/warrior.js"
 import {Ai, AirborneTrajectory, Ambulation, Bot, Choreography, Controllable, GimbalSway, Debug, Force, Gimbal, Grounding, Humanoid, Impetus, Intent, Jump, Orbit, Perspective, Position, PreviousPosition, Rotation, Seed, Smoothing, Spectator, Speeds, Stance, Velocity, IsSprinting} from "./components/plain_components.js"
 
 type Options<Fn extends ((...p: any[]) => any)> = (
@@ -115,10 +115,12 @@ export namespace Archetypes {
 			Health,
 			Stamina,
 			Inventory,
+			ActivityComponent,
+			NextActivity,
 			MeleeAim,
 			MeleeIntent,
-			MeleeAction,
 			Tracers,
+			ProtectiveBubble,
 		},
 		{
 			humanoid: {},
@@ -135,7 +137,7 @@ export namespace Archetypes {
 			isSprinting: false,
 			smoothing: 5,
 
-			speeds: {base: 2.75, fast: 4.75, slow: 1.5},
+			speeds: {base: 2.3, fast: 4, slow: 1},
 			capsule: {
 				height: 1.75,
 				radius: .2,
@@ -176,15 +178,18 @@ export namespace Archetypes {
 				},
 			},
 			rotation: quat.identity(),
+			activityComponent: null,
+			nextActivity: null,
 			meleeAim: {
 				smoothedGlanceNormal: [1, 0],
 				lastGlanceNormal: [1, 0],
 				angle: scalar.radians.from.degrees(90),
 			},
 			meleeIntent: {
-				parry: false,
-				stab: false,
 				swing: false,
+				stab: false,
+				parry: false,
+				feint: false,
 				nextWeapon: false,
 				previousWeapon: false,
 				toggleShield: false,
@@ -200,7 +205,6 @@ export namespace Archetypes {
 					slots: Weapon.listing,
 				},
 			},
-			meleeAction: null,
 			tracers: {},
 			health: {
 				hp: 1,
@@ -210,6 +214,10 @@ export namespace Archetypes {
 				juice: 1,
 				interruptionGametime: 0,
 				knownMeleeAction: null,
+			},
+			protectiveBubble: {
+				active: false,
+				size: 0,
 			},
 		},
 	)

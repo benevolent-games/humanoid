@@ -6,13 +6,17 @@ import {Inventory} from "../../ecs/components/topics/warrior.js"
 export class InventoryManager {
 	constructor(public inventory: Ecs.ComponentState<Inventory>) {}
 
+	// TODO remove, obsolete, weapon getter below provides name
 	get weaponName(): Weapon.Name {
 		return this.#weaponData.name
 	}
 
-	get weapon(): Weapon.Details {
+	get weapon(): Weapon.Loadout {
 		const {grip} = this.inventory.hands
-		return this.#weaponData.grips[grip]!
+		return {
+			...this.#weaponData.grips[grip]!,
+			name: this.#weaponData.name
+		}
 	}
 
 	get grip(): Weapon.Grip {

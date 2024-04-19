@@ -8,21 +8,20 @@ import {Perspective} from "../../../plain_components.js"
 import {CharacterAnims} from "./setup_character_anims.js"
 import {Weapon} from "../../../../../models/armory/weapon.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
-import {Melee} from "../../../../../models/attacking/melee.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
+import {ActivityWeights, AnimMoment} from "../../../../../models/activity/weights/utils/types.js"
 
 export function sync_character_anims({
 		anims,
 		choreo,
 		speeds,
 		gripName,
-		// weapon,
 		shield,
 		boss_anim,
 		ambulatory,
 		perspective,
-		meleeWeights,
+		activityWeights,
 		gimbal: [,gimbalY],
 	}: {
 		gimbal: Vec2
@@ -31,14 +30,13 @@ export function sync_character_anims({
 		shield: boolean
 		anims: CharacterAnims
 		ambulatory: Ambulatory
-		weapon: Weapon.Details
 		boss_anim: AnimationGroup
-		meleeWeights: Melee.Weights
+		activityWeights: ActivityWeights
 		perspective: Ecs.ComponentState<Perspective>
 		speeds: Speeds & {creep: number}
 	}) {
 
-	const top_speed_anim_ratio = 1.5
+	const top_speed_anim_ratio = 1
 	const {inverse} = scalar
 	const {north, south, west, east} = ambulatory
 	const {
@@ -172,14 +170,16 @@ export function sync_character_anims({
 			.forEach(anim => anim.weight = 0))
 
 	const grip = grip_groups[gripName]
-	const w = meleeWeights
+	const w = activityWeights
 
-	function animateAttack(anim: ManualAnim, weight: number) {
+	function animateAttack(anim: ManualAnim, {weight, progress}: AnimMoment) {
 		anim.weight = weight
 		if (weight > (1 / 100))
-			anim.setProgress(scalar.clamp(w.progress))
+			anim.setProgress(scalar.clamp(progress))
 	}
 
+	// console.log("active", w.active.toFixed(2), "::", w.a3.weight.toFixed(2), "++", w.a6.weight.toFixed(2))
+	animateAttack(anims.equip, w.equip)
 	animateAttack(grip.parry, w.parry)
 	animateAttack(grip.attack_1, w.a1)
 	animateAttack(grip.attack_2, w.a2)
@@ -187,17 +187,18 @@ export function sync_character_anims({
 	animateAttack(grip.attack_4, w.a4)
 	animateAttack(grip.attack_5, w.a5)
 	animateAttack(grip.attack_6, w.a6)
-	animateAttack(grip.attack_7, w.a7 + w.a8)
+
+	animateAttack(grip.attack_7, w.a7)
 	// animateAttack(grip.attack_8, w.a8)
 
 	const tinyfix = 1 / 1000
-	anims.equip.weight = w.equip
-	grip.airborne.weight = airborne * w.inactive
-	grip.guard.weight = tinyfix + (w.inactive * groundage * stillness)
-	grip.forward.weight = tinyfix + north * w.inactive * groundage * unstillness
-	grip.backward.weight = south * w.inactive * groundage * unstillness
-	grip.leftward.weight = west * w.inactive * groundage * unstillness
-	grip.rightward.weight = east * w.inactive * groundage * unstillness
+	const inactive = scalar.inverse(w.active)
+	grip.airborne.weight = airborne * inactive
+	grip.guard.weight = tinyfix + (inactive * groundage * stillness)
+	grip.forward.weight = tinyfix + north * inactive * groundage * unstillness
+	grip.backward.weight = south * inactive * groundage * unstillness
+	grip.leftward.weight = west * inactive * groundage * unstillness
+	grip.rightward.weight = east * inactive * groundage * unstillness
 
 	//
 	// specials

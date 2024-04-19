@@ -1,39 +1,45 @@
 
 import {behavior, system} from "../hub.js"
 import {processHits} from "./utils/process_hits.js"
-import {Melee} from "../../models/attacking/melee.js"
 import {Tracers} from "../components/hybrids/tracers.js"
 import {Character} from "../components/hybrids/character/character.js"
-import {Inventory, MeleeAction} from "../components/topics/warrior.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
+import {ActivityComponent, Inventory} from "../components/topics/warrior.js"
+import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
 	behavior("tracers")
-		.select({Character, MeleeAction, Tracers, Inventory})
+		.select({Character, ActivityComponent, Tracers, Inventory})
 		.logic(() => entity => {
 			const {physics} = realm
-			const {character, meleeAction, tracers} = entity.components
+			const {character, activityComponent, tracers} = entity.components
 
-			const releasePhase = Melee.is.attack(meleeAction)
-				&& meleeAction.report.phase === "release"
+			if (activityComponent?.kind !== "melee")
+				return
+
+			const melee = meleeReport(activityComponent)
+			const active = (
+				melee.activeManeuver.phase === "release" &&
+				melee.activity.cancelled === null
+			)
 
 			// start tracing
-			if (releasePhase && !tracers.current) {
+			if (active && !tracers.current) {
 				const inventory = new InventoryManager(entity.components.inventory)
 				const ensemble = character.weaponEnsembles.get(inventory.weaponName)!
 				tracers.start(ensemble, realm.ui.debug.meleeTracers)
 			}
 
 			// continue tracing
-			else if (releasePhase && tracers.current) {
+			else if (active && tracers.current) {
 				for (const {ribbon, edge} of tracers.continue()) {
 					const hitRibbon = processHits({
 						edge,
 						ribbon,
 						world,
 						physics,
-						meleeAction,
+						meleeReport: melee,
 						entityId: entity.id,
 					})
 					if (hitRibbon)
@@ -42,9 +48,10 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 			}
 
 			// finish tracing
-			else if (!releasePhase && tracers.current) {
+			else if (!active && tracers.current) {
 				tracers.finish()
 			}
 		}),
+
 ])
 

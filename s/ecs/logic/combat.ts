@@ -3,11 +3,31 @@ import {scalar, vec2} from "@benev/toolbox"
 
 import {molasses2d} from "../../tools/molasses.js"
 import {behavior, responder, system} from "../hub.js"
-import {Melee} from "../../models/attacking/melee.js"
+import {Activity, Angles} from "../../models/activity/exports.js"
+import {EquipReport} from "../../models/activity/reports/equip.js"
+import {ParryReport} from "../../models/activity/reports/parry.js"
 import {Controllable, Intent} from "../components/plain_components.js"
+import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
-import {considerAttack, considerEquip, considerParry} from "../../models/attacking/consider.js"
-import {Inventory, MeleeAction, MeleeAim, MeleeIntent, Stamina} from "../components/topics/warrior.js"
+import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
+import {ManeuverQuery} from "../../models/activity/reports/melee/parts/types.js"
+import {isMeleeReport, makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
+import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
+
+const isSwingComboable = true
+const isStabComboable = false
+const comboableReleaseThreshold = 2 / 3
+const minimumFeint = 0
+
+export function isComboReady({phase, phaseProgress, chart, next}: ManeuverQuery) {
+	const {comboable} = chart.maneuver
+	return (
+		comboable &&
+		next === null &&
+		phase === "release" &&
+		phaseProgress >= comboableReleaseThreshold
+	)
+}
 
 export const combat = system("combat", ({realm}) => [
 
@@ -17,9 +37,10 @@ export const combat = system("combat", ({realm}) => [
 			.logic(() => ({components}) => {
 				const {buttons} = realm.tact.inputs.humanoid
 				components.meleeIntent = {
-					parry: buttons.parry.input.down,
 					swing: buttons.swing.input.down,
 					stab: buttons.stab.input.down,
+					parry: buttons.parry.input.down,
+					feint: buttons.feint.input.down,
 					nextWeapon: buttons.weapon_next.input.down,
 					previousWeapon: buttons.weapon_previous.input.down,
 					toggleShield: buttons.shield_toggle.input.down,
@@ -41,81 +62,149 @@ export const combat = system("combat", ({realm}) => [
 
 				const glanceAngle = Math.atan2(...smoothed)
 				const zone = glanceAngle < 0
-					? Melee.Angles.zones.left
-					: Melee.Angles.zones.right
+					? Angles.zones.left
+					: Angles.zones.right
 
 				meleeAim.angle = scalar.clamp(glanceAngle, ...zone)
 			}),
 
-		behavior("initiate melee action")
-			.select({MeleeAim, MeleeIntent, MeleeAction, Inventory})
+		behavior("initiate activity")
+			.select({MeleeAim, MeleeIntent, Inventory, ActivityComponent, NextActivity})
 			.logic(() => ({components}) => {
-				if (components.meleeAction)
-					return
-
 				const {angle} = components.meleeAim
 				const intent = components.meleeIntent
 				const inventory = new InventoryManager(components.inventory)
-				const {weapon} = inventory
+				const {weapon, shield} = inventory
 
-				if (intent.parry)
-					components.meleeAction = Melee.make.parry(weapon, inventory.shield)
+				const applyActivity = (activity: () => Activity.Any) => {
+					if (components.activityComponent) {
+						const report = makeActivityReport(components.activityComponent)
+						if (report.almostDone) {
+							const next = activity()
+							const invalid = (
+								isMeleeReport(report) &&
+								report.predicament.procedure === "feint" &&
+								next.kind === "parry"
+							)
+							if (!invalid)
+								components.nextActivity = next
+						}
+					}
+					else {
+						components.activityComponent = activity()
+					}
+				}
 
-				else if (intent.stab)
-					components.meleeAction = Melee.make.stab(weapon, angle)
+				if (intent.parry) {
+					applyActivity(() => ({
+						kind: "parry",
+						seconds: 0,
+						weapon,
+						shield,
+						holdable: shield
+							? {released: null}
+							: null,
+					}))
+				}
 
-				else if (intent.swing)
-					components.meleeAction = Melee.make.swing(weapon, angle)
+				else if (intent.swing && !intent.feint) {
+					applyActivity(() => ({
+						kind: "melee",
+						weapon,
+						maneuvers: [{technique: "swing", comboable: isSwingComboable, angle}],
+						seconds: 0,
+						cancelled: null,
+					}))
+				}
+
+				else if (intent.stab && !intent.feint)
+					applyActivity(() => ({
+						kind: "melee",
+						weapon,
+						maneuvers: [{technique: "stab", comboable: isStabComboable, angle}],
+						seconds: 0,
+						cancelled: null,
+					}))
 
 				else if (intent.nextWeapon)
-					components.meleeAction = Melee.make.equip("nextWeapon")
+					applyActivity(() => ({
+						kind: "equip",
+						routine: "nextWeapon",
+						duration: standardEquipDuration,
+						seconds: 0,
+						switched: false,
+					}))
 
 				else if (intent.previousWeapon)
-					components.meleeAction = Melee.make.equip("previousWeapon")
+					applyActivity(() => ({
+						kind: "equip",
+						routine: "previousWeapon",
+						duration: standardEquipDuration,
+						seconds: 0,
+						switched: false,
+					}))
 
 				else if (intent.toggleShield) {
 					if (inventory.canToggleShield)
-						components.meleeAction = Melee.make.equip("toggleShield")
+						applyActivity(() => ({
+							kind: "equip",
+							routine: "toggleShield",
+							duration: standardEquipDuration,
+							seconds: 0,
+							switched: false,
+						}))
 				}
 
 				else if (intent.changeGrip) {
 					if (inventory.numberOfAvailableGrips > 1)
-						components.meleeAction = Melee.make.equip("changeGrip")
+						applyActivity(() => ({
+							kind: "equip",
+							routine: "changeGrip",
+							duration: standardEquipDuration,
+							seconds: 0,
+							switched: false,
+						}))
 				}
 			}),
-	]),
+		]),
 
-	behavior("sustain melee action")
-		.select({MeleeAction, MeleeIntent})
-		.logic(tick => ({components: {meleeIntent, meleeAction: action}}) => {
-			if (action) {
-				action.seconds += tick.seconds
-
-				if (Melee.is.parry(action) && action.holdable) {
-					const holding = (action.holdable && action.holdable.releasedAt === null)
-					const released = !meleeIntent.parry
-
-					if (holding && released)
-						action.holdable.releasedAt = action.seconds
-				}
+	behavior("launch queued activity")
+		.select({ActivityComponent, NextActivity})
+		.logic(() => ({components}) => {
+			if (!components.activityComponent && components.nextActivity) {
+				components.activityComponent = components.nextActivity
+				components.nextActivity = null
 			}
 		}),
 
-	behavior("update melee actions")
-		.select({MeleeAction, Inventory})
+	behavior("activity seconds increase")
+		.select({ActivityComponent})
+		.logic(tick => ({components: {activityComponent: activity}}) => {
+			if (activity)
+				activity.seconds += tick.seconds
+		}),
+
+	behavior("parry holdable")
+		.select({MeleeIntent, ActivityComponent})
+		.logic(() => ({components: {meleeIntent, activityComponent: activity}}) => {
+			if (activity && activity.kind === "parry" && activity.holdable) {
+				const holding = (activity.holdable && activity.holdable.released === null)
+				const released = !meleeIntent.parry
+				if (holding && released)
+					activity.holdable.released = activity.seconds
+			}
+		}),
+
+	behavior("actuate equip routines")
+		.select({ActivityComponent, Inventory})
 		.logic(() => ({components}) => {
-			const {meleeAction: action} = components
-
-			if (!action)
-				return
-
-			if (Melee.is.equip(action)) {
+			const {activityComponent: activity} = components
+			if (activity && activity.kind === "equip") {
 				const inventory = new InventoryManager(components.inventory)
-				const {weights, ready} = considerEquip(action.seconds)
-				action.weights = weights
-				if (ready && !action.done) {
-					action.done = true
-					switch (action.routine) {
+				const {readyToSwitch} = new EquipReport(activity)
+				if (readyToSwitch && !activity.switched) {
+					activity.switched = true
+					switch (activity.routine) {
 						case "nextWeapon":
 							inventory.nextWeapon()
 							break
@@ -131,59 +220,81 @@ export const combat = system("combat", ({realm}) => [
 					}
 				}
 			}
-			else if (Melee.is.parry(action)) {
-				const {weights, protective} = considerParry(action.weapon, action.holdable, action.seconds)
-				action.weights = weights
-				action.protective = protective
+		}),
+
+	behavior("parry protective bubble")
+		.select({ActivityComponent, ProtectiveBubble})
+		.logic(() => ({components}) => {
+			const {protectiveBubble, activityComponent: activity} = components
+			protectiveBubble.active = false
+			if (activity && activity.kind === "parry") {
+				const {protective} = new ParryReport(activity)
+				protectiveBubble.active = protective
 			}
-			else if (Melee.is.attack(action)) {
-				const {report, weights} = considerAttack(
-					action.kind === "stab"
-						? action.weapon.stab.timing
-						: action.weapon.swing.timing,
-					action.kind,
-					action.seconds,
-					action.earlyRecovery,
-					action.angle,
-				)
-				action.report = report
-				action.weights = weights
+		}),
+
+	behavior("melee combo maneuvers")
+		.select({Inventory, ActivityComponent, MeleeIntent, MeleeAim})
+		.logic(() => ({components}) => {
+			const {meleeIntent, activityComponent: activity} = components
+			if (activity && activity.kind === "melee") {
+				const melee = meleeReport(activity)
+				if (isComboReady(melee.activeManeuver)) {
+					if (meleeIntent.swing) {
+						const {angle: oldAngle} = melee.activeManeuver.chart.maneuver
+						const {angle: newAngle} = components.meleeAim
+						const sameSide = (oldAngle < 0) === (newAngle < 0)
+						activity.maneuvers.push({
+							technique: "swing",
+							comboable: isSwingComboable,
+							angle: sameSide
+								? -newAngle
+								: newAngle,
+						})
+					}
+					else if (meleeIntent.stab) {
+						activity.maneuvers.push({
+							technique: "stab",
+							comboable: isStabComboable,
+							angle: components.meleeAim.angle,
+						})
+					}
+				}
+			}
+		}),
+
+	behavior("feints")
+		.select({ActivityComponent, MeleeIntent})
+		.logic(() => ({components: {meleeIntent, activityComponent: activity}}) => {
+			if (meleeIntent.feint && activity && activity.kind === "melee" && activity.cancelled === null) {
+				const melee = meleeReport(activity)
+				const goodPhase = melee.activeManeuver.phase === "windup"
+				const goodTiming = melee.activeManeuver.phaseTime >= (melee.activeManeuver.chart.timing.windup * minimumFeint)
+				if (goodPhase && goodTiming && melee.predicament.procedure === "normal") {
+					activity.cancelled = activity.seconds
+				}
 			}
 		}),
 
 	behavior("end melee action")
-		.select({MeleeAction})
+		.select({ActivityComponent})
 		.logic(() => ({components}) => {
-			const {meleeAction: action} = components
-
-			if (!action)
-				return
-
-			if (Melee.is.equip(action)) {
-				if (action.weights.progress > 1)
-					components.meleeAction = null
-			}
-			else if (Melee.is.parry(action)) {
-				if (action.weights.progress > 1)
-					components.meleeAction = null
-			}
-			else if (Melee.is.attack(action)) {
-				if (action.report.phase === "none")
-					components.meleeAction = null
-			}
+			const {activityComponent: activity} = components
+			if (activity && makeActivityReport(activity).done)
+				components.activityComponent = null
 		}),
 
 	responder("enable/disable reticle state")
-		.select({Controllable, MeleeAim, MeleeAction})
+		.select({Controllable, MeleeAim})
 		.respond(() => {
 			realm.ui.reticle.enabled = true
 			return () => { realm.ui.reticle.enabled = false }
 		}),
 
-	behavior("melee aiming")
-		.select({Controllable, MeleeAim, MeleeAction})
-		.logic(() => ({components: {meleeAim, meleeAction}}) => {
-			realm.ui.reticle.data = {meleeAim, meleeAction}
+	behavior("update reticle ui")
+		.select({Controllable, MeleeAim, ActivityComponent})
+		.logic(() => ({components: {meleeAim, activityComponent}}) => {
+			realm.ui.reticle.data = {meleeAim, activity: activityComponent}
 		}),
 ])
 
