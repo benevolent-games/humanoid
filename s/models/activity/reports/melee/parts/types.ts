@@ -17,6 +17,7 @@ export type ManeuverQuery = {
 	duration: number
 	progress: number
 	phase: ManeuverPhase
+	phaseTime: number
 	phaseProgress: number
 	chart: ManeuverChart
 	next: ManeuverChart | null

@@ -13,7 +13,7 @@ export class EquipReport {
 		this.progress = scalar.clamp(seconds / duration)
 		this.readyToSwitch = this.progress > 0.5
 		this.done = this.progress >= 1
-		this.almostDone = this.progress >= (6 / 10)
+		this.almostDone = this.progress >= (8 / 10)
 	}
 }
 

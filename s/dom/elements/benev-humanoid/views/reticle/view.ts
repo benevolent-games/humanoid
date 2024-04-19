@@ -98,7 +98,7 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 				angleAlpha: a,
 				angleBravo: null,
 				angleLock: activeManeuver.next?.maneuver.angle
-				?? activeManeuver.chart.maneuver.angle,
+					?? activeManeuver.chart.maneuver.angle,
 				mode: activeManeuver.phase === "release"
 					? "attack-release"
 					: "attack",

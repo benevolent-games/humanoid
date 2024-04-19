@@ -10,12 +10,24 @@ import {Controllable, Intent} from "../components/plain_components.js"
 import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
-import {makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
+import {ManeuverQuery} from "../../models/activity/reports/melee/parts/types.js"
+import {isMeleeReport, makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
 import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
 
 const isSwingComboable = true
 const isStabComboable = false
 const comboableReleaseThreshold = 2 / 3
+const minimumFeint = 0
+
+export function isComboReady({phase, phaseProgress, chart, next}: ManeuverQuery) {
+	const {comboable} = chart.maneuver
+	return (
+		comboable &&
+		next === null &&
+		phase === "release" &&
+		phaseProgress >= comboableReleaseThreshold
+	)
+}
 
 export const combat = system("combat", ({realm}) => [
 
@@ -67,8 +79,16 @@ export const combat = system("combat", ({realm}) => [
 				const applyActivity = (activity: () => Activity.Any) => {
 					if (components.activityComponent) {
 						const report = makeActivityReport(components.activityComponent)
-						if (report.almostDone)
-							components.nextActivity = activity()
+						if (report.almostDone) {
+							const next = activity()
+							const invalid = (
+								isMeleeReport(report) &&
+								report.predicament.procedure === "feint" &&
+								next.kind === "parry"
+							)
+							if (!invalid)
+								components.nextActivity = next
+						}
 					}
 					else {
 						components.activityComponent = activity()
@@ -87,7 +107,7 @@ export const combat = system("combat", ({realm}) => [
 					}))
 				}
 
-				else if (intent.swing) {
+				else if (intent.swing && !intent.feint) {
 					applyActivity(() => ({
 						kind: "melee",
 						weapon,
@@ -97,7 +117,7 @@ export const combat = system("combat", ({realm}) => [
 					}))
 				}
 
-				else if (intent.stab)
+				else if (intent.stab && !intent.feint)
 					applyActivity(() => ({
 						kind: "melee",
 						weapon,
@@ -219,13 +239,7 @@ export const combat = system("combat", ({realm}) => [
 			const {meleeIntent, activityComponent: activity} = components
 			if (activity && activity.kind === "melee") {
 				const melee = meleeReport(activity)
-				const canStartCombo = (
-					melee.activeManeuver.chart.maneuver.comboable &&
-					melee.activeManeuver.next === null &&
-					melee.activeManeuver.phase === "release" &&
-					melee.activeManeuver.phaseProgress >= comboableReleaseThreshold
-				)
-				if (canStartCombo) {
+				if (isComboReady(melee.activeManeuver)) {
 					if (meleeIntent.swing) {
 						const {angle: oldAngle} = melee.activeManeuver.chart.maneuver
 						const {angle: newAngle} = components.meleeAim
@@ -254,9 +268,11 @@ export const combat = system("combat", ({realm}) => [
 		.logic(() => ({components: {meleeIntent, activityComponent: activity}}) => {
 			if (meleeIntent.feint && activity && activity.kind === "melee" && activity.cancelled === null) {
 				const melee = meleeReport(activity)
-				const inFeintableState = melee.activeManeuver.phase === "windup" || melee.activeManeuver.phase === "combo"
-				if (inFeintableState && melee.predicament.procedure === "normal")
+				const goodPhase = melee.activeManeuver.phase === "windup"
+				const goodTiming = melee.activeManeuver.phaseTime >= (melee.activeManeuver.chart.timing.windup * minimumFeint)
+				if (goodPhase && goodTiming && melee.predicament.procedure === "normal") {
 					activity.cancelled = activity.seconds
+				}
 			}
 		}),
 

@@ -49,7 +49,7 @@ function ascertainPredicament(
 		const since = seconds - cancelled
 
 		// feint predicament
-		if (maneuver.phase === "windup" || maneuver.phase === "combo") {
+		if (maneuver.phase === "windup") {
 			const phaseStart = calculate_phase_start_in_maneuver_time(
 				maneuver.chart.timing,
 				maneuver.phase,
@@ -64,7 +64,7 @@ function ascertainPredicament(
 				feintDuration,
 				feintProgress,
 				done: feintProgress >= 1,
-				almostDone: feintProgress >= (1 / 2),
+				almostDone: true,
 				animatedManeuver: queryManeuver(reports, rewind),
 			}
 		}
@@ -122,7 +122,17 @@ function queryManeuver(charts: ManeuverChart[], seconds: number) {
 			const phaseProgress = phaseTime / timing[phase]
 			const progress = time / duration
 			const next = charts.at(index + 1) ?? null
-			active = {chart, index, phase, phaseProgress, time, duration, progress, next}
+			active = {
+				chart,
+				index,
+				phase,
+				phaseTime,
+				phaseProgress,
+				time,
+				duration,
+				progress,
+				next,
+			}
 		}
 	})
 
