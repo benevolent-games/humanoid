@@ -117,9 +117,12 @@ function queryManeuver(charts: ManeuverChart[], seconds: number) {
 		if (seconds >= start) {
 			const time = seconds - start
 			const phase = calculate_phase(timing, time, comboIn, comboOut)
+			const phaseStart = calculate_phase_start_in_maneuver_time(timing, phase, comboIn)
+			const phaseTime = time - phaseStart
+			const phaseProgress = phaseTime / timing[phase]
 			const progress = time / duration
 			const next = charts.at(index + 1) ?? null
-			active = {chart, index, phase, time, duration, progress, next}
+			active = {chart, index, phase, phaseProgress, time, duration, progress, next}
 		}
 	})
 

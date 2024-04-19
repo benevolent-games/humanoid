@@ -13,6 +13,10 @@ import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
 import {makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
 import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
 
+const isSwingComboable = true
+const isStabComboable = false
+const comboableReleaseThreshold = 1 / 3
+
 export const combat = system("combat", ({realm}) => [
 
 	system("intentions", () => [
@@ -87,7 +91,7 @@ export const combat = system("combat", ({realm}) => [
 					applyActivity(() => ({
 						kind: "melee",
 						weapon,
-						maneuvers: [{technique: "swing", comboable: true, angle}],
+						maneuvers: [{technique: "swing", comboable: isSwingComboable, angle}],
 						seconds: 0,
 						cancelled: null,
 					}))
@@ -97,7 +101,7 @@ export const combat = system("combat", ({realm}) => [
 					applyActivity(() => ({
 						kind: "melee",
 						weapon,
-						maneuvers: [{technique: "stab", comboable: false, angle}],
+						maneuvers: [{technique: "stab", comboable: isStabComboable, angle}],
 						seconds: 0,
 						cancelled: null,
 					}))
@@ -209,7 +213,8 @@ export const combat = system("combat", ({realm}) => [
 				const canStartCombo = (
 					melee.activeManeuver.chart.maneuver.comboable &&
 					melee.activeManeuver.next === null &&
-					melee.activeManeuver.phase === "release"
+					melee.activeManeuver.phase === "release" &&
+					melee.activeManeuver.phaseProgress >= comboableReleaseThreshold
 				)
 				if (canStartCombo) {
 					if (meleeIntent.swing) {
@@ -218,16 +223,16 @@ export const combat = system("combat", ({realm}) => [
 						const sameSide = (oldAngle < 0) === (newAngle < 0)
 						activity.maneuvers.push({
 							technique: "swing",
-							comboable: true,
+							comboable: isSwingComboable,
 							angle: sameSide
 								? -newAngle
 								: newAngle,
 						})
 					}
-					if (meleeIntent.stab) {
+					else if (meleeIntent.stab) {
 						activity.maneuvers.push({
 							technique: "stab",
-							comboable: true,
+							comboable: isStabComboable,
 							angle: components.meleeAim.angle,
 						})
 					}
