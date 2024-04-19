@@ -26,7 +26,9 @@ export class Inventory extends Component<{
 	}
 }> {}
 
+// TODO rename to CurrentActivity
 export class ActivityComponent extends Component<Activity.Any | null> {}
+
 export class NextActivity extends Component<Activity.Any | null> {}
 
 export class MeleeAim extends Component<{
@@ -36,9 +38,10 @@ export class MeleeAim extends Component<{
 }> {}
 
 export class MeleeIntent extends Component<{
-	parry: boolean
 	swing: boolean
 	stab: boolean
+	parry: boolean
+	feint: boolean
 
 	nextWeapon: boolean
 	previousWeapon: boolean

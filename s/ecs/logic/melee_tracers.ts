@@ -2,10 +2,10 @@
 import {behavior, system} from "../hub.js"
 import {processHits} from "./utils/process_hits.js"
 import {Tracers} from "../components/hybrids/tracers.js"
-import {MeleeReport} from "../../models/activity/reports/melee.js"
 import {Character} from "../components/hybrids/character/character.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {ActivityComponent, Inventory} from "../components/topics/warrior.js"
+import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
 
 export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
@@ -18,10 +18,10 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 			if (activityComponent?.kind !== "melee")
 				return
 
-			const meleeReport = new MeleeReport(activityComponent)
+			const melee = meleeReport(activityComponent)
 			const active = (
-				meleeReport.phase === "release" &&
-				meleeReport.activity.cancelled === null
+				melee.activeManeuver.phase === "release" &&
+				melee.activity.cancelled === null
 			)
 
 			// start tracing
@@ -39,7 +39,7 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 						ribbon,
 						world,
 						physics,
-						meleeReport,
+						meleeReport: melee,
 						entityId: entity.id,
 					})
 					if (hitRibbon)

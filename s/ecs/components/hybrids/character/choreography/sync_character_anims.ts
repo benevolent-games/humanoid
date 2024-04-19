@@ -10,7 +10,7 @@ import {Weapon} from "../../../../../models/armory/weapon.js"
 import {halfcircle} from "../../../../../tools/halfcircle.js"
 import {Choreo} from "../../../../../models/choreographer/types.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
-import {ActivityWeights, AnimMoment} from "../../../../../models/choreographer/activities/kit/weights.js"
+import {ActivityWeights, AnimMoment} from "../../../../../models/activity/weights/utils/types.js"
 
 export function sync_character_anims({
 		anims,

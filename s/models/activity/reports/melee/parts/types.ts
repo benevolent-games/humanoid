@@ -1,5 +1,5 @@
 
-import {Activity} from "../../../exports.js"
+import {Activity, Maneuver} from "../../../exports.js"
 import {Weapon} from "../../../../armory/weapon.js"
 
 export type MeleeReport = {
@@ -7,7 +7,7 @@ export type MeleeReport = {
 	maneuverReports: ManeuverReport[]
 	activeManeuver: ManeuverQuery
 	predicament: Predicament
-}
+} & BasePredicament
 
 export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
 
@@ -21,6 +21,7 @@ export type ManeuverQuery = {
 }
 
 export type ManeuverReport = {
+	maneuver: Maneuver.Any
 	start: number
 	duration: number
 	comboIn: boolean
@@ -28,32 +29,29 @@ export type ManeuverReport = {
 	timing: Weapon.AttackTiming
 }
 
-export type NormalPredicament = {
-	procedure: "normal"
+type BasePredicament = {
 	animatedManeuver: ManeuverQuery
 	done: boolean
 	almostDone: boolean
 }
+
+export type NormalPredicament = {
+	procedure: "normal"
+} & BasePredicament
 
 export type FeintPredicament = {
 	procedure: "feint"
-	animatedManeuver: ManeuverQuery
 	feintTime: number
 	feintDuration: number
 	feintProgress: number
-	done: boolean
-	almostDone: boolean
-}
+} & BasePredicament
 
 export type BouncePredicament = {
 	procedure: "bounce"
-	animatedManeuver: ManeuverQuery
 	bounceTime: number
 	bounceDuration: number
 	bounceProgress: number
-	done: boolean
-	almostDone: boolean
-}
+} & BasePredicament
 
 export type Predicament = NormalPredicament | FeintPredicament | BouncePredicament
 

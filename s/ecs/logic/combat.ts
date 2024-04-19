@@ -6,10 +6,10 @@ import {behavior, responder, system} from "../hub.js"
 import {Activity, Angles} from "../../models/activity/exports.js"
 import {EquipReport} from "../../models/activity/reports/equip.js"
 import {ParryReport} from "../../models/activity/reports/parry.js"
-import {MeleeReport} from "../../models/activity/reports/melee.js"
 import {Controllable, Intent} from "../components/plain_components.js"
 import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
+import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
 import {makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
 import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
 
@@ -21,9 +21,10 @@ export const combat = system("combat", ({realm}) => [
 			.logic(() => ({components}) => {
 				const {buttons} = realm.tact.inputs.humanoid
 				components.meleeIntent = {
-					parry: buttons.parry.input.down,
 					swing: buttons.swing.input.down,
 					stab: buttons.stab.input.down,
+					parry: buttons.parry.input.down,
+					feint: buttons.feint.input.down,
 					nextWeapon: buttons.weapon_next.input.down,
 					previousWeapon: buttons.weapon_previous.input.down,
 					toggleShield: buttons.shield_toggle.input.down,
@@ -204,15 +205,15 @@ export const combat = system("combat", ({realm}) => [
 		.logic(() => ({components}) => {
 			const {meleeIntent, activityComponent: activity} = components
 			if (activity && activity.kind === "melee") {
-				const melee = new MeleeReport(activity)
+				const melee = meleeReport(activity)
 				const canStartCombo = (
-					melee.maneuver.current.comboable &&
-					melee.maneuver.next === null &&
-					melee.phase === "release"
+					melee.activeManeuver.report.maneuver.comboable &&
+					melee.activeManeuver.next === null &&
+					melee.activeManeuver.phase === "release"
 				)
 				if (canStartCombo) {
 					if (meleeIntent.swing) {
-						const {angle: oldAngle} = melee.maneuver.current
+						const {angle: oldAngle} = melee.activeManeuver.report.maneuver
 						const {angle: newAngle} = components.meleeAim
 						const sameSide = (oldAngle < 0) === (newAngle < 0)
 						activity.maneuvers.push({
@@ -232,6 +233,19 @@ export const combat = system("combat", ({realm}) => [
 					}
 				}
 			}
+		}),
+
+	behavior("feints")
+		.select({ActivityComponent, MeleeIntent})
+		.logic(() => ({components: {meleeIntent, activityComponent: activity}}) => {
+			const its_feint_o_clock = (
+				meleeIntent.feint &&
+				activity &&
+				activity.kind === "melee" &&
+				meleeReport(activity).predicament.procedure === "normal"
+			)
+			if (its_feint_o_clock)
+				activity.cancelled = activity.seconds
 		}),
 
 	behavior("end melee action")

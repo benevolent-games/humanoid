@@ -186,9 +186,10 @@ export namespace Archetypes {
 				angle: scalar.radians.from.degrees(90),
 			},
 			meleeIntent: {
-				parry: false,
-				stab: false,
 				swing: false,
+				stab: false,
+				parry: false,
+				feint: false,
 				nextWeapon: false,
 				previousWeapon: false,
 				toggleShield: false,

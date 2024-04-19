@@ -7,7 +7,7 @@ import {Tracing} from "../../../models/tracing/types.js"
 import {Health} from "../../components/topics/warrior.js"
 import {HuPhysics} from "../../../models/realm/physics.js"
 import {Infirmary} from "../../../models/facilities/infirmary.js"
-import {MeleeReport} from "../../../models/activity/reports/melee.js"
+import {MeleeReport} from "../../../models/activity/reports/melee/parts/types.js"
 
 const {xyz} = vec3.to
 const {xyzw} = quat.to

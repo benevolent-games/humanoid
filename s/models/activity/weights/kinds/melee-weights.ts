@@ -129,13 +129,21 @@ import {MeleeReport} from "../../reports/melee/parts/types.js"
 // 	}
 // }
 
-export function meleeWeights(report: MeleeReport): ActivityWeights {
-	return zeroWeights()
+export function meleeWeights(melee: MeleeReport): ActivityWeights {
+	// const weights = zeroWeights()
+	const {animatedManeuver} = melee.predicament
+	const attackWeights = generate_attack_weights({
+		maneuver: animatedManeuver.report.maneuver,
+		progress: animatedManeuver.progress,
+		active: 1,
+	})
+
+	return attackWeights
 }
 
 //////////////////////////
 
-export function maneuverWeights({maneuver, progress, active}: {
+export function generate_attack_weights({maneuver, progress, active}: {
 		maneuver: Maneuver.Any
 		progress: number
 		active: number

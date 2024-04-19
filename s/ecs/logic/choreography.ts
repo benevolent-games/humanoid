@@ -5,10 +5,10 @@ import {gimbaltool} from "../../tools/gimbaltool.js"
 import {Character} from "../components/hybrids/character/character.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {ActivityComponent, Inventory} from "../components/topics/warrior.js"
+import {activityWeights} from "../../models/activity/weights/activity-weights.js"
 import {sync_character_anims} from "../components/hybrids/character/choreography/sync_character_anims.js"
 import {apply_adjustments, swivel_effected_by_glance} from "../components/hybrids/character/choreography/calculations.js"
 import {Ambulation, Choreography, Gimbal, Intent, Perspective, Position, GimbalSway, Speeds} from "../components/plain_components.js"
-import { calculateActivityWeights } from "../../models/choreographer/activities/calculate-activity-weights.js"
 
 export const choreography = system("humanoid", () => [
 	behavior("sync babylon parts")
@@ -69,7 +69,7 @@ export const choreography = system("humanoid", () => [
 				perspective: c.perspective,
 				gimbal: c.gimbalSway.gimbal,
 				speeds: {...c.speeds, creep: 1.5},
-				activityWeights: calculateActivityWeights(c.activityComponent),
+				activityWeights: activityWeights(c.activityComponent),
 			})
 		}),
 ])

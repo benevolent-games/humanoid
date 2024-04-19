@@ -1,8 +1,8 @@
 
 import {Activity} from "../exports.js"
 import {EquipReport} from "../reports/equip.js"
-import {MeleeReport} from "../reports/melee.js"
 import {ParryReport} from "../reports/parry.js"
+import {meleeReport} from "../reports/melee/melee-report.js"
 
 export function makeActivityReport(activity: Activity.Any) {
 	if (activity.kind === "equip")
@@ -12,7 +12,7 @@ export function makeActivityReport(activity: Activity.Any) {
 		return new ParryReport(activity)
 
 	else if (activity.kind === "melee")
-		return new MeleeReport(activity)
+		return meleeReport(activity)
 
 	else
 		throw new Error(`unknown activity kind`)

@@ -21,7 +21,12 @@ export function meleeReport(activity: Activity.Melee): MeleeReport {
 		activeManeuver,
 	)
 
-	return {activity, maneuverReports, activeManeuver, predicament}
+	return {
+		activity, maneuverReports, activeManeuver, predicament,
+		animatedManeuver: predicament.animatedManeuver,
+		done: predicament.done,
+		almostDone: predicament.almostDone,
+	}
 }
 
 ////////////////////////////////////////////////
@@ -95,7 +100,7 @@ function generateManeuverReports(maneuvers: Maneuver.Any[], weapon: Weapon.Loado
 		const comboOut = index < (maneuvers.length - 1)
 		const duration = sum_maneuver_duration(timing, comboIn, comboOut)
 		runningTime += duration
-		return {timing, start, duration, comboIn, comboOut}
+		return {maneuver, timing, start, duration, comboIn, comboOut}
 	})
 }
 
@@ -103,8 +108,7 @@ function queryManeuver(maneuverReports: ManeuverReport[], seconds: number) {
 	let active: ManeuverQuery | null = null
 	maneuverReports.forEach((report, index) => {
 		const {timing, start, duration, comboIn, comboOut} = report
-		const isActive = scalar.within(seconds, start, start + duration)
-		if (isActive) {
+		if (seconds >= start) {
 			const time = seconds - start
 			const phase = calculate_phase(timing, time, comboIn, comboOut)
 			const progress = time / duration
@@ -112,7 +116,9 @@ function queryManeuver(maneuverReports: ManeuverReport[], seconds: number) {
 			active = {report, index, phase, time, progress, next}
 		}
 	})
-	return active!
+	if (!active)
+		throw new Error("no active maneuver")
+	return active
 }
 
 function calculate_phase(

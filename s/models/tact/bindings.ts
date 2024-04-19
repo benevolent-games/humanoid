@@ -50,8 +50,9 @@ export const huBindings = () => Tact.bindings(({
 			orbit: buttons(b("KeyZ")),
 
 			swing: buttons(b("MousePrimary"), b("Semicolon")),
-			parry: buttons(b("MouseSecondary"), b("Quote"), b("Slash")),
 			stab: buttons(b("MouseTertiary"), b("KeyP")),
+			parry: buttons(b("MouseSecondary"), b("Quote"), b("Slash")),
+			feint: buttons(b("MouseSecondary"), b("Quote"), b("Slash")),
 
 			weapon_next: buttons(b("KeyE")),
 			weapon_previous: buttons(b("KeyQ")),

@@ -2,8 +2,8 @@
 import {Ecs} from "@benev/toolbox"
 import {Ribbon} from "../tracing/ribbon.js"
 import {Activity} from "../activity/exports.js"
-import {MeleeReport} from "../activity/reports/melee.js"
 import {Health} from "../../ecs/components/topics/warrior.js"
+import {meleeReport} from "../activity/reports/melee/melee-report.js"
 
 /** utility methods for interacting with health. */
 export class Infirmary {
@@ -12,8 +12,8 @@ export class Infirmary {
 	applyDamage(activity: Activity.Melee, ribbon: Ribbon) {
 		const {health} = this
 		const {weapon} = activity
-		const {maneuver} = new MeleeReport(activity)
-		const {blunt, bleed} = maneuver.current.technique === "swing"
+		const {activeManeuver} = meleeReport(activity)
+		const {blunt, bleed} = activeManeuver.report.maneuver.technique === "swing"
 			? weapon.swing.damage
 			: weapon.stab.damage
 
