@@ -7,138 +7,66 @@ import {combineWeights} from "../utils/combine-weights.js"
 import {Angles, Maneuver} from "../../../activity/exports.js"
 import {MeleeReport} from "../../reports/melee/parts/types.js"
 
-// export function meleeWeights({activity}: MeleeReport) {
-// 	const {cancelled} = activity
-// 	const {phase, maneuver} = new MeleeReport(activity)
-// 	const {seconds} = maneuver
-// 	const {windup, release, combo, recovery} = maneuver.current.technique === "swing"
-// 		? activity.weapon.swing.timing
-// 		: activity.weapon.stab.timing
-
-// 	const isFirstManeuver = maneuver.index === 0
-
-// 	const reconcile = phase === "combo"
-// 		? combo
-// 		: recovery
-
-// 	// bounce back on early recovery
-// 	const bounciness = 1 / 3
-// 	const bouncySeconds = (
-// 		cancelled === null
-// 			? seconds
-// 			: scalar.bottom(cancelled - ((seconds - cancelled) * bounciness), 0)
-// 	)
-
-// 	if (isFirstManeuver) {
-// 		const a = 0
-// 		const b = windup / 3
-// 		const c = windup
-// 		const d = windup + release
-// 		const e = windup + release + reconcile
-
-// 		const weights = maneuverWeights({
-// 			maneuver: maneuver.current,
-// 			active: cancelled !== null
-// 				? spline.linear(seconds - cancelled, [
-// 					[0, 1],
-// 					[reconcile, 0],
-// 				])
-// 				: spline.linear(seconds, [
-// 					[a, 0],
-// 					[b, 1],
-// 					[c, 1],
-// 					[d, 1],
-// 					[e, 0],
-// 				]),
-// 			progress: spline.linear(bouncySeconds, [
-// 				[a, 0 / 3],
-// 				[c, 1 / 3],
-// 				[d, 2 / 3],
-// 				[e, 3 / 3],
-// 			]),
-// 		})
-
-// 		if (maneuver.next) {
-// 			const nextWeights = maneuverWeights({
-// 				maneuver: maneuver.next,
-// 				active: cancelled !== null
-// 					? spline.linear(seconds - cancelled, [
-// 						[0, 1],
-// 						[reconcile, 0],
-// 					])
-// 					: spline.linear(seconds, [
-// 						[a, 0],
-// 						[b, 0],
-// 						[c, 0],
-// 						[d, 0],
-// 						[e, 1],
-// 					]),
-// 				progress: 1 / 3,
-// 			})
-// 			return combineWeights(weights, nextWeights)
-// 		}
-
-// 		return weights
-// 	}
-// 	else {
-// 		const a = 0
-// 		const b = release
-// 		const c = release + reconcile
-
-// 		const weights = maneuverWeights({
-// 			maneuver: maneuver.current,
-// 			active: cancelled !== null
-// 				? spline.linear(seconds - cancelled, [
-// 					[0, 1],
-// 					[reconcile, 0],
-// 				])
-// 				: spline.linear(seconds, [
-// 					[a, 1],
-// 					[b, 1],
-// 					[c, 0],
-// 				]),
-// 			progress: spline.linear(bouncySeconds, [
-// 				[a, 1 / 3],
-// 				[b, 2 / 3],
-// 				[c, 3 / 3],
-// 			]),
-// 		})
-
-// 		if (maneuver.next) {
-// 			const nextWeights = maneuverWeights({
-// 				maneuver: maneuver.next,
-// 				active: cancelled !== null
-// 					? spline.linear(seconds - cancelled, [
-// 						[0, 1],
-// 						[reconcile, 0],
-// 					])
-// 					: spline.linear(seconds, [
-// 						[a, 0],
-// 						[b, 0],
-// 						[c, 1],
-// 					]),
-// 				progress: spline.linear(bouncySeconds, [
-// 					[a, 0 / 3],
-// 					[b, 0 / 3],
-// 					[c, 1 / 3],
-// 				]),
-// 			})
-// 			return combineWeights(weights, nextWeights)
-// 		}
-// 		else return weights
-// 	}
-// }
+const blend = 0.1
 
 export function meleeWeights(melee: MeleeReport): ActivityWeights {
-	// const weights = zeroWeights()
-	const {animatedManeuver} = melee.predicament
-	const attackWeights = generate_attack_weights({
-		maneuver: animatedManeuver.report.maneuver,
-		progress: animatedManeuver.progress,
-		active: 1,
+	const {predicament} = melee
+	const {chart, phase, progress, next, time} = melee.predicament.animatedManeuver
+	const {windup, release} = chart.timing
+	const reconcile = phase === "combo"
+		? chart.timing.combo
+		: chart.timing.recovery
+
+	const alphaWeights = generate_attack_weights({
+		maneuver: chart.maneuver,
+		progress: chart.comboIn
+			? scalar.remap(progress, [0, 1], [1/3, 1])
+			: progress,
+		active: (
+			predicament.procedure === "normal" ? spline.linear(time, chart.comboIn ? [
+				[0, 1],
+				[release, 1],
+				[release + reconcile, 0],
+			] : [
+				[0, 0],
+				[blend, 1],
+				[windup + release, 1],
+				[windup + release + reconcile, 0],
+			]) :
+			predicament.procedure === "feint" ? spline.linear(predicament.feintProgress, [
+				[0.0, 1],
+				[0.5, 1],
+				[1.0, 0],
+			]) :
+			predicament.procedure === "bounce" ? spline.linear(predicament.bounceProgress, [
+				[0.0, 1],
+				[1.0, 0],
+			]) :
+			0
+		),
 	})
 
-	return attackWeights
+	if (next) {
+		const bravoWeights = generate_attack_weights({
+			maneuver: next.maneuver,
+			progress: 1 / 3, // frozen in windup
+			active: predicament.procedure === "normal"
+				? spline.linear(time, next.comboIn ? [
+					[0, 0],
+					[release, 0],
+					[release + reconcile, 1],
+				] : [
+					[0, 0],
+					[windup + release, 0],
+					[windup + release + reconcile, 1],
+				])
+				: 0,
+		})
+
+		return combineWeights(alphaWeights, bravoWeights)
+	}
+
+	return alphaWeights
 }
 
 //////////////////////////

@@ -4,7 +4,7 @@ import {Weapon} from "../../../../armory/weapon.js"
 
 export type MeleeReport = {
 	activity: Activity.Melee
-	maneuverReports: ManeuverReport[]
+	charts: ManeuverChart[]
 	activeManeuver: ManeuverQuery
 	predicament: Predicament
 } & BasePredicament
@@ -14,13 +14,22 @@ export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
 export type ManeuverQuery = {
 	index: number
 	time: number
+	duration: number
 	progress: number
 	phase: ManeuverPhase
-	report: ManeuverReport
-	next: ManeuverReport | null
+	chart: ManeuverChart
+	next: ManeuverChart | null
 }
 
-export type ManeuverReport = {
+// export type Snapshot = {
+// 	chart: ManeuverChart
+// 	time: number
+// 	phase: ManeuverPhase
+// 	maneuverProgress: number
+// 	next: ManeuverChart | null
+// }
+
+export type ManeuverChart = {
 	maneuver: Maneuver.Any
 	start: number
 	duration: number

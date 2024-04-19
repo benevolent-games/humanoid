@@ -79,7 +79,7 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 		else if (activity?.kind === "melee") {
 			const {activeManeuver} = meleeReport(activity)
 			return {
-				angle: activeManeuver.report.maneuver.angle,
+				angle: activeManeuver.chart.maneuver.angle,
 				mode: activeManeuver.phase === "release"
 					? "attack-release"
 					: "attack",

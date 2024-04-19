@@ -1,8 +1,9 @@
 
-import {scalar} from "@benev/toolbox"
 import {Weapon} from "../../../armory/weapon.js"
 import {Activity, Maneuver} from "../../exports.js"
-import {ManeuverPhase, ManeuverQuery, ManeuverReport, MeleeReport, Predicament} from "./parts/types.js"
+import {ManeuverPhase, ManeuverQuery, ManeuverChart, MeleeReport, Predicament} from "./parts/types.js"
+
+const bounciness = 1 / 3
 
 export function meleeReport(activity: Activity.Melee): MeleeReport {
 	const maneuverReports = generateManeuverReports(
@@ -22,7 +23,10 @@ export function meleeReport(activity: Activity.Melee): MeleeReport {
 	)
 
 	return {
-		activity, maneuverReports, activeManeuver, predicament,
+		activity,
+		charts: maneuverReports,
+		activeManeuver,
+		predicament,
 		animatedManeuver: predicament.animatedManeuver,
 		done: predicament.done,
 		almostDone: predicament.almostDone,
@@ -34,7 +38,7 @@ export function meleeReport(activity: Activity.Melee): MeleeReport {
 
 function ascertainPredicament(
 		activity: Activity.Melee,
-		reports: ManeuverReport[],
+		reports: ManeuverChart[],
 		maneuver: ManeuverQuery,
 	): Predicament {
 
@@ -47,13 +51,13 @@ function ascertainPredicament(
 		// feint predicament
 		if (maneuver.phase === "windup" || maneuver.phase === "combo") {
 			const phaseStart = calculate_phase_start_in_maneuver_time(
-				maneuver.report.timing,
+				maneuver.chart.timing,
 				maneuver.phase,
-				maneuver.report.comboIn,
+				maneuver.chart.comboIn,
 			)
 			const feintDuration = maneuver.time - phaseStart
 			const feintProgress = since / feintDuration
-			const rewind = seconds - since
+			const rewind = cancelled - since
 			return {
 				procedure: "feint",
 				feintTime: since,
@@ -67,9 +71,9 @@ function ascertainPredicament(
 
 		// bounce predicament
 		else if (maneuver.phase === "release") {
-			const bounceDuration = maneuver.report.timing.recovery / 2
+			const bounceDuration = maneuver.chart.timing.recovery / 2
 			const bounceProgress = since / bounceDuration
-			const augmentedRewind = seconds - (since / 3)
+			const augmentedRewind = cancelled - (since * bounciness)
 			return {
 				procedure: "bounce",
 				bounceTime: since,
@@ -93,7 +97,7 @@ function ascertainPredicament(
 
 function generateManeuverReports(maneuvers: Maneuver.Any[], weapon: Weapon.Loadout) {
 	let runningTime = 0
-	return maneuvers.map((maneuver, index): ManeuverReport => {
+	return maneuvers.map((maneuver, index): ManeuverChart => {
 		const {timing} = weapon[maneuver.technique]
 		const start = runningTime
 		const comboIn = index !== 0
@@ -104,20 +108,24 @@ function generateManeuverReports(maneuvers: Maneuver.Any[], weapon: Weapon.Loado
 	})
 }
 
-function queryManeuver(maneuverReports: ManeuverReport[], seconds: number) {
+function queryManeuver(charts: ManeuverChart[], seconds: number) {
 	let active: ManeuverQuery | null = null
-	maneuverReports.forEach((report, index) => {
-		const {timing, start, duration, comboIn, comboOut} = report
+	seconds = Math.max(seconds, 0)
+
+	charts.forEach((chart, index) => {
+		const {timing, start, duration, comboIn, comboOut} = chart
 		if (seconds >= start) {
 			const time = seconds - start
 			const phase = calculate_phase(timing, time, comboIn, comboOut)
 			const progress = time / duration
-			const next = maneuverReports.at(index + 1) ?? null
-			active = {report, index, phase, time, progress, next}
+			const next = charts.at(index + 1) ?? null
+			active = {chart, index, phase, time, duration, progress, next}
 		}
 	})
+
 	if (!active)
 		throw new Error("no active maneuver")
+
 	return active
 }
 

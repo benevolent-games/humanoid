@@ -207,13 +207,13 @@ export const combat = system("combat", ({realm}) => [
 			if (activity && activity.kind === "melee") {
 				const melee = meleeReport(activity)
 				const canStartCombo = (
-					melee.activeManeuver.report.maneuver.comboable &&
+					melee.activeManeuver.chart.maneuver.comboable &&
 					melee.activeManeuver.next === null &&
 					melee.activeManeuver.phase === "release"
 				)
 				if (canStartCombo) {
 					if (meleeIntent.swing) {
-						const {angle: oldAngle} = melee.activeManeuver.report.maneuver
+						const {angle: oldAngle} = melee.activeManeuver.chart.maneuver
 						const {angle: newAngle} = components.meleeAim
 						const sameSide = (oldAngle < 0) === (newAngle < 0)
 						activity.maneuvers.push({
@@ -238,14 +238,12 @@ export const combat = system("combat", ({realm}) => [
 	behavior("feints")
 		.select({ActivityComponent, MeleeIntent})
 		.logic(() => ({components: {meleeIntent, activityComponent: activity}}) => {
-			const its_feint_o_clock = (
-				meleeIntent.feint &&
-				activity &&
-				activity.kind === "melee" &&
-				meleeReport(activity).predicament.procedure === "normal"
-			)
-			if (its_feint_o_clock)
-				activity.cancelled = activity.seconds
+			if (meleeIntent.feint && activity && activity.kind === "melee" && activity.cancelled === null) {
+				const melee = meleeReport(activity)
+				const inFeintableState = melee.activeManeuver.phase === "windup" || melee.activeManeuver.phase === "combo"
+				if (inFeintableState && melee.predicament.procedure === "normal")
+					activity.cancelled = activity.seconds
+			}
 		}),
 
 	behavior("end melee action")

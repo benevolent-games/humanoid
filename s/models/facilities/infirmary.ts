@@ -13,7 +13,7 @@ export class Infirmary {
 		const {health} = this
 		const {weapon} = activity
 		const {activeManeuver} = meleeReport(activity)
-		const {blunt, bleed} = activeManeuver.report.maneuver.technique === "swing"
+		const {blunt, bleed} = activeManeuver.chart.maneuver.technique === "swing"
 			? weapon.swing.damage
 			: weapon.stab.damage
 
