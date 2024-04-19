@@ -2,90 +2,144 @@
 import {scalar} from "@benev/toolbox"
 import {Weapon} from "../../armory/weapon.js"
 import {Activity, Maneuver} from "../exports.js"
-import {ActivityWeights} from "../../choreographer/activities/kit/weights.js"
 
 export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
 
-/*
-
-Activity.Melee
-	seconds,
-	weapon,
-	cancelled,
-	maneuvers [{
-		technique,
-		angle,
-		comboable,
-	}],
-
-MeleeReport
-	activity
-	phase
-	weights
-	maneuver
-		current
-			index
-		next
-			index
-
-*/
-
-export type MeleeReport2 = {
-	activity: Activity.Melee
+export type ManeuverReport = {
+	index: number
+	start: number
+	duration: number
+	seconds: number
+	progress: number
+	comboIn: boolean
+	comboOut: boolean
+	timing: Weapon.AttackTiming
 	phase: ManeuverPhase
-	next: null | Maneuver.Any
-	current: {
-		maneuver: Maneuver.Any
-		seconds: number
-		index: number
-		progress: number
-	}
-	weights: ActivityWeights
+	current: Maneuver.Any
+	next: Maneuver.Any | null
+}
+
+export type NormalMelee = {
+	procedure: "normal"
+	activity: Activity.Melee
+	maneuver: ManeuverReport
+	maneuverAnim: ManeuverReport
 	done: boolean
 	almostDone: boolean
 }
 
-export function meleeReport(activity: Activity.Melee) {
-	const mechanical = maneuverReport(activity, activity.cancelled ?? activity.seconds)
-	const animated = maneuverReport(activity, getBouncy(activity.seconds, activity.cancelled))
+export type FeintMelee = {
+	procedure: "feint"
+	activity: Activity.Melee
+	maneuver: ManeuverReport
+	maneuverAnim: ManeuverReport
+	feintProgress: number
+	done: boolean
+	almostDone: boolean
+}
+
+export type BounceMelee = {
+	procedure: "bounce"
+	activity: Activity.Melee
+	maneuver: ManeuverReport
+	maneuverAnim: ManeuverReport
+	bounceProgress: number
+	done: boolean
+	almostDone: boolean
+}
+
+export type MeleeReport3 = NormalMelee | FeintMelee | BounceMelee
+
+export function meleeReport(activity: Activity.Melee): MeleeReport3 {
+
+	// if canceled, we consider our maneuver logically "frozen in time"
+	const maneuver = getManeuverStateAtTime(activity, activity.cancelled ?? activity.seconds)
+
+	if (activity.cancelled !== null && activity.seconds >= activity.cancelled) {
+		const {seconds, cancelled} = activity
+		const sinceCancellation = seconds - cancelled
+
+		// feint
+		if (maneuver.phase === "windup" || maneuver.phase === "combo") {
+			const feintDuration = maneuver.phase === "windup"
+				? cancelled - maneuver.start
+				: cancelled - (maneuver.timing.windup + maneuver.timing.release)
+			console.log({feintDuration})
+			const rewindBy = scalar.clamp(sinceCancellation, 0, feintDuration)
+			const progress = rewindBy / feintDuration
+			const feintTime = cancelled - rewindBy
+			// console.log("feintTime", {rewindBy, seconds, feintTime})
+			return {
+				procedure: "feint",
+				activity,
+				maneuver,
+				maneuverAnim: getManeuverStateAtTime(activity, feintTime),
+				feintProgress: progress,
+				done: progress >= 1,
+				almostDone: progress >= 0.5,
+			}
+		}
+
+		// bounce
+		else if (maneuver.phase === "release") {
+			const bounciness = 1 / 3
+			const bounceDuration = activity.weapon[maneuver.current.technique].timing.recovery / 2
+			const bounceEffectTime = scalar.bottom(sinceCancellation * bounciness, 0)
+			const progress = scalar.clamp(sinceCancellation / bounceDuration)
+			return {
+				procedure: "bounce",
+				activity,
+				maneuver,
+				maneuverAnim: getManeuverStateAtTime(activity, bounceEffectTime),
+				bounceProgress: progress,
+				done: progress >= 1,
+				almostDone: progress >= 0.5,
+			}
+		}
+	}
+
+	// normal follow-through
+	const progress = (maneuver.seconds / maneuver.duration)
 	return {
+		procedure: "normal",
 		activity,
-		phase: mechanical.phase,
-		maneuverReport: mechanical,
+		maneuver,
+		maneuverAnim: maneuver,
+		done: progress >= 1,
+		almostDone: progress >= 0.75,
 	}
 }
 
-function getBouncy(seconds: number, cancelled: number | null) {
-	if (cancelled === null)
-		return seconds
-	else {
-		const bounciness = 1 / 3
-		return cancelled === null
-			? seconds
-			: scalar.bottom(cancelled - ((seconds - cancelled) * bounciness), 0)
-	}
-}
-
-function maneuverReport({weapon, maneuvers}: Activity.Melee, time: number) {
+function getManeuverStateAtTime(
+		{weapon, maneuvers}: Activity.Melee,
+		activitySeconds: number,
+	): ManeuverReport {
 	let runningTime = 0
 	for (let index = 0; index < maneuvers.length; index++) {
-		const maneuver = maneuvers[index]
+		const current = maneuvers[index]
+		const {timing} = weapon[current.technique]
 		const comboIn = index !== 0
 		const comboOut = index < (maneuvers.length - 1)
-		const duration = sum_up_maneuver_duration(weapon, maneuver, comboIn, comboOut)
-		const maneuverSeconds = time - runningTime
+		const start = runningTime
+		const duration = sum_up_maneuver_duration(timing, comboIn, comboOut)
+		const maneuverSeconds = activitySeconds - runningTime
 		runningTime += duration
 		return {
 			index,
-			maneuver,
+			start,
 			duration,
 			seconds: maneuverSeconds,
+			progress: maneuverSeconds / duration,
+			comboIn,
+			comboOut,
+			timing,
 			phase: calculate_phase({
-				seconds: time,
+				seconds: activitySeconds,
 				comboIn,
 				comboOut,
-				timing: weapon[maneuver.technique].timing,
+				timing: weapon[current.technique].timing,
 			}),
+			current,
 			next: comboOut
 				? maneuvers[index + 1]
 				: null,
@@ -228,7 +282,9 @@ function ascertain_maneuvering_report(activity: Activity.Melee) {
 		const isFirstManeuver = i === 0
 
 		if (activity.seconds >= runningTime) {
-			const duration = sum_up_maneuver_duration(weapon, maneuver, isFirstManeuver, isCombo)
+			// TODO BORKED
+			const duration = 0
+			// const duration = sum_up_maneuver_duration(weapon, maneuver, isFirstManeuver, isCombo)
 			const maneuverSeconds = activity.seconds - runningTime
 			group = {
 				index: i,
@@ -313,15 +369,10 @@ function ascertain_phase(
 }
 
 function sum_up_maneuver_duration(
-		weapon: Weapon.Loadout,
-		maneuver: Maneuver.Any,
+		timing: Weapon.AttackTiming,
 		comboIn: boolean,
 		comboOut: boolean,
 	) {
-
-	const {timing} = maneuver.technique === "swing"
-		? weapon.swing
-		: weapon.stab
 
 	const maybeWindup = comboIn
 		? 0
