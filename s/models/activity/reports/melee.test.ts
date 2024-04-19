@@ -1,9 +1,9 @@
 
-import {Suite, expect} from "cynic"
 import {scalar} from "@benev/toolbox"
+import {Suite, assert, expect} from "cynic"
 
-import {meleeReport} from "./melee.js"
-import {times, quickReport, setupActivity, exampleTimings, quickManeuver} from "./melee-test-tools/tooling.js"
+import {Feint, meleeReport} from "./melee2.js"
+import {setupActivity, quickManeuver, quickReport} from "./melee-test-tools/tooling.js"
 
 function proximal(a: number, b: number, epsilon: number = 0.01) {
 	const diff = Math.abs(a - b)
@@ -13,128 +13,73 @@ function proximal(a: number, b: number, epsilon: number = 0.01) {
 export default <Suite>{
 
 	"basic phases": async() => {
-		expect(quickReport(times.windupMiddle).maneuver.phase).equals("windup")
-		expect(quickReport(times.releaseMiddle).maneuver.phase).equals("release")
-		expect(quickReport(times.recoveryMiddle).maneuver.phase).equals("recovery")
+		expect(quickReport(0.5).activeManeuver.phase)
+			.equals("windup")
+		expect(quickReport(1.5).activeManeuver.phase)
+			.equals("release")
+		expect(quickReport(2.5).activeManeuver.phase)
+			.equals("recovery")
 	},
 
 	"combo phase": async() => {
 		const activity = setupActivity()
-		activity.seconds = times.comboMiddle
+		activity.seconds = 2.5
 		activity.maneuvers.push({
 			technique: "swing",
 			comboable: true,
 			angle: scalar.radians.from.degrees(90),
 		})
-		expect(meleeReport(activity).maneuver.phase).equals("combo")
+		expect(meleeReport(activity).activeManeuver.phase).equals("combo")
 	},
 
 	normal: {
+		"normal predicament": async() => {
+			expect(quickReport(2.1).predicament.procedure).equals("normal")
+		},
 		"normal almost done": async() => {
-			expect(quickReport(times.recoveryEarly).almostDone).equals(false)
-			expect(quickReport(times.recoveryLate).almostDone).equals(true)
+			expect(quickReport(2.1).predicament.almostDone).equals(false)
+			expect(quickReport(2.9).predicament.almostDone).equals(true)
 		},
 		"normal done": async() => {
-			expect(quickReport(times.recoveryLate).done).equals(false)
-			expect(quickReport(times.recoveryEnd).done).equals(true)
+			expect(quickReport(2.1).predicament.done).equals(false)
+			expect(quickReport(3).predicament.done).equals(true)
 		},
 	},
 
-	feints: {
-		"detect feint": async() => {
+	feints: (() => {
+		function feint(cancelled: number, seconds: number) {
 			const activity = setupActivity()
-			activity.cancelled = exampleTimings.windup * 0.2
-			activity.seconds = exampleTimings.windup * 0.3
-			const report = meleeReport(activity)
-			expect(report.procedure).equals("feint")
-			if (report.procedure === "feint") {
-				expect(proximal(report.feintProgress, 0.5)).ok()
-			}
-		},
-		"combo feint": async() => {
-			console.log("------------------")
-			const activity = setupActivity()
-			activity.maneuvers.push(quickManeuver())
-			activity.cancelled = times.releaseEnd + (exampleTimings.combo * 0.2)
-			activity.seconds = times.releaseEnd + (exampleTimings.combo * 0.3)
-			const report = meleeReport(activity)
-			expect(report.procedure).equals("feint")
-			if (report.procedure === "feint") {
-				console.log(report.feintProgress)
-				expect(proximal(report.feintProgress, 0.5)).ok()
-			}
-			console.log("------------------2")
-		},
-		"done and almostDone": async() => {
-			const setup = (a: number, b: number) => {
+			activity.cancelled = cancelled
+			activity.seconds = seconds
+			const predicament = meleeReport(activity).predicament as Feint
+			expect(predicament.procedure).equals("feint")
+			return predicament
+		}
+		return {
+			"feint duration": async() => {
+				assert(proximal(feint(.4, .6).feintDuration, .4))
+			},
+			"feint time": async() => {
+				assert(proximal(feint(.4, .6).feintTime, .2))
+			},
+			"feint done": async() => {
+				expect(feint(.4, .6).done).equals(false)
+				expect(feint(.4, .8).done).equals(true)
+			},
+			"feint almostDone": async() => {
+				expect(feint(.4, .41).almostDone).equals(false)
+				expect(feint(.4, .79).almostDone).equals(true)
+			},
+			"feint combo": async() => {
 				const activity = setupActivity()
-				activity.cancelled = exampleTimings.windup * a
-				activity.seconds = exampleTimings.windup * b
-				return meleeReport(activity)
-			}
-
-			expect(setup(.1, .15).done).equals(false)
-			expect(setup(.1, .20).done).equals(true)
-			expect(setup(.1, .25).done).equals(true)
-
-			expect(setup(.1, .11).almostDone).equals(false)
-			expect(setup(.1, .19).almostDone).equals(true)
-			expect(setup(.1, .25).almostDone).equals(true)
-		},
-		"feint animation": async() => {
-			const testAnimProgress = (cancelled: number, seconds: number, expectedWindup: number) => {
-				const activity = setupActivity()
-				activity.cancelled = cancelled * exampleTimings.windup
-				activity.seconds = seconds * exampleTimings.windup
-				const {maneuverAnim: {progress, duration}} = meleeReport(activity)
-				const expectedProgress = (expectedWindup * exampleTimings.windup) / duration
-				console.log({duration, expectedWindup, windup: exampleTimings.windup, progress, expectedProgress})
-				expect(proximal(progress, expectedProgress)).ok()
-			}
-			// console.log("!!!!!!!!!!!!!!")
-			// testAnimProgress(.5, .5, .5)
-			// testAnimProgress(.5, 1, 0)
-			//
-			// expect(nearby(
-			// 	animProgress(.5, .5),
-			// 	expectedWindup(.5),
-			// 	epsilon
-			// )).ok()
-			// expect(nearby(
-			// 	animProgress(.5, .4),
-			// 	expectedWindup(.1),
-			// 	epsilon,
-			// )).ok()
-		},
-	},
-
-	bounces: {
-		"detect bounce": async() => {
-			const setup = (cancelled: number, seconds: number) => {
-				const activity = setupActivity()
-				activity.cancelled = exampleTimings.release * cancelled
-				activity.seconds = exampleTimings.release * seconds
-				return meleeReport(activity)
-			}
-			expect(setup(.5, .5).procedure).equals("bounce")
-			expect(setup(.5, .6).procedure).equals("bounce")
-			expect(setup(.5, 1).procedure).equals("bounce")
-		},
-		// "detect bounce in second maneuver": async() => {
-		// 	const setup = (cancelled: number, seconds: number) => {
-		// 		const activity1 = setupActivity()
-		// 		activity1.maneuvers.push(quickManeuver())
-		// 		const duration = meleeReport(activity1).maneuver.duration
-
-		// 		const activity = setupActivity()
-		// 		activity.maneuvers.push(quickManeuver())
-		// 		activity.cancelled = duration + (exampleTimings.release * cancelled)
-		// 		activity.seconds = duration + (exampleTimings.release * seconds)
-		// 		return meleeReport(activity)
-		// 	}
-		// 	expect(setup(.5, .6).maneuver.phase).equals("release")
-		// 	expect(setup(.5, .6).procedure).equals("bounce")
-		// },
-	},
+				activity.cancelled = 2.4
+				activity.seconds = 2.6
+				activity.maneuvers.push(quickManeuver())
+				const predicament = meleeReport(activity).predicament as Feint
+				expect(predicament.procedure).equals("feint")
+				assert(proximal(predicament.feintDuration, .4))
+			},
+		}
+	})(),
 }
 

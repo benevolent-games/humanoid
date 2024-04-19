@@ -1,12 +1,12 @@
 
 import {scalar} from "@benev/toolbox"
 
-import {meleeReport} from "../melee.js"
-import {Activity, Maneuver} from "../../exports.js"
+// import {meleeReport} from "../melee.js"
+import {meleeReport} from "../melee2.js"
 import {Weapon} from "../../../armory/weapon.js"
+import {Activity, Maneuver} from "../../exports.js"
 
-export const exampleTimings = {windup: 1, release: 2, combo: 3, recovery: 4}
-// export const exampleManeuverDuration = 1 + 2 + 4
+export const exampleTimings = {windup: 1, release: 1, combo: 1, recovery: 1}
 
 export function setupWeapon(): Weapon.Loadout {
 	return {
@@ -27,22 +27,6 @@ export function setupWeapon(): Weapon.Loadout {
 		},
 	}
 }
-
-export const times = (() => {
-	const weapon = setupWeapon()
-	const {windup, release, combo, recovery} = weapon.swing.timing
-	return {
-		windupMiddle: windup * 0.5,
-		windupEnd: windup * 0.95,
-		releaseMiddle: windup + (release * 0.5),
-		releaseEnd: windup + release,
-		comboMiddle: windup + release + (combo * 0.5),
-		recoveryEarly: windup + release + (recovery * 0.1),
-		recoveryMiddle: windup + release + (recovery * 0.5),
-		recoveryLate: windup + release + (recovery * 0.9),
-		recoveryEnd: windup + release + recovery,
-	}
-})()
 
 export function quickManeuver(): Maneuver.Swing {
 	return {
