@@ -12,7 +12,7 @@ import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
 import {isComboReady} from "../../models/activity/reports/melee/parts/is-combo-ready.js"
 import {isMeleeReport, makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
-import {isStabComboable, isSwingComboable, minimumFeint} from "../../models/activity/reports/melee/constants.js"
+import {canComboFromStab, canComboFromSwing, canComboToStab, canComboToSwing, minimumFeint} from "../../models/activity/reports/melee/constants.js"
 import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
 
 export const combat = system("combat", ({realm}) => [
@@ -107,7 +107,7 @@ export const combat = system("combat", ({realm}) => [
 					applyActivity(() => ({
 						kind: "melee",
 						weapon,
-						maneuvers: [{technique: "swing", comboable: isSwingComboable, angle}],
+						maneuvers: [{technique: "swing", comboable: canComboFromSwing, angle}],
 						seconds: 0,
 						cancelled: null,
 					}))
@@ -117,7 +117,7 @@ export const combat = system("combat", ({realm}) => [
 					applyActivity(() => ({
 						kind: "melee",
 						weapon,
-						maneuvers: [{technique: "stab", comboable: isStabComboable, angle}],
+						maneuvers: [{technique: "stab", comboable: canComboFromStab, angle}],
 						seconds: 0,
 						cancelled: null,
 					}))
@@ -224,29 +224,30 @@ export const combat = system("combat", ({realm}) => [
 		.select({Inventory, ActivityComponent, MeleeIntent, MeleeAim})
 		.logic(() => ({components}) => {
 			const {meleeIntent, activityComponent: activity} = components
-			if (activity && activity.kind === "melee") {
-				const melee = meleeReport(activity)
-				if (isComboReady(melee.logicalSnapshot)) {
-					if (meleeIntent.swing) {
-						const {angle: oldAngle} = melee.logicalSnapshot.chart.maneuver
-						const {angle: newAngle} = components.meleeAim
-						const sameSide = (oldAngle < 0) === (newAngle < 0)
-						activity.maneuvers.push({
-							technique: "swing",
-							comboable: isSwingComboable,
-							angle: sameSide
-								? -newAngle
-								: newAngle,
-						})
-					}
-					else if (meleeIntent.stab) {
-						activity.maneuvers.push({
-							technique: "stab",
-							comboable: isStabComboable,
-							angle: components.meleeAim.angle,
-						})
-					}
-				}
+			const isMeleeActivity = activity && activity.kind === "melee"
+			if (!isMeleeActivity) return
+			const melee = meleeReport(activity)
+			if (!isComboReady(melee.logicalSnapshot)) return
+
+			if (canComboToSwing && meleeIntent.swing) {
+				const {angle: oldAngle} = melee.logicalSnapshot.chart.maneuver
+				const {angle: newAngle} = components.meleeAim
+				const sameSide = (oldAngle < 0) === (newAngle < 0)
+				activity.maneuvers.push({
+					technique: "swing",
+					comboable: canComboFromSwing,
+					angle: sameSide
+						? -newAngle
+						: newAngle,
+				})
+			}
+
+			else if (canComboToStab && meleeIntent.stab) {
+				activity.maneuvers.push({
+					technique: "stab",
+					comboable: canComboFromStab,
+					angle: components.meleeAim.angle,
+				})
 			}
 		}),
 

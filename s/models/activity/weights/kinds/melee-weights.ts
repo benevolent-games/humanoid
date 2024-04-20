@@ -87,7 +87,7 @@ export function derive_attack_anim_progress_from_phase(
 			// // this is technically-mathematically more correct
 			// return 2/3 // hold at release-end
 
-			// but this yields are more natural-looking result
+			// but this yields a more natural-looking result
 			return scalar.map(phaseProgress, [2/3, 3/3])
 
 		case "recovery":
@@ -107,7 +107,7 @@ export function generate_attack_weights({
 	weights.active = active
 
 	if (maneuver.technique === "stab") {
-		weights.a7 = {progress: attackAnimProgress, weight: weights.active}
+		weights.a7 = {weight: weights.active, progress: attackAnimProgress}
 		// if (maneuver.angle < 0)
 		// 	weights.a7 = {progress, weight: weights.active}
 		// else
