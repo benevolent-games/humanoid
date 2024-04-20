@@ -10,24 +10,10 @@ import {Controllable, Intent} from "../components/plain_components.js"
 import {standardEquipDuration} from "../../models/activity/standards.js"
 import {InventoryManager} from "../../models/armory/inventory-manager.js"
 import {meleeReport} from "../../models/activity/reports/melee/melee-report.js"
-import {MeleeSnapshot} from "../../models/activity/reports/melee/parts/types.js"
+import {isComboReady} from "../../models/activity/reports/melee/parts/is-combo-ready.js"
 import {isMeleeReport, makeActivityReport} from "../../models/activity/utils/make-activity-report.js"
+import {isStabComboable, isSwingComboable, minimumFeint} from "../../models/activity/reports/melee/constants.js"
 import {Inventory, ActivityComponent, MeleeAim, MeleeIntent, ProtectiveBubble, NextActivity} from "../components/topics/warrior.js"
-
-const isSwingComboable = true
-const isStabComboable = false
-const comboableReleaseThreshold = 2 / 3
-const minimumFeint = 0
-
-export function isComboReady({phase, phaseProgress, chart, next}: MeleeSnapshot) {
-	const {comboable} = chart.maneuver
-	return (
-		comboable &&
-		next === null &&
-		phase === "release" &&
-		phaseProgress >= comboableReleaseThreshold
-	)
-}
 
 export const combat = system("combat", ({realm}) => [
 
@@ -68,6 +54,15 @@ export const combat = system("combat", ({realm}) => [
 				meleeAim.angle = scalar.clamp(glanceAngle, ...zone)
 			}),
 
+		behavior("launch queued activity")
+			.select({ActivityComponent, NextActivity})
+			.logic(() => ({components}) => {
+				if (!components.activityComponent && components.nextActivity) {
+					components.activityComponent = components.nextActivity
+					components.nextActivity = null
+				}
+			}),
+
 		behavior("initiate activity")
 			.select({MeleeAim, MeleeIntent, Inventory, ActivityComponent, NextActivity})
 			.logic(() => ({components}) => {
@@ -86,8 +81,9 @@ export const combat = system("combat", ({realm}) => [
 								report.flow.procedure === "feint" &&
 								next.kind === "parry"
 							)
-							if (!invalid)
+							if (!invalid) {
 								components.nextActivity = next
+							}
 						}
 					}
 					else {
@@ -167,15 +163,6 @@ export const combat = system("combat", ({realm}) => [
 				}
 			}),
 		]),
-
-	behavior("launch queued activity")
-		.select({ActivityComponent, NextActivity})
-		.logic(() => ({components}) => {
-			if (!components.activityComponent && components.nextActivity) {
-				components.activityComponent = components.nextActivity
-				components.nextActivity = null
-			}
-		}),
 
 	behavior("activity seconds increase")
 		.select({ActivityComponent})

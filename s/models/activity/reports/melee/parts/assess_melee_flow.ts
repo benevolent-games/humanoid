@@ -51,7 +51,7 @@ export function assess_melee_flow(
 			bounceDuration,
 			bounceProgress,
 			done: bounceProgress >= 1,
-			almostDone: bounceProgress >= (1 / 2),
+			almostDone: bounceProgress >= (2 / 3),
 			animSnapshot: query_for_melee_snapshot(charts, augmentedRewind),
 		}
 	}
@@ -61,7 +61,7 @@ export function assess_melee_flow(
 		return {
 			procedure: "normal",
 			done: logicalSnapshot.progress >= 1,
-			almostDone: logicalSnapshot.phase === "recovery" ? true : false,
+			almostDone: logicalSnapshot.phase === "recovery",
 			animSnapshot: logicalSnapshot,
 		}
 	}
