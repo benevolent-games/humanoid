@@ -12,7 +12,7 @@ export class Infirmary {
 	applyDamage(activity: Activity.Melee, ribbon: Ribbon) {
 		const {health} = this
 		const {weapon} = activity
-		const {activeManeuver} = meleeReport(activity)
+		const {logicalSnapshot: activeManeuver} = meleeReport(activity)
 		const {blunt, bleed} = activeManeuver.chart.maneuver.technique === "swing"
 			? weapon.swing.damage
 			: weapon.stab.damage

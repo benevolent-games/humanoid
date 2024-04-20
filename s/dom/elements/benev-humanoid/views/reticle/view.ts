@@ -60,22 +60,17 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			color: white;
 			z-index: 1;
 		}
-
-		.angle.lock > svg {
-			transform: translate(0, -0.6em);
-		}
 	`)
 
 	const {enabled, size, opacity, data} = game.ui.reticle
 	const activity = data?.activity
 	const meleeAim = data?.meleeAim
 
-	const {mode, angleAlpha, angleBravo, angleLock} = (() => {
+	const {mode, angleAlpha, angleLock} = (() => {
 		const angle = meleeAim?.angle ?? null
 		if (activity?.kind === "equip") {
 			return {
 				angleAlpha: null,
-				angleBravo: null,
 				angleLock: null,
 				mode: "plain",
 			}
@@ -84,7 +79,6 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			const {protective} = new ParryReport(activity)
 			return {
 				angleAlpha: null,
-				angleBravo: null,
 				angleLock: null,
 				mode: protective
 					? "parry-protective"
@@ -92,11 +86,9 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 			}
 		}
 		else if (activity?.kind === "melee") {
-			const {activeManeuver} = meleeReport(activity)
-			const a = angle ?? 0
+			const {logicalSnapshot: activeManeuver} = meleeReport(activity)
 			return {
-				angleAlpha: a,
-				angleBravo: null,
+				angleAlpha: null,
 				angleLock: activeManeuver.next?.maneuver.angle
 					?? activeManeuver.chart.maneuver.angle,
 				mode: activeManeuver.phase === "release"
@@ -107,7 +99,6 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 		return {
 			mode: "plain",
 			angleAlpha: angle,
-			angleBravo: null,
 			angleLock: null,
 		}
 	})()
@@ -117,7 +108,6 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 		: `opacity: 0;`
 
 	const angleAlphaStyle = stylize(angleAlpha)
-	const angleBravoStyle = stylize(angleBravo)
 	const angleLockStyle = stylize(angleLock)
 
 	return enabled ? html`
@@ -132,11 +122,6 @@ export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 				<div
 					class="angle alpha graphic"
 					style="${angleAlphaStyle}">
-					${icon_tabler_chevron_up}
-				</div>
-				<div
-					class="angle bravo graphic"
-					style="${angleBravoStyle}">
 					${icon_tabler_chevron_up}
 				</div>
 				<div

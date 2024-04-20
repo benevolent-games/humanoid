@@ -20,7 +20,7 @@ export const melee_tracers = system("melee tracers", ({world, realm}) => [
 
 			const melee = meleeReport(activityComponent)
 			const active = (
-				melee.activeManeuver.phase === "release" &&
+				melee.logicalSnapshot.phase === "release" &&
 				melee.activity.cancelled === null
 			)
 

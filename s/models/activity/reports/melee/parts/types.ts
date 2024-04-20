@@ -1,35 +1,19 @@
 
-import {Activity, Maneuver} from "../../../exports.js"
+import * as MeleeFlow from "./flow.js"
 import {Weapon} from "../../../../armory/weapon.js"
+import {Activity, Maneuver} from "../../../exports.js"
+
+export {MeleeFlow}
 
 export type MeleeReport = {
 	activity: Activity.Melee
 	charts: ManeuverChart[]
-	activeManeuver: ManeuverQuery
-	predicament: Predicament
-} & BasePredicament
-
-export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
-
-export type ManeuverQuery = {
-	index: number
-	time: number
-	duration: number
-	progress: number
-	phase: ManeuverPhase
-	phaseTime: number
-	phaseProgress: number
-	chart: ManeuverChart
-	next: ManeuverChart | null
+	logicalSnapshot: MeleeSnapshot
+	flow: MeleeFlow.Any
+	animSnapshot: MeleeSnapshot
+	done: boolean
+	almostDone: boolean
 }
-
-// export type Snapshot = {
-// 	chart: ManeuverChart
-// 	time: number
-// 	phase: ManeuverPhase
-// 	maneuverProgress: number
-// 	next: ManeuverChart | null
-// }
 
 export type ManeuverChart = {
 	maneuver: Maneuver.Any
@@ -40,29 +24,16 @@ export type ManeuverChart = {
 	timing: Weapon.AttackTiming
 }
 
-type BasePredicament = {
-	animatedManeuver: ManeuverQuery
-	done: boolean
-	almostDone: boolean
+export type ManeuverPhase = "windup" | "release" | "combo" | "recovery"
+
+export type MeleeSnapshot = {
+	index: number
+	time: number
+	progress: number
+	phase: ManeuverPhase
+	phaseTime: number
+	phaseProgress: number
+	chart: ManeuverChart
+	next: ManeuverChart | null
 }
-
-export type NormalPredicament = {
-	procedure: "normal"
-} & BasePredicament
-
-export type FeintPredicament = {
-	procedure: "feint"
-	feintTime: number
-	feintDuration: number
-	feintProgress: number
-} & BasePredicament
-
-export type BouncePredicament = {
-	procedure: "bounce"
-	bounceTime: number
-	bounceDuration: number
-	bounceProgress: number
-} & BasePredicament
-
-export type Predicament = NormalPredicament | FeintPredicament | BouncePredicament
 
