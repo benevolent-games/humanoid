@@ -74,6 +74,7 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<small>2024-04-20</small>
 			</h1>
 			<p>fixed onehanded combos. disabled stabs from combos due to an animation bug.</p>
+			<p>re-enabled turncaps. stamina is still temporarily disabled.</p>
 		</section>
 
 		<section>
