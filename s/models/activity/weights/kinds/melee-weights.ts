@@ -1,17 +1,17 @@
 
 import {Vec2, scalar, spline} from "@benev/toolbox"
 
-import {ActivityWeights, AnimMoment} from "../utils/types.js"
 import {zeroWeights} from "../utils/zero-weights.js"
 import {combineWeights} from "../utils/combine-weights.js"
 import {Angles, Maneuver} from "../../../activity/exports.js"
-import {MeleeReport} from "../../reports/melee/parts/types.js"
+import {ActivityWeights, AnimMoment} from "../utils/types.js"
+import {ManeuverPhase, MeleeReport} from "../../reports/melee/parts/types.js"
 
 const blend = 0.1
 
 export function meleeWeights(melee: MeleeReport): ActivityWeights {
 	const {flow} = melee
-	const {chart, phase, progress, next, time} = melee.flow.animSnapshot
+	const {chart, phase, phaseProgress, next, time} = melee.flow.animSnapshot
 	const {comboIn} = chart
 	const {windup, release} = chart.timing
 	const reconcile = phase === "combo"
@@ -20,9 +20,9 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 
 	const alphaWeights = generate_attack_weights({
 		maneuver: chart.maneuver,
-		progress: comboIn
-			? scalar.remap(progress, [0, 1], [1/3, 1])
-			: progress,
+		attackAnimProgress: (
+			derive_attack_anim_progress_from_phase(phase, phaseProgress)
+		),
 		active: (
 			flow.procedure === "normal" ? spline.linear(time, comboIn ? [
 				[0, 1],
@@ -50,7 +50,7 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 	if (next) {
 		const bravoWeights = generate_attack_weights({
 			maneuver: next.maneuver,
-			progress: 1 / 3, // frozen in windup
+			attackAnimProgress: 1 / 3, // frozen in windup
 			active: flow.procedure === "normal"
 				? spline.linear(time, comboIn ? [
 					[0, 0],
@@ -63,7 +63,6 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 				])
 				: 0,
 		})
-
 		return combineWeights(alphaWeights, bravoWeights)
 	}
 
@@ -72,20 +71,49 @@ export function meleeWeights(melee: MeleeReport): ActivityWeights {
 
 //////////////////////////
 
-export function generate_attack_weights({maneuver, progress, active}: {
+export function derive_attack_anim_progress_from_phase(
+		phase: ManeuverPhase,
+		phaseProgress: number,
+	) {
+	switch (phase) {
+		case "windup":
+			return scalar.map(phaseProgress, [0/3, 1/3])
+
+		case "release":
+			return scalar.map(phaseProgress, [1/3, 2/3])
+
+		case "combo":
+
+			// // this is technically-mathematically more correct
+			// return 2/3 // hold at release-end
+
+			// but this yields are more natural-looking result
+			return scalar.map(phaseProgress, [2/3, 3/3])
+
+		case "recovery":
+			return scalar.map(phaseProgress, [2/3, 3/3])
+	}
+}
+
+export function generate_attack_weights({
+		maneuver, attackAnimProgress, active,
+	}: {
 		maneuver: Maneuver.Any
-		progress: number
+		attackAnimProgress: number
 		active: number
 	}) {
+
 	const weights = zeroWeights()
 	weights.active = active
+
 	if (maneuver.technique === "stab") {
-		weights.a7 = {progress, weight: weights.active}
+		weights.a7 = {progress: attackAnimProgress, weight: weights.active}
 		// if (maneuver.angle < 0)
 		// 	weights.a7 = {progress, weight: weights.active}
 		// else
 		// 	weights.a8 = {progress, weight: weights.active}
 	}
+
 	else if (maneuver.technique === "swing") {
 		const {angle} = maneuver
 		const {splines} = Angles
@@ -93,7 +121,7 @@ export function generate_attack_weights({maneuver, progress, active}: {
 			const weight = spline.linear(angle, points) * weights.active
 			moment.weight = weight
 			if (weight > (1 / 100))
-				moment.progress = progress
+				moment.progress = attackAnimProgress
 			return moment
 		}
 		weights.a1 = calc(weights.a1, splines.a1)
@@ -103,6 +131,7 @@ export function generate_attack_weights({maneuver, progress, active}: {
 		weights.a5 = calc(weights.a5, splines.a5)
 		weights.a6 = calc(weights.a6, splines.a6)
 	}
+
 	return weights
 }
 
