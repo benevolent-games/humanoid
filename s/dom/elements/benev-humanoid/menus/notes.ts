@@ -70,17 +70,26 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
+				<span>cleanups, fixes, refinements.</span>
+				<small>2024-04-20</small>
+			</h1>
+			<p>fixed onehanded combos. disabled stabs from combos due to an animation bug.</p>
+		</section>
+
+		<section>
+			<h1>
 				<span>rewrote the combat code.</span>
 				<small>2024-04-19</small>
 			</h1>
 			<p>this work is surprisingly tricky..</p>
 			<p>we now have <strong>combos</strong>. you can spam-click, or just hold the attack button. combos take less time than a full recovery/windup.</p>
 			<p>we also now have <strong>feints</strong>. press the parry button during an attack's windup.</p>
+			<p>movement speed has been dialed back a bit.</p>
 		</section>
 
 		<section>
 			<h1>
-				<span>the berserkers provide feedback.</span>
+				<span>the berserkers have arrived.</span>
 				<small>2024-04-19</small>
 			</h1>
 			<p>since our last update, we invited a small gang of high level chivalry and mordhau players to playtest this prototype. we had a lot of fun doing screenshares and chatting about game design. in the discord they have the <code>berserkers</code> role.</p>
