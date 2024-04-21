@@ -70,6 +70,16 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
+				<span>viking pimsley.</span>
+				<small>2024-04-21</small>
+			</h1>
+			<p>lonnie gave pimsley hair, a beard, clothes and boots, and a beautiful set of chainmail with a nice gambeson vest.</p>
+			<p>lonnie also made a new skybox and envmap.</p>
+			<p>we improved the weapon grip system, so each weapon is held at different grip-points on the handle for one-handed, two-handed, etc.</p>
+		</section>
+
+		<section>
+			<h1>
 				<span>cleanups, fixes, refinements.</span>
 				<small>2024-04-20</small>
 			</h1>
