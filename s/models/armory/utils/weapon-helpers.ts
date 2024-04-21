@@ -13,20 +13,20 @@ export const weapon = {
 	/** grip points in centimeters. */
 	dualgrip: (onehanderGripCm: number, twohanderGripCm: number) => ({
 		naturallyOneHanded: (details: UngrippedWeaponDetails): Weapon.Grips => ({
-			onehander: {...details, gripPoint: onehanderGripCm * 100},
+			onehander: {...details, gripPoint: onehanderGripCm / 100},
 
 			// using a one-hander with two-hands. (it's a fair tradeoff)
-			twohander: multipliers({...details, gripPoint: twohanderGripCm * 100})
+			twohander: multipliers({...details, gripPoint: twohanderGripCm / 100})
 				.timing(1.1) // a little slower.
 				.turncap(0.5) // less maneuverable.
 				.damage(1.1), // a little more power.
 		}),
 		naturallyTwoHanded: (details: UngrippedWeaponDetails): Weapon.Grips => ({
-			twohander: {...details, gripPoint: twohanderGripCm * 100},
+			twohander: {...details, gripPoint: twohanderGripCm / 100},
 
 			// attempting to use a two-hander with one-hand. (it performs badly)
 			onehander: (() => {
-				const clone = multipliers({...details, gripPoint: onehanderGripCm * 100})
+				const clone = multipliers({...details, gripPoint: onehanderGripCm / 100})
 					.timing(1.0) // timing customized below.
 					.turncap(0.5) // terrible maneuverability.
 					.damage(0.8) // less damage.
