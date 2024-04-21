@@ -1,6 +1,11 @@
 
 console.log(`🏃 humanoid starting up`)
 
+import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
+
+import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
+import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
+
 import {Game} from "./types.js"
 import {nexus} from "./nexus.js"
 import {arch, hub} from "./ecs/hub.js"
@@ -13,6 +18,7 @@ import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
+import { reactor } from "@benev/slate"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -40,7 +46,21 @@ const game: Game = {
 nexus.context.gameOp.setReady(game)
 
 // initial starting level
-await game.levelLoader.goto.viking_village()
+const levelState = await game.levelLoader.goto.viking_village()
+{
+	const sun = levelState.stuff.level.lights[0] as DirectionalLight
+	const shadowGenerator = new ShadowGenerator(1024, sun)
+	for (const mesh of levelState.stuff.level.meshes) {
+		mesh.receiveShadows = true
+		shadowGenerator.addShadowCaster(mesh)
+	}
+	reactor.reaction(() => {
+		console.log("configure shadows!")
+		sun.position.y = game.ui.shadows.sunPositionY
+		for (const [key, value] of Object.entries(game.ui.shadows.generator))
+			(shadowGenerator as any)[key] = value
+	})
+}
 
 // spawner
 const spawner = blank_spawner_state()

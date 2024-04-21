@@ -5,6 +5,7 @@ import {HealthState, Sensitivity} from "./types.js"
 import {Weapon} from "../armory/weapon.js"
 import {MeleeAim} from "../../ecs/components/topics/warrior.js"
 import { Activity } from "../activity/exports.js"
+import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
 export class Ui {
 	sensitivity: Sensitivity = flatstate({
@@ -57,6 +58,29 @@ export class Ui {
 				active: false,
 			}),
 		} satisfies Record<Weapon.Grip, any>
+	})
+
+	shadows = flatstate({
+		// enabled: false,
+		sunPositionY: 0,
+
+		generator: flatstate({
+			usePoissonSampling: false,
+			useExponentialShadowMap: false,
+			useBlurExponentialShadowMap: false,
+			useContactHardeningShadow: false,
+			enableSoftTransparentShadow: false,
+			useCloseExponentialShadowMap: false,
+			useKernelBlur: false,
+
+			mapSize: 1024,
+			blurScale: 2,
+			blurKernel: 1,
+			blurBoxOffset: 1,
+			bias: 50 / 1_000_000,
+			darkness: 0,
+			depthScale: 50,
+		}),
 	})
 }
 
