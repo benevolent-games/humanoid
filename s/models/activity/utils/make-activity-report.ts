@@ -2,8 +2,8 @@
 import {Activity} from "../exports.js"
 import {EquipReport} from "../reports/equip.js"
 import {ParryReport} from "../reports/parry.js"
+import {MeleeReport} from "../reports/melee/parts/types.js"
 import {meleeReport} from "../reports/melee/melee-report.js"
-import { MeleeReport } from "../reports/melee/parts/types.js"
 
 export function makeActivityReport(activity: Activity.Any) {
 	if (activity.kind === "equip")

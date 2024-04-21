@@ -10,6 +10,7 @@ export const exampleTimings = {windup: 1, release: 1, combo: 1, recovery: 1, bou
 export function setupWeapon(): Weapon.Loadout {
 	return {
 		name: "axe",
+		gripPoint: 0,
 		swing: {
 			timing: exampleTimings,
 			damage: {blunt: 10, bleed: 10, pierce: 10},

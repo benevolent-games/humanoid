@@ -32,6 +32,7 @@ export namespace Weapon {
 		parry: Parry
 		swing: Attack
 		stab: Attack
+		gripPoint: number
 	}
 
 	export type Loadout = {name: Name} & Details

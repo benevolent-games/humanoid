@@ -45,6 +45,13 @@ export const choreography = system("humanoid", () => [
 					prop.isVisible = name === weaponName
 		}),
 
+	behavior("set weapon grip point")
+		.select({Character, Inventory})
+		.logic(() => ({components}) => {
+			const inventory = new InventoryManager(components.inventory)
+			components.character.weaponGripPoint = inventory.weapon.gripPoint
+		}),
+
 	behavior("animate the armature")
 		.select({Character, Choreography, Ambulation, Gimbal, GimbalSway, Speeds, Perspective, Inventory, ActivityComponent})
 		.logic(() => ({components: c}) => {
