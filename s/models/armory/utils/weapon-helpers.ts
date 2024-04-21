@@ -2,24 +2,31 @@
 import {scalar} from "@benev/toolbox"
 import {Weapon} from "../weapon.js"
 
+export type UngrippedWeaponDetails = Omit<Weapon.Details, "gripPoint">
+
 export const weapon = {
 	grips: (grips: Weapon.Grips) => grips,
-	dualgrip: {
-		naturallyOneHanded: (details: Weapon.Details): Weapon.Grips => ({
-			onehander: details,
+	fistgrip: (details: UngrippedWeaponDetails): Weapon.Grips => ({
+		fists: {...details, gripPoint: 0},
+	}),
+
+	/** grip points in centimeters. */
+	dualgrip: (onehanderGripCm: number, twohanderGripCm: number) => ({
+		naturallyOneHanded: (details: UngrippedWeaponDetails): Weapon.Grips => ({
+			onehander: {...details, gripPoint: onehanderGripCm * 100},
 
 			// using a one-hander with two-hands. (it's a fair tradeoff)
-			twohander: multipliers(details)
+			twohander: multipliers({...details, gripPoint: twohanderGripCm * 100})
 				.timing(1.1) // a little slower.
 				.turncap(0.5) // less maneuverable.
 				.damage(1.1), // a little more power.
 		}),
-		naturallyTwoHanded: (details: Weapon.Details): Weapon.Grips => ({
-			twohander: details,
+		naturallyTwoHanded: (details: UngrippedWeaponDetails): Weapon.Grips => ({
+			twohander: {...details, gripPoint: twohanderGripCm * 100},
 
 			// attempting to use a two-hander with one-hand. (it performs badly)
 			onehander: (() => {
-				const clone = multipliers(details)
+				const clone = multipliers({...details, gripPoint: onehanderGripCm * 100})
 					.timing(1.0) // timing customized below.
 					.turncap(0.5) // terrible maneuverability.
 					.damage(0.8) // less damage.
@@ -36,7 +43,7 @@ export const weapon = {
 				return clone
 			})(),
 		}),
-	},
+	}),
 }
 
 /**
@@ -60,7 +67,7 @@ export const timings = (windup: number, release: number, recovery: number) => ({
 		damage: (blunt1: number, bleed1: number, pierce1: number) => ({
 
 			/** also measured in health percentages. */
-			stab: (blunt2: number, bleed2: number, pierce2: number): Weapon.Details => {
+			stab: (blunt2: number, bleed2: number, pierce2: number): UngrippedWeaponDetails => {
 				return {
 
 					// standard parry window for all weapons, keeps players sane.

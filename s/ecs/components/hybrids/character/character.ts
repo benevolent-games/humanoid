@@ -1,7 +1,7 @@
 
 import {Prop, babyloid, nametag} from "@benev/toolbox"
 
-import {Weaponry} from "./types.js"
+import {ReferenceWeapon, Weaponry} from "./types.js"
 import {HybridComponent} from "../../../hub.js"
 import {make_tracer_ensembles} from "../../../../models/tracing/ensembles.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
@@ -36,10 +36,27 @@ export class Character extends HybridComponent<{height: number}> {
 					left.set(parsed.name, prop)
 			}
 		}
-		return {left, right}
+		const referenceWeapon = (prop?: Prop): ReferenceWeapon => {
+			if (!prop) throw new Error("missing a reference weapon")
+			return {prop, neutralY: prop.position.y}
+		}
+		return {
+			left,
+			right,
+			referenceLeft: referenceWeapon(left.get("reference")),
+			referenceRight: referenceWeapon(right.get("reference")),
+		}
 	})()
 
 	readonly weaponEnsembles = make_tracer_ensembles(this.weaponry)
+
+	set weaponGripPoint(gripPointMeters: number) {
+		const applyGripPoint = (ref: ReferenceWeapon) => {
+			ref.prop.position.y = ref.neutralY - gripPointMeters
+		}
+		applyGripPoint(this.weaponry.referenceLeft)
+		applyGripPoint(this.weaponry.referenceRight)
+	}
 
 	created() {}
 	updated() {}
