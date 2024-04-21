@@ -37,8 +37,8 @@ export const make_gameplan = Plan.gameplan(({
 	levels: levels({
 		viking_village: {
 			glb: glb("glbs/levels/viking_village.glb", "physics"),
-			sky: sky("skyboxes/sky_01", kilometers(1), degrees(270)),
-			env: env("envmaps/sunset_cloudy.env", degrees(180)),
+			sky: sky("skyboxes/overcast", kilometers(1), degrees(270)),
+			env: env("envmaps/viking_village.env", degrees(180)),
 		},
 		gym: {
 			glb: glb("glbs/levels/gym.glb", "physics"),
