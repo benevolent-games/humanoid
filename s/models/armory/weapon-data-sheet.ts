@@ -9,7 +9,7 @@ export const weaponDataSheet = {
 		timings(300, 500, 300).turncap(500).damage(10, 0, 0).stab(5, 0, 0),
 	),
 
-	adze: weapon.dualgrip(0, 15).naturallyOneHanded(
+	adze: weapon.dualgrip(0, 8).naturallyOneHanded(
 		timings(400, 500, 400).turncap(500).damage(10, 10, 0).stab(10, 0, 0),
 	),
 
@@ -17,11 +17,11 @@ export const weaponDataSheet = {
 		timings(400, 500, 400).turncap(500).damage(20, 20, 20).stab(10, 0, 0),
 	),
 
-	mace: weapon.dualgrip(0, 15).naturallyOneHanded(
+	mace: weapon.dualgrip(0, 8).naturallyOneHanded(
 		timings(400, 500, 500).turncap(400).damage(40, 0, 30).stab(10, 0, 0),
 	),
 
-	hammer: weapon.dualgrip(0, 15).naturallyOneHanded(
+	hammer: weapon.dualgrip(0, 8).naturallyOneHanded(
 		timings(500, 500, 400).turncap(400).damage(40, 0, 30).stab(10, 0, 0),
 	),
 
