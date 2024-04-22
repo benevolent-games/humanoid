@@ -1,10 +1,10 @@
 
 import {Ecs} from "@benev/toolbox"
 import {flatstate} from "@benev/slate"
-import {HealthState, Sensitivity} from "./types.js"
 import {Weapon} from "../armory/weapon.js"
+import {Activity} from "../activity/exports.js"
+import {HealthState, Sensitivity} from "./types.js"
 import {MeleeAim} from "../../ecs/components/topics/warrior.js"
-import { Activity } from "../activity/exports.js"
 
 export class Ui {
 	sensitivity: Sensitivity = flatstate({
@@ -57,6 +57,29 @@ export class Ui {
 				active: false,
 			}),
 		} satisfies Record<Weapon.Grip, any>
+	})
+
+	shadows = flatstate({
+		sunDistance: 100,
+
+		generator: flatstate({
+			usePoissonSampling: false,
+			useExponentialShadowMap: false,
+			useBlurExponentialShadowMap: false,
+			// useContactHardeningShadow: false,
+			useContactHardeningShadow: true,
+			enableSoftTransparentShadow: false,
+			useCloseExponentialShadowMap: false,
+			useKernelBlur: false,
+			// mapSize: 1024,
+			mapSize: 2048,
+			blurScale: 2,
+			blurKernel: 1,
+			blurBoxOffset: 1,
+			bias: 50 / 1_000_000,
+			darkness: 0,
+			depthScale: 50,
+		}),
 	})
 }
 

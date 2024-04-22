@@ -1,12 +1,13 @@
 
 import {html} from "@benev/slate"
-import {Input, Menus, SettingsMenu, menu} from "@benev/toolbox"
+import {Input, Menus, menu} from "@benev/toolbox"
 
 import {Game} from "../../../types.js"
 import {nexus} from "../../../nexus.js"
 import {NotesMenu} from "./menus/notes.js"
 import {ConfigMenu} from "./menus/config.js"
 import {LevelsMenu} from "./menus/levels.js"
+import { EffectsMenu } from "./menus/effects.js"
 
 export const MenuSystem = nexus.light_view(use => (
 		game: Game,
@@ -19,7 +20,7 @@ export const MenuSystem = nexus.light_view(use => (
 		menu("notes", () => NotesMenu([game])),
 		menu("levels", () => LevelsMenu([game])),
 		menu("settings", () => ConfigMenu([game])),
-		menu("effects", () => SettingsMenu([game.stage])),
+		menu("effects", () => EffectsMenu([game])),
 	]))
 
 	use.mount(() => {

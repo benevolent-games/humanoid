@@ -17,7 +17,7 @@ import {make_envmap} from "../../../tools/make_envmap.js"
 
 export class Level extends HybridComponent<{level: HuLevel}> {
 	#dispose: (() => void) | null = null
-	#promise = explode_promise<void>()
+	#promise = explode_promise<LevelStuff>()
 
 	get #levelplan() {
 		return this.realm.gameplan.levels[this.state.level]
@@ -36,6 +36,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 			stuff.accoutrement.dispose()
 			stuff.level.dispose()
 		}
+		return stuff
 	}
 
 	#spawn_level(promise: Promise<AssetContainer>, physics: boolean) {
@@ -45,7 +46,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 			.then(setup_thin_instances)
 			.then(setup_level_accoutrements(this.realm, physics))
 			.then(this.#make_level_disposer)
-			.then(() => this.#promise.resolve())
+			.then(this.#promise.resolve)
 	}
 
 	skybox = (() => {
@@ -135,7 +136,7 @@ async function instance_level(asset: AssetContainer) {
 	return {asset, level}
 }
 
-type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
+export type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
 
 function setup_quality_optimizations(realm: HuRealm) {
 	return (params: LevelInstance) => {

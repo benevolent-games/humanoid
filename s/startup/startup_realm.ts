@@ -6,6 +6,7 @@ import {determine_local_mode} from "../tools/determine_local_mode.js"
 import {determine_webgpu_mode} from "../tools/determine_webgpu_mode.js"
 import {determine_quality_mode} from "../tools/determine_quality_mode.js"
 import {standard_glb_post_process} from "../models/glb_post_processing/standard_glb_post_process.js"
+import { Rendering } from "@benev/toolbox"
 
 /**
  * initialze 3d rendering facilities
@@ -28,11 +29,29 @@ export default async(commit: CommitHash) => {
 		}),
 	})
 
+	const everything = Rendering.effects.everything()
+
 	// use lower quality stuff in potato mode
 	if (realm.gameplan.quality === "potato") {
 		realm.stage.porthole.resolution = 0.5
 		realm.stage.rendering.setEffects({
 			antialiasing: {fxaa: false, samples: 0},
+			scene: {
+				...everything.scene,
+				shadowsEnabled: false,
+				environmentIntensity: 0.6,
+			},
+		})
+	}
+	else {
+		realm.stage.porthole.resolution = 1.0
+		realm.stage.rendering.setEffects({
+			antialiasing: {fxaa: false, samples: 8},
+			scene: {
+				...everything.scene,
+				shadowsEnabled: true,
+				environmentIntensity: 0.6,
+			},
 		})
 	}
 
