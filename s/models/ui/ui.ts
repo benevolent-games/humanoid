@@ -1,11 +1,10 @@
 
 import {Ecs} from "@benev/toolbox"
 import {flatstate} from "@benev/slate"
-import {HealthState, Sensitivity} from "./types.js"
 import {Weapon} from "../armory/weapon.js"
+import {Activity} from "../activity/exports.js"
+import {HealthState, Sensitivity} from "./types.js"
 import {MeleeAim} from "../../ecs/components/topics/warrior.js"
-import { Activity } from "../activity/exports.js"
-import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
 export class Ui {
 	sensitivity: Sensitivity = flatstate({
@@ -61,19 +60,19 @@ export class Ui {
 	})
 
 	shadows = flatstate({
-		// enabled: false,
-		sunPositionY: 0,
+		sunDistance: 100,
 
 		generator: flatstate({
 			usePoissonSampling: false,
 			useExponentialShadowMap: false,
 			useBlurExponentialShadowMap: false,
-			useContactHardeningShadow: false,
+			// useContactHardeningShadow: false,
+			useContactHardeningShadow: true,
 			enableSoftTransparentShadow: false,
 			useCloseExponentialShadowMap: false,
 			useKernelBlur: false,
-
-			mapSize: 1024,
+			// mapSize: 1024,
+			mapSize: 2048,
 			blurScale: 2,
 			blurKernel: 1,
 			blurBoxOffset: 1,

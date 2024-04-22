@@ -1,11 +1,12 @@
 
-import {css, html} from "@benev/slate"
-import {NuiCheckbox, NuiRange} from "@benev/toolbox"
+import {clone, css, html, reactor} from "@benev/slate"
+import {NuiCheckbox, NuiRange, Bestorage} from "@benev/toolbox"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
-import {Game} from "../../../../types.js"
-import {nexus} from "../../../../nexus.js"
-import {Granularity} from "./utils/granularity.js"
+import {Game} from "../../../../../types.js"
+import {nexus} from "../../../../../nexus.js"
+import {HuBestorageData} from "../effects.js"
+import {Granularity} from "../utils/granularity.js"
 
 const shadowBooleans: (keyof ShadowGenerator)[] = [
 	"usePoissonSampling",
@@ -27,20 +28,32 @@ const shadowNumber: [keyof ShadowGenerator, Granularity][] = [
 	["depthScale", Granularity.coarse],
 ]
 
-export const ShadowsMenu = nexus.shadow_view(use => (game: Game) => {
-	use.name("shadows-menu")
+export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bestorage<HuBestorageData>) => {
+	use.name("shadows-panel")
 	use.styles(css``)
+
+	use.mount(() => reactor.reaction(
+		() => clone(game.ui.shadows),
+		shadows => bestorage.data.shadows = shadows,
+	))
+
+	use.mount(() => bestorage.onJson(({shadows}) => {
+		game.ui.shadows.sunDistance = shadows.sunDistance
+		Object.assign(game.ui.shadows.generator, shadows.generator)
+	}))
 
 	const get = (key: any) => (game.ui.shadows.generator as any)[key]
 	const set = (key: any, value: any) => (game.ui.shadows.generator as any)[key] = value
 
 	return html`
 		<section>
+			<h3>shadow settings</h3>
+
 			${NuiRange([{
-				...Granularity.coarse,
-				label: "sun position y-axis",
-				value: game.ui.shadows.sunPositionY,
-				set: x => game.ui.shadows.sunPositionY = x,
+				...Granularity.bigly,
+				label: "sunDistance",
+				value: game.ui.shadows.sunDistance,
+				set: x => game.ui.shadows.sunDistance = x,
 			}])}
 
 			${shadowBooleans.map(key => NuiCheckbox([{
@@ -58,9 +71,4 @@ export const ShadowsMenu = nexus.shadow_view(use => (game: Game) => {
 		</section>
 	`
 })
-
-/*
-
-
-*/
 

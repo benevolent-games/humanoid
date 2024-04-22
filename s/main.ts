@@ -3,6 +3,7 @@ console.log(`🏃 humanoid starting up`)
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
 
+import {reactor} from "@benev/slate"
 import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
@@ -18,7 +19,6 @@ import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
-import { reactor } from "@benev/slate"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -55,10 +55,9 @@ const levelState = await game.levelLoader.goto.viking_village()
 		shadowGenerator.addShadowCaster(mesh)
 	}
 	reactor.reaction(() => {
-		console.log("configure shadows!")
-		sun.position.y = game.ui.shadows.sunPositionY
-		for (const [key, value] of Object.entries(game.ui.shadows.generator))
-			(shadowGenerator as any)[key] = value
+		const d = game.ui.shadows.sunDistance
+		sun.position.copyFrom(sun.direction.multiplyByFloats(-d, -d, -d))
+		Object.assign(shadowGenerator, game.ui.shadows.generator)
 	})
 }
 
