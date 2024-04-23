@@ -85,7 +85,7 @@ export class Ui {
 			useContactHardeningShadow: false,
 			enableSoftTransparentShadow: false,
 			useKernelBlur: false,
-			forceBackfacesOnly: true,
+			forceBackFacesOnly: true,
 			mapSize: 1024,
 			blurScale: 2,
 			blurKernel: 1,

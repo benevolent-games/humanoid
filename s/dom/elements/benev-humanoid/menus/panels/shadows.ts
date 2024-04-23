@@ -38,7 +38,7 @@ const generatorInputs: InputGroup<Ui["shadows"]["generator"]> = {
 	useContactHardeningShadow: [Boolean],
 	enableSoftTransparentShadow: [Boolean],
 	useKernelBlur: [Boolean],
-	forceBackfacesOnly: [Boolean],
+	forceBackFacesOnly: [Boolean],
 	mapSize: [Number, Granularity.square],
 	blurScale: [Number, Granularity.medium],
 	blurKernel: [Number, Granularity.medium],
