@@ -142,9 +142,15 @@ function setup_quality_optimizations(realm: HuRealm) {
 	return (params: LevelInstance) => {
 		const {level} = params
 		if (realm.gameplan.quality === "potato") {
+			const deleted = new Set<Meshoid>()
 			level.meshes
 				.filter(m => m.name.includes("grass"))
-				.forEach(m => m.dispose())
+				.forEach(m => {
+					m.dispose()
+					deleted.add(m)
+				})
+			level.meshes = level.meshes
+				.filter(m => !deleted.has(m))
 		}
 		return params
 	}

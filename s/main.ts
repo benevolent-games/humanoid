@@ -3,6 +3,7 @@ console.log(`🏃 humanoid starting up`)
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
 
+import {nquery} from "@benev/toolbox"
 import {clone, debounce, reactor} from "@benev/slate"
 import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
@@ -10,6 +11,7 @@ import {CascadedShadowGenerator} from "@babylonjs/core/Lights/Shadows/cascadedSh
 
 import {Game} from "./types.js"
 import {nexus} from "./nexus.js"
+import {Ui} from "./models/ui/ui.js"
 import {arch, hub} from "./ecs/hub.js"
 import {CommitHash} from "./tools/commit_hash.js"
 import startup_realm from "./startup/startup_realm.js"
@@ -20,8 +22,6 @@ import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
-import { Ui } from "./models/ui/ui.js"
-import { nquery } from "@benev/toolbox"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -63,36 +63,42 @@ const levelState = await game.levelLoader.goto.viking_village()
 
 		Object.assign(sunlight, data.light)
 
-		if (data.cascaded.enabled) {
-			shadowGenerator = new CascadedShadowGenerator(data.generator.mapSize, sunlight)
-			shadowGenerator.filteringQuality = data.basics.filteringQuality
-			Object.assign(shadowGenerator, data.generator, data.cascaded)
-		}
-		else {
-			shadowGenerator = new ShadowGenerator(data.generator.mapSize, sunlight)
-			shadowGenerator.filteringQuality = data.basics.filteringQuality
-			Object.assign(shadowGenerator, data.generator)
-		}
-
-		for (const mesh of levelState.stuff.level.meshes) {
-			if (nquery(mesh).tag("grass") || nquery(mesh).name("grass")) {
-				mesh.receiveShadows = data.basics.grass_receives_shadows
-				if (data.basics.grass_casts_shadows)
-					shadowGenerator.addShadowCaster(mesh)
+		if (game.stage.rendering.effects?.scene?.shadowsEnabled) {
+			if (data.cascaded.enabled) {
+				shadowGenerator = new CascadedShadowGenerator(data.generator.mapSize, sunlight)
+				shadowGenerator.filteringQuality = data.basics.filteringQuality
+				Object.assign(shadowGenerator, data.generator, data.cascaded)
 			}
 			else {
-				mesh.receiveShadows = true
-				shadowGenerator.addShadowCaster(mesh)
+				shadowGenerator = new ShadowGenerator(data.generator.mapSize, sunlight)
+				shadowGenerator.filteringQuality = data.basics.filteringQuality
+				Object.assign(shadowGenerator, data.generator)
+			}
+
+			for (const mesh of levelState.stuff.level.meshes) {
+				if (nquery(mesh).tag("grass") || nquery(mesh).name("grass")) {
+					mesh.receiveShadows = data.basics.grass_receives_shadows
+					if (data.basics.grass_casts_shadows)
+						shadowGenerator.addShadowCaster(mesh)
+				}
+				else {
+					mesh.receiveShadows = true
+					shadowGenerator.addShadowCaster(mesh)
+				}
 			}
 		}
 	})
 
+	applyShadowSettings(clone(game.ui.shadows))
+
 	reactor.reaction(
 		() => clone(game.ui.shadows),
-		applyShadowSettings,
+		data => applyShadowSettings(data),
 	)
 
-	applyShadowSettings(clone(game.ui.shadows))
+	game.stage.rendering.onEffectsChange(
+		() => applyShadowSettings(clone(game.ui.shadows))
+	)
 }
 
 // spawner

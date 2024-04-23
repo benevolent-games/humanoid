@@ -62,7 +62,7 @@ export class Ui {
 
 	shadows = {
 		basics: flatstate({
-			grass_receives_shadows: false,
+			grass_receives_shadows: true,
 			grass_casts_shadows: false,
 			sunDistance: 100,
 			filteringQuality: ShadowGenerator.QUALITY_LOW,

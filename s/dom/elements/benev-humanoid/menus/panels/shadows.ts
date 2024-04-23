@@ -71,11 +71,7 @@ function renderInputGroup<Data extends Record<string, Primitive>>(data: Data, gr
 			return NuiCheckbox([{
 				label: key,
 				checked: value,
-				set: x => {
-					console.log("boolean", key, x, clone(data))
-					;(data as any)[key] = x
-					console.log("----", key, x, clone(data))
-				},
+				set: x => (data as any)[key] = x,
 			}])
 		}
 		else if (kind === Number) {
