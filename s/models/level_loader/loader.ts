@@ -3,8 +3,9 @@ import {Ecs} from "@benev/toolbox"
 import {Op, ob, signals} from "@benev/slate"
 
 import {arch} from "../../ecs/hub.js"
-import {Plan} from "../planning/plan.js"
 import {HuLevel} from "../../gameplan.js"
+import {HuRealm} from "../realm/realm.js"
+import {setup_shadows} from "./setup_shadows.js"
 import {Bot, Spawner} from "../../ecs/components/plain_components.js"
 import {Level, LevelStuff} from "../../ecs/components/hybrids/level.js"
 
@@ -25,11 +26,11 @@ export class LevelLoader {
 	goto: {[K in HuLevel]: () => Promise<LevelState>}
 
 	constructor(
+			private realm: HuRealm,
 			private world: Ecs.World<any>,
-			gameplan: Plan.Game,
 		) {
 
-		this.goto = ob(gameplan.levels).map((_, n) =>
+		this.goto = ob(realm.gameplan.levels).map((_, n) =>
 			async() => this.#level(n as HuLevel)
 		) as any
 	}
@@ -54,7 +55,16 @@ export class LevelLoader {
 			)
 
 			const stuff = await level.components.level.doneLoading
-			return {name, dispose: () => level.dispose(), stuff}
+			const shadows = setup_shadows(this.realm, stuff)
+
+			return {
+				name,
+				stuff,
+				dispose: () => {
+					level.dispose()
+					shadows.dispose()
+				},
+			}
 		})
 	}
 }

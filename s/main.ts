@@ -3,15 +3,11 @@ console.log(`🏃 humanoid starting up`)
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
 
-import {Bestorage, defaultEffectsData, nquery} from "@benev/toolbox"
-import {clone, debounce, reactor} from "@benev/slate"
-import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
-import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
-import {CascadedShadowGenerator} from "@babylonjs/core/Lights/Shadows/cascadedShadowGenerator.js"
+import {clone} from "@benev/slate"
+import {Bestorage, defaultEffectsData} from "@benev/toolbox"
 
 import {Game} from "./types.js"
 import {nexus} from "./nexus.js"
-import {Ui} from "./models/ui/ui.js"
 import {arch, hub} from "./ecs/hub.js"
 import {CommitHash} from "./tools/commit_hash.js"
 import startup_realm from "./startup/startup_realm.js"
@@ -22,6 +18,8 @@ import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
+import {standard_glb_post_process} from "./models/glb/standard_glb_post_process.js"
+import startup_optimizations from "./startup/startup_optimizations.js"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -30,6 +28,12 @@ startup_web_components()
 
 // realm contains all the global facilities for the game
 const realm = await startup_realm(commit)
+
+// our standard glb postpro will apply shaders and stuff like that,
+// before it's copied to the scene.
+realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
+
+startup_optimizations(realm)
 
 // all our game logic is expressed in behaviors and systems
 const world = hub.world(realm)
@@ -42,7 +46,7 @@ const executeGamelogic = startup_gamelogic(realm, world)
 // define the game, which extends the realm
 const game: Game = {
 	...realm,
-	levelLoader: new LevelLoader(world, realm.gameplan),
+	levelLoader: new LevelLoader(realm, world),
 	bestorage: new Bestorage({
 		...defaultEffectsData(),
 		resolution: realm.stage.porthole.resolution * 100,
@@ -54,59 +58,7 @@ const game: Game = {
 nexus.context.gameOp.setReady(game)
 
 // initial starting level
-const levelState = await game.levelLoader.goto.viking_village()
-{
-	const sunlight = levelState.stuff.level.lights[0] as DirectionalLight
-	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
-
-	const applyShadowSettings = debounce(100, (data: Ui["shadows"]) => {
-		if (shadowGenerator)
-			shadowGenerator.dispose()
-
-		const d = game.ui.shadows.basics.sunDistance
-		sunlight.position.copyFrom(sunlight.direction.multiplyByFloats(-d, -d, -d))
-
-		Object.assign(sunlight, data.light)
-
-		if (game.stage.rendering.effects?.scene?.shadowsEnabled) {
-			if (data.cascaded.enabled) {
-				shadowGenerator = new CascadedShadowGenerator(data.generator.mapSize, sunlight)
-				shadowGenerator.filter = data.basics.filter
-				shadowGenerator.filteringQuality = data.basics.filteringQuality
-				Object.assign(shadowGenerator, data.generator, data.cascaded)
-			}
-			else {
-				shadowGenerator = new ShadowGenerator(data.generator.mapSize, sunlight)
-				shadowGenerator.filter = data.basics.filter
-				shadowGenerator.filteringQuality = data.basics.filteringQuality
-				Object.assign(shadowGenerator, data.generator)
-			}
-
-			for (const mesh of levelState.stuff.level.meshes) {
-				if (nquery(mesh).tag("grass") || nquery(mesh).name("grass")) {
-					mesh.receiveShadows = data.basics.grass_receives_shadows
-					if (data.basics.grass_casts_shadows)
-						shadowGenerator.addShadowCaster(mesh)
-				}
-				else {
-					mesh.receiveShadows = true
-					shadowGenerator.addShadowCaster(mesh)
-				}
-			}
-		}
-	})
-
-	applyShadowSettings(clone(game.ui.shadows))
-
-	reactor.reaction(
-		() => clone(game.ui.shadows),
-		data => applyShadowSettings(data),
-	)
-
-	game.stage.rendering.onEffectsChange(
-		() => applyShadowSettings(clone(game.ui.shadows))
-	)
-}
+await game.levelLoader.goto.viking_village()
 
 // spawner
 const spawner = blank_spawner_state()
