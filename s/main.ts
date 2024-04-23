@@ -52,12 +52,9 @@ nexus.context.gameOp.setReady(game)
 const levelState = await game.levelLoader.goto.viking_village()
 {
 	const sunlight = levelState.stuff.level.lights[0] as DirectionalLight
-	console.log("initial intensity", sunlight.intensity)
 	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
 
 	const applyShadowSettings = debounce(100, (data: Ui["shadows"]) => {
-		console.log("apply shadow settings")
-
 		if (shadowGenerator)
 			shadowGenerator.dispose()
 
@@ -78,7 +75,7 @@ const levelState = await game.levelLoader.goto.viking_village()
 		}
 
 		for (const mesh of levelState.stuff.level.meshes) {
-			if (nquery(mesh).tag("grass") || nquery(mesh).tag("grass")) {
+			if (nquery(mesh).tag("grass") || nquery(mesh).name("grass")) {
 				mesh.receiveShadows = data.basics.grass_receives_shadows
 				if (data.basics.grass_casts_shadows)
 					shadowGenerator.addShadowCaster(mesh)
