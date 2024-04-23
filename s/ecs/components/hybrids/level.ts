@@ -56,6 +56,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 			links: sky.images,
 			yaw: sky.rotation,
 			size: sky.size,
+			height: sky.height,
 		})
 	})()
 

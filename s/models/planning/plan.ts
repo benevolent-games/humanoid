@@ -9,6 +9,7 @@ export namespace Plan {
 		characters: Pojo<Character>
 		levels: Pojo<Level>
 		shaders: Pojo<Shader<any>>
+		graphics: Pojo<string>
 	}
 
 	export type Character = {
@@ -34,6 +35,7 @@ export namespace Plan {
 	export type Sky = {
 		size: number
 		rotation: number
+		height: number
 		images: {
 			px: string
 			py: string

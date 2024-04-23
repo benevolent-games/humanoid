@@ -13,6 +13,7 @@ export const make_gameplan = Plan.gameplan(({
 		quality,
 		root_url,
 		character, levels, glb, sky, env, shader,
+		graphic,
 	}) => ({
 
 	quality,
@@ -29,6 +30,10 @@ export const make_gameplan = Plan.gameplan(({
 		water: shader("shaders/water/shader.json", {}),
 	},
 
+	graphics: {
+		fog: graphic("graphics/fogplane3.webp"),
+	},
+
 	characters: {
 		knight: character("glbs/characters/knight.glb"),
 		pimsley: character("glbs/characters/mr_pimsley.glb"),
@@ -37,7 +42,7 @@ export const make_gameplan = Plan.gameplan(({
 	levels: levels({
 		viking_village: {
 			glb: glb("glbs/levels/viking_village.glb", "physics"),
-			sky: sky("skyboxes/overcast", kilometers(1), degrees(270)),
+			sky: sky("skyboxes/overcast_02", kilometers(1), degrees(270)),
 			env: env("envmaps/viking_village.env", degrees(180)),
 		},
 		gym: {

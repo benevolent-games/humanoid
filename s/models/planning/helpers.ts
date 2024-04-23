@@ -36,9 +36,12 @@ export class PlanningHelpers {
 		rotation,
 	})
 
-	sky = (directory: string, size: number, rotation: number): Plan.Sky => ({
+	graphic = (path: string) => this.resolve(path)
+
+	sky = (directory: string, size: number, rotation: number, height = 0): Plan.Sky => ({
 		size,
 		rotation,
+		height,
 		images: {
 			px: `${this.resolve(directory)}/px${compressed_image_extension}`,
 			py: `${this.resolve(directory)}/py${compressed_image_extension}`,

@@ -8,6 +8,7 @@ import {Bestorage, defaultEffectsData} from "@benev/toolbox"
 
 import {Game} from "./types.js"
 import {nexus} from "./nexus.js"
+import fog from "./models/fog/fog.js"
 import {arch, hub} from "./ecs/hub.js"
 import {CommitHash} from "./tools/commit_hash.js"
 import startup_realm from "./startup/startup_realm.js"
@@ -74,6 +75,18 @@ world.create(arch({AimTarget}, {aimTarget: {
 
 // running the actual gameloop tick
 startup_gameloop(realm, executeGamelogic)
+
+fog({
+	stage: realm.stage,
+	url: realm.gameplan.graphics.fog,
+	particles: {
+		count: 1000,
+		alpha: 10 / 100,
+		spinrate: 1,
+		fadeRange: 2,
+		sizes: [10, 20],
+	},
+})
 
 // indicating that things are going well
 console.log(`🏃 humanoid ready, took ${(performance.now() / 1000).toFixed(1)} seconds.`)
