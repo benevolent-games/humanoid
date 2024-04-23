@@ -1,5 +1,5 @@
 
-import {Stage, debug_colors} from "@benev/toolbox"
+import {Bestorage, Stage, debug_colors, defaultEffectsData} from "@benev/toolbox"
 
 import {Ui} from "../ui/ui.js"
 import {HuTact} from "../tact/tact.js"
@@ -8,6 +8,7 @@ import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 import { Finder } from "../finder/finder.js"
+import { clone } from "@benev/slate"
 // import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
@@ -50,16 +51,24 @@ export async function makeRealm(params: RealmParams) {
 		gameplan.characters.pimsley.glb
 	)
 
+	const ui = new Ui()
+	const bestorage = new Bestorage({
+		...defaultEffectsData(),
+		resolution: stage.porthole.resolution * 100,
+		shadows: clone(ui.shadows),
+	})
+
 	return {
 		...params,
+		ui,
 		tact,
 		scene,
 		stage,
 		colors,
 		physics,
+		bestorage,
 		loadingDock,
 		characterContainer,
-		ui: new Ui(),
 		finder: new Finder(physics),
 	}
 }

@@ -5,7 +5,7 @@ import {Op, ob, signals} from "@benev/slate"
 import {arch} from "../../ecs/hub.js"
 import {HuLevel} from "../../gameplan.js"
 import {HuRealm} from "../realm/realm.js"
-import {setup_shadows} from "./setup_shadows.js"
+import {levelScripts} from "./scripts.js"
 import {Bot, Spawner} from "../../ecs/components/plain_components.js"
 import {Level, LevelStuff} from "../../ecs/components/hybrids/level.js"
 
@@ -55,14 +55,18 @@ export class LevelLoader {
 			)
 
 			const stuff = await level.components.level.doneLoading
-			const shadows = setup_shadows(this.realm, stuff)
+
+			let scriptDispose = () => {}
+			const script = levelScripts[name]
+			if (script)
+				scriptDispose = (await script(this.realm, stuff)).dispose
 
 			return {
 				name,
 				stuff,
 				dispose: () => {
+					scriptDispose()
 					level.dispose()
-					shadows.dispose()
 				},
 			}
 		})

@@ -12,8 +12,7 @@ export const make_gameplan = Plan.gameplan(({
 		local,
 		quality,
 		root_url,
-		character, levels, glb, sky, env, shader,
-		graphic,
+		character, levels, glb, sky, env, shader, graphic,
 	}) => ({
 
 	quality,

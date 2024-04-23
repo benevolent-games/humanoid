@@ -2,8 +2,8 @@
 import {css, html, is} from "@benev/slate"
 import {Menus, scalar} from "@benev/toolbox"
 
-import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
+import {Game} from "../../../../../models/realm/types.js"
 import {ParryReport} from "../../../../../models/activity/reports/parry.js"
 import {icon_tabler_chevron_up} from "../../../../icons/tabler/chevron-up.js"
 import {meleeReport} from "../../../../../models/activity/reports/melee/melee-report.js"

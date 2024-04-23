@@ -1,10 +1,10 @@
 
 import {op_effect} from "@benev/toolbox"
 import {Op, css, html} from "@benev/slate"
-import {Game} from "../../../../types.js"
 import {nexus} from "../../../../nexus.js"
 import {HuLevel} from "../../../../gameplan.js"
 import {Quality} from "../../../../tools/quality.js"
+import {Game} from "../../../../models/realm/types.js"
 
 export const LevelsMenu = nexus.shadow_view(use => (game: Game) => {
 	use.name("levels-menu")

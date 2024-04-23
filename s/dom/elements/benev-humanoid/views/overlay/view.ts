@@ -3,9 +3,9 @@ import {css, html} from "@benev/slate"
 import {Menus} from "@benev/toolbox"
 
 import {Reticle} from "../reticle/view.js"
-import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
 import {HealthBar} from "../health-bar/view.js"
+import {Game} from "../../../../../models/realm/types.js"
 
 export const Overlay = nexus.shadow_view(use => (game: Game, menus: Menus) => {
 	use.name("overlay")

@@ -3,11 +3,11 @@ import {clone, css, html, reactor} from "@benev/slate"
 import {NuiCheckbox, NuiRange, Bestorage, NuiSelect} from "@benev/toolbox"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
-import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
 import {HuBestorageData} from "../effects.js"
 import {Ui} from "../../../../../models/ui/ui.js"
 import {Granularity} from "../utils/granularity.js"
+import {Game} from "../../../../../models/realm/types.js"
 
 type Primitive = number | boolean
 

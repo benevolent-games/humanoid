@@ -2,14 +2,14 @@
 import {nquery} from "@benev/toolbox"
 import {debounce, clone, reactor} from "@benev/slate"
 
-import {Ui} from "../ui/ui.js"
-import {HuRealm} from "../realm/realm.js"
-import {LevelStuff} from "../../ecs/components/hybrids/level.js"
+import {Ui} from "../../ui/ui.js"
+import {HuRealm} from "../../realm/realm.js"
+import {LevelStuff} from "../../../ecs/components/hybrids/level.js"
 import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 import {CascadedShadowGenerator} from "@babylonjs/core/Lights/Shadows/cascadedShadowGenerator.js"
 
-export function setup_shadows(realm: HuRealm, stuff: LevelStuff) {
+export default (realm: HuRealm, stuff: LevelStuff) => {
 	const sunlight = stuff.level.lights[0] as DirectionalLight
 	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
 

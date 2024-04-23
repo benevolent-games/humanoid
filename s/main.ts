@@ -3,16 +3,12 @@ console.log(`🏃 humanoid starting up`)
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
 
-import {clone} from "@benev/slate"
-import {Bestorage, defaultEffectsData} from "@benev/toolbox"
-
-import {Game} from "./types.js"
 import {nexus} from "./nexus.js"
-import fog from "./models/fog/fog.js"
 import {arch, hub} from "./ecs/hub.js"
+import {Game} from "./models/realm/types.js"
 import {CommitHash} from "./tools/commit_hash.js"
+import {LevelLoader} from "./models/levels/loader.js"
 import startup_realm from "./startup/startup_realm.js"
-import {LevelLoader} from "./models/level_loader/loader.js"
 import {AimTarget, Spawner} from "./ecs/components/plain_components.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
@@ -48,11 +44,6 @@ const executeGamelogic = startup_gamelogic(realm, world)
 const game: Game = {
 	...realm,
 	levelLoader: new LevelLoader(realm, world),
-	bestorage: new Bestorage({
-		...defaultEffectsData(),
-		resolution: realm.stage.porthole.resolution * 100,
-		shadows: clone(realm.ui.shadows),
-	}),
 }
 
 // telling the html frontend that the game is ready
@@ -75,18 +66,6 @@ world.create(arch({AimTarget}, {aimTarget: {
 
 // running the actual gameloop tick
 startup_gameloop(realm, executeGamelogic)
-
-fog({
-	stage: realm.stage,
-	url: realm.gameplan.graphics.fog,
-	particles: {
-		count: 1000,
-		alpha: 10 / 100,
-		spinrate: 1,
-		fadeRange: 2,
-		sizes: [10, 20],
-	},
-})
 
 // indicating that things are going well
 console.log(`🏃 humanoid ready, took ${(performance.now() / 1000).toFixed(1)} seconds.`)
