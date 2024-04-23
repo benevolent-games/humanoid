@@ -1,11 +1,11 @@
 
 import {Prop, babyloid, nametag} from "@benev/toolbox"
 
-import {ReferenceWeapon, Weaponry} from "./types.js"
 import {HybridComponent} from "../../../hub.js"
+import {ReferenceWeapon, Weaponry} from "./types.js"
 import {make_tracer_ensembles} from "../../../../models/tracing/ensembles.js"
+import {ContainerInstance} from "../../../../models/glb/container_instance.js"
 import {establish_anim_coordination} from "./choreography/establish_anim_coordination.js"
-import {ContainerInstance} from "../../../../models/glb_post_processing/container_instance.js"
 import {prepare_character_component_parts} from "./choreography/prepare_character_component_parts.js"
 
 export class Character extends HybridComponent<{height: number}> {

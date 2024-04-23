@@ -1,12 +1,13 @@
 
+import {Rendering} from "@benev/toolbox"
+
 import {make_gameplan} from "../gameplan.js"
 import {makeRealm} from "../models/realm/realm.js"
 import {CommitHash} from "../tools/commit_hash.js"
 import {determine_local_mode} from "../tools/determine_local_mode.js"
 import {determine_webgpu_mode} from "../tools/determine_webgpu_mode.js"
 import {determine_quality_mode} from "../tools/determine_quality_mode.js"
-import {standard_glb_post_process} from "../models/glb_post_processing/standard_glb_post_process.js"
-import { Rendering } from "@benev/toolbox"
+import {standard_glb_post_process} from "../models/glb/standard_glb_post_process.js"
 
 /**
  * initialze 3d rendering facilities

@@ -4,7 +4,7 @@ import {HuRealm} from "../../../../../models/realm/realm.js"
 import {setup_character_anims} from "./setup_character_anims.js"
 import {AdjustmentAnims} from "../../../../../models/choreographer/types.js"
 import {adjustment_anim_for_direction} from "./adjustment_anim_for_direction.js"
-import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
+import {ContainerInstance} from "../../../../../models/glb/container_instance.js"
 import {calculate_adjustment_weight} from "../../../../../models/choreographer/utils/calculate_adjustment_weight.js"
 
 export function establish_anim_coordination(realm: HuRealm, character: ContainerInstance, onMissingAnim: (name: string) => void) {
