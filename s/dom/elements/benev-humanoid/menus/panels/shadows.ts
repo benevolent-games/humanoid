@@ -1,7 +1,7 @@
 
 import {clone, css, html, reactor} from "@benev/slate"
-import {NuiCheckbox, NuiRange, Bestorage, NuiSelect} from "@benev/toolbox"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
+import {NuiCheckbox, NuiRange, Bestorage, NuiSelect, assignSelectively} from "@benev/toolbox"
 
 import {nexus} from "../../../../../nexus.js"
 import {HuBestorageData} from "../effects.js"
@@ -136,11 +136,11 @@ export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bes
 		shadows => bestorage.data.shadows = shadows,
 	))
 
-	use.mount(() => bestorage.onJson(({shadows: shadowsJson}) => {
-		Object.assign(shadows.basics, shadowsJson.basics)
-		Object.assign(shadows.light, shadowsJson.light)
-		Object.assign(shadows.generator, shadowsJson.generator)
-		Object.assign(shadows.cascaded, shadowsJson.cascaded)
+	use.mount(() => bestorage.onJson(({shadows: shadowsJson = bestorage.fallback.shadows}) => {
+		assignSelectively(bestorage.fallback.shadows.basics, shadows.basics, shadowsJson.basics)
+		assignSelectively(bestorage.fallback.shadows.light, shadows.light, shadowsJson.light)
+		assignSelectively(bestorage.fallback.shadows.generator, shadows.generator, shadowsJson.generator)
+		assignSelectively(bestorage.fallback.shadows.cascaded, shadows.cascaded, shadowsJson.cascaded)
 	}))
 
 	return html`
