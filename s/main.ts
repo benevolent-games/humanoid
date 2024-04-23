@@ -3,9 +3,10 @@ console.log(`🏃 humanoid starting up`)
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
 
-import {reactor} from "@benev/slate"
+import {clone, debounce, reactor} from "@benev/slate"
 import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
+import {CascadedShadowGenerator} from "@babylonjs/core/Lights/Shadows/cascadedShadowGenerator.js"
 
 import {Game} from "./types.js"
 import {nexus} from "./nexus.js"
@@ -19,6 +20,7 @@ import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
+import { Ui } from "./models/ui/ui.js"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -48,17 +50,43 @@ nexus.context.gameOp.setReady(game)
 // initial starting level
 const levelState = await game.levelLoader.goto.viking_village()
 {
-	const sun = levelState.stuff.level.lights[0] as DirectionalLight
-	const shadowGenerator = new ShadowGenerator(1024, sun)
-	for (const mesh of levelState.stuff.level.meshes) {
-		mesh.receiveShadows = true
-		shadowGenerator.addShadowCaster(mesh)
-	}
-	reactor.reaction(() => {
-		const d = game.ui.shadows.sunDistance
-		sun.position.copyFrom(sun.direction.multiplyByFloats(-d, -d, -d))
-		Object.assign(shadowGenerator, game.ui.shadows.generator)
+	const sunlight = levelState.stuff.level.lights[0] as DirectionalLight
+	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
+
+	const applyShadowSettings = debounce(333, (data: Ui["shadows"]) => {
+		console.log("apply shadow settings")
+
+		if (shadowGenerator)
+			shadowGenerator.dispose()
+
+		const d = game.ui.shadows.basics.sunDistance
+		sunlight.position.copyFrom(sunlight.direction.multiplyByFloats(-d, -d, -d))
+
+		Object.assign(sunlight, data.light)
+
+		if (data.cascaded.enabled) {
+			shadowGenerator = new CascadedShadowGenerator(data.generator.mapSize, sunlight)
+			shadowGenerator.filteringQuality = data.basics.filteringQuality
+			Object.assign(shadowGenerator, data.generator, data.cascaded)
+		}
+		else {
+			shadowGenerator = new ShadowGenerator(data.generator.mapSize, sunlight)
+			shadowGenerator.filteringQuality = data.basics.filteringQuality
+			Object.assign(shadowGenerator, data.generator)
+		}
+
+		for (const mesh of levelState.stuff.level.meshes) {
+			mesh.receiveShadows = true
+			shadowGenerator.addShadowCaster(mesh)
+		}
 	})
+
+	reactor.reaction(
+		() => clone(game.ui.shadows),
+		applyShadowSettings,
+	)
+
+	applyShadowSettings(clone(game.ui.shadows))
 }
 
 // spawner
