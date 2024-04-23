@@ -20,6 +20,7 @@ type InputGroup<G extends Record<string, Primitive>> = {
 }
 
 const lightInputs: InputGroup<Ui["shadows"]["light"]> = {
+	intensity: [Number, Granularity.coarse],
 	autoUpdateExtends: [Boolean],
 	autoCalcShadowZBounds: [Boolean],
 	shadowMaxZ: [Number, Granularity.bigly],
@@ -128,16 +129,18 @@ export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bes
 		h3 { color: #89ff91; }
 	`)
 
+	const {shadows} = game.ui
+
 	use.mount(() => reactor.reaction(
 		() => clone(game.ui.shadows),
 		shadows => bestorage.data.shadows = shadows,
 	))
 
-	use.mount(() => bestorage.onJson(({shadows}) => {
-		Object.assign(game.ui.shadows.basics, shadows.basics)
-		Object.assign(game.ui.shadows.light, shadows.light)
-		Object.assign(game.ui.shadows.generator, shadows.generator)
-		Object.assign(game.ui.shadows.cascaded, shadows.cascaded)
+	use.mount(() => bestorage.onJson(({shadows: shadowsJson}) => {
+		Object.assign(shadows.basics, shadowsJson.basics)
+		Object.assign(shadows.light, shadowsJson.light)
+		Object.assign(shadows.generator, shadowsJson.generator)
+		Object.assign(shadows.cascaded, shadowsJson.cascaded)
 	}))
 
 	return html`
@@ -149,30 +152,40 @@ export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bes
 				${NuiRange([{
 					...Granularity.bigly,
 					label: "sunDistance",
-					value: game.ui.shadows.basics.sunDistance,
-					set: x => game.ui.shadows.basics.sunDistance = x,
+					value: shadows.basics.sunDistance,
+					set: x => shadows.basics.sunDistance = x,
 				}])}
 				${NuiSelect([{
 					label: "filteringQuality",
 					options: [...FilteringQuality.strings.values()],
-					selected: FilteringQuality.toString(game.ui.shadows.basics.filteringQuality as QNumber),
-					set: x => game.ui.shadows.basics.filteringQuality = FilteringQuality.toNumber(x as QString),
+					selected: FilteringQuality.toString(shadows.basics.filteringQuality as QNumber),
+					set: x => shadows.basics.filteringQuality = FilteringQuality.toNumber(x as QString),
+				}])}
+				${NuiCheckbox([{
+					label: "grass_receives_shadows",
+					checked: shadows.basics.grass_receives_shadows,
+					set: x => shadows.basics.grass_receives_shadows = x,
+				}])}
+				${NuiCheckbox([{
+					label: "grass_casts_shadows",
+					checked: shadows.basics.grass_casts_shadows,
+					set: x => shadows.basics.grass_casts_shadows = x,
 				}])}
 			</section>
 
 			<section>
 				<h3>light</h3>
-				${renderInputGroup(game.ui.shadows.light, lightInputs)}
+				${renderInputGroup(shadows.light, lightInputs)}
 			</section>
 
 			<section>
 				<h3>generator</h3>
-				${renderInputGroup(game.ui.shadows.generator, generatorInputs)}
+				${renderInputGroup(shadows.generator, generatorInputs)}
 			</section>
 
 			<section>
 				<h3>cascaded</h3>
-				${renderInputGroup(game.ui.shadows.cascaded, cascadedInputs)}
+				${renderInputGroup(shadows.cascaded, cascadedInputs)}
 			</section>
 		</section>
 	`

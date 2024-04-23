@@ -21,6 +21,7 @@ import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
 import { Ui } from "./models/ui/ui.js"
+import { nquery } from "@benev/toolbox"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -51,9 +52,10 @@ nexus.context.gameOp.setReady(game)
 const levelState = await game.levelLoader.goto.viking_village()
 {
 	const sunlight = levelState.stuff.level.lights[0] as DirectionalLight
+	console.log("initial intensity", sunlight.intensity)
 	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
 
-	const applyShadowSettings = debounce(333, (data: Ui["shadows"]) => {
+	const applyShadowSettings = debounce(100, (data: Ui["shadows"]) => {
 		console.log("apply shadow settings")
 
 		if (shadowGenerator)
@@ -76,8 +78,15 @@ const levelState = await game.levelLoader.goto.viking_village()
 		}
 
 		for (const mesh of levelState.stuff.level.meshes) {
-			mesh.receiveShadows = true
-			shadowGenerator.addShadowCaster(mesh)
+			if (nquery(mesh).tag("grass") || nquery(mesh).tag("grass")) {
+				mesh.receiveShadows = data.basics.grass_receives_shadows
+				if (data.basics.grass_casts_shadows)
+					shadowGenerator.addShadowCaster(mesh)
+			}
+			else {
+				mesh.receiveShadows = true
+				shadowGenerator.addShadowCaster(mesh)
+			}
 		}
 	})
 
