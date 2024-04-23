@@ -3,7 +3,7 @@ console.log(`🏃 humanoid starting up`)
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
 
-import {nquery} from "@benev/toolbox"
+import {Bestorage, defaultEffectsData, nquery} from "@benev/toolbox"
 import {clone, debounce, reactor} from "@benev/slate"
 import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
@@ -43,6 +43,11 @@ const executeGamelogic = startup_gamelogic(realm, world)
 const game: Game = {
 	...realm,
 	levelLoader: new LevelLoader(world, realm.gameplan),
+	bestorage: new Bestorage({
+		...defaultEffectsData(),
+		resolution: realm.stage.porthole.resolution * 100,
+		shadows: clone(realm.ui.shadows),
+	}),
 }
 
 // telling the html frontend that the game is ready
