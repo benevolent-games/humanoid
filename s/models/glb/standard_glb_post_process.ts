@@ -3,14 +3,13 @@ import {fix_animation_groups, nametag} from "@benev/toolbox"
 
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Material} from "@babylonjs/core/Materials/material.js"
-import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh.js"
 import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
+import {Shader} from "./parts/shader.js"
 import {HuRealm} from "../realm/realm.js"
 import {isFoliage} from "./parts/is-foliage.js"
 import {GlbPostProcess} from "./parts/types.js"
-import {Shader} from "../assets/parts/make_shader.js"
 
 export function standard_glb_post_process(
 		{gameplan, loadingDock}: HuRealm,
