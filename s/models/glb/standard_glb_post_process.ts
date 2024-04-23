@@ -70,13 +70,9 @@ export function standard_glb_post_process(
 
 		// delete foliage if not allowed
 		if (!allowFoliage) {
-			const deleted = new Set<AbstractMesh>()
 			const foliage = container.meshes.filter(isFoliage)
-			for (const mesh of foliage) {
-				deleted.add(mesh)
+			for (const mesh of foliage)
 				mesh.dispose()
-			}
-			console.log("deleted foliage", deleted.size)
 		}
 
 		return container
