@@ -62,10 +62,11 @@ export class Ui {
 
 	shadows = {
 		basics: flatstate({
+			filter: ShadowGenerator.FILTER_NONE,
+			filteringQuality: ShadowGenerator.QUALITY_LOW,
+			sunDistance: 100,
 			grass_receives_shadows: true,
 			grass_casts_shadows: false,
-			sunDistance: 100,
-			filteringQuality: ShadowGenerator.QUALITY_LOW,
 		}),
 
 		light: flatstate({
@@ -79,13 +80,6 @@ export class Ui {
 		}),
 
 		generator: flatstate({
-			usePoissonSampling: false,
-			useExponentialShadowMap: false,
-			useBlurExponentialShadowMap: false,
-			useCloseExponentialShadowMap: false,
-			useBlurCloseExponentialShadowMap: false,
-			usePercentageCloserFiltering: false,
-			useContactHardeningShadow: false,
 			enableSoftTransparentShadow: false,
 			useKernelBlur: false,
 			forceBackFacesOnly: false,
@@ -109,8 +103,8 @@ export class Ui {
 			lambda: 0.5,
 			cascadeBlendPercentage: 0.05,
 			penumbraDarkness: 1,
-			// shadowMinZ: 0.1,
-			// shadowMaxZ: 500,
+			shadowMinZ: 0.1,
+			shadowMaxZ: 500,
 		}),
 	}
 }

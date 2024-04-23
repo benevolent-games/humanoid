@@ -1,13 +1,13 @@
 
 import {clone, css, html, reactor} from "@benev/slate"
 import {NuiCheckbox, NuiRange, Bestorage, NuiSelect} from "@benev/toolbox"
+import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
 import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
 import {HuBestorageData} from "../effects.js"
 import {Ui} from "../../../../../models/ui/ui.js"
 import {Granularity} from "../utils/granularity.js"
-import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
 type Primitive = number | boolean
 
@@ -23,20 +23,13 @@ const lightInputs: InputGroup<Ui["shadows"]["light"]> = {
 	intensity: [Number, Granularity.coarse],
 	autoUpdateExtends: [Boolean],
 	autoCalcShadowZBounds: [Boolean],
-	shadowMaxZ: [Number, Granularity.bigly],
 	shadowMinZ: [Number, Granularity.bigly],
+	shadowMaxZ: [Number, Granularity.bigly],
 	shadowOrthoScale: [Number, Granularity.fine],
 	shadowFrustumSize: [Number, Granularity.fine],
 }
 
 const generatorInputs: InputGroup<Ui["shadows"]["generator"]> = {
-	usePoissonSampling: [Boolean],
-	useExponentialShadowMap: [Boolean],
-	useBlurExponentialShadowMap: [Boolean],
-	useCloseExponentialShadowMap: [Boolean],
-	useBlurCloseExponentialShadowMap: [Boolean],
-	usePercentageCloserFiltering: [Boolean],
-	useContactHardeningShadow: [Boolean],
 	enableSoftTransparentShadow: [Boolean],
 	useKernelBlur: [Boolean],
 	forceBackFacesOnly: [Boolean],
@@ -60,6 +53,8 @@ const cascadedInputs: InputGroup<Ui["shadows"]["cascaded"]> = {
 	lambda: [Number, Granularity.fine],
 	cascadeBlendPercentage: [Number, Granularity.fine],
 	penumbraDarkness: [Number, Granularity.fine],
+	shadowMinZ: [Number, Granularity.bigly],
+	shadowMaxZ: [Number, Granularity.bigly],
 }
 
 function renderInputGroup<Data extends Record<string, Primitive>>(data: Data, group: InputGroup<Data>) {
@@ -87,28 +82,37 @@ function renderInputGroup<Data extends Record<string, Primitive>>(data: Data, gr
 	})
 }
 
-type QString = "low" | "medium" | "high"
-type QNumber = 0 | 1 | 2
-
-class FilteringQuality {
-	static strings = new Map<QNumber, QString>([
-		[ShadowGenerator.QUALITY_LOW, "low"],
-		[ShadowGenerator.QUALITY_MEDIUM, "medium"],
-		[ShadowGenerator.QUALITY_HIGH, "high"],
-	])
-
-	static numbers = new Map<QString, QNumber>(
-		[...this.strings].map((([number, string]) => [string, number]))
-	)
-
-	static toString(number: QNumber) {
-		return this.strings.get(number)!
+class Flags<N extends number, S extends string> {
+	strings: Map<N, S>
+	numbers: Map<S, N>
+	constructor(entries: [N, S][]) {
+		this.strings = new Map(entries)
+		this.numbers = new Map(entries.map(([number, string]) => [string, number]))
 	}
-
-	static toNumber(string: QString) {
-		return this.numbers.get(string)!
-	}
+	toString(number: N) { return this.strings.get(number)! }
+	toNumber(string: S) { return this.numbers.get(string)! }
 }
+
+type FQNumber = 0 | 1 | 2
+type FQString = "low" | "medium" | "high"
+const filteringQualityFlags = new Flags<FQNumber, FQString>([
+	[ShadowGenerator.QUALITY_LOW, "low"],
+	[ShadowGenerator.QUALITY_MEDIUM, "medium"],
+	[ShadowGenerator.QUALITY_HIGH, "high"],
+])
+
+type FNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+type FString = "none" | "exponential" | "poisson" | "blurExponential" | "closeExponential" | "blurCloseExponential" | "pcf" | "pcss"
+const filterFlags = new Flags<FNumber, FString>([
+	[ShadowGenerator.FILTER_NONE, "none"],
+	[ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP, "exponential"],
+	[ShadowGenerator.FILTER_POISSONSAMPLING, "poisson"],
+	[ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP, "blurExponential"],
+	[ShadowGenerator.FILTER_CLOSEEXPONENTIALSHADOWMAP, "closeExponential"],
+	[ShadowGenerator.FILTER_BLURCLOSEEXPONENTIALSHADOWMAP, "blurCloseExponential"],
+	[ShadowGenerator.FILTER_PCF, "pcf"],
+	[ShadowGenerator.FILTER_PCSS, "pcss"],
+])
 
 export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bestorage<HuBestorageData>) => {
 	use.name("shadows-panel")
@@ -118,7 +122,7 @@ export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bes
 			> section {
 				padding: 1em;
 				background: #0002;
-				> * + * { margin-top: 0.6em; }
+				> * + * { display: block; margin-top: 0.6em; }
 			}
 		}
 		h2 { color: white; text-align: center; }
@@ -145,17 +149,23 @@ export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bes
 
 			<section>
 				<h3>basics</h3>
+				${NuiSelect([{
+					label: "filter",
+					options: [...filterFlags.strings.values()],
+					selected: filterFlags.toString(shadows.basics.filter as FNumber),
+					set: x => shadows.basics.filter = filterFlags.toNumber(x as FString),
+				}])}
+				${NuiSelect([{
+					label: "filteringQuality",
+					options: [...filteringQualityFlags.strings.values()],
+					selected: filteringQualityFlags.toString(shadows.basics.filteringQuality as FQNumber),
+					set: x => shadows.basics.filteringQuality = filteringQualityFlags.toNumber(x as FQString),
+				}])}
 				${NuiRange([{
 					...Granularity.bigly,
 					label: "sunDistance",
 					value: shadows.basics.sunDistance,
 					set: x => shadows.basics.sunDistance = x,
-				}])}
-				${NuiSelect([{
-					label: "filteringQuality",
-					options: [...FilteringQuality.strings.values()],
-					selected: FilteringQuality.toString(shadows.basics.filteringQuality as QNumber),
-					set: x => shadows.basics.filteringQuality = FilteringQuality.toNumber(x as QString),
 				}])}
 				${NuiCheckbox([{
 					label: "grass_receives_shadows",

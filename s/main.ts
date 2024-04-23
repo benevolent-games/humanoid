@@ -66,11 +66,13 @@ const levelState = await game.levelLoader.goto.viking_village()
 		if (game.stage.rendering.effects?.scene?.shadowsEnabled) {
 			if (data.cascaded.enabled) {
 				shadowGenerator = new CascadedShadowGenerator(data.generator.mapSize, sunlight)
+				shadowGenerator.filter = data.basics.filter
 				shadowGenerator.filteringQuality = data.basics.filteringQuality
 				Object.assign(shadowGenerator, data.generator, data.cascaded)
 			}
 			else {
 				shadowGenerator = new ShadowGenerator(data.generator.mapSize, sunlight)
+				shadowGenerator.filter = data.basics.filter
 				shadowGenerator.filteringQuality = data.basics.filteringQuality
 				Object.assign(shadowGenerator, data.generator)
 			}
