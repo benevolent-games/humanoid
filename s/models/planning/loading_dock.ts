@@ -3,9 +3,9 @@ import {load_glb} from "@benev/toolbox"
 import {Scene} from "@babylonjs/core/scene.js"
 
 import {Plan} from "./plan.js"
+import {GlbPostProcess} from "../glb/parts/types.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {make_shader} from "../assets/parts/make_shader.js"
-import {GlbPostProcess} from "../glb_post_processing/parts/types.js"
 
 export class LoadingDock {
 	constructor(

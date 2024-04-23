@@ -2,7 +2,7 @@
 import {Scene} from "@babylonjs/core/scene.js"
 import {babyloid, label, quat, vec3} from "@benev/toolbox"
 import {TransformNode} from "@babylonjs/core/Meshes/transformNode.js"
-import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
+import {ContainerInstance} from "../../../../../models/glb/container_instance.js"
 
 export function prepare_character_component_parts(
 		scene: Scene,

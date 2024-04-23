@@ -5,6 +5,7 @@ import {Weapon} from "../armory/weapon.js"
 import {Activity} from "../activity/exports.js"
 import {HealthState, Sensitivity} from "./types.js"
 import {MeleeAim} from "../../ecs/components/topics/warrior.js"
+import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 
 export class Ui {
 	sensitivity: Sensitivity = flatstate({
@@ -59,27 +60,52 @@ export class Ui {
 		} satisfies Record<Weapon.Grip, any>
 	})
 
-	shadows = flatstate({
-		sunDistance: 100,
+	shadows = {
+		basics: flatstate({
+			filter: ShadowGenerator.FILTER_NONE,
+			filteringQuality: ShadowGenerator.QUALITY_LOW,
+			sunDistance: 100,
+			grass_receives_shadows: true,
+			grass_casts_shadows: false,
+		}),
+
+		light: flatstate({
+			intensity: 8,
+			autoUpdateExtends: false,
+			autoCalcShadowZBounds: false,
+			shadowOrthoScale: 0.1,
+			shadowFrustumSize: 0,
+			shadowMinZ: 10,
+			shadowMaxZ: 500,
+		}),
 
 		generator: flatstate({
-			usePoissonSampling: false,
-			useExponentialShadowMap: false,
-			useBlurExponentialShadowMap: false,
-			// useContactHardeningShadow: false,
-			useContactHardeningShadow: true,
 			enableSoftTransparentShadow: false,
-			useCloseExponentialShadowMap: false,
 			useKernelBlur: false,
-			// mapSize: 1024,
-			mapSize: 2048,
+			forceBackFacesOnly: false,
+			mapSize: 1024,
 			blurScale: 2,
 			blurKernel: 1,
 			blurBoxOffset: 1,
 			bias: 50 / 1_000_000,
 			darkness: 0,
 			depthScale: 50,
+			frustumEdgeFalloff: 0,
 		}),
-	})
+
+		cascaded: flatstate({
+			enabled: false,
+			debug: false,
+			stabilizeCascades: false,
+			autoCalcDepthBounds: true,
+			freezeShadowCastersBoundingInfo: true,
+			numCascades: 4,
+			lambda: 0.5,
+			cascadeBlendPercentage: 0.05,
+			penumbraDarkness: 1,
+			shadowMinZ: 0.1,
+			shadowMaxZ: 500,
+		}),
+	}
 }
 

@@ -5,7 +5,8 @@ export class Granularity {
 		public max: number,
 		public step: number,
 	) {}
-	static ultrafine = new this(0, (1/1000), (1/1_000_000))
+	static ultrafine = new this(0, (1/1_000), (1/1_000_000))
+	static quitefine = new this(0, (1/10), (1/1_000_000))
 	static fine = new this(0, 1, (1/1_000))
 	static medium = new this(0, 10, (1/100))
 	static coarse = new this(0, 100, (1/10))

@@ -1,9 +1,9 @@
 
 import {BasedAnim} from "../../../../../models/choreographer/anims/based.js"
 import {ManualAnim} from "../../../../../models/choreographer/anims/manual.js"
+import {ContainerInstance} from "../../../../../models/glb/container_instance.js"
 import {manifest_anims} from "../../../../../models/choreographer/utils/manifest_anims.js"
 import {ManualAdditiveAnim} from "../../../../../models/choreographer/anims/manual_additive.js"
-import {ContainerInstance} from "../../../../../models/glb_post_processing/container_instance.js"
 
 export type CharacterAnims = ReturnType<typeof setup_character_anims>
 

@@ -42,7 +42,6 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 	#spawn_level(promise: Promise<AssetContainer>, physics: boolean) {
 		return promise
 			.then(instance_level)
-			.then(setup_quality_optimizations(this.realm))
 			.then(setup_thin_instances)
 			.then(setup_level_accoutrements(this.realm, physics))
 			.then(this.#make_level_disposer)
@@ -137,18 +136,6 @@ async function instance_level(asset: AssetContainer) {
 }
 
 export type LevelStuff = ReturnType<ReturnType<typeof setup_level_accoutrements>>
-
-function setup_quality_optimizations(realm: HuRealm) {
-	return (params: LevelInstance) => {
-		const {level} = params
-		if (realm.gameplan.quality === "potato") {
-			level.meshes
-				.filter(m => m.name.includes("grass"))
-				.forEach(m => m.dispose())
-		}
-		return params
-	}
-}
 
 function trace_paternity(meshes: Meshoid[]) {
 	const paternity = new Map<Mesh, InstancedMesh[]>()
