@@ -1,15 +1,16 @@
 
+import {clone, reactor} from "@benev/slate"
 import {Bestorage, Stage, assignSelectively, debug_colors, defaultEffectsData} from "@benev/toolbox"
 
 import {Ui} from "../ui/ui.js"
 import {HuTact} from "../tact/tact.js"
 import {HuPhysics} from "./physics.js"
+import {Finder} from "../finder/finder.js"
 import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
+import {ShadowManager} from "./parts/shadow-manager.js"
 import {LoadingDock} from "../planning/loading_dock.js"
-import { Finder } from "../finder/finder.js"
-import { clone, reactor } from "@benev/slate"
-// import {optimize_scene} from "../../tools/optimize_scene.js"
+import {standard_glb_post_process} from "../glb/standard_glb_post_process.js"
 
 export type RealmParams = {
 	allow_webgpu: boolean
@@ -58,14 +59,20 @@ export async function makeRealm(params: RealmParams) {
 	})
 
 	const {scene} = stage
-
-	// // disabled: because it breaks our postpro effects
-	// optimize_scene(scene)
-
 	const loadingDock = new LoadingDock(scene, commit)
 	const tact = new HuTact()
 	const colors = debug_colors(scene)
 	const physics = new HuPhysics({scene, colors})
+
+	// our standard glb postpro will apply shaders and stuff like that,
+	// before it's copied to the scene.
+	loadingDock.glb_post_process = standard_glb_post_process({gameplan, loadingDock})
+
+	// hack specular fix on node material shaders
+	loadingDock.shader_post_process = async shader => {
+		if (shader.pbr)
+			shader.pbr.specularIntensity = 0.2
+	}
 
 	const characterContainer = await loadingDock.loadGlb(
 		gameplan.characters.pimsley.glb
@@ -83,6 +90,7 @@ export async function makeRealm(params: RealmParams) {
 		loadingDock,
 		characterContainer,
 		finder: new Finder(physics),
+		shadowManager: new ShadowManager(),
 	}
 }
 

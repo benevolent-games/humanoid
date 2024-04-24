@@ -7,13 +7,16 @@ import {PBRMaterial} from "@babylonjs/core/Materials/PBR/pbrMaterial.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 
 import {Shader} from "./parts/shader.js"
-import {HuRealm} from "../realm/realm.js"
-import {isFoliage} from "./parts/is-foliage.js"
+import {HuGameplan} from "../../gameplan.js"
 import {GlbPostProcess} from "./parts/types.js"
+import {LoadingDock} from "../planning/loading_dock.js"
+import {isFoliage, isHair} from "./parts/mesh-filters.js"
+import {collectMaterials} from "../../tools/collect-materials.js"
 
-export function standard_glb_post_process(
-		{gameplan, loadingDock}: HuRealm,
-	): GlbPostProcess {
+export function standard_glb_post_process({gameplan, loadingDock}: {
+		gameplan: HuGameplan
+		loadingDock: LoadingDock
+	}): GlbPostProcess {
 
 	const {quality} = gameplan
 
@@ -52,9 +55,8 @@ export function standard_glb_post_process(
 		for (const mesh of container.meshes) {
 			if (mesh instanceof Mesh && mesh.material) {
 				const shader = replacements.get(mesh.material)
-				if (shader) {
+				if (shader)
 					mesh.material = shader.material
-				}
 			}
 		}
 
@@ -67,14 +69,20 @@ export function standard_glb_post_process(
 		// fix animations
 		fix_animation_groups(container.animationGroups)
 
-		// delete foliage if not allowed
+		// foliage settings
+		const foliageMeshes = container.meshes.filter(isFoliage)
+		const foliageMaterials = collectMaterials(foliageMeshes).pbr
 		if (!allowFoliage) {
-			const foliage = container.meshes.filter(isFoliage)
-			for (const mesh of foliage)
+			for (const mesh of foliageMeshes)
 				mesh.dispose()
 		}
-
-		return container
+		else {
+			for (const material of foliageMaterials) {
+				material.twoSidedLighting = false
+				material.backFaceCulling = true
+				material.forceNormalForward = true
+			}
+		}
 	}
 }
 

@@ -4,8 +4,8 @@ import {Scene} from "@babylonjs/core/scene.js"
 
 import {Plan} from "./plan.js"
 import {Shader} from "../glb/parts/shader.js"
-import {GlbPostProcess} from "../glb/parts/types.js"
 import {CommitHash} from "../../tools/commit_hash.js"
+import {GlbPostProcess, ShaderPostProcess} from "../glb/parts/types.js"
 
 export class LoadingDock {
 	constructor(
@@ -13,18 +13,19 @@ export class LoadingDock {
 		private readonly commit: CommitHash,
 	) {}
 
-	/** defaults to doing nothing -- set this if you want to process all loaded glbs */
-	glb_post_process: GlbPostProcess = async asset => asset
+	glb_post_process: GlbPostProcess = async() => {}
+	shader_post_process: ShaderPostProcess = async() => {}
 
 	async loadGlb(plan: Plan.Glb) {
-		return this.glb_post_process(
-			await load_glb(this.scene, this.commit.augment(plan.url)),
-			plan,
-		)
+		const glb = await load_glb(this.scene, this.commit.augment(plan.url))
+		await this.glb_post_process(glb, plan)
+		return glb
 	}
 
 	async loadShader<Inputs extends object>(plan: Plan.Shader<Inputs>) {
-		return Shader.make(this.scene, this.commit, plan)
+		const shader = await Shader.make(this.scene, this.commit, plan)
+		await this.shader_post_process(shader)
+		return shader
 	}
 }
 

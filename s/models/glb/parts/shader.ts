@@ -9,7 +9,7 @@ import {CommitHash} from "../../../tools/commit_hash.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
 import {url_replace_extension} from "../../../tools/url_replace_extension.js"
-import {InputBlock, ReflectionBlock, RefractionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
+import {InputBlock, PBRMetallicRoughnessBlock, ReflectionBlock, RefractionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
 
 export class Shader<Inputs extends object = object> {
 
@@ -34,13 +34,19 @@ export class Shader<Inputs extends object = object> {
 		return new Shader(material, inputs)
 	}
 
+	pbr: PBRMetallicRoughnessBlock | null = null
 	#inputBlocks = new Map<string, InputBlock>()
 
 	constructor(public readonly material: NodeMaterial, inputs: Inputs) {
 		for (const block of material.getInputBlocks())
 			this.#inputBlocks.set(block.name, block)
+
 		for (const [key, value] of Object.entries(inputs))
 			this.inputs[key as keyof Inputs] = value
+
+		this.pbr = material.getBlockByPredicate(
+			b => b instanceof PBRMetallicRoughnessBlock
+		) as PBRMetallicRoughnessBlock | null
 	}
 
 	#getInputBlock(key: string) {
