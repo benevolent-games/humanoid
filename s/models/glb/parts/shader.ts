@@ -12,6 +12,28 @@ import {url_replace_extension} from "../../../tools/url_replace_extension.js"
 import {InputBlock, ReflectionBlock, RefractionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
 
 export class Shader<Inputs extends object = object> {
+
+	static async make<I extends object>(
+			scene: Scene,
+			commit: CommitHash,
+			{url, inputs, forced_extension_for_textures}: Plan.Shader<I>,
+		) {
+		NodeMaterial.IgnoreTexturesAtLoadTime = true
+		const material = await NodeMaterial.ParseFromFileAsync(label("shader"), commit.augment(url), scene)
+		material.name = label("shader")
+		for (const texblock of material.getTextureBlocks()) {
+			if (texblock instanceof ReflectionBlock || texblock instanceof RefractionBlock)
+				texblock.texture = scene.environmentTexture
+			else {
+				const rebased_url = new URL(texblock.name, new URL(url, location.href)).href
+				const new_url = url_replace_extension(rebased_url, forced_extension_for_textures)
+				const texture = new Texture(commit.augment(new_url), scene)
+				texblock.texture = texture
+			}
+		}
+		return new Shader(material, inputs)
+	}
+
 	#inputBlocks = new Map<string, InputBlock>()
 
 	constructor(public readonly material: NodeMaterial, inputs: Inputs) {
@@ -39,29 +61,5 @@ export class Shader<Inputs extends object = object> {
 	dispose() {
 		this.material.dispose()
 	}
-}
-
-export async function make_shader<I extends object>(
-		scene: Scene,
-		commit: CommitHash,
-		{url, inputs, forced_extension_for_textures}: Plan.Shader<I>,
-	) {
-
-	NodeMaterial.IgnoreTexturesAtLoadTime = true
-	const material = await NodeMaterial.ParseFromFileAsync(label("shader"), commit.augment(url), scene)
-	material.name = label("shader")
-
-	for (const texblock of material.getTextureBlocks()) {
-		if (texblock instanceof ReflectionBlock || texblock instanceof RefractionBlock)
-			texblock.texture = scene.environmentTexture
-		else {
-			const rebased_url = new URL(texblock.name, new URL(url, location.href)).href
-			const new_url = url_replace_extension(rebased_url, forced_extension_for_textures)
-			const texture = new Texture(commit.augment(new_url), scene)
-			texblock.texture = texture
-		}
-	}
-
-	return new Shader(material, inputs)
 }
 

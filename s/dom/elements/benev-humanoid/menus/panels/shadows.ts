@@ -1,13 +1,13 @@
 
 import {clone, css, html, reactor} from "@benev/slate"
-import {NuiCheckbox, NuiRange, Bestorage, NuiSelect} from "@benev/toolbox"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
+import {NuiCheckbox, NuiRange, Bestorage, NuiSelect, assignSelectively} from "@benev/toolbox"
 
-import {Game} from "../../../../../types.js"
 import {nexus} from "../../../../../nexus.js"
 import {HuBestorageData} from "../effects.js"
 import {Ui} from "../../../../../models/ui/ui.js"
 import {Granularity} from "../utils/granularity.js"
+import {Game} from "../../../../../models/realm/types.js"
 
 type Primitive = number | boolean
 
@@ -37,6 +37,7 @@ const generatorInputs: InputGroup<Ui["shadows"]["generator"]> = {
 	blurScale: [Number, Granularity.medium],
 	blurKernel: [Number, Granularity.medium],
 	blurBoxOffset: [Number, Granularity.medium],
+	contactHardeningLightSizeUVRatio: [Number, Granularity.fine],
 	bias: [Number, Granularity.ultrafine],
 	darkness: [Number, Granularity.fine],
 	depthScale: [Number, Granularity.coarse],
@@ -114,7 +115,7 @@ const filterFlags = new Flags<FNumber, FString>([
 	[ShadowGenerator.FILTER_PCSS, "pcss"],
 ])
 
-export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bestorage<HuBestorageData>) => {
+export const ShadowsPanel = nexus.shadow_view(use => (game: Game) => {
 	use.name("shadows-panel")
 	use.styles(css`
 		.panel {
@@ -130,18 +131,6 @@ export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bes
 	`)
 
 	const {shadows} = game.ui
-
-	use.mount(() => reactor.reaction(
-		() => clone(game.ui.shadows),
-		shadows => bestorage.data.shadows = shadows,
-	))
-
-	use.mount(() => bestorage.onJson(({shadows: shadowsJson}) => {
-		Object.assign(shadows.basics, shadowsJson.basics)
-		Object.assign(shadows.light, shadowsJson.light)
-		Object.assign(shadows.generator, shadowsJson.generator)
-		Object.assign(shadows.cascaded, shadowsJson.cascaded)
-	}))
 
 	return html`
 		<section class=panel>

@@ -1,6 +1,6 @@
 
 import {Scene} from "@babylonjs/core/scene.js"
-import {Quaternion} from "@babylonjs/core/Maths/math.vector.js"
+import {Quaternion, Vector3} from "@babylonjs/core/Maths/math.vector.js"
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture.js"
@@ -20,6 +20,7 @@ export type SkyboxLinks = {
 export type SkyboxParams = {
 	yaw: number
 	size: number
+	height: number
 }
 
 export function skybox_image_links(directory: string, extension: string): SkyboxLinks {
@@ -39,6 +40,7 @@ export function make_skybox({
 			size,
 			links,
 			commit,
+			height,
 		}: {
 		scene: Scene
 		commit: CommitHash
@@ -46,6 +48,7 @@ export function make_skybox({
 	} & SkyboxParams) {
 
 	const box = MeshBuilder.CreateBox("skyBox", {size}, scene)
+	box.position = new Vector3(0, height, 0)
 	box.infiniteDistance = true
 	box.rotationQuaternion = (
 		Quaternion.RotationYawPitchRoll(yaw, 0, 0)

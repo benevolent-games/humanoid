@@ -3,9 +3,9 @@ import {load_glb} from "@benev/toolbox"
 import {Scene} from "@babylonjs/core/scene.js"
 
 import {Plan} from "./plan.js"
+import {Shader} from "../glb/parts/shader.js"
 import {GlbPostProcess} from "../glb/parts/types.js"
 import {CommitHash} from "../../tools/commit_hash.js"
-import {make_shader} from "../assets/parts/make_shader.js"
 
 export class LoadingDock {
 	constructor(
@@ -24,7 +24,7 @@ export class LoadingDock {
 	}
 
 	async loadShader<Inputs extends object>(plan: Plan.Shader<Inputs>) {
-		return make_shader(this.scene, this.commit, plan)
+		return Shader.make(this.scene, this.commit, plan)
 	}
 }
 

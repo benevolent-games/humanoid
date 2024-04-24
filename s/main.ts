@@ -3,15 +3,12 @@ console.log(`🏃 humanoid starting up`)
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js"
 
-import {clone} from "@benev/slate"
-import {Bestorage, defaultEffectsData} from "@benev/toolbox"
-
-import {Game} from "./types.js"
 import {nexus} from "./nexus.js"
 import {arch, hub} from "./ecs/hub.js"
+import {Game} from "./models/realm/types.js"
 import {CommitHash} from "./tools/commit_hash.js"
+import {LevelLoader} from "./models/levels/loader.js"
 import startup_realm from "./startup/startup_realm.js"
-import {LevelLoader} from "./models/level_loader/loader.js"
 import {AimTarget, Spawner} from "./ecs/components/plain_components.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
@@ -19,7 +16,6 @@ import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
 import {standard_glb_post_process} from "./models/glb/standard_glb_post_process.js"
-import startup_optimizations from "./startup/startup_optimizations.js"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -33,8 +29,6 @@ const realm = await startup_realm(commit)
 // before it's copied to the scene.
 realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
 
-startup_optimizations(realm)
-
 // all our game logic is expressed in behaviors and systems
 const world = hub.world(realm)
 
@@ -47,11 +41,6 @@ const executeGamelogic = startup_gamelogic(realm, world)
 const game: Game = {
 	...realm,
 	levelLoader: new LevelLoader(realm, world),
-	bestorage: new Bestorage({
-		...defaultEffectsData(),
-		resolution: realm.stage.porthole.resolution * 100,
-		shadows: clone(realm.ui.shadows),
-	}),
 }
 
 // telling the html frontend that the game is ready

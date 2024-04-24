@@ -2,12 +2,12 @@
 import {html} from "@benev/slate"
 import {Input, Menus, menu} from "@benev/toolbox"
 
-import {Game} from "../../../types.js"
 import {nexus} from "../../../nexus.js"
 import {NotesMenu} from "./menus/notes.js"
 import {ConfigMenu} from "./menus/config.js"
 import {LevelsMenu} from "./menus/levels.js"
-import { EffectsMenu } from "./menus/effects.js"
+import {EffectsMenu} from "./menus/effects.js"
+import {Game} from "../../../models/realm/types.js"
 
 export const MenuSystem = nexus.light_view(use => (
 		game: Game,

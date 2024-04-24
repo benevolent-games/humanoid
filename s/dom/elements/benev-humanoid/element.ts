@@ -6,9 +6,9 @@ import {NubLookpad} from "@benev/toolbox/x/tact/nubs/lookpad/view.js"
 
 import {styles} from "./styles.js"
 import {MenuSystem} from "./menus.js"
-import {Game} from "../../../types.js"
 import {nexus} from "../../../nexus.js"
 import {Overlay} from "./views/overlay/view.js"
+import {Game} from "../../../models/realm/types.js"
 
 enum Predicament {
 	Menu,
