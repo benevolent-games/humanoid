@@ -1,5 +1,5 @@
 
-import {Bestorage, Stage, debug_colors, defaultEffectsData} from "@benev/toolbox"
+import {Bestorage, Stage, assignSelectively, debug_colors, defaultEffectsData} from "@benev/toolbox"
 
 import {Ui} from "../ui/ui.js"
 import {HuTact} from "../tact/tact.js"
@@ -8,7 +8,7 @@ import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 import { Finder } from "../finder/finder.js"
-import { clone } from "@benev/slate"
+import { clone, reactor } from "@benev/slate"
 // import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
@@ -22,7 +22,15 @@ export type HuRealm = Awaited<ReturnType<typeof makeRealm>>
 export async function makeRealm(params: RealmParams) {
 	const {gameplan, commit} = params
 
+	const ui = new Ui()
+
+	const bestorage = new Bestorage({
+		...defaultEffectsData(),
+		shadows: clone(ui.shadows),
+	})
+
 	const stage = await Stage.create({
+		bestorage,
 		background: Stage.backgrounds.sky(),
 		allow_webgpu: params.allow_webgpu,
 		webgl_options: {
@@ -35,6 +43,18 @@ export async function makeRealm(params: RealmParams) {
 			audioEngine: true,
 			powerPreference: "high-performance",
 		},
+	})
+
+	reactor.reaction(
+		() => clone(ui.shadows),
+		shadows => bestorage.data.shadows = shadows,
+	)
+
+	bestorage.onJson(({shadows: shadowsJson = bestorage.fallback.shadows}) => {
+		assignSelectively(bestorage.fallback.shadows.basics, ui.shadows.basics, shadowsJson.basics)
+		assignSelectively(bestorage.fallback.shadows.light, ui.shadows.light, shadowsJson.light)
+		assignSelectively(bestorage.fallback.shadows.generator, ui.shadows.generator, shadowsJson.generator)
+		assignSelectively(bestorage.fallback.shadows.cascaded, ui.shadows.cascaded, shadowsJson.cascaded)
 	})
 
 	const {scene} = stage
@@ -50,13 +70,6 @@ export async function makeRealm(params: RealmParams) {
 	const characterContainer = await loadingDock.loadGlb(
 		gameplan.characters.pimsley.glb
 	)
-
-	const ui = new Ui()
-	const bestorage = new Bestorage({
-		...defaultEffectsData(),
-		resolution: stage.porthole.resolution * 100,
-		shadows: clone(ui.shadows),
-	})
 
 	return {
 		...params,

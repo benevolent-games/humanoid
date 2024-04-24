@@ -16,7 +16,6 @@ import startup_housekeeping from "./startup/startup_housekeeping.js"
 import startup_web_components from "./startup/startup_web_components.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
 import {standard_glb_post_process} from "./models/glb/standard_glb_post_process.js"
-import startup_optimizations from "./startup/startup_optimizations.js"
 
 const commit = CommitHash.parse_from_dom()
 
@@ -29,8 +28,6 @@ const realm = await startup_realm(commit)
 // our standard glb postpro will apply shaders and stuff like that,
 // before it's copied to the scene.
 realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
-
-startup_optimizations(realm)
 
 // all our game logic is expressed in behaviors and systems
 const world = hub.world(realm)

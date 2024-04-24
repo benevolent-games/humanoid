@@ -17,7 +17,7 @@ export const EffectsMenu = nexus.shadow_view(use => (game: Game) => {
 
 	return EffectsPanel(
 		[game.stage, game.bestorage],
-		{content: html`${ShadowsPanel([game, game.bestorage])}`},
+		{content: html`${ShadowsPanel([game])}`},
 	)
 })
 

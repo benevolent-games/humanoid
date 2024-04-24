@@ -87,6 +87,7 @@ export class Ui {
 			blurScale: 2,
 			blurKernel: 1,
 			blurBoxOffset: 1,
+			contactHardeningLightSizeUVRatio: 0.1,
 			bias: 50 / 1_000_000,
 			darkness: 0,
 			depthScale: 50,

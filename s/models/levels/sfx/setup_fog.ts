@@ -42,7 +42,7 @@ export default ({
 	system.minLifeTime = Infinity
 	system.blendMode = ParticleSystem.BLENDMODE_STANDARD
 
-	const distanceFadeOut = sizeMax / 2
+	const distanceFadeOut = sizeMax / 3
 	const distanceFadeIn = distanceFadeOut + fadeRange
 
 	system.updateFunction = (particles) => {

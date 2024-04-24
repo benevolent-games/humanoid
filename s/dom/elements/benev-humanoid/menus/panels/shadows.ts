@@ -37,6 +37,7 @@ const generatorInputs: InputGroup<Ui["shadows"]["generator"]> = {
 	blurScale: [Number, Granularity.medium],
 	blurKernel: [Number, Granularity.medium],
 	blurBoxOffset: [Number, Granularity.medium],
+	contactHardeningLightSizeUVRatio: [Number, Granularity.fine],
 	bias: [Number, Granularity.ultrafine],
 	darkness: [Number, Granularity.fine],
 	depthScale: [Number, Granularity.coarse],
@@ -114,7 +115,7 @@ const filterFlags = new Flags<FNumber, FString>([
 	[ShadowGenerator.FILTER_PCSS, "pcss"],
 ])
 
-export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bestorage<HuBestorageData>) => {
+export const ShadowsPanel = nexus.shadow_view(use => (game: Game) => {
 	use.name("shadows-panel")
 	use.styles(css`
 		.panel {
@@ -130,18 +131,6 @@ export const ShadowsPanel = nexus.shadow_view(use => (game: Game, bestorage: Bes
 	`)
 
 	const {shadows} = game.ui
-
-	use.mount(() => reactor.reaction(
-		() => clone(game.ui.shadows),
-		shadows => bestorage.data.shadows = shadows,
-	))
-
-	use.mount(() => bestorage.onJson(({shadows: shadowsJson = bestorage.fallback.shadows}) => {
-		assignSelectively(bestorage.fallback.shadows.basics, shadows.basics, shadowsJson.basics)
-		assignSelectively(bestorage.fallback.shadows.light, shadows.light, shadowsJson.light)
-		assignSelectively(bestorage.fallback.shadows.generator, shadows.generator, shadowsJson.generator)
-		assignSelectively(bestorage.fallback.shadows.cascaded, shadows.cascaded, shadowsJson.cascaded)
-	}))
 
 	return html`
 		<section class=panel>
