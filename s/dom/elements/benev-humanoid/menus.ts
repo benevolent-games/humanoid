@@ -4,9 +4,9 @@ import {Input, Menus, menu} from "@benev/toolbox"
 
 import {nexus} from "../../../nexus.js"
 import {NotesMenu} from "./menus/notes.js"
-import {ConfigMenu} from "./menus/config.js"
-import {LevelsMenu} from "./menus/levels.js"
+import {QualityMenu} from "./menus/quality.js"
 import {EffectsMenu} from "./menus/effects.js"
+import {SettingsMenu} from "./menus/settings.js"
 import {Game} from "../../../models/realm/types.js"
 
 export const MenuSystem = nexus.light_view(use => (
@@ -18,8 +18,8 @@ export const MenuSystem = nexus.light_view(use => (
 
 	const menus = use.once(() => new Menus([
 		menu("notes", () => NotesMenu([game])),
-		menu("levels", () => LevelsMenu([game])),
-		menu("settings", () => ConfigMenu([game])),
+		menu("quality", () => QualityMenu([game])),
+		menu("settings", () => SettingsMenu([game])),
 		menu("effects", () => EffectsMenu([game])),
 	]))
 

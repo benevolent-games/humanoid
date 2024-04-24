@@ -5,8 +5,8 @@ import {NuiCheckbox, NuiRange} from "@benev/toolbox"
 import {nexus} from "../../../../nexus.js"
 import {Game} from "../../../../models/realm/types.js"
 
-export const ConfigMenu = nexus.shadow_view(use => (game: Game) => {
-	use.name("config-menu")
+export const SettingsMenu = nexus.shadow_view(use => (game: Game) => {
+	use.name("settings-menu")
 	use.styles(css`
 		:host > * + * { margin-top: 1em; }
 		section {
