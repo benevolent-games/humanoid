@@ -73,12 +73,12 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 				<span>make it pretty.</span>
 				<small>2024-04-24</small>
 			</h1>
-			<p><strong>shadows!</strong> mid/fancy quality now have shadows, and there's a whole lot of new shadow options in the effects menu.</p>
+			<p><strong>shadows!</strong> enabled in mid/fancy quality tiers. and also, there's a whole lot of new shadow options in the effects menu.</p>
 			<p><strong>fog!</strong> lonnie made a fog plane texture and i coded it into a particle system, now we have a nice ominous fogbank.</p>
 			<p><strong>skybox!</strong> lonnie made a new skybox that has distant hills.</p>
 			<p><strong>effects!</strong> lonnie tailored the knobs and dials in the effects panels, and established the defaults for mid and fancy quality tiers. i did potato tier for my laptop.</p>
 			<p><strong>pimsley-shadows!</strong> i finally got pimsley to cast and receive shadows. unfortunately, in first person, his shadow betrays a missing head..</p>
-			<p><strong>minor fixes</strong> include making the terrain less shiny, and fixing pimsley's alpha-sorting on his ponytail.</p>
+			<p><strong>minor fixes:</strong> make terrain less shiny; fix pimsley's alpha-sorting on his ponytail; fix shield positioning during certain weapon grips.</p>
 		</section>
 
 		<section>
