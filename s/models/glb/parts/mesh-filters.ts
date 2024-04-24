@@ -9,3 +9,11 @@ export function isFoliage(mesh: AbstractMesh) {
 	)
 }
 
+export function isHair(mesh: AbstractMesh) {
+	return !!(
+		mesh.name.startsWith("hair") ||
+		nquery(mesh).name("hair") ||
+		nquery(mesh).tag("hair")
+	)
+}
+

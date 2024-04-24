@@ -10,6 +10,7 @@ import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {ShadowManager} from "./parts/shadow-manager.js"
 import {LoadingDock} from "../planning/loading_dock.js"
+import {standard_glb_post_process} from "../glb/standard_glb_post_process.js"
 
 export type RealmParams = {
 	allow_webgpu: boolean
@@ -62,6 +63,16 @@ export async function makeRealm(params: RealmParams) {
 	const tact = new HuTact()
 	const colors = debug_colors(scene)
 	const physics = new HuPhysics({scene, colors})
+
+	// our standard glb postpro will apply shaders and stuff like that,
+	// before it's copied to the scene.
+	loadingDock.glb_post_process = standard_glb_post_process({gameplan, loadingDock})
+
+	// hack specular fix on node material shaders
+	loadingDock.shader_post_process = async shader => {
+		if (shader.pbr)
+			shader.pbr.specularIntensity = 0.2
+	}
 
 	const characterContainer = await loadingDock.loadGlb(
 		gameplan.characters.pimsley.glb
