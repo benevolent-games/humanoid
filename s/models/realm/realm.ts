@@ -10,7 +10,6 @@ import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {ShadowManager} from "./parts/shadow-manager.js"
 import {LoadingDock} from "../planning/loading_dock.js"
-// import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
 	allow_webgpu: boolean
@@ -57,9 +56,6 @@ export async function makeRealm(params: RealmParams) {
 		assignSelectively(bestorage.fallback.shadows.generator, ui.shadows.generator, shadowsJson.generator)
 		assignSelectively(bestorage.fallback.shadows.cascaded, ui.shadows.cascaded, shadowsJson.cascaded)
 	})
-
-	// // disabled: because it breaks our postpro effects
-	// optimize_scene(scene)
 
 	const {scene} = stage
 	const loadingDock = new LoadingDock(scene, commit)

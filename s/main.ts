@@ -29,6 +29,12 @@ const realm = await startup_realm(commit)
 // before it's copied to the scene.
 realm.loadingDock.glb_post_process = standard_glb_post_process(realm)
 
+// hack specular fix on node material shaders
+realm.loadingDock.shader_post_process = async shader => {
+	if (shader.pbr)
+		shader.pbr.specularIntensity = 0.2
+}
+
 // all our game logic is expressed in behaviors and systems
 const world = hub.world(realm)
 

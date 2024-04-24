@@ -52,9 +52,8 @@ export function standard_glb_post_process(
 		for (const mesh of container.meshes) {
 			if (mesh instanceof Mesh && mesh.material) {
 				const shader = replacements.get(mesh.material)
-				if (shader) {
+				if (shader)
 					mesh.material = shader.material
-				}
 			}
 		}
 
@@ -73,8 +72,6 @@ export function standard_glb_post_process(
 			for (const mesh of foliage)
 				mesh.dispose()
 		}
-
-		return container
 	}
 }
 
