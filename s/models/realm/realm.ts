@@ -1,14 +1,15 @@
 
+import {clone, reactor} from "@benev/slate"
 import {Bestorage, Stage, assignSelectively, debug_colors, defaultEffectsData} from "@benev/toolbox"
 
 import {Ui} from "../ui/ui.js"
 import {HuTact} from "../tact/tact.js"
 import {HuPhysics} from "./physics.js"
+import {Finder} from "../finder/finder.js"
 import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
+import {ShadowManager} from "./parts/shadow-manager.js"
 import {LoadingDock} from "../planning/loading_dock.js"
-import { Finder } from "../finder/finder.js"
-import { clone, reactor } from "@benev/slate"
 // import {optimize_scene} from "../../tools/optimize_scene.js"
 
 export type RealmParams = {
@@ -57,11 +58,10 @@ export async function makeRealm(params: RealmParams) {
 		assignSelectively(bestorage.fallback.shadows.cascaded, ui.shadows.cascaded, shadowsJson.cascaded)
 	})
 
-	const {scene} = stage
-
 	// // disabled: because it breaks our postpro effects
 	// optimize_scene(scene)
 
+	const {scene} = stage
 	const loadingDock = new LoadingDock(scene, commit)
 	const tact = new HuTact()
 	const colors = debug_colors(scene)
@@ -83,6 +83,7 @@ export async function makeRealm(params: RealmParams) {
 		loadingDock,
 		characterContainer,
 		finder: new Finder(physics),
+		shadowManager: new ShadowManager(),
 	}
 }
 

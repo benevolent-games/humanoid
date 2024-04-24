@@ -16,6 +16,17 @@ export class Character extends HybridComponent<{height: number}> {
 		this.state.height,
 	)
 
+	readonly shadowCasters = (() => {
+		const disposers: (() => void)[] = []
+		for (const mesh of this.parts.character.meshes.values()) {
+			mesh.receiveShadows = true
+			disposers.push(this.realm.shadowManager.registerCasters(mesh))
+		}
+		return {
+			dispose: () => disposers.forEach(dispose => dispose()),
+		}
+	})()
+
 	readonly coordination = establish_anim_coordination(
 		this.realm,
 		this.parts.character,
@@ -63,6 +74,7 @@ export class Character extends HybridComponent<{height: number}> {
 	deleted() {
 		this.parts.dispose()
 		this.coordination.dispose()
+		this.shadowCasters.dispose()
 	}
 }
 

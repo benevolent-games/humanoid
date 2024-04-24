@@ -11,11 +11,19 @@ import {CascadedShadowGenerator} from "@babylonjs/core/Lights/Shadows/cascadedSh
 
 export default (realm: HuRealm, stuff: LevelStuff) => {
 	const sunlight = stuff.level.lights[0] as DirectionalLight
-	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
 
-	const applyShadowSettings = debounce(100, (data: Ui["shadows"]) => {
+	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
+	let unlisten = () => {}
+
+	const dispose = () => {
 		if (shadowGenerator)
 			shadowGenerator.dispose()
+		if (unlisten)
+			unlisten()
+	}
+
+	const applyShadowSettings = debounce(100, (data: Ui["shadows"]) => {
+		dispose()
 
 		const d = realm.ui.shadows.basics.sunDistance
 		sunlight.position.copyFrom(sunlight.direction.multiplyByFloats(-d, -d, -d))
@@ -47,6 +55,11 @@ export default (realm: HuRealm, stuff: LevelStuff) => {
 					shadowGenerator.addShadowCaster(mesh)
 				}
 			}
+
+			unlisten = realm.shadowManager.attachListener({
+				addCaster: mesh => shadowGenerator.addShadowCaster(mesh),
+				removeCaster: mesh => shadowGenerator.removeShadowCaster(mesh),
+			})
 		}
 	})
 
@@ -65,6 +78,7 @@ export default (realm: HuRealm, stuff: LevelStuff) => {
 		dispose() {
 			stop1()
 			stop2()
+			dispose()
 		},
 	}
 }
