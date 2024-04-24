@@ -65,7 +65,7 @@ export class Character extends HybridComponent<{height: number}> {
 		const applyGripPoint = (ref: ReferenceWeapon) => {
 			ref.prop.position.y = ref.neutralY - gripPointMeters
 		}
-		applyGripPoint(this.weaponry.referenceLeft)
+		// applyGripPoint(this.weaponry.referenceLeft)
 		applyGripPoint(this.weaponry.referenceRight)
 	}
 
