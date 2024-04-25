@@ -3,6 +3,7 @@ import {clone, reactor} from "@benev/slate"
 import {Bestorage, Stage, assignSelectively, debug_colors, defaultEffectsData} from "@benev/toolbox"
 
 import {Ui} from "../ui/ui.js"
+import {Net} from "../net/net.js"
 import {HuTact} from "../tact/tact.js"
 import {HuPhysics} from "./physics.js"
 import {Finder} from "../finder/finder.js"
@@ -95,6 +96,7 @@ export async function makeRealm(params: RealmParams) {
 		physics,
 		bestorage,
 		loadingDock,
+		net: new Net(),
 		characterContainer,
 		finder: new Finder(physics),
 		shadowManager: new ShadowManager(),

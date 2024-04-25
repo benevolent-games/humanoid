@@ -8,6 +8,7 @@ import {QualityMenu} from "./menus/quality.js"
 import {EffectsMenu} from "./menus/effects.js"
 import {SettingsMenu} from "./menus/settings.js"
 import {Game} from "../../../models/realm/types.js"
+import {MultiplayerMenu} from "./menus/multiplayer.js"
 
 export const MenuSystem = nexus.light_view(use => (
 		game: Game,
@@ -18,6 +19,7 @@ export const MenuSystem = nexus.light_view(use => (
 
 	const menus = use.once(() => new Menus([
 		menu("notes", () => NotesMenu([game])),
+		menu("multiplayer", () => MultiplayerMenu([game])),
 		menu("quality", () => QualityMenu([game])),
 		menu("settings", () => SettingsMenu([game])),
 		menu("effects", () => EffectsMenu([game])),
