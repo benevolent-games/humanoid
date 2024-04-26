@@ -2,9 +2,6 @@
 import {css, html} from "@benev/slate"
 import {nexus} from "../../../../nexus.js"
 import {Game} from "../../../../models/realm/types.js"
-import {HostHandler} from "../../../../models/net/handlers/host.js"
-import {LocalHandler} from "../../../../models/net/handlers/local.js"
-import {ClientHandler} from "../../../../models/net/handlers/client.js"
 
 export const MultiplayerMenu = nexus.shadow_view(use => (game: Game) => {
 	use.name("multiplayer-menu")
@@ -14,28 +11,25 @@ export const MultiplayerMenu = nexus.shadow_view(use => (game: Game) => {
 
 	const panel = (() => {switch (scenario.mode) {
 		case "local": {
-			const handler = game.net.handler as LocalHandler
 			return html`
-				<button @click="${() => handler.start_host_session()}">
+				<button @click="${() => game.net.startHostSession()}">
 					host a new session!
 				</button>
-				<button @click="${() => handler.connect_as_client()}">
+				<button @click="${() => game.net.joinAsClient()}">
 					connect as client
 				</button>
 			`
 		}
 		case "host": {
-			const handler = game.net.handler as HostHandler
 			return html`
-				<button @click="${() => handler.end_session()}">
+				<button @click="${() => game.net.backToLocalSession()}">
 					end session
 				</button>
 			`
 		}
 		case "client": {
-			const handler = game.net.handler as ClientHandler
 			return html`
-				<button @click="${() => handler.disconnect()}">
+				<button @click="${() => game.net.backToLocalSession()}">
 					disconnect
 				</button>
 			`
