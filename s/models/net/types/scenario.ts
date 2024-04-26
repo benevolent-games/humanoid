@@ -1,4 +1,5 @@
 
+import {Op} from "@benev/slate"
 import {Lobby} from "./stats.js"
 
 export type Local = {
@@ -7,12 +8,12 @@ export type Local = {
 
 export type Host = {
 	mode: "host"
-	lobby: Lobby
+	lobbyOp: Op.For<Lobby>
 } & Base
 
 export type Client = {
 	mode: "client"
-	lobby: Lobby
+	lobbyOp: Op.For<Lobby>
 } & Base
 
 //////////////////////

@@ -1,11 +1,13 @@
 
+import {Session} from "sparrow-rtc"
+
 export type Lobby = {
-	label: string
+	session: Session
 	players: Player[]
 }
 
 export type Player = {
 	id: string
-	ping: string
+	ping: number
 }
 

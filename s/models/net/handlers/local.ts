@@ -5,23 +5,23 @@ import {Control} from "../parts/control.js"
 import {Scenario} from "../types/exports.js"
 
 export class LocalHandler {
-	#control: Control
+	#control: Control<Scenario.Local>
 
-	constructor(control: Control) {
-		this.#control = control
+	constructor(control: Control<Scenario.Any>) {
+		this.#control = control as any
 		control.tree.transmute(() => ({mode: "local"}))
 	}
 
 	get scenario() {
-		return this.#control.get<Scenario.Local>("local")
+		return this.#control.scenario
 	}
 
 	async start_host_session() {
-		this.#control.handler = new HostHandler(this.#control)
+		this.#control.handler = await HostHandler.initiate(this.#control as any)
 	}
 
 	async connect_as_client() {
-		this.#control.handler = new ClientHandler(this.#control)
+		this.#control.handler = await ClientHandler.initiate(this.#control as any)
 	}
 }
 
