@@ -1,12 +1,13 @@
 
 import {Op, Trashcan} from "@benev/slate"
-import {HostControls, Session, createSessionAsHost, standardRtcConfig} from "sparrow-rtc"
+import {HostControls, Session, createSessionAsHost} from "sparrow-rtc"
 
-import {Handler, $update} from "./handler.js"
+import {Handler, $update, $set} from "./handler.js"
 import {makeHostApi} from "../api/host-api.js"
 import {ClientApi} from "../api/client-api.js"
-import {Lobby, Scenario} from "../types/exports.js"
+import {Scenario} from "../types/exports.js"
 import {PingStation} from "../parts/ping-station.js"
+import {sparrowConfig} from "../parts/sparrow-config.js"
 import {remoteReceiver, remoteSender} from "../parts/remote.js"
 
 export type HostParams = {
@@ -15,10 +16,10 @@ export type HostParams = {
 
 export class HostHandler extends Handler<Scenario.Host> {
 	#params: HostParams
-	#connection: HostControls | null = null
+	#controls: HostControls | null = null
 
 	constructor(params: HostParams) {
-		super({mode: "host", lobbyOp: Op.loading()})
+		super()
 		this.#params = params
 	}
 
@@ -33,9 +34,9 @@ export class HostHandler extends Handler<Scenario.Host> {
 	}
 
 	async dispose() {
-		if (this.#connection) {
-			this.#connection.close()
-			this.#connection = null
+		if (this.#controls) {
+			this.#controls.close()
+			this.#controls = null
 		}
 	}
 
@@ -45,24 +46,30 @@ export class HostHandler extends Handler<Scenario.Host> {
 	#trash = new Trashcan()
 	#clients = new Map<string, {rtt: number}>()
 
-	#transmuteLobby(fn: (lobby: Lobby) => void) {
-		this[$update](scenario => {
-			if (Op.is.ready(scenario.lobbyOp))
-				fn(scenario.lobbyOp.payload)
-		})
+	#bootUpScenario({session}: {session: Session}) {
+		const op = this.scenarioOp
+		if (!Op.is.ready(op)) {
+			this[$set]({
+				mode: "host",
+				session,
+				lobby: {players: []},
+			})
+		}
 	}
 
 	#updateLobbyPlayers() {
-		this.#transmuteLobby(lobby => {
-			lobby.players = (
+		this[$update](scenario => {
+			scenario.lobby.players = (
 				[...this.#clients.entries()]
-					.map(([id, client]) => ({id, ping: client.rtt}))
+					.map(([clientId, client]) => ({clientId, ping: client.rtt}))
 			)
 		})
 	}
 
 	#updateSession(session: Session) {
-		this.#transmuteLobby(lobby => lobby.session = session)
+		this[$update](scenario => {
+			scenario.session = session
+		})
 	}
 
 	#handleSessionDied() {
@@ -95,13 +102,15 @@ export class HostHandler extends Handler<Scenario.Host> {
 	}
 
 	async #initiate({label}: {label: string}) {
-		this.#connection = await createSessionAsHost({
+		this.#controls = await createSessionAsHost({
+			...sparrowConfig,
 			label,
-			signalServerUrl: "wss://sparrow-rtc.benevolent.games/",
-			rtcConfig: standardRtcConfig,
 
 			onStateChange: ({session}) => {
-				if (session) this.#updateSession(session)
+				if (session) {
+					this.#bootUpScenario({session})
+					this.#updateSession(session)
+				}
 				else this.#handleSessionDied()
 			},
 

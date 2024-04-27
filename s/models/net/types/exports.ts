@@ -1,9 +1,8 @@
 
-import {LocalHandler} from "../handlers/local.js"
-import {HostHandler} from "../handlers/host.js"
-import {ClientHandler} from "../handlers/client.js"
+import {LocalHandler} from "../handlers/local-handler.js"
+import {HostHandler} from "../handlers/host-handler.js"
+import {ClientHandler} from "../handlers/client-handler.js"
 
-export * from "./stats.js"
 export * as Scenario from "./scenario.js"
 
 export type AnyHandler = LocalHandler | HostHandler | ClientHandler

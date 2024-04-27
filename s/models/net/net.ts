@@ -1,7 +1,7 @@
 
-import {HostHandler} from "./handlers/host.js"
-import {LocalHandler} from "./handlers/local.js"
-import {ClientHandler} from "./handlers/client.js"
+import {HostHandler} from "./handlers/host-handler.js"
+import {LocalHandler} from "./handlers/local-handler.js"
+import {ClientHandler} from "./handlers/client-handler.js"
 
 export type AnyHandler = HostHandler | ClientHandler | LocalHandler
 

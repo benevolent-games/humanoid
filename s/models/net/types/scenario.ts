@@ -1,24 +1,35 @@
 
-import {Op} from "@benev/slate"
-import {Lobby} from "./stats.js"
+import {Session, SessionInfo} from "sparrow-rtc"
 
 export type Local = {
 	mode: "local"
-} & Base
+}
 
 export type Host = {
 	mode: "host"
-	lobbyOp: Op.For<Lobby>
-} & Base
+	session: Session
+	lobby: Lobby
+}
 
 export type Client = {
 	mode: "client"
-	lobbyOp: Op.For<Lobby>
-} & Base
+	clientId: string
+	sessionInfo: SessionInfo
+	lobby: Lobby
+}
 
 //////////////////////
 
-export type Mode = "local" | "host" | "client"
 export type Any = Local | Host | Client
-export type Base = { mode: Mode }
+
+//////////////////////
+
+export type Lobby = {
+	players: Player[]
+}
+
+export type Player = {
+	clientId: string
+	ping: number
+}
 

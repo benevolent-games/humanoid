@@ -1,24 +1,30 @@
 
 import {Scenario} from "../types/exports.js"
-import {StateTree, watch} from "@benev/slate"
+import {Op, StateTree, watch} from "@benev/slate"
 
+export const $set = Symbol()
 export const $update = Symbol()
 
 export abstract class Handler<S extends Scenario.Any> {
-	#tree: StateTree<S>
+	#tree: StateTree<Op.For<S>>
 
-	constructor(scenario: S) {
-		this.#tree = watch.stateTree(scenario)
+	constructor() {
+		this.#tree = watch.stateTree(Op.loading())
 	}
 
-	get scenario() {
+	get scenarioOp() {
 		return this.#tree.state
 	}
 
+	;[$set](scenario: S) {
+		this.#tree.transmute(() => Op.ready(scenario))
+	}
+
 	;[$update](fn: (scenario: S) => void) {
-		this.#tree.transmute(scenario => {
-			fn(scenario)
-			return scenario
+		this.#tree.transmute(op => {
+			if (Op.is.ready(op)) fn(op.payload)
+			// else throw new Error("scenario not in ready state")
+			return op
 		})
 	}
 
