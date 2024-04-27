@@ -17,7 +17,7 @@ export class Net {
 		this.handler = new HostHandler({
 			onSessionDeath: () => this.backToLocalSession(),
 		})
-		await this.handler.initiate()
+		await this.handler.initiate({label: "testing session"})
 	}
 
 	async joinAsClient() {
