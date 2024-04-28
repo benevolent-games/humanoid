@@ -20,12 +20,17 @@ export class Net {
 		await this.handler.initiate({label: "testing session"})
 	}
 
-	async joinAsClient() {
+	async joinAsClient(sessionId: string) {
 		this.handler.dispose()
+		this.handler = new ClientHandler({
+			onSessionDeath: () => this.backToLocalSession(),
+		})
+		await this.handler.initiate({sessionId})
 	}
 
 	async backToLocalSession() {
 		this.handler.dispose()
+		this.handler = new LocalHandler()
 	}
 }
 

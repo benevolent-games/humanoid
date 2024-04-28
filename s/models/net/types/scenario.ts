@@ -1,5 +1,5 @@
 
-import {Session, SessionInfo} from "sparrow-rtc"
+import {ClientState, HostState, Session, SessionInfo} from "sparrow-rtc"
 
 export type Local = {
 	mode: "local"
@@ -7,14 +7,13 @@ export type Local = {
 
 export type Host = {
 	mode: "host"
-	session: Session
+	state: HostState
 	lobby: Lobby
 }
 
 export type Client = {
 	mode: "client"
-	clientId: string
-	sessionInfo: SessionInfo
+	state: ClientState
 	lobby: Lobby
 }
 

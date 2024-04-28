@@ -10,6 +10,7 @@ export abstract class Handler<S extends Scenario.Any> {
 
 	constructor() {
 		this.#tree = watch.stateTree(Op.loading())
+		watch.dispatch()
 	}
 
 	get scenarioOp() {

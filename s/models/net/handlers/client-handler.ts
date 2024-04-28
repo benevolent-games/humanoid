@@ -1,6 +1,6 @@
 
 import {Op} from "@benev/slate"
-import {JoinerControls, SessionInfo, joinSessionAsClient} from "sparrow-rtc"
+import {ClientState, SessionInfo, joinSessionAsClient} from "sparrow-rtc"
 
 import {HostApi} from "../api/host-api.js"
 import {$set, $update, Handler} from "./handler.js"
@@ -15,7 +15,7 @@ export type ClientParams = {
 
 export class ClientHandler extends Handler<Scenario.Client> {
 	#params: ClientParams
-	#controls: JoinerControls | null = null
+	#connection: Awaited<ReturnType<typeof joinSessionAsClient>> | null = null
 
 	constructor(params: ClientParams) {
 		super()
@@ -33,55 +33,45 @@ export class ClientHandler extends Handler<Scenario.Client> {
 	}
 
 	dispose() {
-		if (this.#controls)
-			this.#controls.close()
+		if (this.#connection)
+			this.#connection.close()
 	}
 
 	//////////////////////////////
 	//////////////////////////////
 
-	#bootUpScenario({clientId, sessionInfo}: {
-			clientId: string
-			sessionInfo: SessionInfo
-		}) {
+	#bootUpScenario(state: ClientState) {
 		const op = this.scenarioOp
 		if (!Op.is.ready(op)) {
 			this[$set]({
 				mode: "client",
-				clientId,
-				sessionInfo,
+				state,
 				lobby: {players: []},
 			})
 		}
 	}
 
-	#updateSessionInfo(sessionInfo: SessionInfo) {
-		this[$update](scenario => {
-			scenario.sessionInfo = sessionInfo
-		})
+	#updateState(state: ClientState) {
+		this[$update](scenario => { scenario.state = state })
 	}
 
 	#handleSessionDied() {
-		this.#controls = null
+		this.#connection = null
 		this.dispose()
 		this.#params.onSessionDeath()
 	}
 
 	async #initiate({sessionId}: {sessionId: string}) {
-		const {controls} = await joinSessionAsClient({
+		const connection = await joinSessionAsClient({
 			...sparrowConfig,
 			sessionId,
-			onStateChange: ({clientId, sessionInfo}) => {
-				if (clientId && sessionInfo) {
-					this.#bootUpScenario({clientId, sessionInfo})
-					this.#updateSessionInfo(sessionInfo)
-				}
-				else this.#handleSessionDied()
+			onClosed: () => {
+				this.#handleSessionDied()
 			},
-			handleJoin: ({clientId, send}) => {
-				this[$update](scenario => {
-					scenario.clientId = clientId
-				})
+			onStateChange: state => {
+				this.#updateState(state)
+			},
+			handleJoin: ({send}) => {
 				const hostApi = remoteSender<HostApi>(send)
 				const clientApi = makeClientApi({hostApi})
 				return {
@@ -90,7 +80,8 @@ export class ClientHandler extends Handler<Scenario.Client> {
 				}
 			},
 		})
-		this.#controls = controls
+		this.#connection = connection
+		this.#bootUpScenario(connection.state)
 	}
 }
 

@@ -1,11 +1,11 @@
 
 import {Op, Trashcan} from "@benev/slate"
-import {HostControls, Session, createSessionAsHost} from "sparrow-rtc"
+import {HostControls, HostState, createSessionAsHost} from "sparrow-rtc"
 
-import {Handler, $update, $set} from "./handler.js"
+import {Scenario} from "../types/exports.js"
 import {makeHostApi} from "../api/host-api.js"
 import {ClientApi} from "../api/client-api.js"
-import {Scenario} from "../types/exports.js"
+import {Handler, $update, $set} from "./handler.js"
 import {PingStation} from "../parts/ping-station.js"
 import {sparrowConfig} from "../parts/sparrow-config.js"
 import {remoteReceiver, remoteSender} from "../parts/remote.js"
@@ -46,12 +46,12 @@ export class HostHandler extends Handler<Scenario.Host> {
 	#trash = new Trashcan()
 	#clients = new Map<string, {rtt: number}>()
 
-	#bootUpScenario({session}: {session: Session}) {
+	#bootUpScenario(state: HostState) {
 		const op = this.scenarioOp
 		if (!Op.is.ready(op)) {
 			this[$set]({
 				mode: "host",
-				session,
+				state,
 				lobby: {players: []},
 			})
 		}
@@ -66,13 +66,12 @@ export class HostHandler extends Handler<Scenario.Host> {
 		})
 	}
 
-	#updateSession(session: Session) {
-		this[$update](scenario => {
-			scenario.session = session
-		})
+	#updateState(state: HostState) {
+		this[$update](scenario => { scenario.state = state })
 	}
 
 	#handleSessionDied() {
+		this.#controls = null
 		this.dispose()
 		this.#params.onSessionDeath()
 	}
@@ -102,18 +101,15 @@ export class HostHandler extends Handler<Scenario.Host> {
 	}
 
 	async #initiate({label}: {label: string}) {
-		this.#controls = await createSessionAsHost({
+		const controls = await createSessionAsHost({
 			...sparrowConfig,
 			label,
-
-			onStateChange: ({session}) => {
-				if (session) {
-					this.#bootUpScenario({session})
-					this.#updateSession(session)
-				}
-				else this.#handleSessionDied()
+			onConnectionLost: () => {
+				this.#handleSessionDied()
 			},
-
+			onStateChange: state => {
+				this.#updateState(state)
+			},
 			handleJoin: ({clientId, send, close}) => {
 				console.log(`client has joined: ${clientId}`)
 				const {hostApi, trash} = (
@@ -130,6 +126,8 @@ export class HostHandler extends Handler<Scenario.Host> {
 				}
 			},
 		})
+		this.#controls = controls
+		this.#bootUpScenario(controls.state)
 	}
 }
 
