@@ -19,7 +19,7 @@ export const MultiplayerMenu = nexus.shadow_view(use => (game: Game) => {
 	return op_effect.braille(scenarioOp, scenario => {
 		function renderSessionInfo(sessionInfo: SessionInfo) {
 			const {origin, pathname} = new URL(location.href)
-			const sessionLink = origin + pathname + `?quality=potato` + `#session=${sessionInfo.id}`
+			const sessionLink = origin + pathname + `#session=${sessionInfo.id}`
 			return html`
 				<p>session id: ${sessionInfo.id}</p>
 				<p>session label: ${sessionInfo.label}</p>
@@ -45,9 +45,6 @@ export const MultiplayerMenu = nexus.shadow_view(use => (game: Game) => {
 				return html`
 					<button @click="${() => game.net.startHostSession()}">
 						host a new session!
-					</button>
-					<button @click="${() => game.net.joinAsClient("")}">
-						connect as client
 					</button>
 				`
 			}
