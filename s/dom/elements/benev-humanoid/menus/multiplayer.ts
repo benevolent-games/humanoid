@@ -31,9 +31,10 @@ export const MultiplayerMenu = nexus.shadow_view(use => (game: Game) => {
 			if (lobby.players.length === 0)
 				return null
 			return html`
+				<h3>clients:</h3>
 				<ol>
 					${lobby.players.map(player => html`
-						<li>${player.clientId} :: ${player.ping}ms</li>
+						<li>${player.clientId} :: ${player.ping} ms</li>
 					`)}
 				</ol>
 			`
@@ -56,7 +57,7 @@ export const MultiplayerMenu = nexus.shadow_view(use => (game: Game) => {
 				const {session, signalServerPing} = scenario.state
 				return html`
 					${renderSessionInfo(session)}
-					<p>signalServerPing: ${signalServerPing}</p>
+					<p>signalServerPing: ${signalServerPing} ms</p>
 					<button @click="${() => game.net.backToLocalSession()}">
 						end session
 					</button>

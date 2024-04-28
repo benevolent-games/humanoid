@@ -114,7 +114,7 @@ export class HostHandler extends Handler<Scenario.Host> {
 		const pingingInterval = setInterval(() => {
 			const ping = pingStation.ping()
 			clientApi.ping(ping.id, this.#scenario.lobby)
-		}, 1000)
+		}, 100)
 
 		trash.mark(() => clearInterval(pingingInterval))
 		trash.mark(() => close())
