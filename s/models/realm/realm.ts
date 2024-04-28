@@ -15,8 +15,8 @@ import {optimize_scene} from "../../tools/optimize_scene.js"
 import {standard_glb_post_process} from "../glb/standard_glb_post_process.js"
 
 export type RealmParams = {
-	allow_webgpu: boolean
 	commit: CommitHash
+	allow_webgpu: boolean
 	gameplan: HuGameplan
 }
 
@@ -96,8 +96,8 @@ export async function makeRealm(params: RealmParams) {
 		physics,
 		bestorage,
 		loadingDock,
-		net: new Net(),
 		characterContainer,
+		net: new Net(),
 		finder: new Finder(physics),
 		shadowManager: new ShadowManager(),
 	}

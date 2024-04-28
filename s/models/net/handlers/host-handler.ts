@@ -45,6 +45,33 @@ export class HostHandler extends Handler<Scenario.Host> {
 
 	#trash = new Trashcan()
 	#clients = new Map<string, {rtt: number}>()
+	get #scenario() { return Op.payload(this.scenarioOp)! }
+
+	#addClient(clientId: string) {
+		this.#clients.set(clientId, {rtt: -1})
+		this.#updateLobbyPlayers()
+	}
+
+	#removeClient(clientId: string) {
+		this.#clients.delete(clientId)
+		this.#updateLobbyPlayers()
+	}
+
+	#updateClientRtt(clientId: string, rtt: number) {
+		const client = this.#clients.get(clientId)
+		if (client)
+			client.rtt = rtt
+		this.#updateLobbyPlayers()
+	}
+
+	#updateLobbyPlayers() {
+		this[$update](scenario => {
+			scenario.lobby.players = (
+				[...this.#clients.entries()]
+					.map(([clientId, client]) => ({clientId, ping: client.rtt}))
+			)
+		})
+	}
 
 	#bootUpScenario(state: HostState) {
 		const op = this.scenarioOp
@@ -57,21 +84,14 @@ export class HostHandler extends Handler<Scenario.Host> {
 		}
 	}
 
-	#updateLobbyPlayers() {
-		this[$update](scenario => {
-			scenario.lobby.players = (
-				[...this.#clients.entries()]
-					.map(([clientId, client]) => ({clientId, ping: client.rtt}))
-			)
-		})
-	}
-
 	#updateState(state: HostState) {
 		this[$update](scenario => { scenario.state = state })
 	}
 
 	#handleSessionDied() {
+		console.log("host session died")
 		this.#controls = null
+		this.#clients.clear()
 		this.dispose()
 		this.#params.onSessionDeath()
 	}
@@ -82,21 +102,23 @@ export class HostHandler extends Handler<Scenario.Host> {
 			close: () => void
 		}) {
 		const trash = new Trashcan()
+		this.#addClient(clientId)
+
 		const pingStation = new PingStation({
-			onReport: rtt => this.#clients.set(clientId, {rtt}),
+			onReport: rtt => this.#updateClientRtt(clientId, rtt),
 		})
+
 		const hostApi = makeHostApi({pingStation})
 		const clientApi = remoteSender<ClientApi>(send)
 
 		const pingingInterval = setInterval(() => {
 			const ping = pingStation.ping()
-			clientApi.ping(ping.id)
+			clientApi.ping(ping.id, this.#scenario.lobby)
 		}, 1000)
 
 		trash.mark(() => clearInterval(pingingInterval))
 		trash.mark(() => close())
-		trash.mark(() => this.#clients.delete(clientId))
-		trash.mark(() => this.#updateLobbyPlayers())
+		trash.mark(() => this.#removeClient(clientId))
 		return {hostApi, trash}
 	}
 

@@ -1,13 +1,14 @@
 
 import {Op} from "@benev/slate"
-import {ClientState, SessionInfo, joinSessionAsClient} from "sparrow-rtc"
+import {ClientState, joinSessionAsClient} from "sparrow-rtc"
 
 import {HostApi} from "../api/host-api.js"
-import {$set, $update, Handler} from "./handler.js"
 import {Scenario} from "../types/exports.js"
 import {makeClientApi} from "../api/client-api.js"
+import {$set, $update, Handler} from "./handler.js"
 import {sparrowConfig} from "../parts/sparrow-config.js"
 import {remoteReceiver, remoteSender} from "../parts/remote.js"
+import { Lobby } from "../types/scenario.js"
 
 export type ClientParams = {
 	onSessionDeath: () => void
@@ -55,7 +56,12 @@ export class ClientHandler extends Handler<Scenario.Client> {
 		this[$update](scenario => { scenario.state = state })
 	}
 
+	#updateLobby(lobby: Lobby) {
+		this[$update](scenario => { scenario.lobby = lobby })
+	}
+
 	#handleSessionDied() {
+		console.log("client session died!")
 		this.#connection = null
 		this.dispose()
 		this.#params.onSessionDeath()
@@ -73,7 +79,10 @@ export class ClientHandler extends Handler<Scenario.Client> {
 			},
 			handleJoin: ({send}) => {
 				const hostApi = remoteSender<HostApi>(send)
-				const clientApi = makeClientApi({hostApi})
+				const clientApi = makeClientApi({
+					hostApi,
+					updateLobby: lobby => this.#updateLobby(lobby),
+				})
 				return {
 					handleMessage: remoteReceiver(clientApi),
 					handleClose: () => this.#handleSessionDied(),
