@@ -28,6 +28,7 @@ export async function makeRealm(params: RealmParams) {
 	const bestorage = new Bestorage({
 		...defaultEffectsData(),
 		shadows: clone(ui.shadows),
+		particleFog: clone(ui.particleFog),
 	})
 
 	const stage = await Stage.create({
@@ -51,11 +52,20 @@ export async function makeRealm(params: RealmParams) {
 		shadows => bestorage.data.shadows = shadows,
 	)
 
-	bestorage.onJson(({shadows: shadowsJson = bestorage.fallback.shadows}) => {
-		assignSelectively(bestorage.fallback.shadows.basics, ui.shadows.basics, shadowsJson.basics)
-		assignSelectively(bestorage.fallback.shadows.light, ui.shadows.light, shadowsJson.light)
-		assignSelectively(bestorage.fallback.shadows.generator, ui.shadows.generator, shadowsJson.generator)
-		assignSelectively(bestorage.fallback.shadows.cascaded, ui.shadows.cascaded, shadowsJson.cascaded)
+	reactor.reaction(
+		() => clone(ui.particleFog),
+		particleFog => bestorage.data.particleFog = particleFog,
+	)
+
+	bestorage.onJson(({shadows: json = bestorage.fallback.shadows}) => {
+		assignSelectively(bestorage.fallback.shadows.basics, ui.shadows.basics, json.basics)
+		assignSelectively(bestorage.fallback.shadows.light, ui.shadows.light, json.light)
+		assignSelectively(bestorage.fallback.shadows.generator, ui.shadows.generator, json.generator)
+		assignSelectively(bestorage.fallback.shadows.cascaded, ui.shadows.cascaded, json.cascaded)
+	})
+
+	bestorage.onJson(({particleFog: json = bestorage.fallback.particleFog}) => {
+		assignSelectively(bestorage.fallback.particleFog, ui.particleFog, json)
 	})
 
 	const {scene} = stage

@@ -1,5 +1,5 @@
 
-import {Ecs} from "@benev/toolbox"
+import {Ecs, Vec3} from "@benev/toolbox"
 import {flatstate} from "@benev/slate"
 import {Weapon} from "../armory/weapon.js"
 import {Activity} from "../activity/exports.js"
@@ -58,6 +58,12 @@ export class Ui {
 				active: false,
 			}),
 		} satisfies Record<Weapon.Grip, any>
+	})
+
+	particleFog = flatstate({
+		enabled: true,
+		color1: [.3, .3, .3] as Vec3,
+		color2: [.95, .95, .95] as Vec3,
 	})
 
 	shadows = {

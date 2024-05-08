@@ -1,6 +1,8 @@
 
+import {clone, debounce, reactor} from "@benev/slate"
 import {PointLight} from "@babylonjs/core/Lights/pointLight.js"
 
+import {Ui} from "../../ui/ui.js"
 import {levelScript} from "../types.js"
 import setup_fog from "../sfx/setup_fog.js"
 import setup_shadows from "../sfx/setup_shadows.js"
@@ -17,23 +19,36 @@ export default levelScript(async(realm, stuff) => {
 		}
 	}
 
-	const fog = setup_fog({
-		stage: realm.stage,
-		url: realm.gameplan.graphics.fog,
-		extent: [[-40, -1, -50], [40, 8, 50]],
-		particles: {
-			fadeRange: 20,
-			sizes: [10, 20],
-			colors: [
-				[.3, .3, .3],
-				[.95, .95, .95],
-			],
-			...(quality === "potato"
-				? {count: 500, alpha: 25 / 100, spinrate: .5}
-				: {count: 2000, alpha: 10 / 100, spinrate: .5}
-			),
-		},
+	let particleFog: ReturnType<typeof setup_fog> | null = null
+
+	const applyFogSettings = debounce(100, (data: Ui["particleFog"]) => {
+		if (particleFog)
+			particleFog.dispose()
+
+		particleFog = setup_fog({
+			stage: realm.stage,
+			url: realm.gameplan.graphics.fog,
+			extent: [[-40, -1, -50], [40, 8, 50]],
+			particles: {
+				fadeRange: 20,
+				sizes: [10, 20],
+				colors: [data.color1, data.color2],
+				...(quality === "potato"
+					? {count: 500, alpha: 25 / 100, spinrate: .5}
+					: {count: 2000, alpha: 10 / 100, spinrate: .5}
+				),
+			},
+		})
 	})
+
+	const stop1 = reactor.reaction(
+		() => clone(realm.ui.particleFog),
+		data => applyFogSettings(data),
+	)
+
+	const stop2 = realm.stage.rendering.onEffectsChange(
+		() => applyFogSettings(clone(realm.ui.particleFog))
+	)
 
 	if (quality === "potato") bestorage.json = `
 		{"resolution":50,"effects":{"image":{"contrast":1.85,"exposure":1},"tonemapping":{"operator":"Photographic"},"vignette":{"color":[0,0,0],"weight":3.68,"stretch":1,"multiply":true},"scene":{"clearColor":[0.1,0.1,0.1],"ambientColor":[0,0,0],"shadowsEnabled":false,"environmentIntensity":0.38,"forceWireframe":false,"forceShowBoundingBoxes":false,"disableGammaTransform":false}},"shadows":{"basics":{"filter":0,"filteringQuality":2,"sunDistance":100,"grass_receives_shadows":true,"grass_casts_shadows":false},"light":{"intensity":7.6,"autoUpdateExtends":false,"autoCalcShadowZBounds":false,"shadowOrthoScale":0.1,"shadowFrustumSize":0,"shadowMinZ":10,"shadowMaxZ":500},"generator":{"enableSoftTransparentShadow":false,"useKernelBlur":false,"forceBackFacesOnly":false,"mapSize":1024,"blurScale":2,"blurKernel":1,"blurBoxOffset":1,"bias":0.00005,"darkness":0,"depthScale":50,"frustumEdgeFalloff":0},"cascaded":{"enabled":false,"debug":false,"stabilizeCascades":false,"autoCalcDepthBounds":true,"freezeShadowCastersBoundingInfo":true,"numCascades":4,"lambda":0.5,"cascadeBlendPercentage":0.05,"penumbraDarkness":1,"shadowMinZ":0.1,"shadowMaxZ":500}}}
@@ -47,7 +62,10 @@ export default levelScript(async(realm, stuff) => {
 
 	return {dispose: () => {
 		shadows.dispose()
-		fog.dispose()
+		stop1()
+		stop2()
+		if (particleFog)
+			particleFog.dispose()
 	}}
 })
 

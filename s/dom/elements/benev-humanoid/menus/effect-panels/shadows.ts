@@ -1,23 +1,14 @@
 
-import {clone, css, html, reactor} from "@benev/slate"
+import {css, html} from "@benev/slate"
+import {NuiCheckbox, NuiRange, NuiSelect} from "@benev/toolbox"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
-import {NuiCheckbox, NuiRange, Bestorage, NuiSelect, assignSelectively} from "@benev/toolbox"
 
+import {InputGroup} from "./parts/types.js"
 import {nexus} from "../../../../../nexus.js"
-import {HuBestorageData} from "../effects.js"
 import {Ui} from "../../../../../models/ui/ui.js"
 import {Granularity} from "../utils/granularity.js"
 import {Game} from "../../../../../models/realm/types.js"
-
-type Primitive = number | boolean
-
-type InputGroup<G extends Record<string, Primitive>> = {
-	[K in keyof G]: (
-		G[K] extends number ? [typeof Number, Granularity] :
-		G[K] extends boolean ? [typeof Boolean] :
-		never
-	)
-}
+import {renderInputGroup} from "./parts/render-input-group.js"
 
 const lightInputs: InputGroup<Ui["shadows"]["light"]> = {
 	intensity: [Number, Granularity.coarse],
@@ -56,31 +47,6 @@ const cascadedInputs: InputGroup<Ui["shadows"]["cascaded"]> = {
 	penumbraDarkness: [Number, Granularity.fine],
 	shadowMinZ: [Number, Granularity.bigly],
 	shadowMaxZ: [Number, Granularity.bigly],
-}
-
-function renderInputGroup<Data extends Record<string, Primitive>>(data: Data, group: InputGroup<Data>) {
-	return Object.entries(group).map(([key, spec]) => {
-		const [kind] = spec
-		const value = data[key] as any
-		const set = (x: any) => (data as any)[key] = x
-		if (kind === Boolean) {
-			return NuiCheckbox([{
-				label: key,
-				checked: value,
-				set: x => (data as any)[key] = x,
-			}])
-		}
-		else if (kind === Number) {
-			const granularity = spec[1]!
-			return NuiRange([{
-				...granularity,
-				label: key,
-				value,
-				set,
-			}])
-		}
-		else throw new Error("unknown group kind")
-	})
 }
 
 class Flags<N extends number, S extends string> {
