@@ -197,6 +197,11 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 				node.name.includes("toy")
 			))
 
+		for (const mesh of level.meshes) {
+			if (nquery(mesh).tag("invisible"))
+				mesh.isVisible = false
+		}
+
 		const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))
 		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))
 		const boxes = level.top_level_nodes.filter(m => m.name.includes("toy_cube"))

@@ -1,4 +1,6 @@
 
+import {PointLight} from "@babylonjs/core/Lights/pointLight.js"
+
 import {levelScript} from "../types.js"
 import setup_fog from "../sfx/setup_fog.js"
 import setup_shadows from "../sfx/setup_shadows.js"
@@ -9,12 +11,23 @@ export default levelScript(async(realm, stuff) => {
 
 	const shadows = setup_shadows(realm, stuff)
 
+	for (const light of stuff.level.lights) {
+		if (light instanceof PointLight) {
+			light.dispose()
+		}
+	}
+
 	const fog = setup_fog({
 		stage: realm.stage,
 		url: realm.gameplan.graphics.fog,
+		extent: [[-40, -1, -50], [40, 8, 50]],
 		particles: {
 			fadeRange: 20,
 			sizes: [10, 20],
+			colors: [
+				[.3, .3, .3],
+				[.95, .95, .95],
+			],
 			...(quality === "potato"
 				? {count: 500, alpha: 25 / 100, spinrate: .5}
 				: {count: 2000, alpha: 10 / 100, spinrate: .5}

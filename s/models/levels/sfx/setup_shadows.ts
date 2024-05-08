@@ -1,5 +1,5 @@
 
-import {nquery} from "@benev/toolbox"
+import {Meshoid, nquery} from "@benev/toolbox"
 import {debounce, clone, reactor} from "@benev/slate"
 
 import {Ui} from "../../ui/ui.js"
@@ -9,8 +9,8 @@ import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 import {CascadedShadowGenerator} from "@babylonjs/core/Lights/Shadows/cascadedShadowGenerator.js"
 
-export default (realm: HuRealm, stuff: LevelStuff) => {
-	const sunlight = stuff.level.lights[0] as DirectionalLight
+export default (realm: HuRealm, {level}: LevelStuff) => {
+	const sunlight = level.lights[0] as DirectionalLight
 
 	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
 	let unlisten = () => {}
@@ -44,17 +44,42 @@ export default (realm: HuRealm, stuff: LevelStuff) => {
 				Object.assign(shadowGenerator, data.generator)
 			}
 
-			for (const mesh of stuff.level.meshes) {
-				if (nquery(mesh).tag("grass") || nquery(mesh).name("grass")) {
-					mesh.receiveShadows = data.basics.grass_receives_shadows
+			const shadowCasters = new Set<Meshoid>()
+			const shadowReceivers = new Set<Meshoid>()
+
+			// apply mesh/material shadow settings
+			for (const mesh of level.meshes) {
+				const shadows = nquery(mesh).tag("shadows") ?? true
+				const isGrass = nquery(mesh).tag("grass") || nquery(mesh).name("grass")
+
+				if (isGrass) {
 					if (data.basics.grass_casts_shadows)
-						shadowGenerator.addShadowCaster(mesh)
+						shadowCasters.add(mesh)
+					if (data.basics.grass_receives_shadows)
+						shadowReceivers.add(mesh)
 				}
-				else {
+
+				if (shadows === "cast") {
+					shadowCasters.add(mesh)
+					shadowGenerator.addShadowCaster(mesh)
+				}
+				else if (shadows === "receive") {
+					shadowReceivers.add(mesh)
+					mesh.receiveShadows = true
+				}
+				else if (shadows === true) {
+					shadowCasters.add(mesh)
+					shadowReceivers.add(mesh)
 					mesh.receiveShadows = true
 					shadowGenerator.addShadowCaster(mesh)
 				}
 			}
+
+			for (const mesh of shadowCasters)
+				shadowGenerator.addShadowCaster(mesh)
+
+			for (const mesh of shadowReceivers)
+				mesh.receiveShadows = true
 
 			unlisten = realm.shadowManager.attachListener({
 				addCaster: mesh => shadowGenerator.addShadowCaster(mesh),

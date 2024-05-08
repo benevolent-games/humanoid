@@ -21,11 +21,11 @@ export class Capsule extends HybridComponent<{
 		radius: this.state.radius,
 		halfHeight: this.halfHeight,
 		snapToGround: {
-			distance: this.halfHeight / 2,
+			distance: this.halfHeight / 3,
 		},
 		autostep: {
-			maxHeight: this.halfHeight,
-			minWidth: this.state.radius,
+			maxHeight: this.halfHeight / 2,
+			minWidth: this.state.radius / 2,
 			includeDynamicBodies: false,
 		},
 		slopes: {

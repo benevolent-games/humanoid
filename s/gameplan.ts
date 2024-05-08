@@ -20,12 +20,13 @@ export const make_gameplan = Plan.gameplan(({
 	local,
 
 	shaders: {
+		mercury: shader("shaders/mercury/shader.json", {}),
+		mountain: shader("shaders/mountain/shader.json", {}),
+		rock_large_01: shader("shaders/rock_large_01/shader.json", {}),
+		skylight: shader("shaders/skylight/shader.json", {}),
 		terrain: shader("shaders/terrain/shader.json", {}),
 		terrain2: shader("shaders/terrain2/shader.json", {}),
 		terrain3: shader("shaders/terrain3/shader.json", {}),
-		rock_large_01: shader("shaders/rock_large_01/shader.json", {}),
-		skylight: shader("shaders/skylight/shader.json", {}),
-		mercury: shader("shaders/mercury/shader.json", {}),
 		water: shader("shaders/water/shader.json", {}),
 	},
 
@@ -41,7 +42,7 @@ export const make_gameplan = Plan.gameplan(({
 	levels: levels({
 		viking_village: {
 			glb: glb("glbs/levels/viking_village.glb", "physics"),
-			sky: sky("skyboxes/overcast_02", kilometers(1), degrees(270)),
+			sky: sky("skyboxes/overcast_03", kilometers(1), degrees(270)),
 			env: env("envmaps/viking_village.env", degrees(180)),
 		},
 		gym: {
