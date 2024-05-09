@@ -29,7 +29,7 @@ export class Finder {
 		const ray = new Rapier.Ray(xyz(origin), xyz(direction))
 		physics.world.intersectionsWithRay(ray, maxDistance, true, hit => {
 			hits.push({
-				distance: hit.toi,
+				distance: hit.timeOfImpact,
 				collider: hit.collider,
 				normal: vec3.from.xyz(hit.normal),
 			})

@@ -22,7 +22,7 @@ export const make_gameplan = Plan.gameplan(({
 	shaders: {
 		mercury: shader("shaders/mercury/shader.json", {}),
 		mountain: shader("shaders/mountain/shader.json", {}),
-		rock_large_01: shader("shaders/rock_large_01/shader.json", {}),
+		"rock-large-01": shader("shaders/rock_large_01/shader.json", {}),
 		skylight: shader("shaders/skylight/shader.json", {}),
 		terrain: shader("shaders/terrain/shader.json", {}),
 		terrain2: shader("shaders/terrain2/shader.json", {}),
