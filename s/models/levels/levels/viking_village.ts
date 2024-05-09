@@ -1,6 +1,6 @@
 
 import {clone, debounce, reactor} from "@benev/slate"
-import {PointLight} from "@babylonjs/core/Lights/pointLight.js"
+import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 
 import {Ui} from "../../ui/ui.js"
 import {levelScript} from "../types.js"
@@ -11,13 +11,11 @@ export default levelScript(async(realm, stuff) => {
 	const {bestorage} = realm
 	const {quality} = realm.gameplan
 
-	const shadows = setup_shadows(realm, stuff)
+	const [originalSun] = stuff.level.lights
+	const sunlight = originalSun.clone("newsun") as DirectionalLight
+	originalSun.dispose()
 
-	for (const light of stuff.level.lights) {
-		if (light instanceof PointLight) {
-			light.dispose()
-		}
-	}
+	const shadows = setup_shadows(realm, stuff, sunlight)
 
 	let particleFog: ReturnType<typeof setup_fog> | null = null
 
@@ -25,20 +23,19 @@ export default levelScript(async(realm, stuff) => {
 		if (particleFog)
 			particleFog.dispose()
 
-		particleFog = setup_fog({
+		particleFog = data.enabled ? setup_fog({
 			stage: realm.stage,
 			url: realm.gameplan.graphics.fog,
-			extent: [[-40, -1, -50], [40, 8, 50]],
+			extent: [[-40, -1, -50], [40, 12, 50]],
 			particles: {
 				fadeRange: 20,
 				sizes: [10, 20],
 				colors: [data.color1, data.color2],
-				...(quality === "potato"
-					? {count: 500, alpha: 25 / 100, spinrate: .5}
-					: {count: 2000, alpha: 10 / 100, spinrate: .5}
-				),
+				count: data.count,
+				alpha: data.alpha,
+				spinrate: data.spinrate,
 			},
-		})
+		}) : null
 	})
 
 	const stop1 = reactor.reaction(

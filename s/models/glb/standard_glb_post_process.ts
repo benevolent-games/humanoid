@@ -1,5 +1,5 @@
 
-import {fix_animation_groups, nametag} from "@benev/toolbox"
+import {fix_animation_groups, nametag, nquery} from "@benev/toolbox"
 
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
 import {Material} from "@babylonjs/core/Materials/material.js"
@@ -11,6 +11,7 @@ import {HuGameplan} from "../../gameplan.js"
 import {GlbPostProcess} from "./parts/types.js"
 import {LoadingDock} from "../planning/loading_dock.js"
 import {isFoliage, isHair} from "./parts/mesh-filters.js"
+import {PointLight} from "@babylonjs/core/Lights/pointLight.js"
 import {collectMaterials} from "../../tools/collect-materials.js"
 
 export function standard_glb_post_process({gameplan, loadingDock}: {
@@ -35,6 +36,13 @@ export function standard_glb_post_process({gameplan, loadingDock}: {
 	return async container => {
 		const replacements = new Map<Material, Shader>()
 
+		for (const light of [...container.lights]) {
+			if (light instanceof PointLight) {
+				console.log("disposed", light.name)
+				light.dispose()
+			}
+		}
+
 		// load shaders
 		for (const material of container.materials) {
 			const tag = nametag(material.name)
@@ -48,6 +56,15 @@ export function standard_glb_post_process({gameplan, loadingDock}: {
 				else {
 					console.warn(`shader not found "${name}"`)
 				}
+			}
+		}
+
+		// replace temp materials with shaders
+		for (const mesh of container.meshes) {
+			if (mesh instanceof Mesh && mesh.material) {
+				const shader = replacements.get(mesh.material)
+				if (shader)
+					mesh.material = shader.material
 			}
 		}
 

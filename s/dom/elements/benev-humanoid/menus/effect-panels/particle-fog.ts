@@ -3,6 +3,7 @@ import {css, html} from "@benev/slate"
 
 import {nexus} from "../../../../../nexus.js"
 import {Ui} from "../../../../../models/ui/ui.js"
+import {Granularity} from "../utils/granularity.js"
 import {ColorInput, InputGroup} from "./parts/types.js"
 import {Game} from "../../../../../models/realm/types.js"
 import {renderInputGroup} from "./parts/render-input-group.js"
@@ -11,6 +12,9 @@ const particleFogInputs: InputGroup<Ui["particleFog"]> = {
 	enabled: [Boolean],
 	color1: [ColorInput],
 	color2: [ColorInput],
+	alpha: [Number, Granularity.fine],
+	count: [Number, Granularity.particles],
+	spinrate: [Number, Granularity.medium],
 }
 
 export const ParticleFogPanel = nexus.shadow_view(use => (game: Game) => {

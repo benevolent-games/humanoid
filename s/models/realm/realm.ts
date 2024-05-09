@@ -10,6 +10,7 @@ import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {ShadowManager} from "./parts/shadow-manager.js"
 import {LoadingDock} from "../planning/loading_dock.js"
+import {ScenePerformancePriority} from "@babylonjs/core/scene.js"
 import {standard_glb_post_process} from "../glb/standard_glb_post_process.js"
 
 export type RealmParams = {
@@ -69,6 +70,8 @@ export async function makeRealm(params: RealmParams) {
 	})
 
 	const {scene} = stage
+	scene.performancePriority = ScenePerformancePriority.BackwardCompatible
+
 	const loadingDock = new LoadingDock(scene, commit)
 	const tact = new HuTact()
 	const colors = debug_colors(scene)

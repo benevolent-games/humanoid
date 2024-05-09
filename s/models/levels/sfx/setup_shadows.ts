@@ -9,9 +9,7 @@ import {DirectionalLight} from "@babylonjs/core/Lights/directionalLight.js"
 import {ShadowGenerator} from "@babylonjs/core/Lights/Shadows/shadowGenerator.js"
 import {CascadedShadowGenerator} from "@babylonjs/core/Lights/Shadows/cascadedShadowGenerator.js"
 
-export default (realm: HuRealm, {level}: LevelStuff) => {
-	const sunlight = level.lights[0] as DirectionalLight
-
+export default (realm: HuRealm, {level}: LevelStuff, sunlight: DirectionalLight) => {
 	let shadowGenerator: ShadowGenerator | CascadedShadowGenerator
 	let unlisten = () => {}
 
@@ -61,17 +59,13 @@ export default (realm: HuRealm, {level}: LevelStuff) => {
 
 				if (shadows === "cast") {
 					shadowCasters.add(mesh)
-					shadowGenerator.addShadowCaster(mesh)
 				}
 				else if (shadows === "receive") {
 					shadowReceivers.add(mesh)
-					mesh.receiveShadows = true
 				}
 				else if (shadows === true) {
 					shadowCasters.add(mesh)
 					shadowReceivers.add(mesh)
-					mesh.receiveShadows = true
-					shadowGenerator.addShadowCaster(mesh)
 				}
 			}
 

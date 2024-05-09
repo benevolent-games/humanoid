@@ -28,6 +28,7 @@ export class Shader<Inputs extends object = object> {
 				const rebased_url = new URL(texblock.name, new URL(url, location.href)).href
 				const new_url = url_replace_extension(rebased_url, forced_extension_for_textures)
 				const texture = new Texture(commit.augment(new_url), scene)
+				// const texture = new Texture(commit.augment(new_url), scene, {gammaSpace: true})
 				texblock.texture = texture
 			}
 		}

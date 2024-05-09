@@ -64,6 +64,9 @@ export class Ui {
 		enabled: true,
 		color1: [.3, .3, .3] as Vec3,
 		color2: [.95, .95, .95] as Vec3,
+		alpha: 0.25,
+		count: 500,
+		spinrate: 0.5,
 	})
 
 	shadows = {
