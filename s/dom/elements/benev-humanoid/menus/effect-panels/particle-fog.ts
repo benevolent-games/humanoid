@@ -8,6 +8,7 @@ import {Game} from "../../../../../models/realm/types.js"
 import {renderInputGroup} from "./parts/render-input-group.js"
 
 const particleFogInputs: InputGroup<Ui["particleFog"]> = {
+	enabled: [Boolean],
 	color1: [ColorInput],
 	color2: [ColorInput],
 }
