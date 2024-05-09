@@ -11,9 +11,7 @@ export default levelScript(async(realm, stuff) => {
 	const {bestorage} = realm
 	const {quality} = realm.gameplan
 
-	const [originalSun] = stuff.level.lights
-	const sunlight = originalSun.clone("newsun") as DirectionalLight
-	originalSun.dispose()
+	const sunlight = stuff.level.lights[0] as DirectionalLight
 
 	const shadows = setup_shadows(realm, stuff, sunlight)
 

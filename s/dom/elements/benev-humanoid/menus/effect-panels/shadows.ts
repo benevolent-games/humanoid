@@ -28,7 +28,7 @@ const generatorInputs: InputGroup<Ui["shadows"]["generator"]> = {
 	blurScale: [Number, Granularity.medium],
 	blurKernel: [Number, Granularity.medium],
 	blurBoxOffset: [Number, Granularity.medium],
-	contactHardeningLightSizeUVRatio: [Number, Granularity.fine],
+	contactHardeningLightSizeUVRatio: [Number, Granularity.medium],
 	bias: [Number, Granularity.ultrafine],
 	darkness: [Number, Granularity.fine],
 	depthScale: [Number, Granularity.coarse],
