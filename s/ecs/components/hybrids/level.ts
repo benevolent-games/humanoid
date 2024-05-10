@@ -91,7 +91,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 type LevelInstance = Awaited<ReturnType<typeof instance_level>>
 
 async function instance_level(asset: AssetContainer) {
-	const instanced = asset.instantiateModelsToScene()
+	const instanced = asset.instantiateModelsToScene(n => n)
 	const [root] = instanced.rootNodes
 
 	const get_top_level = true

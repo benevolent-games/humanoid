@@ -50,7 +50,7 @@ export function standard_glb_post_process({gameplan, loadingDock}: {
 				const name = tag.name as keyof typeof gameplan.shaders
 				if (name in gameplan.shaders) {
 					const plan = gameplan.shaders[name]
-					const shader = await loadingDock.loadShader(plan)
+					const shader = await loadingDock.loadShader(plan, material.name)
 					replacements.set(material, shader)
 				}
 				else {

@@ -1,15 +1,15 @@
 
-import "@babylonjs/core/Materials/Node/Blocks/index.js"
-
 import {is} from "@benev/slate"
-import {label} from "@benev/toolbox"
-import {Plan} from "../../planning/plan.js"
+import {nametag} from "@benev/toolbox"
 import {Scene} from "@babylonjs/core/scene.js"
-import {CommitHash} from "../../../tools/commit_hash.js"
+import "@babylonjs/core/Materials/Node/Blocks/index.js"
 import {Texture} from "@babylonjs/core/Materials/Textures/texture.js"
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial.js"
-import {url_replace_extension} from "../../../tools/url_replace_extension.js"
 import {InputBlock, PBRMetallicRoughnessBlock, ReflectionBlock, RefractionBlock} from "@babylonjs/core/Materials/Node/Blocks/index.js"
+
+import {Plan} from "../../planning/plan.js"
+import {CommitHash} from "../../../tools/commit_hash.js"
+import {url_replace_extension} from "../../../tools/url_replace_extension.js"
 
 export class Shader<Inputs extends object = object> {
 
@@ -17,18 +17,24 @@ export class Shader<Inputs extends object = object> {
 			scene: Scene,
 			commit: CommitHash,
 			{url, inputs, forced_extension_for_textures}: Plan.Shader<I>,
+			namestring: string,
 		) {
+
+		const name = nametag(namestring)
+		name.delete("shader")
+		const newName = name.toString()
+
 		NodeMaterial.IgnoreTexturesAtLoadTime = true
-		const material = await NodeMaterial.ParseFromFileAsync(label("shader"), commit.augment(url), scene)
-		material.name = label("shader")
+		const material = await NodeMaterial.ParseFromFileAsync(newName, commit.augment(url), scene)
+
 		for (const texblock of material.getTextureBlocks()) {
-			if (texblock instanceof ReflectionBlock || texblock instanceof RefractionBlock)
+			if (texblock instanceof ReflectionBlock || texblock instanceof RefractionBlock) {
 				texblock.texture = scene.environmentTexture
+			}
 			else {
 				const rebased_url = new URL(texblock.name, new URL(url, location.href)).href
 				const new_url = url_replace_extension(rebased_url, forced_extension_for_textures)
 				const texture = new Texture(commit.augment(new_url), scene)
-				// const texture = new Texture(commit.augment(new_url), scene, {gammaSpace: true})
 				texblock.texture = texture
 			}
 		}

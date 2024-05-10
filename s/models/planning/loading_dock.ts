@@ -22,8 +22,8 @@ export class LoadingDock {
 		return glb
 	}
 
-	async loadShader<Inputs extends object>(plan: Plan.Shader<Inputs>) {
-		const shader = await Shader.make(this.scene, this.commit, plan)
+	async loadShader<Inputs extends object>(plan: Plan.Shader<Inputs>, name: string) {
+		const shader = await Shader.make(this.scene, this.commit, plan, name)
 		await this.shader_post_process(shader)
 		return shader
 	}
