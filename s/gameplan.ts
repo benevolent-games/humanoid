@@ -26,11 +26,11 @@ export const make_gameplan = Plan.gameplan(({
 		terrain: shader("shaders/terrain/shader.json", {}),
 		terrain2: shader("shaders/terrain2/shader.json", {}),
 
-		// terrain3: shader("shaders/terrain3/shader.json", {}),
-		// mountain: shader("shaders/mountain/shader.json", {}),
+		terrain3: shader("shaders/terrain3/shader.json", {}),
+		mountain: shader("shaders/mountain/shader.json", {}),
 
-		mountain: shader("shaders/terrain3/shader.json", {}),
-		terrain3: shader("shaders/mountain/shader.json", {}),
+		// mountain: shader("shaders/terrain3/shader.json", {}),
+		// terrain3: shader("shaders/mountain/shader.json", {}),
 
 		water: shader("shaders/water/shader.json", {}),
 	},

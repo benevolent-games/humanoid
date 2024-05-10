@@ -1,5 +1,6 @@
 
 import {clone, reactor} from "@benev/slate"
+import {ScenePerformancePriority} from "@babylonjs/core/scene.js"
 import {Bestorage, Stage, assignSelectively, debug_colors, defaultEffectsData} from "@benev/toolbox"
 
 import {Ui} from "../ui/ui.js"
@@ -10,7 +11,6 @@ import {HuGameplan} from "../../gameplan.js"
 import {CommitHash} from "../../tools/commit_hash.js"
 import {ShadowManager} from "./parts/shadow-manager.js"
 import {LoadingDock} from "../planning/loading_dock.js"
-import {ScenePerformancePriority} from "@babylonjs/core/scene.js"
 import {standard_glb_post_process} from "../glb/standard_glb_post_process.js"
 
 export type RealmParams = {
@@ -81,11 +81,11 @@ export async function makeRealm(params: RealmParams) {
 	// before it's copied to the scene.
 	loadingDock.glb_post_process = standard_glb_post_process({gameplan, loadingDock})
 
-	// hack specular fix on node material shaders
-	loadingDock.shader_post_process = async shader => {
-		if (shader.pbr)
-			shader.pbr.specularIntensity = 0.2
-	}
+	// // hack specular fix on node material shaders
+	// loadingDock.shader_post_process = async shader => {
+	// 	if (shader.pbr)
+	// 		shader.pbr.specularIntensity = 0.2
+	// }
 
 	const characterContainer = await loadingDock.loadGlb(
 		gameplan.characters.pimsley.glb
