@@ -12,6 +12,7 @@ export class Granularity {
 	static coarse = new this(0, 100, (1/10))
 	static zeroed = new this(-1, 1, (1/20))
 	static bigly = new this(0, 1000, 5)
+	static particles = new this(0, 10_000, 50)
 	static square = new this(512, 4096, 512)
 }
 

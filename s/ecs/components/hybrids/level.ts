@@ -91,7 +91,7 @@ export class Level extends HybridComponent<{level: HuLevel}> {
 type LevelInstance = Awaited<ReturnType<typeof instance_level>>
 
 async function instance_level(asset: AssetContainer) {
-	const instanced = asset.instantiateModelsToScene()
+	const instanced = asset.instantiateModelsToScene(n => n)
 	const [root] = instanced.rootNodes
 
 	const get_top_level = true
@@ -196,6 +196,11 @@ function setup_level_accoutrements(realm: HuRealm, enable_physics: boolean) {
 				node.name.includes("feature") ||
 				node.name.includes("toy")
 			))
+
+		for (const mesh of level.meshes) {
+			if (nquery(mesh).tag("invisible"))
+				mesh.isVisible = false
+		}
 
 		const balls = level.top_level_nodes.filter(m => m.name.includes("hanging_ball"))
 		const bags = level.top_level_nodes.filter(m => m.name.includes("hanging_heavybag"))

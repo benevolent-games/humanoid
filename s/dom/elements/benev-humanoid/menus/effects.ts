@@ -4,8 +4,9 @@ import {EffectsPanel, EffectsPanelData} from "@benev/toolbox"
 
 import {nexus} from "../../../../nexus.js"
 import {Ui} from "../../../../models/ui/ui.js"
-import {ShadowsPanel} from "./panels/shadows.js"
 import {Game} from "../../../../models/realm/types.js"
+import {ShadowsPanel} from "./effect-panels/shadows.js"
+import {ParticleFogPanel} from "./effect-panels/particle-fog.js"
 
 export type HuBestorageData = {
 	shadows: Ui["shadows"]
@@ -17,7 +18,10 @@ export const EffectsMenu = nexus.shadow_view(use => (game: Game) => {
 
 	return EffectsPanel(
 		[game.stage, game.bestorage],
-		{content: html`${ShadowsPanel([game])}`},
+		{content: html`
+			${ParticleFogPanel([game])}
+			${ShadowsPanel([game])}
+		`},
 	)
 })
 

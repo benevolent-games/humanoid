@@ -120,7 +120,7 @@ export const humanoid = system("humanoid", () => [
 		.select({Capsule, Grounding, Impetus})
 		.logic(tick => ({components}) => {
 			const {grounded, seconds} = components.grounding
-			const subtle_grounding_force = 5 * tick.seconds
+			const subtle_grounding_force = 1 / 10_000
 
 			let y = -subtle_grounding_force
 
