@@ -34,8 +34,8 @@
 		"simplex-noise": "^4.0.1"
 	},
 	"peerDependencies": {
-		"@babylonjs/core": "^7.5.0",
-		"@babylonjs/loaders": "^7.5.0"
+		"@babylonjs/core": "^7.6.0",
+		"@babylonjs/loaders": "^7.6.0"
 	},
 	"devDependencies": {
 		"@benev/batchimage": "^0.0.1",
