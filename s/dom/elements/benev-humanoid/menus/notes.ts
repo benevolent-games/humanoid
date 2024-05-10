@@ -70,6 +70,19 @@ export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
 
 		<section>
 			<h1>
+				<span>just grinding.</span>
+				<small>2024-05-10</small>
+			</h1>
+			<p><strong>vibes:</strong> improve atmosphere, lighting, background trees.</p>
+			<p><strong>props:</strong> new trinkets and stuff like buckets have been sprinkled around.</p>
+			<p><strong>barn:</strong> new version of the livestock area is more modest.</p>
+			<p><strong>longhouse:</strong> extra-wide edition, new furniture.</p>
+			<p><strong>grass:</strong> new and improved grass.</p>
+			<p><strong>physics:</strong> we upgraded the physics engine which improves and slightly changes the way movement and gravity behaves.</p>
+		</section>
+
+		<section>
+			<h1>
 				<span>make it pretty.</span>
 				<small>2024-04-24</small>
 			</h1>
