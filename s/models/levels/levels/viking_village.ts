@@ -71,7 +71,7 @@ export default levelScript(async(realm, stuff) => {
 			[...materials].map(
 				async([material, mesh]) => {
 					await material.forceCompilationAsync(mesh)
-					material.freeze()
+					// material.freeze()
 				}
 			)
 		)
