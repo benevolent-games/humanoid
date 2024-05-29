@@ -1,25 +1,136 @@
 #!/bin/bash
 
-echo "wipe local assets"
-rm -rf assets && mkdir assets
+banner() {
+	echo "";
+	echo "### $1";
+}
 
-echo "download and process glbs"
-npx glbx mount/benev-storage/assets assets
+banner "initialize the assets area";
+mkdir -p assets/source && \
+	rm -rf assets/dist && \
+	mkdir assets/dist;
 
-echo "download other kinds of files"
-rsync -vham \
-	--progress \
-	--include="*/" \
-	--include="*.json" \
-	--exclude="*.glb" \
-	mount/benev-storage/assets \
-	.
+banner "download all asset sources";
+rsync -vham --delete --progress \
+	mount/benev-storage/assets/ \
+	assets/source;
 
-echo "download and compress all images"
-npx @benev/batchimage \
-	--in "mount/benev-storage/assets" \
-	--out "assets" \
-	--format "webp" \
+###
+### glbs
+###
+
+banner "glbs: potato";
+npx @benev/batch 3d glb \
+	--verbose \
+	--in "assets/source" \
+	--out "assets/dist" \
+	--tier "potato" \
+	--suffix "potato";
+
+banner "glbs: mid";
+npx @benev/batch 3d glb \
+	--verbose \
+	--in "assets/source" \
+	--out "assets/dist" \
+	--tier "mid" \
+	--suffix "mid";
+
+banner "glbs: fancy";
+npx @benev/batch 3d glb \
+	--verbose \
+	--in "assets/source" \
+	--out "assets/dist" \
+	--tier "fancy" \
+	--suffix "fancy";
+
+###
+### audio effects
+###
+
+banner "audio effects: potato";
+npx @benev/batch audio m4a \
+	--verbose \
+	--in "assets/source/audio/effects" \
+	--out "assets/dist/audio/effects" \
+	--suffix "potato" \
+	--kbps "32" \
+	--mono;
+
+banner "audio effects: mid";
+npx @benev/batch audio m4a \
+	--verbose \
+	--in "assets/source/audio/effects" \
+	--out "assets/dist/audio/effects" \
+	--suffix "mid" \
+	--kbps "72" \
+	--mono;
+
+banner "audio effects: fancy";
+npx @benev/batch audio m4a \
+	--verbose \
+	--in "assets/source/audio/effects" \
+	--out "assets/dist/audio/effects" \
+	--suffix "fancy" \
+	--kbps "128" \
+	--mono;
+
+###
+### audio music
+###
+
+banner "audio music: potato";
+npx @benev/batch audio m4a \
+	--verbose \
+	--in "assets/source/audio/music" \
+	--out "assets/dist/audio/music" \
+	--suffix "potato" \
+	--kbps "64" \
+	--mono
+
+banner "audio music: mid";
+npx @benev/batch audio m4a \
+	--verbose \
+	--in "assets/source/audio/music" \
+	--out "assets/dist/audio/music" \
+	--suffix "mid" \
+	--kbps "128"
+
+banner "audio music: fancy";
+npx @benev/batch audio m4a \
+	--verbose \
+	--in "assets/source/audio/music" \
+	--out "assets/dist/audio/music" \
+	--suffix "fancy" \
+	--kbps "192"
+
+###
+### images
+###
+
+banner "images: standard";
+npx @benev/batch images webp \
+	--verbose \
+	--in "assets/source" \
+	--out "assets/dist" \
+	--ignores "graphics/**" \
 	--quality "90" \
-	--size "512"
+	--size "1024";
+
+banner "images: graphics";
+npx @benev/batch images webp \
+	--verbose \
+	--in "assets/source/graphics" \
+	--out "assets/dist/graphics" \
+	--quality "90";
+
+###
+### copy other files
+###
+
+banner "copy: other files";
+npx @benev/batch copy \
+	--verbose \
+	--in "assets/source" \
+	--out "assets/dist" \
+	--find "json,env";
 
