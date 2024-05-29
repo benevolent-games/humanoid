@@ -62,7 +62,7 @@ npx @benev/batch audio m4a \
 	--in "assets/source/audio/effects" \
 	--out "assets/dist/audio/effects" \
 	--suffix "mid" \
-	--kbps "72" \
+	--kbps "64" \
 	--mono;
 
 banner "audio effects: fancy";
@@ -84,8 +84,7 @@ npx @benev/batch audio m4a \
 	--in "assets/source/audio/music" \
 	--out "assets/dist/audio/music" \
 	--suffix "potato" \
-	--kbps "64" \
-	--mono
+	--kbps "96"
 
 banner "audio music: mid";
 npx @benev/batch audio m4a \
