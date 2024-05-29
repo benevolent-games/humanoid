@@ -38,7 +38,7 @@
 		"@babylonjs/loaders": "^7.8.2"
 	},
 	"devDependencies": {
-		"@benev/batch": "^0.0.0-5",
+		"@benev/batch": "^0.0.0",
 		"@benev/batchimage": "^0.0.1",
 		"@benev/turtle": "^0.5.2",
 		"@rollup/plugin-node-resolve": "^15.2.3",
