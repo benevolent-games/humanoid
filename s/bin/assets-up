@@ -1,5 +1,5 @@
 #!/bin/bash
 
 echo "upload processed assets back to storage"
-rsync -vham --progress --delete assets mount/benev-storage/x
+rsync -vham --progress --delete assets/dist/ mount/benev-storage/x/assets
 
