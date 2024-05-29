@@ -13,7 +13,7 @@
 	"scripts": {
 		"prepare": "babylon-cleanup",
 		"build": "turtle-standard && run-s links",
-		"links": "ln -s \"$(realpath assets)\" x/assets",
+		"links": "ln -s \"$(realpath assets/dist)\" x/assets",
 		"start": "turtle-standard-watch",
 		"mount": "s/bin/mount",
 		"unmount": "s/bin/unmount",
