@@ -8,6 +8,7 @@ import {LoadingDock} from "../planning/loading_dock.js"
 import {config_foliage} from "./parts/config_foliage.js"
 import {set_max_light_limit} from "./parts/set_max_light_limit.js"
 import {load_and_replace_shaders} from "./parts/load_and_replace_shaders.js"
+import { setup_lods } from "./parts/setup_lods.js"
 
 export function standard_glb_post_process({gameplan, loadingDock}: {
 		gameplan: HuGameplan
@@ -40,6 +41,8 @@ export function standard_glb_post_process({gameplan, loadingDock}: {
 				false
 			),
 		})
+
+		setup_lods(container.meshes)
 	}
 }
 

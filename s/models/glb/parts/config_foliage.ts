@@ -26,5 +26,7 @@ export function config_foliage({
 			material.forceNormalForward = true
 		}
 	}
+
+	container.meshes = container.meshes.filter(m => !m.isDisposed())
 }
 
