@@ -19,7 +19,7 @@ export function standard_glb_post_process({gameplan, loadingDock}: {
 	return async container => {
 		kill_lights(container)
 
-		load_and_replace_shaders({container, gameplan, loadingDock})
+		await load_and_replace_shaders({container, gameplan, loadingDock})
 
 		set_max_light_limit({
 			container,
