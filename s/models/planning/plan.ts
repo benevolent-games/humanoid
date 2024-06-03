@@ -7,6 +7,7 @@ export namespace Plan {
 	export type Game = {
 		root_url: string
 		characters: Pojo<Character>
+		props: Pojo<Glb>
 		levels: Pojo<Level>
 		shaders: Pojo<Shader<any>>
 		graphics: Pojo<string>
@@ -24,7 +25,6 @@ export namespace Plan {
 
 	export type Glb = {
 		url: string
-		physics: boolean
 	}
 
 	export type Env = {

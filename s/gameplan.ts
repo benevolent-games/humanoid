@@ -44,6 +44,10 @@ export const make_gameplan = Plan.gameplan(({
 		pimsley: character("glbs/characters/mr_pimsley.glb"),
 	},
 
+	props: {
+		viking: glb("glbs/props/viking.glb"),
+	},
+
 	levels: levels({
 		viking_village: {
 			glb: glb("glbs/levels/viking_village.glb", "physics"),

@@ -1,7 +1,7 @@
 
 import {nametag} from "@benev/toolbox"
 import {Mesh} from "@babylonjs/core/Meshes/mesh.js"
-import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh.js"
+import {AssetContainer} from "@babylonjs/core/assetContainer.js"
 import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh.js"
 
 class LodMaster {
@@ -47,10 +47,13 @@ class LodMaster {
 	}
 }
 
-export function setup_lods(meshes: AbstractMesh[]) {
-	const lodmeshes = meshes.filter(m => nametag(m.name).get("lod"))
-	const sources = lodmeshes.filter(m => m instanceof Mesh) as Mesh[]
-	const instances = lodmeshes.filter(m => m instanceof InstancedMesh) as InstancedMesh[]
+// 1. organizing source meshes into a sequence
+// 2. some meshes and instances have been turned into empty transform
+//    - delete them, but record their data position/rotation
+// 3. sometimes the wrong lod has instances
+//    - delete them, but record their data position/rotation
+
+function organize_lodmasters(sources: Mesh[]) {
 	const map = new Map<string, LodMaster>()
 
 	for (const mesh of sources) {
@@ -62,7 +65,24 @@ export function setup_lods(meshes: AbstractMesh[]) {
 			map.set(name, new LodMaster(mesh))
 	}
 
-	for (const lodmaster of map.values()) {
+	return [...map.values()]
+}
+
+export function setup_lods(container: AssetContainer) {
+	const lodmeshes = container.meshes.filter(m => nametag(m.name).get("lod"))
+	const lodtransforms = container.transformNodes.filter(n => nametag(n.name).get("lod"))
+	const sources = lodmeshes.filter(m => m instanceof Mesh) as Mesh[]
+	const instances = lodmeshes.filter(m => m instanceof InstancedMesh) as InstancedMesh[]
+
+	console.log(container)
+
+	for (const transform of lodtransforms) {
+		console.log(transform.name)
+	}
+
+	const lodmasters = organize_lodmasters(sources)
+
+	for (const lodmaster of lodmasters) {
 		const [fancyMesh, midMesh, potatoMesh, bingusMesh] = lodmaster.sequence
 		fancyMesh.addLODLevel(10, midMesh)
 		fancyMesh.addLODLevel(20, potatoMesh)
