@@ -11,15 +11,17 @@ export const styles = css`
 	width: 100%;
 	max-width: 64rem;
 	margin: auto;
-	padding: 1rem;
+	padding: 1rem 6rem;
 }
 
 .header {
 	position: relative;
 	width: 100%;
-	aspect-ratio: 48 / 9;
+	height: 12rem;
 	box-shadow: 0 1em 3em #000;
-	border-bottom: 0.3em solid #111;
+
+	background-size: cover;
+	background-position: center center;
 
 	.banner {
 		display: block;
@@ -37,7 +39,7 @@ export const styles = css`
 		.logo {
 			position: absolute;
 			bottom: 0;
-			height: 70%;
+			height: 50%;
 			width: auto;
 		}
 	}
@@ -58,6 +60,7 @@ export const styles = css`
 			cursor: pointer;
 			flex: 0 0 auto;
 			border: 0;
+			border-radius: 0.15rem;
 			background: #8888;
 			color: white;
 			font: inherit;

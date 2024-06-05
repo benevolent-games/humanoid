@@ -10,8 +10,7 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 	use.styles(styles)
 
 	return html`
-		<h1 class=header>
-			<img class=banner src="/assets/graphics/heathen-logo/banner.webp" alt=""/>
+		<h1 class=header style="background-image: url('/assets/graphics/heathen-logo/banner.webp');">
 			<div class="logobox slice">
 				<img class="logo" src="/assets/graphics/heathen-logo/heathen-gg.small.webp" alt="HEATHEN.GG"/>
 			</div>
@@ -20,7 +19,7 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 		<section class="plate slice">
 			<header class=buttons>
 				<button class=play @click="${o.onClickPlay}">play</button>
-				<button class=quality>quality</button>
+				<button class=quality>mid quality</button>
 			</header>
 
 			<div class="content text">

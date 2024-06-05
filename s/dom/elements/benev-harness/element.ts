@@ -19,11 +19,25 @@ async function loadMenuVideo() {
 	})
 }
 
+async function loadMenuAudio() {
+	return await new Promise<HTMLAudioElement>((resolve, reject) => {
+		const audio = document.createElement("audio")
+		audio.preload = "auto"
+		audio.src = "/assets/audio/music/group-1/anticipate.mid.m4a"
+		audio.autoplay = true
+		audio.loop = true
+		audio.oncanplaythrough = () => resolve(audio)
+		audio.onerror = reject
+		audio.load()
+	})
+}
+
 export const BenevHarness = hnexus.shadow_component(use => {
 	use.styles(styles)
 	const mode = use.signal<"landing" | "menu">("landing")
 	const splash = use.signal(false)
 	const video = use.signal<HTMLVideoElement | null>(null)
+	const audio = use.signal<HTMLAudioElement | null>(null)
 
 	async function showSplash() {
 		splash.value = true
@@ -41,20 +55,22 @@ export const BenevHarness = hnexus.shadow_component(use => {
 		</div>
 
 		${mode.value === "landing"
+
 			? LandingView([{
 				onClickPlay: async() => {
 					await Promise.all([
 						showSplash(),
-						loadMenuVideo().then(v => {
-							video.value = v
-						})
+						loadMenuVideo().then(v => { video.value = v }),
+						loadMenuAudio().then(a => { audio.value = a }),
 					])
 					mode.value = "menu"
 					await hideSplash()
 				},
 			}])
+
 			: MainMenuView([{
 				video,
+				audio,
 				onClickExit: async() => {
 					await showSplash()
 					mode.value = "landing"
