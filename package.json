@@ -42,7 +42,7 @@
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.0",
-		"@benev/turtle": "^0.5.2",
+		"@benev/turtle": "^0.6.0-0",
 		"@rollup/plugin-node-resolve": "^15.2.3",
 		"@rollup/plugin-wasm": "^6.2.2",
 		"chokidar": "^3.6.0",

@@ -13,7 +13,10 @@ export default template(async basic => {
 		head: html`
 			<link rel="icon" href="https://benevolent.games/assets/benevolent.svg"/>
 			<meta data-commit-hash="${commitHash}"/>
-			${startup_scripts_with_dev_mode(path)}
+			${startup_scripts_with_dev_mode({
+				path,
+				scripts: [{module: "main.bundle.js", bundle: "main.bundled.min.js"}],
+			})}
 		`,
 		body: html`
 			<benev-humanoid></benev-humanoid>
