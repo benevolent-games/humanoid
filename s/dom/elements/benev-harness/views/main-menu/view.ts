@@ -1,13 +1,21 @@
 
-// import {html} from "@benev/slate"
-// import {styles} from "./styles.js"
-// import {nexus} from "../../nexus.js"
+import {Signal, html} from "@benev/slate"
+import {styles} from "./styles.js"
+import {hnexus} from "../../nexus.js"
 
-// export const MainMenuView = nexus.shadow_view(use => () => {
-// 	use.styles(styles)
+export const MainMenuView = hnexus.shadow_view(use => (o: {
+		video: Signal<HTMLVideoElement | null>
+		onClickExit: () => void
+	}) => {
 
-// 	return html`
-// 		<h1>main menu</h1>
-// 	`
-// })
+	use.styles(styles)
+
+	return html`
+		${o.video}
+		<div class=plate>
+			<h1>main menu</h1>
+			<button @click=${o.onClickExit}>exit</button>
+		</div>
+	`
+})
 

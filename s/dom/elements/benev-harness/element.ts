@@ -1,18 +1,36 @@
 
 import {html, nap} from "@benev/slate"
+
 import {hnexus} from "./nexus.js"
 import {styles} from "./styles.js"
 import {LandingView} from "./views/landing/view.js"
+import {MainMenuView} from "./views/main-menu/view.js"
+
+async function loadMenuVideo() {
+	return await new Promise<HTMLVideoElement>((resolve, reject) => {
+		const video = document.createElement("video")
+		video.preload = "auto"
+		video.src = "/assets/graphics/menu.webm"
+		video.autoplay = true
+		video.loop = true
+		video.oncanplaythrough = () => resolve(video)
+		video.onerror = reject
+		video.load()
+	})
+}
 
 export const BenevHarness = hnexus.shadow_component(use => {
 	use.styles(styles)
-	const mode = use.signal("landing")
+	const mode = use.signal<"landing" | "menu">("landing")
 	const splash = use.signal(false)
+	const video = use.signal<HTMLVideoElement | null>(null)
 
-	async function switchModes(m: string) {
+	async function showSplash() {
 		splash.value = true
 		await nap(600)
-		mode.value = m
+	}
+
+	async function hideSplash() {
 		await nap(0)
 		splash.value = false
 	}
@@ -21,14 +39,28 @@ export const BenevHarness = hnexus.shadow_component(use => {
 		<div class=splash ?data-active=${splash}>
 			<img src="https://benevolent.games/assets/benevolent.svg" alt=""/>
 		</div>
+
 		${mode.value === "landing"
 			? LandingView([{
-				onClickPlay: () => switchModes("menu"),
+				onClickPlay: async() => {
+					await Promise.all([
+						showSplash(),
+						loadMenuVideo().then(v => {
+							video.value = v
+						})
+					])
+					mode.value = "menu"
+					await hideSplash()
+				},
 			}])
-			: html`
-				<p>menu</p>
-				<button @click="${() => switchModes("landing")}">back to landing</button>
-			`}
+			: MainMenuView([{
+				video,
+				onClickExit: async() => {
+					await showSplash()
+					mode.value = "landing"
+					await hideSplash()
+				},
+			}])}
 	`
 })
 
