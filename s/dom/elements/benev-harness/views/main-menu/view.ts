@@ -12,12 +12,28 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 	use.name("main-menu")
 	use.styles(styles)
 
+	const benevLogo = "/assets/graphics/benevolent.svg"
+	const heathenLogo = "/assets/graphics/heathen-logo/heathen-logo-red.webp"
+
 	return html`
 		${o.video}
 		${o.audio}
-		<div class=plate>
-			<h1>main menu</h1>
-			<button @click=${o.onClickExit}>exit</button>
+		<div class=container>
+
+			<div class=banner>
+				<img src="${heathenLogo}" alt=""/>
+				<nav>
+					<button>news</button>
+					<button>multiplayer</button>
+					<button>settings</button>
+					<button @click=${o.onClickExit}>exit</button>
+					<button class=benev>
+						<img src="${benevLogo}" alt=""/>
+					</button>
+				</nav>
+			</div>
+
+			<div class=plate></div>
 		</div>
 	`
 })

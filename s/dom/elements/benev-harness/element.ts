@@ -15,7 +15,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	const video = use.signal<HTMLVideoElement | null>(null)
 	const audio = use.signal<HTMLAudioElement | null>(null)
 
-	const logoSrc = "/assets/graphics/benevolent.svg"
+	const benevSrc = "/assets/graphics/benevolent.svg"
 	const videoSrc = "/assets/graphics/menu.webm"
 	const audioSrc = "/assets/audio/music/group-1/anticipate.mid.m4a"
 
@@ -31,7 +31,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 
 	return html`
 		<div class=splash ?data-active=${splash}>
-			<img src="${logoSrc}" alt=""/>
+			<img src="${benevSrc}" alt=""/>
 		</div>
 
 		${mode.value === "landing"
