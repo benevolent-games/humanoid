@@ -3,6 +3,7 @@ import {html, nap} from "@benev/slate"
 
 import {hnexus} from "./nexus.js"
 import {styles} from "./styles.js"
+import {assets} from "./constants.js"
 import {loadVideo} from "./utils/load-video.js"
 import {loadAudio} from "./utils/load-audio.js"
 import {LandingView} from "./views/landing/view.js"
@@ -15,10 +16,6 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	const splash = use.signal(false)
 	const video = use.signal<HTMLVideoElement | null>(null)
 	const audio = use.signal<HTMLAudioElement | null>(null)
-
-	const benevSrc = "/assets/graphics/benevolent.svg"
-	const videoSrc = "/assets/graphics/menu.webm"
-	const audioSrc = "/assets/audio/music/group-1/anticipate.mid.m4a"
 
 	async function showSplash() {
 		splash.value = true
@@ -33,26 +30,26 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	async function onClickPlay() {
 		await Promise.all([
 			showSplash(),
-			loadVideo(videoSrc).then(v => { video.value = v }),
-			loadAudio(audioSrc).then(a => { audio.value = a }),
+			loadVideo(assets.menuVideo).then(v => { video.value = v }),
+			loadAudio(assets.menuMusic).then(a => { audio.value = a }),
 		])
 		mode.value = "menu"
 		await hideSplash()
 	}
 
-	///////// HACK auto-play
-	const started = use.signal(false)
-	use.defer(() => {
-		if (started.value)
-			return
-		onClickPlay()
-		started.value = true
-	})
-	///////// HACK auto-play
+	// ///////// HACK auto-play
+	// const started = use.signal(false)
+	// use.defer(() => {
+	// 	if (started.value)
+	// 		return
+	// 	onClickPlay()
+	// 	started.value = true
+	// })
+	// ///////// HACK auto-play
 
 	return html`
 		<div class=splash ?data-active=${splash}>
-			<img src="${benevSrc}" alt=""/>
+			<img src="${assets.benevLogo}" alt=""/>
 		</div>
 
 		${mode.value === "landing"

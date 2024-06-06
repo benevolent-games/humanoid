@@ -15,14 +15,16 @@ export const styles = css`
 }
 
 .plate {
+	font-size: min(2vw, 2em);
+
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	max-width: 42rem;
+	max-width: 42em;
 	max-height: 100%;
 	margin: auto;
-	padding: 2rem;
-	gap: 1rem;
+	padding: 2em;
+	gap: 1em;
 
 	overflow: auto;
 
@@ -33,8 +35,7 @@ export const styles = css`
 
 h1 {
 	> img {
-		width: 100%;
-		max-width: 32rem;
+		width: 15em;
 		user-select: none;
 		user-drag: none;
 		-webkit-user-drag: none;
@@ -53,8 +54,8 @@ h1 {
 		color: white;
 		font: inherit;
 		border: none;
-		padding: 1rem 2rem;
-		border-radius: 0.2rem;
+		padding: 1em 2em;
+		border-radius: 0.2em;
 		text-shadow: .1em .2em .3em #0008;
 		box-shadow: .2em .3em .5em #0004;
 
@@ -63,7 +64,7 @@ h1 {
 		&:hover { opacity: 1; }
 
 		&.play {
-			padding: 1rem 4rem;
+			padding: 1em 4em;
 			text-transform: uppercase;
 			font-weight: bold;
 			background: #090;
@@ -82,7 +83,7 @@ h1 {
 
 section {
 	font-family: Caudex, serif;
-	font-size: 1.3rem;
+	font-size: 1.3em;
 	color: white;
 }
 

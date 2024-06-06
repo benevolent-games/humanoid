@@ -2,6 +2,7 @@
 import {html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
+import {assets} from "../../constants.js"
 
 export const LandingView = hnexus.shadow_view(use => (o: {
 		onClickPlay: (event: MouseEvent) => void,
@@ -10,14 +11,11 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 	use.name("landing")
 	use.styles(styles)
 
-	const bgSrc = "/assets/graphics/village-screenshot.webp"
-	const logoSrc = "/assets/graphics/heathen-logo/heathen-logo-red.webp"
-
 	return html`
-		<div class=bg style="--background-image: url('${bgSrc}');">
+		<div class=bg style="--background-image: url('${assets.landingImage}');">
 			<div class=plate>
 				<h1>
-					<img src="${logoSrc}" alt="HEATHEN.gg"/>
+					<img src="${assets.heathenLogo}" alt="HEATHEN.gg"/>
 				</h1>
 
 				<div class="buttonbar">

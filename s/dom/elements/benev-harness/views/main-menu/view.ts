@@ -2,6 +2,7 @@
 import {Signal, RenderResult, html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
+import {assets} from "../../constants.js"
 import {when} from "../../../../../tools/zui.js"
 
 type MenuItem = [string, RenderResult]
@@ -14,10 +15,7 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 
 	use.name("main-menu")
 	use.styles(styles)
-
 	const selectedTab = use.signal("game")
-	const benevLogo = "/assets/graphics/benevolent.svg"
-	const heathenLogo = "/assets/graphics/heathen-logo/heathen-logo-red.webp"
 
 	function switchTab(name: string) {
 		selectedTab.value = name
@@ -38,7 +36,7 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 		<div class=container>
 
 			<div class=banner>
-				<img src="${heathenLogo}" alt=""/>
+				<img src="${assets.heathenLogo}" alt=""/>
 				<nav>
 					${tabs.map(([name]) => html`
 						<button
@@ -53,7 +51,7 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 					</button>
 
 					<button class=benev>
-						<img src="${benevLogo}" alt=""/>
+						<img src="${assets.benevLogo}" alt=""/>
 					</button>
 				</nav>
 			</div>
