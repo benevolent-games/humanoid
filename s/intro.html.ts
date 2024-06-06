@@ -12,7 +12,7 @@ export default template(async basic => {
 		css: "index.css",
 		title: "heathen.gg",
 		head: html`
-			<link rel="icon" href="https://benevolent.games/assets/benevolent.svg"/>
+			<link rel="icon" href="/assets/graphics/benevolent.svg"/>
 			<link rel="stylesheet" href="${path.version.root("intro.css")}"/>
 			<meta data-commit-hash="${commitHash}"/>
 			${startup_scripts_with_dev_mode({

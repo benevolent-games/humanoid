@@ -8,6 +8,12 @@ export const styles = css`
 	overflow: hidden;
 }
 
+[view="landing"], [view="main-menu"] {
+	display: block;
+	position: absolute;
+	inset: 0;
+}
+
 .splash {
 	z-index: 10;
 	position: absolute;

@@ -9,6 +9,7 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 		onClickExit: () => void
 	}) => {
 
+	use.name("main-menu")
 	use.styles(styles)
 
 	return html`

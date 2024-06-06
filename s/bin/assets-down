@@ -133,3 +133,10 @@ npx @benev/batch copy \
 	--out "assets/dist" \
 	--find "json,env";
 
+banner "copy: graphics";
+npx @benev/batch copy \
+	--verbose \
+	--in "assets/source/graphics" \
+	--out "assets/dist/graphics" \
+	--find "*";
+

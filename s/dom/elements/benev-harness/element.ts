@@ -3,34 +3,10 @@ import {html, nap} from "@benev/slate"
 
 import {hnexus} from "./nexus.js"
 import {styles} from "./styles.js"
+import {loadVideo} from "./utils/load-video.js"
+import {loadAudio} from "./utils/load-audio.js"
 import {LandingView} from "./views/landing/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
-
-async function loadMenuVideo() {
-	return await new Promise<HTMLVideoElement>((resolve, reject) => {
-		const video = document.createElement("video")
-		video.preload = "auto"
-		video.src = "/assets/graphics/menu.webm"
-		video.autoplay = true
-		video.loop = true
-		video.oncanplaythrough = () => resolve(video)
-		video.onerror = reject
-		video.load()
-	})
-}
-
-async function loadMenuAudio() {
-	return await new Promise<HTMLAudioElement>((resolve, reject) => {
-		const audio = document.createElement("audio")
-		audio.preload = "auto"
-		audio.src = "/assets/audio/music/group-1/anticipate.mid.m4a"
-		audio.autoplay = true
-		audio.loop = true
-		audio.oncanplaythrough = () => resolve(audio)
-		audio.onerror = reject
-		audio.load()
-	})
-}
 
 export const BenevHarness = hnexus.shadow_component(use => {
 	use.styles(styles)
@@ -38,6 +14,10 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	const splash = use.signal(false)
 	const video = use.signal<HTMLVideoElement | null>(null)
 	const audio = use.signal<HTMLAudioElement | null>(null)
+
+	const logoSrc = "/assets/graphics/benevolent.svg"
+	const videoSrc = "/assets/graphics/menu.webm"
+	const audioSrc = "/assets/audio/music/group-1/anticipate.mid.m4a"
 
 	async function showSplash() {
 		splash.value = true
@@ -51,7 +31,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 
 	return html`
 		<div class=splash ?data-active=${splash}>
-			<img src="https://benevolent.games/assets/benevolent.svg" alt=""/>
+			<img src="${logoSrc}" alt=""/>
 		</div>
 
 		${mode.value === "landing"
@@ -60,8 +40,8 @@ export const BenevHarness = hnexus.shadow_component(use => {
 				onClickPlay: async() => {
 					await Promise.all([
 						showSplash(),
-						loadMenuVideo().then(v => { video.value = v }),
-						loadMenuAudio().then(a => { audio.value = a }),
+						loadVideo(videoSrc).then(v => { video.value = v }),
+						loadAudio(audioSrc).then(a => { audio.value = a }),
 					])
 					mode.value = "menu"
 					await hideSplash()
