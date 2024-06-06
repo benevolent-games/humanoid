@@ -11,16 +11,19 @@ video {
 }
 
 .container {
+	container: base / inline-size;
+
+	font-size: calc(.5em + .5vw);
 	position: absolute;
 	inset: 0;
 	z-index: 1;
 
-	padding: 0 3em;
-	padding-bottom: 2em;
-	max-width: 64em;
-	margin: auto;
-
 	display: flex;
+	width: calc(64rem + 30vw);
+	max-width: 100%;
+	margin: auto;
+	padding: 0 4em;
+	padding-bottom: 2em;
 }
 
 .banner {
@@ -30,6 +33,7 @@ video {
 	flex: 0 0 auto;
 	width: 16em;
 	height: 100%;
+	max-height: 72em;
 
 	display: flex;
 	flex-direction: column;
@@ -58,6 +62,7 @@ video {
 			background: transparent;
 			border: none;
 			font: inherit;
+			text-shadow: .1em .1em .2em #0008;
 
 			cursor: pointer;
 			font-family: Caudex, serif;
@@ -69,16 +74,27 @@ video {
 			padding: 0.5em 1em;
 
 			opacity: 0.8;
-			transition: background 150ms linear;
+
 			&:hover {
 				opacity: 1;
 				background: #8881;
 			}
+
+			&[data-selected] {
+				cursor: default;
+				opacity: 1;
+				background: #a00;
+				background: linear-gradient(to bottom, #f22, #800);
+			}
+		}
+
+		.exit {
+			margin-top: auto;
+			margin-bottom: .3em;
 		}
 
 		.benev {
 			flex: 0 0 auto;
-			margin-top: auto;
 			> img {
 				height: 1.5em;
 			}
@@ -87,9 +103,12 @@ video {
 }
 
 .plate {
-	flex: 1 0 auto;
-	margin-top: 6em;
+	flex: 1 1 auto;
+	margin-top: 8em;
 	margin-bottom: 2em;
+
+	padding: 2em;
+	max-height: 58em;
 
 	background: #1118;
 	backdrop-filter: blur(.5em);

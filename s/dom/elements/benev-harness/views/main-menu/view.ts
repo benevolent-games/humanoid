@@ -1,7 +1,10 @@
 
-import {Signal, html} from "@benev/slate"
+import {Signal, RenderResult, html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
+import {when} from "../../../../../tools/zui.js"
+
+type MenuItem = [string, RenderResult]
 
 export const MainMenuView = hnexus.shadow_view(use => (o: {
 		video: Signal<HTMLVideoElement | null>
@@ -12,8 +15,22 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 	use.name("main-menu")
 	use.styles(styles)
 
+	const selectedTab = use.signal("game")
 	const benevLogo = "/assets/graphics/benevolent.svg"
 	const heathenLogo = "/assets/graphics/heathen-logo/heathen-logo-red.webp"
+
+	function switchTab(name: string) {
+		selectedTab.value = name
+	}
+
+	const tabs: MenuItem[] = [
+		["game", html`
+			game panel, lol
+		`],
+		["settings", html`
+			settings panel, rofl
+		`],
+	]
 
 	return html`
 		${o.video}
@@ -23,17 +40,30 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 			<div class=banner>
 				<img src="${heathenLogo}" alt=""/>
 				<nav>
-					<button>news</button>
-					<button>multiplayer</button>
-					<button>settings</button>
-					<button @click=${o.onClickExit}>exit</button>
+					${tabs.map(([name]) => html`
+						<button
+							@click=${() => switchTab(name)}
+							?data-selected=${name === selectedTab.value}>
+								${name}
+						</button>
+					`)}
+
+					<button class=exit @click=${o.onClickExit}>
+						exit
+					</button>
+
 					<button class=benev>
 						<img src="${benevLogo}" alt=""/>
 					</button>
 				</nav>
 			</div>
 
-			<div class=plate></div>
+			<div class=plate>
+				${when(
+					tabs.find(([name]) => name === selectedTab.value),
+					([,content]) => content,
+				)}
+			</div>
 		</div>
 	`
 })

@@ -10,6 +10,7 @@ import {MainMenuView} from "./views/main-menu/view.js"
 
 export const BenevHarness = hnexus.shadow_component(use => {
 	use.styles(styles)
+
 	const mode = use.signal<"landing" | "menu">("landing")
 	const splash = use.signal(false)
 	const video = use.signal<HTMLVideoElement | null>(null)
@@ -29,6 +30,26 @@ export const BenevHarness = hnexus.shadow_component(use => {
 		splash.value = false
 	}
 
+	async function onClickPlay() {
+		await Promise.all([
+			showSplash(),
+			loadVideo(videoSrc).then(v => { video.value = v }),
+			loadAudio(audioSrc).then(a => { audio.value = a }),
+		])
+		mode.value = "menu"
+		await hideSplash()
+	}
+
+	///////// HACK auto-play
+	const started = use.signal(false)
+	use.defer(() => {
+		if (started.value)
+			return
+		onClickPlay()
+		started.value = true
+	})
+	///////// HACK auto-play
+
 	return html`
 		<div class=splash ?data-active=${splash}>
 			<img src="${benevSrc}" alt=""/>
@@ -36,17 +57,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 
 		${mode.value === "landing"
 
-			? LandingView([{
-				onClickPlay: async() => {
-					await Promise.all([
-						showSplash(),
-						loadVideo(videoSrc).then(v => { video.value = v }),
-						loadAudio(audioSrc).then(a => { audio.value = a }),
-					])
-					mode.value = "menu"
-					await hideSplash()
-				},
-			}])
+			? LandingView([{onClickPlay}])
 
 			: MainMenuView([{
 				video,
