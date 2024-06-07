@@ -44,8 +44,8 @@ video {
 	box-shadow: .3em .3em 2em #0004;
 
 	> img {
-		margin-top: 4em;
-		margin-bottom: 4em;
+		pointer-events: none;
+		margin-top: 3.5em;
 		display: block;
 		width: 100%;
 		transform: translate(33%, 0) scale(2);
@@ -74,11 +74,10 @@ video {
 			width: 100%;
 			padding: 0.5em 1em;
 
-			opacity: 0.8;
+			opacity: 0.6;
 
 			&:hover {
 				opacity: 1;
-				background: #8881;
 			}
 
 			&[data-selected] {
