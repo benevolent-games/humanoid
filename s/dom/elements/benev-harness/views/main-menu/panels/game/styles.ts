@@ -28,7 +28,7 @@ export const styles = css`
 		max-width: 100%;
 		aspect-ratio: 16 / 9;
 
-		transition: all 300ms ease;
+		transition: filter 300ms ease;
 
 		> input {
 			display: none;
@@ -45,7 +45,7 @@ export const styles = css`
 			color: white;
 			font-family: Caudex;
 			font-weight: bold;
-			text-shadow: .1em .2em .2em #0008;
+			text-shadow: .05em .1em .1em #0008;
 		}
 
 		> .note {
@@ -63,8 +63,7 @@ export const styles = css`
 
 		&[data-selected] {
 			border-color: #4c4;
-			.levelname { color: #afa; }
-			.note { color: #4c4; }
+			.levelname, .note { color: #afa; }
 		}
 
 		&:not([data-selected]) {

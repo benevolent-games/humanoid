@@ -15,7 +15,7 @@ export const styles = css`
 }
 
 .plate {
-	font-size: max(.6em, min(2.5vw, 2.5vh, 1.5em));
+	font-size: max(.6em, min(2vw, 2vh, 1.5em));
 
 	display: flex;
 	flex-direction: column;
