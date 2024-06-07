@@ -5,8 +5,8 @@ import {hnexus} from "../../../../nexus.js"
 import {carmackify} from "../../../../../../../tools/zui.js"
 
 const levels = {
-	village: "/assets/graphics/levelpics/village.webp",
-	gym: "/assets/graphics/levelpics/gym.webp",
+	village: "/assets/images/levelpics/village-03.small.webp",
+	gym: "/assets/images/levelpics/gym-01.small.webp",
 }
 
 export const GamePanel = hnexus.shadow_view(use => () => {
@@ -39,11 +39,9 @@ export const GamePanel = hnexus.shadow_view(use => () => {
 					?data-selected=${isSelected(level)}>
 					<img src="${pic}" alt=""/>
 					<span class="levelname">${level}</span>
-					<span class="button">
-						${isSelected(level)
-							? "selected"
-							: "choose"}
-					</span>
+					${isSelected(level)
+						? html`<span class=note>selected</span>`
+						: null}
 				</button>
 			`)}
 		</div>

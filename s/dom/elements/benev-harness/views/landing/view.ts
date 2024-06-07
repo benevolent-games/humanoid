@@ -3,6 +3,7 @@ import {html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
+import {carmackify} from "../../../../../tools/zui.js"
 
 export const LandingView = hnexus.shadow_view(use => (o: {
 		onClickPlay: (event: MouseEvent) => void,
@@ -19,7 +20,12 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 				</h1>
 
 				<div class="buttonbar">
-					<button class="play" @click=${o.onClickPlay}>▶ play</button>
+					<button
+						class="play"
+						@mousedown=${carmackify(o.onClickPlay)}
+						@click=${o.onClickPlay}>
+							▶ play
+					</button>
 					<select class="quality">
 						<option selected>🥔 potato quality</option>
 						<option>😐 mid quality</option>

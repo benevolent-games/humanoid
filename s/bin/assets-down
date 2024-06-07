@@ -122,6 +122,15 @@ npx @benev/batch images webp \
 	--out "assets/dist/graphics" \
 	--quality "90";
 
+banner "images: levelpics";
+npx @benev/batch images webp \
+	--verbose \
+	--in "assets/source/images/levelpics" \
+	--out "assets/dist/images/levelpics" \
+	--quality "50" \
+	--suffix "small" \
+	--size "800";
+
 ###
 ### copy other files
 ###

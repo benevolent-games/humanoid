@@ -48,7 +48,7 @@ export const styles = css`
 			text-shadow: .1em .2em .2em #0008;
 		}
 
-		> .button {
+		> .note {
 			bottom: .2em;
 			right: .2em;
 		}
@@ -63,7 +63,8 @@ export const styles = css`
 
 		&[data-selected] {
 			border-color: #4c4;
-			.levelname, .button { color: #4c4; }
+			.levelname { color: #afa; }
+			.note { color: #4c4; }
 		}
 
 		&:not([data-selected]) {
