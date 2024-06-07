@@ -2,27 +2,26 @@
 import {html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../../../nexus.js"
+import {LevelName, LevelImages} from "./levels.js"
 import {carmackify} from "../../../../../../../tools/zui.js"
 
-const levels = {
-	village: "/assets/images/levelpics/village-03.small.webp",
-	gym: "/assets/images/levelpics/gym-01.small.webp",
-}
+export const GamePanel = hnexus.shadow_view(use => ({levelImages}: {
+		levelImages: LevelImages
+	}) => {
 
-export const GamePanel = hnexus.shadow_view(use => () => {
 	use.name("game-panel")
 	use.styles(styles)
 
-	const selectedLevel = use.signal<keyof typeof levels>("village")
+	const selectedLevel = use.signal<LevelName>("village")
 
 	function levelChange(event: InputEvent) {
 		const target = event.target as HTMLInputElement
-		selectedLevel.value = target.value as keyof typeof levels
+		selectedLevel.value = target.value as LevelName
 	}
 
 	function select(level: string) {
 		return () => {
-			selectedLevel.value = level as keyof typeof levels
+			selectedLevel.value = level as LevelName
 		}
 	}
 
@@ -32,12 +31,12 @@ export const GamePanel = hnexus.shadow_view(use => () => {
 
 	return html`
 		<div class="levelselect" @change=${levelChange}>
-			${Object.entries(levels).map(([level, pic]) => html`
+			${Object.entries(levelImages).map(([level, img]) => html`
 				<button
 					@mousedown=${carmackify(select(level))}
 					@click=${select(level)}
 					?data-selected=${isSelected(level)}>
-					<img src="${pic}" alt=""/>
+					${img}
 					<span class="levelname">${level}</span>
 					${isSelected(level)
 						? html`<span class=note>selected</span>`

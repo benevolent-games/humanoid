@@ -8,14 +8,17 @@ import {loadVideo} from "./utils/load-video.js"
 import {loadAudio} from "./utils/load-audio.js"
 import {LandingView} from "./views/landing/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
+import {LevelImages, loadLevelImages} from "./views/main-menu/panels/game/levels.js"
 
 export const BenevHarness = hnexus.shadow_component(use => {
 	use.styles(styles)
 
 	const mode = use.signal<"landing" | "menu">("landing")
 	const splash = use.signal(false)
+
 	const video = use.signal<HTMLVideoElement | null>(null)
 	const audio = use.signal<HTMLAudioElement | null>(null)
+	const levelImages = use.signal<LevelImages | null>(null)
 
 	async function showSplash() {
 		splash.value = true
@@ -32,6 +35,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 			showSplash(),
 			loadVideo(assets.menuVideo).then(v => { video.value = v }),
 			loadAudio(assets.menuMusic).then(a => { audio.value = a }),
+			loadLevelImages().then(i => { levelImages.value = i }),
 		])
 		mode.value = "menu"
 		await hideSplash()
@@ -56,8 +60,9 @@ export const BenevHarness = hnexus.shadow_component(use => {
 			? LandingView([{onClickPlay}])
 
 			: MainMenuView([{
-				video,
-				audio,
+				video: video.value!,
+				audio: audio.value!,
+				levelImages: levelImages.value!,
 				onClickExit: async() => {
 					await showSplash()
 					mode.value = "landing"

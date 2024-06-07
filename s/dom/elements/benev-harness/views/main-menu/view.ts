@@ -1,17 +1,19 @@
 
-import {Signal, RenderResult, html} from "@benev/slate"
+import {RenderResult, html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
-import {carmackify, when} from "../../../../../tools/zui.js"
 import {GamePanel} from "./panels/game/panel.js"
+import {LevelImages} from "./panels/game/levels.js"
 import {SettingsPanel} from "./panels/settings/panel.js"
+import {carmackify, when} from "../../../../../tools/zui.js"
 
 type MenuItem = [string, RenderResult]
 
 export const MainMenuView = hnexus.shadow_view(use => (o: {
-		video: Signal<HTMLVideoElement | null>
-		audio: Signal<HTMLAudioElement | null>
+		video: HTMLVideoElement
+		audio: HTMLAudioElement
+		levelImages: LevelImages
 		onClickExit: () => void
 	}) => {
 
@@ -30,7 +32,7 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 	}
 
 	const tabs: MenuItem[] = [
-		["game", GamePanel([])],
+		["game", GamePanel([o])],
 		["settings", SettingsPanel([])],
 	]
 
