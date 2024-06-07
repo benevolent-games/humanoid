@@ -16,3 +16,15 @@ export function when<X, Y>(
 		: null
 }
 
+/**
+ * prepare a 'mousedown' handler, which prevents 'click' handlers from working.
+ * see john carmack's tweet about "act on press":
+ *  - https://x.com/ID_AA_Carmack/status/1787850053912064005
+ */
+export function carmackify(fn: (event: MouseEvent) => void) {
+	return (event: MouseEvent) => {
+		fn(event)
+		event.preventDefault()
+	}
+}
+

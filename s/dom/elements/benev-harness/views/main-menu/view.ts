@@ -3,9 +3,9 @@ import {Signal, RenderResult, html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
-import {when} from "../../../../../tools/zui.js"
-import {GamePanel} from "./panels/game-panel.js"
-import {SettingsPanel} from "./panels/settings-panel.js"
+import {carmackify, when} from "../../../../../tools/zui.js"
+import {GamePanel} from "./panels/game/panel.js"
+import {SettingsPanel} from "./panels/settings/panel.js"
 
 type MenuItem = [string, RenderResult]
 
@@ -19,8 +19,14 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 	use.styles(styles)
 	const selectedTab = use.signal("game")
 
-	function switchTab(name: string) {
-		selectedTab.value = name
+	function isSelected(tabName: string) {
+		return tabName === selectedTab.value
+	}
+
+	function navigate(tabName: string) {
+		return () => {
+			return selectedTab.value = tabName
+		}
 	}
 
 	const tabs: MenuItem[] = [
@@ -35,12 +41,14 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 
 			<div class=banner>
 				<img src="${assets.heathenLogo}" alt=""/>
+
 				<nav>
-					${tabs.map(([name]) => html`
+					${tabs.map(([tabName]) => html`
 						<button
-							@click=${() => switchTab(name)}
-							?data-selected=${name === selectedTab.value}>
-								${name}
+							@mousedown=${carmackify(navigate(tabName))}
+							@click=${navigate(tabName)}
+							?data-selected=${isSelected(tabName)}>
+								${tabName}
 						</button>
 					`)}
 
@@ -57,7 +65,7 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 			<div class=plate>
 				<div class=content>
 					${when(
-						tabs.find(([name]) => name === selectedTab.value),
+						tabs.find(([tabName]) => isSelected(tabName)),
 						([,content]) => content,
 					)}
 				</div>

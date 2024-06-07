@@ -1,6 +1,6 @@
 
 import {css, html} from "@benev/slate"
-import {hnexus} from "../../../nexus.js"
+import {hnexus} from "../../../../nexus.js"
 
 const styles = css``
 
