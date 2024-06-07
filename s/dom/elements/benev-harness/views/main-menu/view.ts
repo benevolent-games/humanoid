@@ -4,6 +4,8 @@ import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
 import {when} from "../../../../../tools/zui.js"
+import {GamePanel} from "./panels/game-panel.js"
+import {SettingsPanel} from "./panels/settings-panel.js"
 
 type MenuItem = [string, RenderResult]
 
@@ -22,12 +24,8 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 	}
 
 	const tabs: MenuItem[] = [
-		["game", html`
-			game panel, lol
-		`],
-		["settings", html`
-			settings panel, rofl
-		`],
+		["game", GamePanel([])],
+		["settings", SettingsPanel([])],
 	]
 
 	return html`
