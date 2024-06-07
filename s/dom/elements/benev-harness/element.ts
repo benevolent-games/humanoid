@@ -45,7 +45,6 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	// 	onClickPlay()
 	// 	started.value = true
 	// })
-	// ///////// HACK auto-play
 
 	return html`
 		<div class=splash ?data-active=${splash}>

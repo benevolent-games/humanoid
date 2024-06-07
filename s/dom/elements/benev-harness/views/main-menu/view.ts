@@ -57,10 +57,12 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 			</div>
 
 			<div class=plate>
-				${when(
-					tabs.find(([name]) => name === selectedTab.value),
-					([,content]) => content,
-				)}
+				<div class=content>
+					${when(
+						tabs.find(([name]) => name === selectedTab.value),
+						([,content]) => content,
+					)}
+				</div>
 			</div>
 		</div>
 	`

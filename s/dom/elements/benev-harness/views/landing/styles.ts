@@ -15,7 +15,7 @@ export const styles = css`
 }
 
 .plate {
-	font-size: min(2vw, 2em);
+	font-size: max(.6em, min(2.5vw, 2.5vh, 1.5em));
 
 	display: flex;
 	flex-direction: column;
@@ -36,15 +36,17 @@ export const styles = css`
 h1 {
 	> img {
 		width: 15em;
+		max-width: 100%;
 		user-select: none;
 		user-drag: none;
 		-webkit-user-drag: none;
+		margin-bottom: -1.5em;
 	}
 }
 
 .buttonbar {
-	margin-top: -3em;
 	display: flex;
+	flex-wrap: wrap;
 	gap: 0.4em;
 	user-select: none;
 

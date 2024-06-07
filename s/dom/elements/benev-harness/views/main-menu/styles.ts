@@ -44,10 +44,11 @@ video {
 	box-shadow: .3em .3em 2em #0004;
 
 	> img {
-		margin-top: 2em;
+		margin-top: 4em;
+		margin-bottom: 4em;
 		display: block;
 		width: 100%;
-		transform: scale(1.3);
+		transform: translate(33%, 0) scale(2);
 	}
 
 	> nav {
@@ -103,6 +104,8 @@ video {
 }
 
 .plate {
+	overflow: auto;
+
 	flex: 1 1 auto;
 	margin-top: 8em;
 	margin-bottom: 2em;
@@ -114,6 +117,10 @@ video {
 	backdrop-filter: blur(.5em);
 	border-radius: 0 .5em .5em 0;
 	box-shadow: .3em .3em 2em #0002;
+
+	.content {
+		font-size: max(1em, 1rem);
+	}
 }
 
 `
