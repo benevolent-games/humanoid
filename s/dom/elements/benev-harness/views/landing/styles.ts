@@ -73,11 +73,9 @@ h1 {
 			background: linear-gradient(to bottom, #4c4, #090);
 		}
 
-		&.quality {
-			margin: 0.5em 0;
-			> option {
-				color: #333;
-				background: #eee;
+		&[view="quality-selector"] {
+			&::part(select) {
+				margin: 0.5em 0;
 			}
 		}
 	}

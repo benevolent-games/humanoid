@@ -4,6 +4,7 @@ import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
 import {carmackify} from "../../../../../tools/zui.js"
+import {QualitySelector} from "../../../../views/quality-selector/view.js"
 
 export const LandingView = hnexus.shadow_view(use => (o: {
 		onClickPlay: (event: MouseEvent) => void,
@@ -26,11 +27,7 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 						@click=${o.onClickPlay}>
 							▶ play
 					</button>
-					<select class="quality">
-						<option selected>🥔 potato quality</option>
-						<option>😐 mid quality</option>
-						<option>🧐 fancy quality</option>
-					</select>
+					${QualitySelector([])}
 				</div>
 
 				<section>
