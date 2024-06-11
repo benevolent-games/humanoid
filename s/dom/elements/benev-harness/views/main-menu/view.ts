@@ -6,7 +6,7 @@ import {assets} from "../../constants.js"
 import {GamePanel} from "./panels/game/panel.js"
 import {LevelImages} from "./panels/game/levels.js"
 import {SettingsPanel} from "./panels/settings/panel.js"
-import {carmackify, when} from "../../../../../tools/zui.js"
+import {when, onCarmackClick} from "../../../../../tools/zui.js"
 
 type MenuItem = [string, RenderResult]
 
@@ -47,9 +47,8 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 				<nav>
 					${tabs.map(([tabName]) => html`
 						<button
-							@mousedown=${carmackify(navigate(tabName))}
-							@click=${navigate(tabName)}
-							?data-selected=${isSelected(tabName)}>
+							?data-selected=${isSelected(tabName)}
+							${onCarmackClick(navigate(tabName))}>
 								${tabName}
 						</button>
 					`)}

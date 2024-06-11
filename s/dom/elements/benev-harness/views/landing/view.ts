@@ -3,7 +3,7 @@ import {html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
-import {carmackify} from "../../../../../tools/zui.js"
+import {onCarmackClick} from "../../../../../tools/zui.js"
 import {QualitySelector} from "../../../../views/quality-selector/view.js"
 
 export const LandingView = hnexus.shadow_view(use => (o: {
@@ -21,11 +21,8 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 				</h1>
 
 				<div class="buttonbar">
-					<button
-						class="play"
-						@mousedown=${carmackify(o.onClickPlay)}
-						@click=${o.onClickPlay}>
-							▶ play
+					<button class="play" ${onCarmackClick(o.onClickPlay)}>
+						▶ play
 					</button>
 					${QualitySelector([])}
 				</div>

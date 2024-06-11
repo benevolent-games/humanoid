@@ -33,7 +33,7 @@ video {
 	flex: 0 0 auto;
 	width: 16em;
 	height: 100%;
-	max-height: 72em;
+	XXX-max-height: 72em;
 
 	display: flex;
 	flex-direction: column;
@@ -103,14 +103,15 @@ video {
 }
 
 .plate {
-	overflow: auto;
+	position: relative;
 
+	overflow: auto;
 	flex: 1 1 auto;
 	margin-top: 8em;
 	margin-bottom: 2em;
 
 	padding: 2em;
-	max-height: 58em;
+	XXX-max-height: 58em;
 
 	background: #1118;
 	backdrop-filter: blur(.5em);
@@ -119,6 +120,8 @@ video {
 
 	.content {
 		font-size: max(1em, 1rem);
+		width: 100%;
+		height: 100%;
 	}
 }
 

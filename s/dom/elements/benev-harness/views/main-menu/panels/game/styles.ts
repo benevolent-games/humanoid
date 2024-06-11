@@ -3,6 +3,27 @@ import {css} from "@benev/slate"
 
 export const styles = css`
 
+:host {
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+	justify-content: center;
+	height: 100%;
+}
+
+.actionbar {
+	display: flex;
+	justify-content: end;
+
+	> button {
+		padding: 1em 2em;
+		background: #43ca43ab;
+		background: linear-gradient(#8dff8dab, #138813ab);
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+}
+
 .levelselect {
 	display: flex;
 	width: 100%;
@@ -17,13 +38,9 @@ export const styles = css`
 		overflow: hidden;
 		border: 0.2em solid #fff2;
 		border-radius: .5em;
-		box-shadow: .2em .5em .5em #0004;
 
 		background: transparent;
-		font: inherit;
-		color: inherit;
 
-		display: block;
 		width: 16em;
 		max-width: 100%;
 		aspect-ratio: 16 / 9;

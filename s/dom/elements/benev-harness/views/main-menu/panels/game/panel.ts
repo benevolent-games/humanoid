@@ -3,7 +3,7 @@ import {html} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../../../nexus.js"
 import {LevelName, LevelImages} from "./levels.js"
-import {carmackify} from "../../../../../../../tools/zui.js"
+import {onCarmackClick} from "../../../../../../../tools/zui.js"
 
 export const GamePanel = hnexus.shadow_view(use => ({levelImages}: {
 		levelImages: LevelImages
@@ -29,20 +29,37 @@ export const GamePanel = hnexus.shadow_view(use => ({levelImages}: {
 		return level === selectedLevel.value
 	}
 
+	function startGame() {
+		console.log(selectedLevel.value)
+	}
+
 	return html`
+		<h2>select a level to play on</h2>
+
 		<div class="levelselect" @change=${levelChange}>
 			${Object.entries(levelImages).map(([level, img]) => html`
 				<button
-					@mousedown=${carmackify(select(level))}
-					@click=${select(level)}
-					?data-selected=${isSelected(level)}>
+					class=based
+					?data-selected=${isSelected(level)}
+					${onCarmackClick(select(level))}>
+
 					${img}
+
 					<span class="levelname">${level}</span>
+
 					${isSelected(level)
 						? html`<span class=note>selected</span>`
 						: null}
 				</button>
 			`)}
+		</div>
+
+		<div class=actionbar>
+			<button
+				class="based fx"
+				${onCarmackClick(startGame)}>
+					start new game
+			</button>
 		</div>
 	`
 })
