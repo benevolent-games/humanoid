@@ -6,9 +6,9 @@ export const styles = css`
 :host {
 	display: flex;
 	flex-direction: column;
-	gap: 2em;
 	justify-content: center;
 	height: 100%;
+	gap: 2em;
 }
 
 .actionbar {
@@ -24,9 +24,8 @@ export const styles = css`
 
 .levelselect {
 	display: flex;
-	width: 100%;
-	flex-direction: row;
 	flex-wrap: wrap;
+	width: 100%;
 	gap: 0.5em;
 
 	border: none;

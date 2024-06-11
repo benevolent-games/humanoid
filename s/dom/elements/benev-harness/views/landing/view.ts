@@ -4,6 +4,7 @@ import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
 import {onCarmackClick} from "../../../../../tools/zui.js"
+import {benevLinks} from "../../../../renderers/benev-links.js"
 
 export const LandingView = hnexus.shadow_view(use => (o: {
 		onClickPlay: (event: MouseEvent) => void,
@@ -33,8 +34,7 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 				</section>
 
 				<footer>
-					<p>by <a target="_blank" href="https://benevolent.games/">benevolent.games</a></p>
-					<p>join our <a target="_blank" href="https://discord.gg/BnZx2utdev">discord</a></p>
+					${benevLinks()}
 				</footer>
 			</div>
 		</div>

@@ -76,6 +76,10 @@ video {
 
 			opacity: 0.6;
 
+			> img {
+				height: 1.5em;
+			}
+
 			&:hover {
 				opacity: 1;
 			}
@@ -91,13 +95,6 @@ video {
 		.exit {
 			margin-top: auto;
 			margin-bottom: .3em;
-		}
-
-		.benev {
-			flex: 0 0 auto;
-			> img {
-				height: 1.5em;
-			}
 		}
 	}
 }
@@ -118,10 +115,17 @@ video {
 	border-radius: 0 .5em .5em 0;
 	box-shadow: .3em .3em 2em #0002;
 
-	.content {
+	> .content {
 		font-size: max(1em, 1rem);
 		width: 100%;
 		height: 100%;
+
+		> [view] {
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+			justify-content: center;
+		}
 	}
 }
 

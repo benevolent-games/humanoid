@@ -1,14 +1,16 @@
 
 import {RenderResult, html} from "@benev/slate"
+
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
+import {BPanel} from "./panels/b/panel.js"
 import {GamePanel} from "./panels/game/panel.js"
 import {LevelImages} from "./panels/game/levels.js"
 import {SettingsPanel} from "./panels/settings/panel.js"
 import {when, onCarmackClick} from "../../../../../tools/zui.js"
 
-type MenuItem = [string, RenderResult]
+type MenuItem = {name: string, label: RenderResult, panel: RenderResult}
 
 export const MainMenuView = hnexus.shadow_view(use => (o: {
 		video: HTMLVideoElement
@@ -32,8 +34,21 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 	}
 
 	const tabs: MenuItem[] = [
-		["game", GamePanel([o])],
-		["settings", SettingsPanel([])],
+		{
+			name: "game",
+			label: "game",
+			panel: GamePanel([o]),
+		},
+		{
+			name: "settings",
+			label: "settings",
+			panel: SettingsPanel([]),
+		},
+		{
+			name: "b",
+			label: html`<img src="${assets.benevLogo}" alt=""/>`,
+			panel: BPanel([]),
+		},
 	]
 
 	return html`
@@ -45,20 +60,16 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 				<img src="${assets.heathenLogo}" alt=""/>
 
 				<nav>
-					${tabs.map(([tabName]) => html`
+					${tabs.map(tab => html`
 						<button
-							?data-selected=${isSelected(tabName)}
-							${onCarmackClick(navigate(tabName))}>
-								${tabName}
+							?data-selected=${isSelected(tab.name)}
+							${onCarmackClick(navigate(tab.name))}>
+								${tab.label}
 						</button>
 					`)}
 
 					<button class=exit @click=${o.onClickExit}>
 						exit
-					</button>
-
-					<button class=benev>
-						<img src="${assets.benevLogo}" alt=""/>
 					</button>
 				</nav>
 			</div>
@@ -66,8 +77,8 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 			<div class=plate>
 				<div class=content>
 					${when(
-						tabs.find(([tabName]) => isSelected(tabName)),
-						([,content]) => content,
+						tabs.find(tab => isSelected(tab.name)),
+						tab => tab.panel,
 					)}
 				</div>
 			</div>

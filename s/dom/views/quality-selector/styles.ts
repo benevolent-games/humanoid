@@ -12,12 +12,15 @@ export const styles = css`
 select {
 	width: 100%;
 	height: 100%;
+
+	padding: .5em 1em;
+	border-radius: 0.2em;
+	text-align: center;
+
 	background: #8884;
 	color: white;
 	font: inherit;
 	border: none;
-	padding: .5em 1em;
-	border-radius: 0.2em;
 	text-shadow: .1em .2em .3em #0008;
 	box-shadow: .2em .3em .5em #0004;
 
