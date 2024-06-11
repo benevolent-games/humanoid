@@ -41,14 +41,14 @@ export const BenevHarness = hnexus.shadow_component(use => {
 		await hideSplash()
 	}
 
-	// TODO HACK auto-play
-	const started = use.signal(false)
-	use.defer(() => {
-		if (started.value)
-			return
-		onClickPlay()
-		started.value = true
-	})
+	// // TODO HACK auto-play
+	// const started = use.signal(false)
+	// use.defer(() => {
+	// 	if (started.value)
+	// 		return
+	// 	onClickPlay()
+	// 	started.value = true
+	// })
 
 	return html`
 		<div class=splash ?data-active=${splash}>

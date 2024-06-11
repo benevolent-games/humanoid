@@ -4,7 +4,6 @@ import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
 import {onCarmackClick} from "../../../../../tools/zui.js"
-import {QualitySelector} from "../../../../views/quality-selector/view.js"
 
 export const LandingView = hnexus.shadow_view(use => (o: {
 		onClickPlay: (event: MouseEvent) => void,
@@ -20,11 +19,13 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 					<img src="${assets.heathenLogo}" alt="HEATHEN.gg"/>
 				</h1>
 
-				<div class="buttonbar">
-					<button class="play" ${onCarmackClick(o.onClickPlay)}>
-						▶ play
+				<div class=buttonbar>
+					<button
+						class="play based gogo fx"
+						${onCarmackClick(o.onClickPlay)}>
+							play
 					</button>
-					${QualitySelector([])}
+					<em>early access pre-alpha</em>
 				</div>
 
 				<section>
@@ -32,8 +33,8 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 				</section>
 
 				<footer>
-					<p>by <a href="https://benevolent.games/">benevolent.games</a></p>
-					<p>join our <a href="https://discord.gg/BnZx2utdev">discord</a></p>
+					<p>by <a target="_blank" href="https://benevolent.games/">benevolent.games</a></p>
+					<p>join our <a target="_blank" href="https://discord.gg/BnZx2utdev">discord</a></p>
 				</footer>
 			</div>
 		</div>

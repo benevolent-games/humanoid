@@ -4,6 +4,7 @@ import {styles} from "./styles.js"
 import {hnexus} from "../../../../nexus.js"
 import {LevelName, LevelImages} from "./levels.js"
 import {onCarmackClick} from "../../../../../../../tools/zui.js"
+import {QualitySelector} from "../../../../../../views/quality-selector/view.js"
 
 export const GamePanel = hnexus.shadow_view(use => ({levelImages}: {
 		levelImages: LevelImages
@@ -55,8 +56,9 @@ export const GamePanel = hnexus.shadow_view(use => ({levelImages}: {
 		</div>
 
 		<div class=actionbar>
+			${QualitySelector([])}
 			<button
-				class="based fx"
+				class="based gogo fx"
 				${onCarmackClick(startGame)}>
 					start new game
 			</button>

@@ -27,9 +27,9 @@ export const QualitySelector = hnexus.shadow_view(use => () => {
 
 	return html`
 		<select part=select @change=${handle}>
-			${option("potato", "🥔")}
-			${option("mid", "😐")}
 			${option("fancy", "🧐")}
+			${option("mid", "😐")}
+			${option("potato", "🥔")}
 		</select>
 	`
 })

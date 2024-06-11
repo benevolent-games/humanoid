@@ -54,6 +54,14 @@ button.based {
 		&:hover { filter: brightness(110%); }
 		&:active { filter: brightness(95%); }
 	}
+
+	&.gogo {
+		padding: 1em 2em;
+		background: #43ca43ab;
+		background: linear-gradient(#8dff8dab, #138813ab);
+		font-weight: bold;
+		text-transform: uppercase;
+	}
 }
 
 `

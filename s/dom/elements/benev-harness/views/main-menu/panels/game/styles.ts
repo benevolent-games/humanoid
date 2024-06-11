@@ -14,13 +14,11 @@ export const styles = css`
 .actionbar {
 	display: flex;
 	justify-content: end;
+	gap: .5em;
 
-	> button {
-		padding: 1em 2em;
-		background: #43ca43ab;
-		background: linear-gradient(#8dff8dab, #138813ab);
-		font-weight: bold;
-		text-transform: uppercase;
+	> [view="quality-selector"] {
+		display: block;
+		margin: 0.3em 0;
 	}
 }
 

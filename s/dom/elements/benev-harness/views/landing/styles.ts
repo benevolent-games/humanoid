@@ -47,37 +47,26 @@ h1 {
 .buttonbar {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.4em;
+	gap: 1em;
 	user-select: none;
+	align-items: center;
 
 	> * {
 		flex: 0 0 auto;
-		background: #8884;
-		color: white;
-		font: inherit;
-		border: none;
-		padding: 1em 2em;
-		border-radius: 0.2em;
-		text-shadow: .1em .2em .3em #0008;
-		box-shadow: .2em .3em .5em #0004;
+	}
 
-		cursor: pointer;
-		opacity: 0.9;
-		&:hover { opacity: 1; }
+	> .play {
+		padding-left: 5em !important;
+		padding-right: 5em !important;
+	}
 
-		&.play {
-			padding: 1em 4em;
-			text-transform: uppercase;
-			font-weight: bold;
-			background: #090;
-			background: linear-gradient(to bottom, #4c4, #090);
-		}
+	> [view="quality-selector"]::part(select) {
+		margin: 0.5em 0;
+	}
 
-		&[view="quality-selector"] {
-			&::part(select) {
-				margin: 0.5em 0;
-			}
-		}
+	> em {
+		font-family: Caudex, serif;
+		font-size: 1.3em;
 	}
 }
 

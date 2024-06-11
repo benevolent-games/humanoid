@@ -3,16 +3,20 @@ import {css} from "@benev/slate"
 export const styles = css`
 
 :host {
-	display: contents;
+	display: block;
+	position: relative;
+	height: auto;
+	width: max-content;
 }
 
 select {
-	flex: 0 0 auto;
+	width: 100%;
+	height: 100%;
 	background: #8884;
 	color: white;
 	font: inherit;
 	border: none;
-	padding: 1em 2em;
+	padding: .5em 1em;
 	border-radius: 0.2em;
 	text-shadow: .1em .2em .3em #0008;
 	box-shadow: .2em .3em .5em #0004;
