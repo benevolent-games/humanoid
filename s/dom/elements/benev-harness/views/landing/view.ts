@@ -21,7 +21,7 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 
 				<div class=buttonbar>
 					<button
-						class="play based gogo fx"
+						class="play based fx"
 						${onCarmackClick(o.onClickPlay)}>
 							play
 					</button>

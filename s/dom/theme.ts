@@ -55,7 +55,7 @@ button.based {
 		&:active { filter: brightness(95%); }
 	}
 
-	&.gogo {
+	&.play {
 		padding: 1em 2em;
 		background: #43ca43ab;
 		background: linear-gradient(#8dff8dab, #138813ab);

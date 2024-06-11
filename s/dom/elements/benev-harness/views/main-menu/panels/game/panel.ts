@@ -58,7 +58,7 @@ export const GamePanel = hnexus.shadow_view(use => ({levelImages}: {
 		<div class=actionbar>
 			${QualitySelector([])}
 			<button
-				class="based gogo fx"
+				class="play based fx"
 				${onCarmackClick(startGame)}>
 					start new game
 			</button>
