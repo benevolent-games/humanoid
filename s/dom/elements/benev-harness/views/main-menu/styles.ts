@@ -13,10 +13,11 @@ video {
 .container {
 	container: base / inline-size;
 
-	font-size: calc(.25em + .75vw);
+	font-size: calc(.5em + min(.5vw, .5vh));
 	position: absolute;
 	inset: 0;
 	z-index: 1;
+	user-select: none;
 
 	display: flex;
 	width: calc(64rem + 30vw);

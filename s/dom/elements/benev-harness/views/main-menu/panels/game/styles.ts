@@ -73,6 +73,8 @@ export const styles = css`
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
+			user-drag: none;
+			-webkit-user-drag: none;
 		}
 
 		&[data-selected] {
