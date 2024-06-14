@@ -8,9 +8,10 @@ import {loadVideo} from "./utils/load-video.js"
 import {loadAudio} from "./utils/load-audio.js"
 import {loadImage} from "./utils/load-image.js"
 import {LandingView} from "./views/landing/view.js"
+import {GameplayView} from "./views/gameplay/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
-import {loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
 import {LoadingScreen, LoadingView, loadingScreen} from "./views/loading/view.js"
+import {LevelName, loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
 
 /**
  * coordinate the app state at the highest level.
@@ -27,20 +28,22 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	// preload logo image for splash screen
 	use.once(() => loadImage(assets.benevLogo))
 
+	function onDone() {
+		loading.value = null
+	}
+
 	async function launchLanding() {
 		if (loading.value)
 			return
 		loading.value = loadingScreen({
 			kind: "splash",
+			onDone,
 			workload: Promise.resolve(),
 			onReady: () => {
 				exhibit.value = LandingView([{
 					onClickPlay: launchMenu,
 				}])
 			},
-			onDone: () => {
-				loading.value = null
-			}
 		})
 	}
 
@@ -49,6 +52,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 			return
 		loading.value = loadingScreen({
 			kind: "splash",
+			onDone,
 			workload: Promise.all([
 				loadVideo(assets.menuVideo),
 				loadAudio(assets.menuMusic),
@@ -60,10 +64,22 @@ export const BenevHarness = hnexus.shadow_component(use => {
 					audio,
 					levelImages,
 					onClickExit: launchLanding,
+					onClickStartGame: launchGameplay,
 				}])
 			},
-			onDone: () => {
-				loading.value = null
+		})
+	}
+
+	async function launchGameplay(level: LevelName) {
+		if (loading.value)
+			return
+		loading.value = loadingScreen({
+			kind: "level",
+			level,
+			onDone,
+			workload: nap(3000),
+			onReady: () => {
+				exhibit.value = GameplayView([{}])
 			},
 		})
 	}

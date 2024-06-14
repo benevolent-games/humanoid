@@ -9,7 +9,6 @@ export const styles = css`
 }
 
 .blanket {
-	pointer-events: none;
 	position: absolute;
 	inset: 0;
 	z-index: 2;
