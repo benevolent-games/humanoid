@@ -59,12 +59,8 @@ export const LoadingView = hnexus.shadow_view(use => (loading: LoadingScreen) =>
 		loading.onDone()
 	})
 
-	function animend() {
-		console.log("animend")
-	}
-
 	return html`
-		<div class=blanket ?data-active=${active} @transitionend=${animend}>
+		<div class=blanket ?data-active=${active}>
 			${(() => { switch (loading.kind) {
 
 				case "splash": return html`
