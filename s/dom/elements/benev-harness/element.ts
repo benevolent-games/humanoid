@@ -1,74 +1,78 @@
 
-import {html, nap} from "@benev/slate"
+import {RenderResult, html, nap} from "@benev/slate"
 
 import {hnexus} from "./nexus.js"
 import {styles} from "./styles.js"
 import {assets} from "./constants.js"
 import {loadVideo} from "./utils/load-video.js"
 import {loadAudio} from "./utils/load-audio.js"
+import {loadImage} from "./utils/load-image.js"
 import {LandingView} from "./views/landing/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
-import {LevelImages, loadLevelImages} from "./views/main-menu/panels/game/levels.js"
+import {loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
+import {LoadingScreen, LoadingView, loadingScreen} from "./views/loading/view.js"
 
+/**
+ * coordinate the app state at the highest level.
+ *  - orchestrate loading screens between major modes.
+ */
 export const BenevHarness = hnexus.shadow_component(use => {
 	use.styles(styles)
 
-	const mode = use.signal<"landing" | "menu">("landing")
-	const splash = use.signal(false)
+	const loading = use.signal<LoadingScreen | null>(null)
+	const exhibit = use.signal<RenderResult>(
+		LandingView([{onClickPlay: launchMenu}])
+	)
 
-	const video = use.signal<HTMLVideoElement | null>(null)
-	const audio = use.signal<HTMLAudioElement | null>(null)
-	const levelImages = use.signal<LevelImages | null>(null)
+	// preload logo image for splash screen
+	use.once(() => loadImage(assets.benevLogo))
 
-	async function showSplash() {
-		splash.value = true
-		await nap(600)
+	async function launchLanding() {
+		if (loading.value)
+			return
+		loading.value = loadingScreen({
+			kind: "splash",
+			workload: Promise.resolve(),
+			onReady: () => {
+				exhibit.value = LandingView([{
+					onClickPlay: launchMenu,
+				}])
+			},
+			onDone: () => {
+				loading.value = null
+			}
+		})
 	}
 
-	async function hideSplash() {
-		await nap(0)
-		splash.value = false
+	async function launchMenu() {
+		if (loading.value)
+			return
+		loading.value = loadingScreen({
+			kind: "splash",
+			workload: Promise.all([
+				loadVideo(assets.menuVideo),
+				loadAudio(assets.menuMusic),
+				loadLevelThumbnails(),
+			]),
+			onReady: ([video, audio, levelImages]) => {
+				exhibit.value = MainMenuView([{
+					video,
+					audio,
+					levelImages,
+					onClickExit: launchLanding,
+				}])
+			},
+			onDone: () => {
+				loading.value = null
+			},
+		})
 	}
-
-	async function onClickPlay() {
-		await Promise.all([
-			showSplash(),
-			loadVideo(assets.menuVideo).then(v => { video.value = v }),
-			loadAudio(assets.menuMusic).then(a => { audio.value = a }),
-			loadLevelImages().then(i => { levelImages.value = i }),
-		])
-		mode.value = "menu"
-		await hideSplash()
-	}
-
-	// // TODO HACK auto-play
-	// const started = use.signal(false)
-	// use.defer(() => {
-	// 	if (started.value)
-	// 		return
-	// 	onClickPlay()
-	// 	started.value = true
-	// })
 
 	return html`
-		<div class=splash ?data-active=${splash}>
-			<img src="${assets.benevLogo}" alt=""/>
-		</div>
-
-		${mode.value === "landing"
-
-			? LandingView([{onClickPlay}])
-
-			: MainMenuView([{
-				video: video.value!,
-				audio: audio.value!,
-				levelImages: levelImages.value!,
-				onClickExit: async() => {
-					await showSplash()
-					mode.value = "landing"
-					await hideSplash()
-				},
-			}])}
+		${loading.value
+			? LoadingView([loading.value])
+			: null}
+		${exhibit}
 	`
 })
 

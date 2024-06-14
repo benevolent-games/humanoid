@@ -1,23 +1,18 @@
 
+import {assets} from "../../../../constants.js"
 import {loadImage} from "../../../../utils/load-image.js"
 
-export const levels = {
-	village: "/assets/images/levelpics/village-03.small.webp",
-	gym: "/assets/images/levelpics/gym-01.small.webp",
-}
-
-export type Levels = typeof levels
+export type Levels = typeof assets.levelpics
 export type LevelName = keyof Levels
 export type LevelImages = {[K in keyof Levels]: HTMLImageElement}
 
-export async function loadLevelImages() {
-	const promises = Object.entries(levels)
-		.map(
-			async([name, src]) => [
-				name,
-				await loadImage(src),
-			] as [string, HTMLImageElement]
-		)
+export async function loadLevelThumbnails() {
+	const promises = Object.entries(assets.levelpics)
+		.map(async([name, {small}]) => [
+			name,
+			await loadImage(small),
+		] as [string, HTMLImageElement])
+
 	return (
 		Object.fromEntries(await Promise.all(promises))
 	) as LevelImages
