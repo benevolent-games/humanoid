@@ -62,7 +62,14 @@ export class PlanningHelpers {
 		glb: this.glb(path),
 	})
 
-	level = (level: Plan.Level) => level
+	level = (level: Plan.Level): Plan.Level => ({
+		...level,
+		images: {
+			big: this.resolve(level.images.big),
+			small: this.resolve(level.images.small),
+		},
+	})
+
 	levels = <LevelName extends string>(levels: Record<LevelName, Plan.Level>) => levels
 }
 

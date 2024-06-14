@@ -1,18 +1,18 @@
 
-import {scalar} from "@benev/toolbox"
 import {Plan} from "./models/planning/plan.js"
+import {radians} from "@benev/toolbox/x/math/scalar.js"
 
 export type HuGameplan = ReturnType<typeof make_gameplan>
 export type HuLevel = keyof HuGameplan["levels"]
 export type HuCharacter = keyof HuGameplan["characters"]
 const kilometers = (m: number) => m * 1000
-const degrees = scalar.radians.from.degrees
+const degrees = radians.from.degrees
 
 export const make_gameplan = Plan.gameplan(({
 		local,
 		quality,
 		root_url,
-		character, levels, glb, sky, env, shader, graphic,
+		character, levels, level, glb, sky, env, shader, graphic,
 	}) => ({
 
 	quality,
@@ -45,16 +45,40 @@ export const make_gameplan = Plan.gameplan(({
 	},
 
 	levels: levels({
-		viking_village: {
+		viking_village: level({
 			glb: glb("glbs/levels/viking_village.glb", "physics"),
 			sky: sky("skyboxes/overcast_03", kilometers(1), degrees(270)),
 			env: env("envmaps/viking_village.env", degrees(180)),
-		},
-		gym: {
+			images: {
+				big: "images/levelpics/village-03.webp",
+				small: "images/levelpics/village-03.small.webp",
+			},
+			info: {
+				label: {
+					english: "Askrigg",
+					norse: "Askrhryggr",
+					runes: "ᚨᛊᚲᚱᚺᚱᛁᚷᚷᚱ",
+				},
+				context: "Viking Settlement on the River Ure",
+				location: "North Yorkshire, Danelaw",
+				date: "879 AD",
+			},
+		}),
+		gym: level({
 			glb: glb("glbs/levels/gym.glb", "physics"),
 			sky: sky("skyboxes/sky_01", kilometers(1), degrees(0)),
 			env: env("envmaps/sunset_cloudy.env", degrees(90)),
-		},
+			images: {
+				big: "images/levelpics/gym-01.webp",
+				small: "images/levelpics/gym-01.small.webp",
+			},
+			info: {
+				label: {english: "Gym"},
+				context: "Developer Testing Grounds",
+				location: "Victoria BC, Canada",
+				date: "2024 AD",
+			},
+		}),
 		// mountainside: {
 		// 	glb: glb("glbs/levels/mountainside.glb", "physics"),
 		// 	sky: sky("skyboxes/sky_01", kilometers(10), degrees(270)),

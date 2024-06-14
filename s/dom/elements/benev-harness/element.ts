@@ -4,14 +4,15 @@ import {RenderResult, html, nap} from "@benev/slate"
 import {hnexus} from "./nexus.js"
 import {styles} from "./styles.js"
 import {assets} from "./constants.js"
+import {HuLevel} from "../../../gameplan.js"
 import {loadVideo} from "./utils/load-video.js"
 import {loadAudio} from "./utils/load-audio.js"
 import {loadImage} from "./utils/load-image.js"
 import {LandingView} from "./views/landing/view.js"
 import {GameplayView} from "./views/gameplay/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
+import {loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
 import {LoadingScreen, LoadingView, loadingScreen} from "./views/loading/view.js"
-import {LevelName, loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
 
 /**
  * coordinate the app state at the highest level.
@@ -56,7 +57,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 			workload: Promise.all([
 				loadVideo(assets.menuVideo),
 				loadAudio(assets.menuMusic),
-				loadLevelThumbnails(),
+				loadLevelThumbnails(use.context.gameplan.value.levels),
 			]),
 			onReady: ([video, audio, levelImages]) => {
 				exhibit.value = MainMenuView([{
@@ -70,16 +71,18 @@ export const BenevHarness = hnexus.shadow_component(use => {
 		})
 	}
 
-	async function launchGameplay(level: LevelName) {
+	async function launchGameplay(level: HuLevel) {
 		if (loading.value)
 			return
 		loading.value = loadingScreen({
 			kind: "level",
-			level,
+			level: use.context.gameplan.value.levels[level],
 			onDone,
-			workload: nap(3000),
+			workload: nap(5000),
 			onReady: () => {
-				exhibit.value = GameplayView([{}])
+				exhibit.value = GameplayView([{
+					onClickBackToMenu: launchMenu,
+				}])
 			},
 		})
 	}

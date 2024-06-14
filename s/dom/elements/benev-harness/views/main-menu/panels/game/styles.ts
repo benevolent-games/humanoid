@@ -52,7 +52,7 @@ export const styles = css`
 			position: absolute;
 		}
 
-		> .levelname {
+		> .label {
 			font-size: 1.5em;
 			top: .2em;
 			left: .2em;

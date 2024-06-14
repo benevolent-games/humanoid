@@ -1,16 +1,16 @@
 
-import {assets} from "../../../../constants.js"
+import {Pojo} from "@benev/slate"
+import {HuLevel} from "../../../../../../../gameplan.js"
 import {loadImage} from "../../../../utils/load-image.js"
+import {Plan} from "../../../../../../../models/planning/plan.js"
 
-export type Levels = typeof assets.levelpics
-export type LevelName = keyof Levels
-export type LevelImages = {[K in keyof Levels]: HTMLImageElement}
+export type LevelImages = {[K in HuLevel]: HTMLImageElement}
 
-export async function loadLevelThumbnails() {
-	const promises = Object.entries(assets.levelpics)
-		.map(async([name, {small}]) => [
+export async function loadLevelThumbnails(levels: Pojo<Plan.Level>) {
+	const promises = Object.entries(levels)
+		.map(async([name, {images}]) => [
 			name,
-			await loadImage(small),
+			await loadImage(images.small),
 		] as [string, HTMLImageElement])
 
 	return (

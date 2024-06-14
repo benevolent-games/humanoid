@@ -6,8 +6,9 @@ import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
 import {BPanel} from "./panels/b/panel.js"
 import {GamePanel} from "./panels/game/panel.js"
+import {HuLevel} from "../../../../../gameplan.js"
+import {LevelImages} from "./panels/game/levels.js"
 import {SettingsPanel} from "./panels/settings/panel.js"
-import {LevelImages, LevelName} from "./panels/game/levels.js"
 import {when, onCarmackClick} from "../../../../../tools/zui.js"
 
 type MenuItem = {name: string, label: RenderResult, panel: RenderResult}
@@ -17,7 +18,7 @@ export const MainMenuView = hnexus.shadow_view(use => (o: {
 		audio: HTMLAudioElement
 		levelImages: LevelImages
 		onClickExit: () => void
-		onClickStartGame: (level: LevelName) => void
+		onClickStartGame: (level: HuLevel) => void
 	}) => {
 
 	use.name("main-menu")

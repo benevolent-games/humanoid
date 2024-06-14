@@ -4,7 +4,7 @@ import {css, html, nap} from "@benev/slate"
 import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 import {assets} from "../../constants.js"
-import {LevelName} from "../main-menu/panels/game/levels.js"
+import {Plan} from "../../../../../models/planning/plan.js"
 
 export type LoadingSplash<W = any> = {
 	kind: "splash"
@@ -15,7 +15,7 @@ export type LoadingSplash<W = any> = {
 
 export type LoadingLevel<W = any> = {
 	kind: "level"
-	level: LevelName
+	level: Plan.Level
 	workload: Promise<W>
 	onReady: (work: W) => void
 	onDone: () => void
@@ -27,7 +27,7 @@ export function loadingScreen<W>(loading: LoadingScreen<W>) {
 	return loading
 }
 
-export const LoadingLevelView = hnexus.shadow_view(use => (level: LevelName) => {
+export const LoadingLevelView = hnexus.shadow_view(use => (level: Plan.Level) => {
 	use.styles(css`
 		:host {
 			display: contents;
@@ -50,13 +50,30 @@ export const LoadingLevelView = hnexus.shadow_view(use => (level: LevelName) => 
 		.info {
 			position: relative;
 			z-index: 1;
-			width: 100%;
-			max-width: 50em;
+			height: 100%;
+			max-width: 100%;
+			aspect-ratio: 16 / 9;
+
+			font-size: 1.2em;
+			font-family: Caudex, serif;
+			color: white;
+			text-shadow: .1em .2em .2em #0008;
+
+			display: flex;
+			flex-direction: column;
+			justify-content: end;
+			align-items: start;
+			padding: 4%;
+
+			> * {
+				max-width: 50rem;
+			}
 		}
 	`)
 
 	const loaded = use.signal(false)
-	const src = assets.levelpics[level].big
+	const src = level.images.big
+	const {info} = level
 
 	function onload() {
 		loaded.value = true
@@ -65,11 +82,14 @@ export const LoadingLevelView = hnexus.shadow_view(use => (level: LevelName) => 
 	return html`
 		<img src="${src}" alt="" @load=${onload} ?data-loaded=${loaded}/>
 		<div class=info>
-			<h1>${level}</h1>
-			<p>Askrigg</p>
-			<p>On the River Ure</p>
-			<p>North Yorkshire under the Danelaw</p>
-			<p>879 AD</p>
+			<h1>
+				<span>${info.label.norse ?? info.label.english}</span>
+			</h1>
+			${[
+				info.context,
+				info.location,
+				info.date,
+			].filter(x => !!x).map(x => html`<p>${x}</p>`)}
 		</div>
 	`
 })
@@ -112,7 +132,9 @@ export const LoadingView = hnexus.shadow_view(use => (loading: LoadingScreen) =>
 
 				case "splash":
 					return html`
-						<img class=splash src="${assets.benevLogo}" alt=""/>
+						<div class=splash>
+							<img src="${assets.benevLogo}" alt=""/>
+						</div>
 					`
 
 				case "level":

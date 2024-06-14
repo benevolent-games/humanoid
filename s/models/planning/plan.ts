@@ -16,10 +16,28 @@ export namespace Plan {
 		glb: Glb
 	}
 
+	export type Translated = {
+		english: string
+		norse?: string
+		runes?: string
+	}
+
+	export type LevelInfo = {
+		label: Translated
+		context?: string
+		location?: string
+		date?: string
+	}
+
 	export type Level = {
 		glb: Glb
 		env: Env
 		sky: Sky
+		info: LevelInfo
+		images: {
+			big: string,
+			small: string,
+		}
 	}
 
 	export type Glb = {

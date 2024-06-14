@@ -1,29 +1,30 @@
 
 import {html} from "@benev/slate"
 import {styles} from "./styles.js"
+import {LevelImages} from "./levels.js"
 import {hnexus} from "../../../../nexus.js"
-import {LevelName, LevelImages} from "./levels.js"
+import {HuLevel} from "../../../../../../../gameplan.js"
 import {onCarmackClick} from "../../../../../../../tools/zui.js"
 import {QualitySelector} from "../../../../../../views/quality-selector/view.js"
 
 export const GamePanel = hnexus.shadow_view(use => (o: {
 		levelImages: LevelImages
-		onClickStartGame: (level: LevelName) => void
+		onClickStartGame: (level: HuLevel) => void
 	}) => {
 
 	use.name("game-panel")
 	use.styles(styles)
 
-	const selectedLevel = use.signal<LevelName>("village")
+	const selectedLevel = use.signal<HuLevel>("viking_village")
 
 	function levelChange(event: InputEvent) {
 		const target = event.target as HTMLInputElement
-		selectedLevel.value = target.value as LevelName
+		selectedLevel.value = target.value as HuLevel
 	}
 
 	function select(level: string) {
 		return () => {
-			selectedLevel.value = level as LevelName
+			selectedLevel.value = level as HuLevel
 		}
 	}
 
@@ -38,22 +39,25 @@ export const GamePanel = hnexus.shadow_view(use => (o: {
 	return html`
 		<h2>select a level to play on</h2>
 
-		<div class="levelselect" @change=${levelChange}>
-			${Object.entries(o.levelImages).map(([level, img]) => html`
-				<button
-					class=based
-					?data-selected=${isSelected(level)}
-					${onCarmackClick(select(level))}>
+		<div class=levelselect @change=${levelChange}>
+			${Object.entries(o.levelImages).map(([levelName, img]) => {
+				const {info} = use.context.gameplan.value.levels[levelName as HuLevel]
+				return html`
+					<button
+						class=based
+						?data-selected=${isSelected(levelName)}
+						${onCarmackClick(select(levelName))}>
 
-					${img}
+						${img}
 
-					<span class="levelname">${level}</span>
+						<span class=label>${info.label.norse ?? info.label.english}</span>
 
-					${isSelected(level)
-						? html`<span class=note>selected</span>`
-						: null}
-				</button>
-			`)}
+						${isSelected(levelName)
+							? html`<span class=note>selected</span>`
+							: null}
+					</button>
+				`
+			})}
 		</div>
 
 		<div class=actionbar>

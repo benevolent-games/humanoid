@@ -7,8 +7,10 @@ export const styles = css`
 	inset: 0;
 
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	gap: 0.5em;
 }
 
 `
