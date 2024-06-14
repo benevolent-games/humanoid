@@ -15,7 +15,6 @@ select {
 
 	padding: .5em 1em;
 	border-radius: 0.2em;
-	text-align: center;
 
 	background: #8884;
 	color: white;
