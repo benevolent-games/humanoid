@@ -2,9 +2,8 @@
 import {css} from "@benev/slate"
 export const styles = css`
 
-section {
-	display: flex;
-	justify-content: center;
+:host {
+	font-size: 1.5em;
 }
 
 `

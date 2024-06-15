@@ -50,7 +50,7 @@ export const GamePanel = hnexus.shadow_view(use => (o: {
 
 						${img}
 
-						<span class=label>${info.label.norse ?? info.label.english}</span>
+						<span class=label>${info.label.english}</span>
 
 						${isSelected(levelName)
 							? html`<span class=note>selected</span>`

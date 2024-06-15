@@ -31,6 +31,12 @@ export const styles = css`
 	> * {
 		flex: 0 0 auto;
 	}
+
+	section {
+		> * + * {
+			margin-top: 0.6em;
+		}
+	}
 }
 
 h1 {

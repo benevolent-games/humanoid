@@ -12,7 +12,7 @@ import {LandingView} from "./views/landing/view.js"
 import {GameplayView} from "./views/gameplay/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
 import {loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
-import {LoadingScreen, LoadingView, loadingScreen} from "./views/loading/view.js"
+import {LoadingScreen, LoadingView, asLoadingScreen} from "./views/loading/view.js"
 
 /**
  * coordinate the app state at the highest level.
@@ -36,7 +36,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	async function launchLanding() {
 		if (loading.value)
 			return
-		loading.value = loadingScreen({
+		loading.value = asLoadingScreen({
 			kind: "splash",
 			onDone,
 			workload: Promise.resolve(),
@@ -51,7 +51,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	async function launchMenu() {
 		if (loading.value)
 			return
-		loading.value = loadingScreen({
+		loading.value = asLoadingScreen({
 			kind: "splash",
 			onDone,
 			workload: Promise.all([
@@ -74,7 +74,7 @@ export const BenevHarness = hnexus.shadow_component(use => {
 	async function launchGameplay(level: HuLevel) {
 		if (loading.value)
 			return
-		loading.value = loadingScreen({
+		loading.value = asLoadingScreen({
 			kind: "level",
 			level: use.context.gameplan.value.levels[level],
 			onDone,

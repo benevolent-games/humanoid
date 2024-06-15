@@ -4,16 +4,14 @@ import {css} from "@benev/slate"
 export const styles = css`
 
 :host {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	height: 100%;
+	max-width: 80em;
 	gap: 2em;
 }
 
 .actionbar {
 	display: flex;
 	justify-content: end;
+	flex-wrap: wrap;
 	gap: .5em;
 
 	> [view="quality-selector"] {

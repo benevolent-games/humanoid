@@ -23,7 +23,7 @@ export type LoadingLevel<W = any> = {
 
 export type LoadingScreen<W = any> = LoadingSplash<W> | LoadingLevel<W>
 
-export function loadingScreen<W>(loading: LoadingScreen<W>) {
+export function asLoadingScreen<W>(loading: LoadingScreen<W>) {
 	return loading
 }
 
@@ -83,7 +83,7 @@ export const LoadingLevelView = hnexus.shadow_view(use => (level: Plan.Level) =>
 		<img src="${src}" alt="" @load=${onload} ?data-loaded=${loaded}/>
 		<div class=info>
 			<h1>
-				<span>${info.label.norse ?? info.label.english}</span>
+				<span>${info.label.english}</span>
 			</h1>
 			${[
 				info.context,

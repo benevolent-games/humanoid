@@ -30,7 +30,8 @@ export const LandingView = hnexus.shadow_view(use => (o: {
 				</div>
 
 				<section>
-					<p>heathen is an incredible 3d multiplayer combat game about vikings that is kinda historically accurate.</p>
+					<p>heathen will be historically-accurate 3d multiplayer combat game about vikings.</p>
+					<p>it's under active development.</p>
 				</section>
 
 				<footer>

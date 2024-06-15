@@ -120,12 +120,16 @@ video {
 		font-size: max(1em, 1rem);
 		width: 100%;
 		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 
 		> [view] {
 			display: flex;
-			height: 100%;
 			flex-direction: column;
 			justify-content: center;
+			align-items: center;
 		}
 	}
 }
