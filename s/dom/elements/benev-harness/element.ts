@@ -9,10 +9,11 @@ import {loadVideo} from "./utils/load-video.js"
 import {loadAudio} from "./utils/load-audio.js"
 import {loadImage} from "./utils/load-image.js"
 import {LandingView} from "./views/landing/view.js"
+import {LoadingView} from "./views/loading/view.js"
 import {GameplayView} from "./views/gameplay/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
+import {LoadingScreen, asLoadingScreen} from "./views/loading/types.js"
 import {loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
-import {LoadingScreen, LoadingView, asLoadingScreen} from "./views/loading/view.js"
 
 /**
  * coordinate the app state at the highest level.
