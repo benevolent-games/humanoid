@@ -16,14 +16,8 @@ export namespace Plan {
 		glb: Glb
 	}
 
-	export type Translated = {
-		english: string
-		norse?: string
-		runes?: string
-	}
-
 	export type LevelInfo = {
-		label: Translated
+		label: string
 		context?: string
 		location?: string
 		date?: string

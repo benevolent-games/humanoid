@@ -54,13 +54,9 @@ export const make_gameplan = Plan.gameplan(({
 				small: "images/levelpics/village-03.small.webp",
 			},
 			info: {
-				label: {
-					english: "Askrigg",
-					norse: "Askrhryggr",
-					runes: "ᚨᛊᚲᚱᚺᚱᛁᚷᚷᚱ",
-				},
+				label: "Askrigg",
 				context: "Viking Settlement on the River Ure",
-				location: "North Yorkshire, Danelaw",
+				location: "North Yorkshire, under the Danelaw",
 				date: "879 AD",
 			},
 		}),
@@ -73,7 +69,7 @@ export const make_gameplan = Plan.gameplan(({
 				small: "images/levelpics/gym-01.small.webp",
 			},
 			info: {
-				label: {english: "Testing Gym"},
+				label: "Testing Gym",
 				context: "Development Headquarters",
 				location: "Victoria BC, Canada",
 				date: "2024 AD",

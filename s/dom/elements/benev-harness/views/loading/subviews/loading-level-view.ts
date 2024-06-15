@@ -3,7 +3,7 @@ import {css, html} from "@benev/slate"
 import {hnexus} from "../../../nexus.js"
 import {assets} from "../../../constants.js"
 import {Plan} from "../../../../../../models/planning/plan.js"
-import { LoadingSpinner } from "../../../../../views/loading-spinner/view.js"
+import {LoadingSpinner} from "../../../../../views/loading-spinner/view.js"
 
 export const LoadingLevelView = hnexus.shadow_view(use => (level: Plan.Level) => {
 	use.styles(css`
@@ -95,7 +95,7 @@ export const LoadingLevelView = hnexus.shadow_view(use => (level: Plan.Level) =>
 			</h1>
 
 			<div class=info>
-				<h1>${info.label.english}</h1>
+				<h1>${info.label}</h1>
 				${[
 					info.context,
 					info.location,
