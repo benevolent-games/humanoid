@@ -73,8 +73,8 @@ export const make_gameplan = Plan.gameplan(({
 				small: "images/levelpics/gym-01.small.webp",
 			},
 			info: {
-				label: {english: "Gym"},
-				context: "Developer Testing Grounds",
+				label: {english: "Testing Gym"},
+				context: "Development Headquarters",
 				location: "Victoria BC, Canada",
 				date: "2024 AD",
 			},
