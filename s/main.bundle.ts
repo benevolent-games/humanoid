@@ -9,12 +9,12 @@ import {Game} from "./models/realm/types.js"
 import {CommitHash} from "./tools/commit_hash.js"
 import {LevelLoader} from "./models/levels/loader.js"
 import startup_realm from "./startup/startup_realm.js"
-import {AimTarget, Spawner} from "./ecs/components/plain_components.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
+import startup_gamelogic from "./startup/startup_gamelogic.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
+import {AimTarget, Spawner} from "./ecs/components/plain_components.js"
 import startup_web_components from "./startup/startup_web_components.js"
-import startup_gamelogic from "./startup/startup_gamelogic.js"
 
 const commit = CommitHash.parse_from_dom()
 
