@@ -16,7 +16,7 @@ enum Predicament {
 	MobileGaming,
 }
 
-const GameView = nexus.light_view(use => (game: Game, menus: Menus) => {
+export const GameView = nexus.light_view(use => (game: Game, menus: Menus) => {
 	use.name("game")
 	const {modes} = game.tact
 	const {pointerLocker} = game.stage
