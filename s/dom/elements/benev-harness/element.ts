@@ -1,5 +1,5 @@
 
-import {RenderResult, html, nap} from "@benev/slate"
+import {RenderResult, html} from "@benev/slate"
 
 import {hnexus} from "./nexus.js"
 import {styles} from "./styles.js"
@@ -10,7 +10,6 @@ import {loadAudio} from "./utils/load-audio.js"
 import {loadImage} from "./utils/load-image.js"
 import {LandingView} from "./views/landing/view.js"
 import {LoadingView} from "./views/loading/view.js"
-import {GameplayView} from "./views/gameplay/view.js"
 import {MainMenuView} from "./views/main-menu/view.js"
 import {LoadingScreen, asLoadingScreen} from "./views/loading/types.js"
 import {loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
@@ -79,11 +78,17 @@ export const BenevHarness = hnexus.shadow_component(use => {
 			kind: "level",
 			level: use.context.gameplan.value.levels[level],
 			onDone,
-			workload: nap(5000),
-			onReady: () => {
-				exhibit.value = GameplayView([{
-					onClickBackToMenu: launchMenu,
-				}])
+			workload: import("../../../game.js")
+				.then(async({loadHeathenGame, HeathenGame}) => {
+					const game = await loadHeathenGame()
+					const gameView = HeathenGame([{game}])
+					return gameView
+				}),
+			onReady: gameView => {
+				exhibit.value = gameView
+				// exhibit.value = GameplayView([{
+				// 	onClickBackToMenu: launchMenu,
+				// }])
 			},
 		})
 	}

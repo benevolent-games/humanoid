@@ -15,7 +15,7 @@ export default template(async basic => {
 			<meta data-commit-hash="${commitHash}"/>
 			${startup_scripts_with_dev_mode({
 				path,
-				scripts: [{module: "main.bundle.js", bundle: "main.bundled.min.js"}],
+				scripts: [{module: "main.bundle.js", bundle: "main.bundle.min.js"}],
 			})}
 		`,
 		body: html`

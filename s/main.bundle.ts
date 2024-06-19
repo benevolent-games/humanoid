@@ -10,6 +10,7 @@ import {CommitHash} from "./tools/commit_hash.js"
 import {LevelLoader} from "./models/levels/loader.js"
 import startup_realm from "./startup/startup_realm.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
+import {hnexus} from "./dom/elements/benev-harness/nexus.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
@@ -22,7 +23,7 @@ const commit = CommitHash.parse_from_dom()
 startup_web_components()
 
 // realm contains all the global facilities for the game
-const realm = await startup_realm(commit)
+const realm = await startup_realm(commit, hnexus.context.qualityMachine.quality)
 
 // all our game logic is expressed in behaviors and systems
 const world = hub.world(realm)
@@ -35,6 +36,7 @@ const executeGamelogic = startup_gamelogic(realm, world)
 // define the game, which extends the realm
 const game: Game = {
 	...realm,
+	world,
 	levelLoader: new LevelLoader(realm, world),
 }
 

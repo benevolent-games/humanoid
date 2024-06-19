@@ -2,14 +2,13 @@
 import {html} from "@benev/slate"
 import {Input, Menus, menu} from "@benev/toolbox"
 
-import {nexus} from "../../../nexus.js"
 import {NotesMenu} from "./menus/notes.js"
-import {QualityMenu} from "./menus/quality.js"
 import {EffectsMenu} from "./menus/effects.js"
+import {hnexus} from "../benev-harness/nexus.js"
 import {SettingsMenu} from "./menus/settings.js"
 import {Game} from "../../../models/realm/types.js"
 
-export const MenuSystem = nexus.light_view(use => (
+export const MenuSystem = hnexus.light_view(use => (
 		game: Game,
 		render: (menus: Menus) => any,
 	) => {
@@ -18,9 +17,8 @@ export const MenuSystem = nexus.light_view(use => (
 
 	const menus = use.once(() => new Menus([
 		menu("notes", () => NotesMenu([game])),
-		menu("quality", () => QualityMenu([game])),
-		menu("settings", () => SettingsMenu([game])),
 		menu("effects", () => EffectsMenu([game])),
+		menu("settings", () => SettingsMenu([game])),
 	]))
 
 	use.mount(() => {
