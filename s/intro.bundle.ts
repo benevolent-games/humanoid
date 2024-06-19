@@ -1,6 +1,5 @@
 
-import {register_to_dom} from "@benev/slate"
-import {BenevHarness} from "./dom/elements/benev-harness/element.js"
-
-register_to_dom({BenevHarness})
+void async function intro() {
+	await import("./starter.js")
+}()
 
