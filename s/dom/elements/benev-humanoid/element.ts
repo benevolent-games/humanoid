@@ -16,7 +16,7 @@ enum Predicament {
 	MobileGaming,
 }
 
-export const GameView = nexus.light_view(use => (game: Game, menus: Menus) => {
+export const GameView = nexus.lightView(use => (game: Game, menus: Menus) => {
 	use.name("game")
 	const {modes} = game.tact
 	const {pointerLocker} = game.stage
@@ -97,7 +97,7 @@ export const GameView = nexus.light_view(use => (game: Game, menus: Menus) => {
 	`
 })
 
-export const BenevHumanoid = nexus.shadow_component(use => {
+export const BenevHumanoid = nexus.shadowComponent(use => {
 	use.styles(styles)
 	const gameOp = use.context.gameOp.value
 	return op_effect.braille(

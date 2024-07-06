@@ -18,7 +18,7 @@ import {loadLevelThumbnails} from "./views/main-menu/panels/game/levels.js"
  * coordinate the app state at the highest level.
  *  - orchestrate loading screens between major modes.
  */
-export const BenevHarness = hnexus.shadow_component(use => {
+export const BenevHarness = hnexus.shadowComponent(use => {
 	use.styles(styles)
 
 	const loading = use.signal<LoadingScreen | null>(null)

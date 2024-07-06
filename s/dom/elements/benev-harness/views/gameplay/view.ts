@@ -4,7 +4,7 @@ import {styles} from "./styles.js"
 import {hnexus} from "../../nexus.js"
 // import {onCarmackClick} from "../../../../../tools/zui.js"
 
-export const GameplayView = hnexus.shadow_view(use => (o: {
+export const GameplayView = hnexus.shadowView(use => (o: {
 		onClickBackToMenu: () => void
 	}) => {
 

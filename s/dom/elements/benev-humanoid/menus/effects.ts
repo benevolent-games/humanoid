@@ -12,7 +12,7 @@ export type HuBestorageData = {
 	shadows: Ui["shadows"]
 } & EffectsPanelData
 
-export const EffectsMenu = nexus.shadow_view(use => (game: Game) => {
+export const EffectsMenu = nexus.shadowView(use => (game: Game) => {
 	use.name("effects-menu")
 	use.styles(css``)
 

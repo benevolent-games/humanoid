@@ -81,7 +81,7 @@ const filterFlags = new Flags<FNumber, FString>([
 	[ShadowGenerator.FILTER_PCSS, "pcss"],
 ])
 
-export const ShadowsPanel = nexus.shadow_view(use => (game: Game) => {
+export const ShadowsPanel = nexus.shadowView(use => (game: Game) => {
 	use.name("shadows-panel")
 	use.styles(css`
 		.panel {

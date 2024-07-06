@@ -6,7 +6,7 @@ import {HuLevel} from "../../../../gameplan.js"
 import {Quality} from "../../../../tools/quality.js"
 import {Game} from "../../../../models/realm/types.js"
 
-export const QualityMenu = nexus.shadow_view(use => (game: Game) => {
+export const QualityMenu = nexus.shadowView(use => (game: Game) => {
 	use.name("quality-menu")
 	use.styles(css`
 		:host > * + * { margin-top: 1em; }

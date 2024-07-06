@@ -7,7 +7,7 @@ import {nexus} from "../../../../../nexus.js"
 import {HealthBar} from "../health-bar/view.js"
 import {Game} from "../../../../../models/realm/types.js"
 
-export const Overlay = nexus.shadow_view(use => (game: Game, menus: Menus) => {
+export const Overlay = nexus.shadowView(use => (game: Game, menus: Menus) => {
 	use.name("overlay")
 	use.styles(css`
 		.container {

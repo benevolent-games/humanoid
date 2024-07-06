@@ -2,7 +2,7 @@
 import {css, svg} from "@benev/slate"
 import {hnexus} from "../../elements/benev-harness/nexus.js"
 
-export const LoadingSpinner = hnexus.shadow_view(use => () => {
+export const LoadingSpinner = hnexus.shadowView(use => () => {
 	use.styles(css`
 		:host {
 			display: block;

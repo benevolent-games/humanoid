@@ -6,7 +6,7 @@ import {assets} from "../../constants.js"
 import {onCarmackClick} from "../../../../../tools/zui.js"
 import {benevLinks} from "../../../../renderers/benev-links.js"
 
-export const LandingView = hnexus.shadow_view(use => (o: {
+export const LandingView = hnexus.shadowView(use => (o: {
 		onClickPlay: (event: MouseEvent) => void,
 	}) => {
 

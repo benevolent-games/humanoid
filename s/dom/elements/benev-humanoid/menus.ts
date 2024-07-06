@@ -8,7 +8,7 @@ import {hnexus} from "../benev-harness/nexus.js"
 import {SettingsMenu} from "./menus/settings.js"
 import {Game} from "../../../models/realm/types.js"
 
-export const MenuSystem = hnexus.light_view(use => (
+export const MenuSystem = hnexus.lightView(use => (
 		game: Game,
 		render: (menus: Menus) => any,
 	) => {

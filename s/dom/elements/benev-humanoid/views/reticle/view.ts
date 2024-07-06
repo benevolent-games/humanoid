@@ -8,7 +8,7 @@ import {ParryReport} from "../../../../../models/activity/reports/parry.js"
 import {icon_tabler_chevron_up} from "../../../../icons/tabler/chevron-up.js"
 import {meleeReport} from "../../../../../models/activity/reports/melee/melee-report.js"
 
-export const Reticle = nexus.shadow_view(use => (game: Game, menus: Menus) => {
+export const Reticle = nexus.shadowView(use => (game: Game, menus: Menus) => {
 	use.name("reticle")
 	use.styles(css`
 		.shell {

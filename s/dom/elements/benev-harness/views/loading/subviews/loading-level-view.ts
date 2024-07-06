@@ -5,7 +5,7 @@ import {assets} from "../../../constants.js"
 import {Plan} from "../../../../../../models/planning/plan.js"
 import {LoadingSpinner} from "../../../../../views/loading-spinner/view.js"
 
-export const LoadingLevelView = hnexus.shadow_view(use => (level: Plan.Level) => {
+export const LoadingLevelView = hnexus.shadowView(use => (level: Plan.Level) => {
 	use.styles(css`
 		:host {
 			display: contents;

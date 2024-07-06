@@ -4,7 +4,7 @@ import {styles} from "./styles.js"
 import {hnexus} from "../../elements/benev-harness/nexus.js"
 import {Quality, normalizeQualityString} from "../../../tools/quality.js"
 
-export const QualitySelector = hnexus.shadow_view(use => () => {
+export const QualitySelector = hnexus.shadowView(use => () => {
 	use.name("quality-selector")
 	use.styles(styles)
 

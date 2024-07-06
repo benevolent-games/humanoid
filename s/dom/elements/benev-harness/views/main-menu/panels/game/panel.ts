@@ -7,7 +7,7 @@ import {HuLevel} from "../../../../../../../gameplan.js"
 import {onCarmackClick} from "../../../../../../../tools/zui.js"
 import {QualitySelector} from "../../../../../../views/quality-selector/view.js"
 
-export const GamePanel = hnexus.shadow_view(use => (o: {
+export const GamePanel = hnexus.shadowView(use => (o: {
 		levelImages: LevelImages
 		onClickStartGame: (level: HuLevel) => void
 	}) => {

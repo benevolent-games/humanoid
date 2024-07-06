@@ -17,7 +17,7 @@ const particleFogInputs: InputGroup<Ui["particleFog"]> = {
 	spinrate: [Number, Granularity.medium],
 }
 
-export const ParticleFogPanel = nexus.shadow_view(use => (game: Game) => {
+export const ParticleFogPanel = nexus.shadowView(use => (game: Game) => {
 	use.name("particle-fog-panel")
 	use.styles(css`
 		.panel {

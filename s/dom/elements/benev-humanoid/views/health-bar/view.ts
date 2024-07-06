@@ -5,7 +5,7 @@ import {css, html} from "@benev/slate"
 import {nexus} from "../../../../../nexus.js"
 import {HealthState} from "../../../../../models/ui/types.js"
 
-export const HealthBar = nexus.shadow_view(use => (health: HealthState) => {
+export const HealthBar = nexus.shadowView(use => (health: HealthState) => {
 	use.name("health")
 	use.styles(css`
 		.plate {

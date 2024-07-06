@@ -16,7 +16,7 @@ enum Predicament {
 	MobileGaming,
 }
 
-const InnerGameView = hnexus.light_view(use => (game: Game, menus: Menus) => {
+const InnerGameView = hnexus.lightView(use => (game: Game, menus: Menus) => {
 	const {modes} = game.tact
 	const {pointerLocker} = game.stage
 
@@ -93,7 +93,7 @@ const InnerGameView = hnexus.light_view(use => (game: Game, menus: Menus) => {
 	)
 })
 
-export const HeathenGame = hnexus.shadow_view(use => ({game}: {
+export const HeathenGame = hnexus.shadowView(use => ({game}: {
 		game: Game
 	}) => {
 	use.name("game")

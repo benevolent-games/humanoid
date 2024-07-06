@@ -13,7 +13,7 @@ import {when, onCarmackClick} from "../../../../../tools/zui.js"
 
 type MenuItem = {name: string, label: RenderResult, panel: RenderResult}
 
-export const MainMenuView = hnexus.shadow_view(use => (o: {
+export const MainMenuView = hnexus.shadowView(use => (o: {
 		video: HTMLVideoElement
 		audio: HTMLAudioElement
 		levelImages: LevelImages

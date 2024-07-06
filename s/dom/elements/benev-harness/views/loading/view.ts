@@ -7,7 +7,7 @@ import {LoadingScreen} from "./types.js"
 import {assets} from "../../constants.js"
 import {LoadingLevelView} from "./subviews/loading-level-view.js"
 
-export const LoadingView = hnexus.shadow_view(use => (loading: LoadingScreen) => {
+export const LoadingView = hnexus.shadowView(use => (loading: LoadingScreen) => {
 	use.styles(styles)
 	const active = use.signal(false)
 

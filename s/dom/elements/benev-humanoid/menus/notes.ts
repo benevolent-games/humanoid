@@ -3,7 +3,7 @@ import {css, html} from "@benev/slate"
 import {nexus} from "../../../../nexus.js"
 import {Game} from "../../../../models/realm/types.js"
 
-export const NotesMenu = nexus.shadow_view(use => (game: Game) => {
+export const NotesMenu = nexus.shadowView(use => (game: Game) => {
 	use.name("notes-menu")
 	use.styles(css`
 		.base {
