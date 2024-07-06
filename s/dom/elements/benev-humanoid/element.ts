@@ -1,6 +1,6 @@
 
-import {html} from "@benev/slate"
-import {Menus, Theater, op_effect} from "@benev/toolbox"
+import {html, loading} from "@benev/slate"
+import {Menus, Theater} from "@benev/toolbox"
 import {NubStick} from "@benev/toolbox/x/tact/nubs/stick/view.js"
 import {NubLookpad} from "@benev/toolbox/x/tact/nubs/lookpad/view.js"
 
@@ -100,7 +100,7 @@ export const GameView = nexus.lightView(use => (game: Game, menus: Menus) => {
 export const BenevHumanoid = nexus.shadowComponent(use => {
 	use.styles(styles)
 	const gameOp = use.context.gameOp.value
-	return op_effect.braille(
+	return loading.braille(
 		gameOp,
 		game => MenuSystem(game, menus => GameView(game, menus)),
 	)

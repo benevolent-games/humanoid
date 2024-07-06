@@ -1,6 +1,6 @@
 
-import {op_effect} from "@benev/toolbox"
-import {Op, css, html} from "@benev/slate"
+import {Op, css, html, loading} from "@benev/slate"
+
 import {nexus} from "../../../../nexus.js"
 import {HuLevel} from "../../../../gameplan.js"
 import {Quality} from "../../../../tools/quality.js"
@@ -129,7 +129,7 @@ export const QualityMenu = nexus.shadowView(use => (game: Game) => {
 				)}
 			</div>
 			<div class=loading>
-				${op_effect.binary(game.levelLoader.op, () => {})}
+				${loading.binary(game.levelLoader.op, () => {})}
 			</div>
 		</section>
 	`
