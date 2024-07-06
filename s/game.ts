@@ -6,12 +6,12 @@ import type {Game} from "./models/realm/types.js"
 import {CommitHash} from "./tools/commit_hash.js"
 import {LevelLoader} from "./models/levels/loader.js"
 import startup_realm from "./startup/startup_realm.js"
+import {hnexus} from "./dom/elements/benev-harness/nexus.js"
 import startup_gameloop from "./startup/startup_gameloop.js"
 import startup_gamelogic from "./startup/startup_gamelogic.js"
 import {blank_spawner_state} from "./ecs/logic/utils/spawns.js"
 import startup_housekeeping from "./startup/startup_housekeeping.js"
 import {AimTarget, Spawner} from "./ecs/components/plain_components.js"
-import { hnexus } from "./dom/elements/benev-harness/nexus.js"
 
 export {HeathenGame} from "./dom/views/heathen-game/view.js"
 
