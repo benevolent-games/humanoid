@@ -25,27 +25,30 @@
 		"assets-down": "s/bin/assets-down",
 		"assets-up": "s/bin/assets-up",
 		"assets-cycle": "run-s assets-down assets-up",
+		"devlinks": "run-s devlinks-toolbox devlinks-slate",
+		"devlinks-toolbox": "rm -rf node_modules/@benev/toolbox && ln -s \"$(realpath ../toolbox)\" node_modules/@benev/toolbox",
+		"devlinks-slate": "rm -rf node_modules/@benev/slate && ln -s \"$(realpath ../slate)\" node_modules/@benev/slate",
 		"test": "cynic node x/tests.test.js",
 		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\""
 	},
 	"dependencies": {
-		"@benev/slate": "^0.2.0-0",
-		"@benev/toolbox": "^0.6.0-10",
+		"@benev/slate": "^0.2.0-4",
+		"@benev/toolbox": "^0.6.0-14",
 		"@dimforge/rapier3d": "^0.13.1",
 		"@dimforge/rapier3d-compat": "^0.13.1",
 		"@rollup/plugin-terser": "^0.4.4",
 		"es-module-shims": "^1.10.0",
 		"lit": "^3.1.4",
 		"simplex-noise": "^4.0.1",
-		"zx": "^8.1.3"
+		"zx": "^8.1.4"
 	},
 	"peerDependencies": {
-		"@babylonjs/core": "^7.12.0",
-		"@babylonjs/loaders": "^7.12.0"
+		"@babylonjs/core": "^7.14.0",
+		"@babylonjs/loaders": "^7.14.0"
 	},
 	"devDependencies": {
 		"@benev/batch": "^0.0.0",
-		"@benev/turtle": "^0.6.0-2",
+		"@benev/turtle": "^0.6.0-4",
 		"@rollup/plugin-node-resolve": "^15.2.3",
 		"@rollup/plugin-wasm": "^6.2.2",
 		"chokidar": "^3.6.0",
@@ -58,7 +61,7 @@
 		"rimraf": "^5.0.7",
 		"rollup": "^4.18.0",
 		"terser": "^5.31.1",
-		"typescript": "^5.5.2"
+		"typescript": "^5.5.3"
 	},
 	"keywords": [
 		"game",
