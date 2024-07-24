@@ -3,6 +3,7 @@ import {template, html, easypage, startup_scripts_with_dev_mode, git_commit_hash
 
 export default template(async basic => {
 	const path = basic.path(import.meta.url)
+
 	return easypage({
 		path,
 		css: "index.css",

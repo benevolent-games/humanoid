@@ -25,9 +25,10 @@
 		"assets-down": "s/bin/assets-down",
 		"assets-up": "s/bin/assets-up",
 		"assets-cycle": "run-s assets-down assets-up",
-		"devlinks": "run-s devlinks-toolbox devlinks-slate",
+		"devlinks": "run-s devlinks-toolbox devlinks-slate devlinks-turtle",
 		"devlinks-toolbox": "rm -rf node_modules/@benev/toolbox && ln -s \"$(realpath ../toolbox)\" node_modules/@benev/toolbox",
 		"devlinks-slate": "rm -rf node_modules/@benev/slate && ln -s \"$(realpath ../slate)\" node_modules/@benev/slate",
+		"devlinks-turtle": "rm -rf node_modules/@benev/turtle && ln -s \"$(realpath ../turtle)\" node_modules/@benev/turtle",
 		"test": "cynic node x/tests.test.js",
 		"test-watch": "chokidar \"x/**/*.js\" -c \"clear && npm test\""
 	},
